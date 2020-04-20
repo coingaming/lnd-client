@@ -26,7 +26,6 @@ stdenv.mkDerivation {
     /* IDE */
     haskell-ide
     /* Apps */
-    postgresql
     bitcoin
     lnd
     /* Utils */
