@@ -27,6 +27,8 @@ stdenv.mkDerivation {
     haskell-ide
     /* Apps */
     postgresql
+    bitcoin
+    lnd
     /* Utils */
     git
     nix-prefetch-scripts
@@ -48,6 +50,11 @@ stdenv.mkDerivation {
     source ./nix/export-test-envs.sh
     sh ./nix/reset-test-data.sh
     sh ./nix/spawn-test-deps.sh
+
+    alias bitcoind="bitcoind -datadir=$BTCD_DIR"
+    alias bitcoin-cli="bitcoin-cli -datadir=$BTCD_DIR"
+    alias lncli-merchant="lncli -n regtest --lnddir=$LND_MERCHANT_DIR"
+    alias lncli-customer="lncli -n regtest --lnddir=$LND_CUSTOMER_DIR --rpcserver=localhost:11009"
 
     export HOOGLEDB=/root/.hoogle
     if [ "$(ls -A $HOOGLEDB)" ]; then

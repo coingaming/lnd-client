@@ -1,10 +1,14 @@
 .stack-work/
-lnd-client.cabal
+p88lnd.cabal
 *~
 pkg.nix
 nix/pkg.nix
-postgres
-postgres_data
+postgres/
+postgres_data/
+.bitcoin/*
+!.bitcoin/bitcoin.conf
+.lnd-*/*
+!.lnd-*/lnd.conf
 dist*
 postgres.log
 result
