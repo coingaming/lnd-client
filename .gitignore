@@ -1,0 +1,10 @@
+.stack-work/
+lnd-client.cabal
+*~
+pkg.nix
+nix/pkg.nix
+postgres
+postgres_data
+dist*
+postgres.log
+result
