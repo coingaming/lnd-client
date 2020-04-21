@@ -112,14 +112,14 @@ rawConfig =
     RawConfig
       <$> var
         (str <=< nonempty)
-        "P88LND_LND_B64_WALLET_PASSWORD"
+        "LND_CLIENT_LND_B64_WALLET_PASSWORD"
         (keep <> help "")
-      <*> var (str <=< nonempty) "P88LND_LND_TLS_CERT" (keep <> help "")
-      <*> var (str <=< nonempty) "P88LND_LND_TLS_KEY" (keep <> help "")
-      <*> var (str <=< nonempty) "P88LND_LND_HEX_MACAROON" (keep <> help "")
-      <*> var (str <=< nonempty) "P88LND_LND_URL" (keep <> help "")
-      <*> var (str <=< nonempty) "P88LND_ENV" (keep <> help "")
-      <*> var (auto <=< nonempty) "P88LND_LOG_FORMAT" (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_LND_TLS_CERT" (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_LND_TLS_KEY" (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_LND_HEX_MACAROON" (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_LND_URL" (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_ENV" (keep <> help "")
+      <*> var (auto <=< nonempty) "LND_CLIENT_LOG_FORMAT" (keep <> help "")
 
 newEnv' :: KatipContextT IO Env
 newEnv' = liftIO rawConfig >>= newEnv
