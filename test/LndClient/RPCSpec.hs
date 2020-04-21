@@ -9,7 +9,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module LND.RPCSpec
+module LndClient.RPCSpec
   ( spec,
   )
 where
@@ -19,18 +19,11 @@ import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Concurrent.Thread.Delay (delay)
 import Control.Exception (bracket)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Reader
-  ( MonadReader,
-    ReaderT,
-    asks,
-    local,
-    runReaderT,
-  )
+import Control.Monad.Reader (MonadReader, ReaderT, asks, local, runReaderT)
 import Data.Aeson (Result (..), fromJSON, toJSON)
 import Data.Aeson.QQ
 import Data.ByteString (ByteString)
-import Data.Text (pack)
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import Env
   ( (<=<),
     auto,
