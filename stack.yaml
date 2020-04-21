@@ -40,6 +40,12 @@ packages:
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
 # extra-deps: []
+extra-deps:
+  - envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
+  - hspec-wai-0.10.1@sha256:56dd9ec1d56f47ef1946f71f7cbf070e4c285f718cac1b158400ae5e7172ef47,2290
+  - hspec-wai-json-0.10.1@sha256:67b405c38f0a9e2771480c8d3ecd8aeb8d8776a35d3b2906cb1b76c9538617e4,1629
+  - cryptostore-0.2.1.0@sha256:9896e2984f36a1c8790f057fd5ce3da4cbcaf8aa73eb2d9277916886978c5b19,3881
+  - cryptonite-0.26@sha256:43c722f3770c31f4c5376e7aa42645b104834103312e217aa7fe79316416d6df,17352
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

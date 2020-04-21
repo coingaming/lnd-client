@@ -8,7 +8,7 @@ export PATH=/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin
 echo 'http2 = false' >> /etc/nix/nix.conf
 nix-channel --add https://nixos.org/channels/nixos-19.09 nixpkgs
 nix-channel --update
-nix-env -iAP nixpkgs.openssh nixpkgs.git nixpkgs.cabal2nix nixpkgs.coreutils nixpkgs.docker
+nix-env -iAP nixpkgs.openssh nixpkgs.git nixpkgs.cabal2nix nixpkgs.coreutils
 nix-env -iAP cachix -f https://cachix.org/api/v1/install
 cachix use all-hies
 
