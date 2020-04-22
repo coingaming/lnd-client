@@ -1,8 +1,6 @@
 .stack-work/
 lnd-client.cabal
 *~
-pkg.nix
-nix/pkg.nix
 postgres/
 postgres_data/
 .bitcoin/*
