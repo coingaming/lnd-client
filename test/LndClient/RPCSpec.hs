@@ -148,11 +148,20 @@ newEnv rc = do
 
 runKatip :: KatipContextT IO a -> IO a
 runKatip x = do
-  le <- initLogEnv "LndClient" "test"
+  handleScribe <-
+    mkHandleScribeWithFormatter
+      bracketFormat
+      ColorIfTerminal
+      stdout
+      (permitItem DebugS)
+      V2
+  le <-
+    registerScribe "stdout" handleScribe defaultScribeSettings
+      =<< initLogEnv "LndClient" "test"
   runKatipContextT le (mempty :: LogContexts) mempty x
 
 withEnv :: (Env -> IO ()) -> IO ()
-withEnv = bracket (runKatip newEnv') $ const $ return ()
+withEnv = bracket (runKatip newEnv') (closeScribes . envKatipLE)
 
 newtype AppM m a
   = AppM
@@ -178,31 +187,8 @@ instance (MonadIO m) => KatipContext (AppM m) where
   localKatipNamespace f (AppM m) =
     AppM (local (\s -> s {envKatipNS = f (envKatipNS s)}) m)
 
-runApp' :: Env -> AppM m a -> m a
-runApp' env app = runReaderT (unAppM app) env
-
---
--- TODO : for some reason logging is not working in tests
---
-runApp :: Env -> AppM IO a -> IO a
-runApp env app = do
-  handleScribe <-
-    mkHandleScribeWithFormatter
-      bracketFormat
-      ColorIfTerminal
-      stdout
-      (permitItem DebugS)
-      V2
-  let mkLogEnv =
-        registerScribe "stdout" handleScribe defaultScribeSettings
-          =<< initLogEnv "LndClient" "test"
-  bracket mkLogEnv closeScribes $ \le ->
-    runKatipContextT le (mempty :: LogContexts) mempty
-      $ lift
-      $ runApp' env
-      $ do
-        $(logTM) ErrorS "Hello Katip"
-        app
+runApp :: Env -> AppM m a -> m a
+runApp env app = runReaderT (unAppM app) env
 
 spec :: Spec
 spec = around withEnv $ do
@@ -301,16 +287,18 @@ spec = around withEnv $ do
                 (liftIO . putMVar x)
       let runTest = do
             _ <- delay 3000000
-            runApp env $
-              coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
+            res <-
+              runApp env $
+                coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
+            i <- takeMVar x
+            return (res, i)
       result <- race subscribeInv runTest
       case result of
         Left f -> case f of
           LndSuccess _ -> fail "HTTP success"
           LndFail lndFail -> fail (show lndFail)
           LndHttpException e -> fail (show e)
-        Right res -> do
-          i <- takeMVar x
+        Right (res, i) ->
           i
             `shouldSatisfy` ( \this ->
                                 AddInvoice.rHash res
