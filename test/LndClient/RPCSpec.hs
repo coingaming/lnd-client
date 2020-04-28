@@ -8,6 +8,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
 
 module LndClient.RPCSpec
   ( spec,
@@ -15,6 +17,7 @@ module LndClient.RPCSpec
 where
 
 import Control.Concurrent (forkIO)
+import Control.Concurrent.Async (race)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Concurrent.Thread.Delay (delay)
 import Control.Exception (bracket)
@@ -245,7 +248,10 @@ spec = around withEnv $ do
               expiry = "3600",
               settled = Nothing,
               settleIndex = Nothing,
-              descriptionHash = Just "world"
+              descriptionHash = Just "world",
+              memo = Just "my invoice",
+              paymentRequest = Just "req",
+              fallbackAddr = ""
             }
         )
         `shouldBe` fromJSON
@@ -254,30 +260,37 @@ spec = around withEnv $ do
                     creation_date: "11.11.2011",
                     value: "123",
                     expiry: "3600",
-                    description_hash: "world"
+                    description_hash: "world",
+                    memo: "my invoice",
+                    payment_request: "req",
+                    fallback_addr: ""
                    }|]
     it "rpc-succeeds" $ \env -> do
       x <- newEmptyMVar
-      _ <- forkIO $ do
-        _ <-
-          runApp env $
-            subscribeInvoices
-              (envLnd env)
-              (SubscribeInvoicesRequest Nothing Nothing)
-              (liftIO . putMVar x)
-        return ()
-      _ <- delay 3000000 -- forkIO may cause race condition
-      res <-
-        runApp env $
-          coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
-      i <- takeMVar x
-      i
-        `shouldSatisfy` ( \this ->
-                            AddInvoice.rHash res
-                              == Invoice.rHash this
-                              && pack (show $ AddInvoice.value addInvoiceRequest)
-                              == Invoice.value this
-                        )
+      let subscribeInv =
+            runApp env $
+              subscribeInvoices
+                (envLnd env)
+                (SubscribeInvoicesRequest Nothing Nothing)
+                (liftIO . putMVar x)
+      let runTest =
+            runApp env $
+              coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
+      result <- race subscribeInv runTest
+      case result of
+        Left f -> case f of
+          LndSuccess _ -> fail "HTTP success"
+          LndFail lndFail -> fail (show lndFail)
+          LndHttpException e -> fail (show e)
+        Right res -> do
+          i <- takeMVar x
+          i
+            `shouldSatisfy` ( \this ->
+                                AddInvoice.rHash res
+                                  == Invoice.rHash this
+                                  && pack (show $ AddInvoice.value addInvoiceRequest)
+                                  == Invoice.value this
+                            )
   where
     addInvoiceRequest =
       hashifyAddInvoiceRequest $

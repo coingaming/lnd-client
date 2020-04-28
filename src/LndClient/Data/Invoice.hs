@@ -30,7 +30,14 @@ data Invoice
         expiry :: Text,
         settled :: Maybe Bool,
         settleIndex :: Maybe Text,
-        descriptionHash :: Maybe Text
+        descriptionHash :: Maybe Text,
+        memo :: Maybe Text,
+        paymentRequest :: Maybe Text,
+        fallbackAddr :: Text
+        --      cltvExpiry :: Text
+        -- private :: Maybe Bool,
+        -- addIndex :: Maybe Text
+        --        state :: Text
         --
         -- TODO : add other fields, think how to handle optional
         --
