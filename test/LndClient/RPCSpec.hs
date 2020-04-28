@@ -273,7 +273,8 @@ spec = around withEnv $ do
                 (envLnd env)
                 (SubscribeInvoicesRequest Nothing Nothing)
                 (liftIO . putMVar x)
-      let runTest =
+      let runTest = do
+            _ <- delay 3000000
             runApp env $
               coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
       result <- race subscribeInv runTest
