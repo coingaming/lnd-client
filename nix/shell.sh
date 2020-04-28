@@ -11,9 +11,7 @@ docker run -it --rm \
   -e ROBOT_SSH_KEY="$ROBOT_SSH_KEY" \
   -v "$(pwd):/app" \
   -v "nix:/nix" \
-  -v "stack:/root/.stack" \
-  -v "cabal:/root/.cabal" \
-  -v "hoogle:/root/.hoogle" \
+  -v "nix-19.09-root:/root" \
   -w "/app" nixos/nix:2.3 sh -c "
   ./nix/bootstrap.sh &&
   nix-shell ./nix/shell.nix --pure \

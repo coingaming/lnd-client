@@ -7,6 +7,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# OPTIONS_GHC -Wno-unused-imports #-}
@@ -23,6 +24,7 @@ import Control.Concurrent.Thread.Delay (delay)
 import Control.Exception (bracket)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (MonadReader, ReaderT, asks, local, runReaderT)
+import Control.Monad.Trans.Class (lift)
 import Data.Aeson (Result (..), fromJSON, toJSON)
 import Data.Aeson.QQ
 import Data.ByteString (ByteString)
@@ -70,6 +72,7 @@ import LndClient.RPC
 import LndClient.Utils
 import Network.HTTP.Client (responseStatus)
 import Network.HTTP.Types.Status (status404)
+import System.IO (stdout)
 import Test.Hspec
 import UnliftIO (MonadUnliftIO (..), UnliftIO (..))
 
@@ -162,9 +165,6 @@ instance (MonadUnliftIO m) => MonadUnliftIO (AppM m) where
     AppM (fmap (\(UnliftIO run) -> UnliftIO (run . unAppM)) askUnliftIO)
   withRunInIO go = AppM (withRunInIO (\k -> go (k . unAppM)))
 
-runApp :: Env -> AppM m a -> m a
-runApp env app = runReaderT (unAppM app) env
-
 instance (MonadIO m) => Katip (AppM m) where
   getLogEnv = asks envKatipLE
   localLogEnv f (AppM m) =
@@ -177,6 +177,32 @@ instance (MonadIO m) => KatipContext (AppM m) where
   getKatipNamespace = asks envKatipNS
   localKatipNamespace f (AppM m) =
     AppM (local (\s -> s {envKatipNS = f (envKatipNS s)}) m)
+
+runApp' :: Env -> AppM m a -> m a
+runApp' env app = runReaderT (unAppM app) env
+
+--
+-- TODO : for some reason logging is not working in tests
+--
+runApp :: Env -> AppM IO a -> IO a
+runApp env app = do
+  handleScribe <-
+    mkHandleScribeWithFormatter
+      bracketFormat
+      ColorIfTerminal
+      stdout
+      (permitItem DebugS)
+      V2
+  let mkLogEnv =
+        registerScribe "stdout" handleScribe defaultScribeSettings
+          =<< initLogEnv "LndClient" "test"
+  bracket mkLogEnv closeScribes $ \le ->
+    runKatipContextT le (mempty :: LogContexts) mempty
+      $ lift
+      $ runApp' env
+      $ do
+        $(logTM) ErrorS "Hello Katip"
+        app
 
 spec :: Spec
 spec = around withEnv $ do
