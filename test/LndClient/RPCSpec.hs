@@ -298,6 +298,9 @@ spec = around withEnv $ do
             i <- takeMVar x
             return (res, i)
       result <- race subscribeInv runTest
+      --
+      --TODO Optimize handling LndResult(LndSuccess, LndFail, LndHttpException)
+      --
       case result of
         Left f -> case f of
           LndSuccess _ -> fail "HTTP success"
