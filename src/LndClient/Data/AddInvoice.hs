@@ -13,21 +13,22 @@ import Data.ByteString.Base64 (encode)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import GHC.Generics (Generic)
+import LndClient.Data.Newtypes
 import LndClient.Utils (stdParseJSON, stdToJSON)
 
 data AddInvoiceRequest
   = AddInvoiceRequest
       { memo :: Maybe Text,
-        value :: Integer,
+        value :: MoneyAmount,
         descriptionHash :: Maybe Text
       }
   deriving (Generic, Show)
 
 data AddInvoiceResponse
   = AddInvoiceResponse
-      { rHash :: Text,
-        paymentRequest :: Text,
-        addIndex :: Text
+      { rHash :: RHash,
+        paymentRequest :: PaymentRequest,
+        addIndex :: AddIndex
       }
   deriving (Generic, Show, Eq)
 

@@ -9,6 +9,7 @@ where
 import Data.Aeson (FromJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
+import LndClient.Data.Newtypes
 import LndClient.Utils (stdParseJSON)
 
 newtype ResultWrapper a
@@ -22,11 +23,11 @@ instance (FromJSON a) => FromJSON (ResultWrapper a) where
 
 data Invoice
   = Invoice
-      { rHash :: Text,
+      { rHash :: RHash,
         amtPaidSat :: Maybe Text,
         creationDate :: Text,
         settleDate :: Maybe Text,
-        value :: Text,
+        value :: MoneyAmount,
         expiry :: Text,
         settled :: Maybe Bool,
         settleIndex :: Maybe Text,
