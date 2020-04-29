@@ -7,7 +7,10 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
 
 module LndClient.RPCSpec
   ( spec,
@@ -15,11 +18,13 @@ module LndClient.RPCSpec
 where
 
 import Control.Concurrent (forkIO)
+import Control.Concurrent.Async (race)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Concurrent.Thread.Delay (delay)
 import Control.Exception (bracket)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (MonadReader, ReaderT, asks, local, runReaderT)
+import Control.Monad.Trans.Class (lift)
 import Data.Aeson (Result (..), fromJSON, toJSON)
 import Data.Aeson.QQ
 import Data.ByteString (ByteString)
@@ -67,6 +72,7 @@ import LndClient.RPC
 import LndClient.Utils
 import Network.HTTP.Client (responseStatus)
 import Network.HTTP.Types.Status (status404)
+import System.IO (stdout)
 import Test.Hspec
 import UnliftIO (MonadUnliftIO (..), UnliftIO (..))
 
@@ -142,11 +148,20 @@ newEnv rc = do
 
 runKatip :: KatipContextT IO a -> IO a
 runKatip x = do
-  le <- initLogEnv "LndClient" "test"
+  handleScribe <-
+    mkHandleScribeWithFormatter
+      bracketFormat
+      ColorIfTerminal
+      stdout
+      (permitItem DebugS)
+      V2
+  le <-
+    registerScribe "stdout" handleScribe defaultScribeSettings
+      =<< initLogEnv "LndClient" "test"
   runKatipContextT le (mempty :: LogContexts) mempty x
 
 withEnv :: (Env -> IO ()) -> IO ()
-withEnv = bracket (runKatip newEnv') $ const $ return ()
+withEnv = bracket (runKatip newEnv') (closeScribes . envKatipLE)
 
 newtype AppM m a
   = AppM
@@ -158,9 +173,6 @@ instance (MonadUnliftIO m) => MonadUnliftIO (AppM m) where
   askUnliftIO =
     AppM (fmap (\(UnliftIO run) -> UnliftIO (run . unAppM)) askUnliftIO)
   withRunInIO go = AppM (withRunInIO (\k -> go (k . unAppM)))
-
-runApp :: Env -> AppM m a -> m a
-runApp env app = runReaderT (unAppM app) env
 
 instance (MonadIO m) => Katip (AppM m) where
   getLogEnv = asks envKatipLE
@@ -174,6 +186,9 @@ instance (MonadIO m) => KatipContext (AppM m) where
   getKatipNamespace = asks envKatipNS
   localKatipNamespace f (AppM m) =
     AppM (local (\s -> s {envKatipNS = f (envKatipNS s)}) m)
+
+runApp :: Env -> AppM m a -> m a
+runApp env app = runReaderT (unAppM app) env
 
 spec :: Spec
 spec = around withEnv $ do
@@ -245,7 +260,14 @@ spec = around withEnv $ do
               expiry = "3600",
               settled = Nothing,
               settleIndex = Nothing,
-              descriptionHash = Just "world"
+              descriptionHash = Just "world",
+              memo = Just "my invoice",
+              paymentRequest = Just "req",
+              fallbackAddr = Nothing,
+              cltvExpiry = "40",
+              private = Nothing,
+              addIndex = Just "8",
+              state = Nothing
             }
         )
         `shouldBe` fromJSON
@@ -254,30 +276,44 @@ spec = around withEnv $ do
                     creation_date: "11.11.2011",
                     value: "123",
                     expiry: "3600",
-                    description_hash: "world"
+                    description_hash: "world",
+                    memo: "my invoice",
+                    payment_request: "req",
+                    cltv_expiry: "40",
+                    add_index: "8"
                    }|]
     it "rpc-succeeds" $ \env -> do
       x <- newEmptyMVar
-      _ <- forkIO $ do
-        _ <-
-          runApp env $
-            subscribeInvoices
-              (envLnd env)
-              (SubscribeInvoicesRequest Nothing Nothing)
-              (liftIO . putMVar x)
-        return ()
-      _ <- delay 3000000 -- forkIO may cause race condition
-      res <-
-        runApp env $
-          coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
-      i <- takeMVar x
-      i
-        `shouldSatisfy` ( \this ->
-                            AddInvoice.rHash res
-                              == Invoice.rHash this
-                              && pack (show $ AddInvoice.value addInvoiceRequest)
-                              == Invoice.value this
-                        )
+      let subscribeInv =
+            runApp env $
+              subscribeInvoices
+                (envLnd env)
+                (SubscribeInvoicesRequest Nothing Nothing)
+                (liftIO . putMVar x)
+      let runTest = do
+            _ <- delay 3000000
+            res <-
+              runApp env $
+                coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
+            i <- takeMVar x
+            return (res, i)
+      result <- race subscribeInv runTest
+      --
+      --TODO Optimize handling LndResult(LndSuccess, LndFail, LndHttpException)
+      --
+      case result of
+        Left f -> case f of
+          LndSuccess _ -> fail "HTTP success"
+          LndFail lndFail -> fail (show lndFail)
+          LndHttpException e -> fail (show e)
+        Right (res, i) ->
+          i
+            `shouldSatisfy` ( \this ->
+                                AddInvoice.rHash res
+                                  == Invoice.rHash this
+                                  && pack (show $ AddInvoice.value addInvoiceRequest)
+                                  == Invoice.value this
+                            )
   where
     addInvoiceRequest =
       hashifyAddInvoiceRequest $
