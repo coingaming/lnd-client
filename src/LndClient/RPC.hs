@@ -292,7 +292,8 @@ subscribeInvoices env req invoiceHandler = rpc $ rpcArgs env
           rpcName = SubscribeInvoices,
           rpcSubHandler = Just subHandler
         }
-    subHandler x = case eitherDecode $ fromStrict x of
-      Left e ->
-        $(logTM) ErrorS $ logStr $ "failed to parse subscription invoice " <> e
-      Right (ResultWrapper (i :: Invoice)) -> invoiceHandler i
+    subHandler x = do
+      liftIO $ print x
+      case eitherDecode $ fromStrict x of
+        Left e -> $(logTM) ErrorS $ logStr $ "failed to parse subscription invoice " <> e
+        Right (ResultWrapper (i :: Invoice)) -> invoiceHandler i

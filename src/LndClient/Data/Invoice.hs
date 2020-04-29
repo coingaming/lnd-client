@@ -33,14 +33,11 @@ data Invoice
         descriptionHash :: Maybe Text,
         memo :: Maybe Text,
         paymentRequest :: Maybe Text,
-        fallbackAddr :: Text
-        --      cltvExpiry :: Text
-        -- private :: Maybe Bool,
-        -- addIndex :: Maybe Text
-        --        state :: Text
-        --
-        -- TODO : add other fields, think how to handle optional
-        --
+        fallbackAddr :: Maybe Text,
+        cltvExpiry :: Text,
+        private :: Maybe Bool,
+        addIndex :: Maybe Text,
+        state :: Maybe Text
       }
   deriving (Generic, Show, Eq)
 

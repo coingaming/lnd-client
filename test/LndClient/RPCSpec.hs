@@ -263,7 +263,11 @@ spec = around withEnv $ do
               descriptionHash = Just "world",
               memo = Just "my invoice",
               paymentRequest = Just "req",
-              fallbackAddr = ""
+              fallbackAddr = Nothing,
+              cltvExpiry = "40",
+              private = Nothing,
+              addIndex = Just "8",
+              state = Nothing
             }
         )
         `shouldBe` fromJSON
@@ -275,7 +279,8 @@ spec = around withEnv $ do
                     description_hash: "world",
                     memo: "my invoice",
                     payment_request: "req",
-                    fallback_addr: ""
+                    cltv_expiry: "40",
+                    add_index: "8"
                    }|]
     it "rpc-succeeds" $ \env -> do
       x <- newEmptyMVar
