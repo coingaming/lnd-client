@@ -58,6 +58,7 @@ import LndClient.Data.LndEnv
     newLndEnv,
   )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
+import LndClient.Data.Newtypes
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.RPC
@@ -233,7 +234,12 @@ spec = around withEnv $ do
             }
           |]
     it "response-jsonify" $ \_ ->
-      Success (AddInvoiceResponse "hello" "world" "123")
+      Success
+        ( AddInvoiceResponse
+            (RHash "hello")
+            (PaymentRequest "world")
+            (AddIndex 123)
+        )
         `shouldBe` fromJSON
           [aesonQQ|
              {
@@ -252,11 +258,11 @@ spec = around withEnv $ do
     it "invoice-jsonify" $ \_ ->
       Success
         ( Invoice
-            { rHash = "hello",
+            { rHash = RHash "hello",
               amtPaidSat = Nothing,
               creationDate = "11.11.2011",
               settleDate = Nothing,
-              value = "123",
+              value = MoneyAmount 123,
               expiry = "3600",
               settled = Nothing,
               settleIndex = Nothing,
@@ -311,7 +317,7 @@ spec = around withEnv $ do
             `shouldSatisfy` ( \this ->
                                 AddInvoice.rHash res
                                   == Invoice.rHash this
-                                  && pack (show $ AddInvoice.value addInvoiceRequest)
+                                  && AddInvoice.value addInvoiceRequest
                                   == Invoice.value this
                             )
   where
@@ -319,7 +325,7 @@ spec = around withEnv $ do
       hashifyAddInvoiceRequest $
         AddInvoiceRequest
           { memo = Just "HELLO",
-            value = 1000,
+            value = MoneyAmount 1000,
             descriptionHash = Nothing
           }
     initWalletSeed =
