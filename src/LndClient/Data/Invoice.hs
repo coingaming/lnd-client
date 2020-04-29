@@ -36,7 +36,7 @@ data Invoice
         fallbackAddr :: Maybe Text,
         cltvExpiry :: Text,
         private :: Maybe Bool,
-        addIndex :: Maybe Text,
+        addIndex :: Text,
         state :: Maybe Text
       }
   deriving (Generic, Show, Eq)

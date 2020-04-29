@@ -10,6 +10,7 @@ module LndClient.RPC
     newAddress,
     addInvoice,
     initWallet,
+    openChannel,
     subscribeInvoices,
     RPCResponse (..),
     coerceRPCResponse,
@@ -45,6 +46,7 @@ import LndClient.Data.LndEnv
     LndUrl (..),
   )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
+import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
@@ -78,6 +80,7 @@ data RpcName
   | AddInvoice
   | InitWallet
   | SubscribeInvoices
+  | OpenChannel
   deriving (Generic)
 
 instance ToJSON RpcName
@@ -293,6 +296,26 @@ subscribeInvoices env req invoiceHandler = rpc $ rpcArgs env
           rpcSubHandler = Just subHandler
         }
     subHandler x = case eitherDecode $ fromStrict x of
-      Left e -> 
+      Left e ->
         $(logTM) ErrorS $ logStr $ "failed to parse subscription invoice " <> e
       Right (ResultWrapper (i :: Invoice)) -> invoiceHandler i
+
+openChannel ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  OpenChannelRequest ->
+  m (LndResult (RPCResponse ChannelPoint))
+openChannel env req = rpc $ rpcArgs env
+  where
+    rpcArgs rpcEnv =
+      RpcArgs
+        { rpcEnv,
+          rpcMethod = POST,
+          rpcUrlPath = "/v1/channels",
+          rpcUrlQuery = [],
+          rpcReqBody = Just req,
+          rpcRetryAttempt = 0,
+          rpcSuccessCond = stdRpcCond,
+          rpcName = OpenChannel,
+          rpcSubHandler = Nothing
+        }

@@ -58,6 +58,7 @@ import LndClient.Data.LndEnv
     newLndEnv,
   )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
+import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.RPC
@@ -248,6 +249,29 @@ spec = around withEnv $ do
       Success (NewAddressResponse "HELLO")
         `shouldBe` fromJSON [aesonQQ|{address: "HELLO"}|]
     it "rpc-succeeds" $ shouldBeOk newAddress
+  describe "OpenChannel" $ do
+    it "response-jsonify" $ \_ ->
+      Success
+        ( OpenChannelRequest
+            { nodePubkey = "key",
+              localFundingAmount = 1000,
+              pushSat = 1000,
+              targetConf = Nothing,
+              satPerByte = Nothing,
+              private = Nothing,
+              minHtlcMsat = Nothing,
+              remoteCsvDelay = Nothing,
+              minConfs = Nothing,
+              spendUnconfirmed = Nothing,
+              closeAddress = Nothing
+            }
+        )
+        `shouldBe` fromJSON
+          [aesonQQ|{
+          node_pubkey: "key",
+          local_funding_amount: "1000",
+          push_sat: "1000"
+                   }|]
   describe "SubscribeInvoices" $ do
     it "invoice-jsonify" $ \_ ->
       Success
@@ -266,7 +290,7 @@ spec = around withEnv $ do
               fallbackAddr = Nothing,
               cltvExpiry = "40",
               private = Nothing,
-              addIndex = Just "8",
+              addIndex = "8",
               state = Nothing
             }
         )
@@ -360,3 +384,27 @@ spec = around withEnv $ do
                             LndSuccess _ -> True
                             _ -> False
                         )
+--describe "OpenChannel" $ do
+--  it "request-jsonify" $ \_ ->
+--    True
+--    Success
+--      ( OpenChannelRequest
+--          { nodePubkey = "key",
+--            localFundingAmount = 1000,
+--            pushSat = 1000,
+--            targetConf = Nothing,
+--            satPerByte = Nothing,
+--            private = Nothing,
+--            minHtlcMsat = Nothing,
+--            remoteCsvDelay = Nothing,
+--            minConfs = Nothing,
+--            spendUnconfirmed = Nothing,
+--            closeAddress = Nothing
+--          }
+--      )
+--      `shouldBe` fromJSON
+--        [aesonQQ|{
+--          node_pubkey: "key",
+--          local_funding_amount: "1000",
+--          push_sat: "1000"
+--                   }|]
