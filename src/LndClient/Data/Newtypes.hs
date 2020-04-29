@@ -12,19 +12,20 @@ import Data.Aeson (FromJSON (..), ToJSON, Value (..))
 import Data.Scientific (toBoundedInteger)
 import Data.Text (Text, unpack)
 import Database.Persist.Class (PersistField)
+import Database.Persist.Sql (PersistFieldSql)
 import Text.Read (readMaybe)
 
 newtype AddIndex = AddIndex Int
-  deriving (ToJSON, PersistField, Show, Eq)
+  deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
 newtype PaymentRequest = PaymentRequest Text
-  deriving (FromJSON, ToJSON, PersistField, Show, Eq)
+  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
 newtype RHash = RHash Text
-  deriving (FromJSON, ToJSON, PersistField, Show, Eq)
+  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
 newtype MoneyAmount = MoneyAmount Int
-  deriving (ToJSON, PersistField, Show, Eq)
+  deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
 instance FromJSON AddIndex where
   parseJSON = intParser AddIndex "AddIndex"
