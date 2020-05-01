@@ -64,6 +64,9 @@ dependencies:
 - async
 - persistent
 - scientific
+- qrcode-core
+- qrcode-juicypixels
+- JuicyPixels
 
 library:
   source-dirs: src

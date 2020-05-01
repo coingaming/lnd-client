@@ -8,6 +8,7 @@ module LndClient.Data.Newtypes
   )
 where
 
+import Codec.QRCode (ToText)
 import Data.Aeson (FromJSON (..), ToJSON, Value (..))
 import Data.Scientific (toBoundedInteger)
 import Data.Text (Text, unpack)
@@ -19,7 +20,7 @@ newtype AddIndex = AddIndex Int
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
 newtype PaymentRequest = PaymentRequest Text
-  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq)
+  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq, ToText)
 
 newtype RHash = RHash Text
   deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq)
