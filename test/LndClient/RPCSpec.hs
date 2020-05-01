@@ -28,6 +28,7 @@ import Control.Monad.Trans.Class (lift)
 import Data.Aeson (Result (..), fromJSON, toJSON)
 import Data.Aeson.QQ
 import Data.ByteString (ByteString)
+import Data.Maybe
 import Data.Text (Text, pack)
 import Env
   ( (<=<),
@@ -61,6 +62,7 @@ import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.Newtypes
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
+import LndClient.QRCode
 import LndClient.RPC
   ( RPCResponse (..),
     addInvoice,
@@ -249,6 +251,12 @@ spec = around withEnv $ do
              }
            |]
     it "rpc-succeeds" $ shouldBeOk $ flip addInvoice addInvoiceRequest
+    it "generate-qrcode" $ \env -> do
+      res <-
+        runApp env $
+          coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
+      let qr = newPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
+      isJust qr `shouldBe` True
   describe "NewAddress" $ do
     it "response-jsonify" $ \_ ->
       Success (NewAddressResponse "HELLO")

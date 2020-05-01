@@ -1,10 +1,10 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module LndClient.QRcode
+module LndClient.QRCode
   ( newGeneric,
     newPixels,
     newPngDataUrl,
-    defOpts,
+    qrDefOpts,
     QROpts (..),
     QRPixels (..),
     QRPngDataUrl (..),
@@ -38,11 +38,11 @@ data QROpts
         qrScale :: Int
       }
 
-defOpts :: QROpts
-defOpts =
+qrDefOpts :: QROpts
+qrDefOpts =
   QROpts
     { qrBorder = 4,
-      qrScale = 1
+      qrScale = 5
     }
 
 newGeneric :: ToText a => a -> Maybe QRImage
