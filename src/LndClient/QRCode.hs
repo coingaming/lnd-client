@@ -1,9 +1,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module LndClient.QRCode
-  ( newGeneric,
-    newPixels,
-    newPngDataUrl,
+  ( qrGeneric,
+    qrPixels,
+    qrPngDataUrl,
     qrDefOpts,
     QROpts (..),
     QRPixels (..),
@@ -45,13 +45,13 @@ qrDefOpts =
       qrScale = 5
     }
 
-newGeneric :: ToText a => a -> Maybe QRImage
-newGeneric = encodeAutomatic (defaultQRCodeOptions L) Iso8859_1OrUtf8WithoutECI
+qrGeneric :: ToText a => a -> Maybe QRImage
+qrGeneric = encodeAutomatic (defaultQRCodeOptions L) Iso8859_1OrUtf8WithoutECI
 
-newPixels :: ToText a => QROpts -> a -> Maybe QRPixels
-newPixels opts x = QRPixels . toImage (qrBorder opts) (qrScale opts) <$> newGeneric x
+qrPixels :: ToText a => QROpts -> a -> Maybe QRPixels
+qrPixels opts x = QRPixels . toImage (qrBorder opts) (qrScale opts) <$> qrGeneric x
 
-newPngDataUrl :: ToText a => QROpts -> a -> Maybe QRPngDataUrl
-newPngDataUrl opts x =
+qrPngDataUrl :: ToText a => QROpts -> a -> Maybe QRPngDataUrl
+qrPngDataUrl opts x =
   QRPngDataUrl . toStrict . toPngDataUrlT (qrBorder opts) (qrScale opts)
-    <$> newGeneric x
+    <$> qrGeneric x

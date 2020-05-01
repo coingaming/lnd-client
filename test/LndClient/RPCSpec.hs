@@ -255,7 +255,7 @@ spec = around withEnv $ do
       res <-
         runApp env $
           coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
-      let qr = newPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
+      let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
       isJust qr `shouldBe` True
   describe "NewAddress" $ do
     it "response-jsonify" $ \_ ->
