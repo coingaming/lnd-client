@@ -42,6 +42,7 @@ import Env
     var,
   )
 import Katip
+import LndClient
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
@@ -51,19 +52,9 @@ import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
-import LndClient.Data.Newtypes
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.QRCode
-import LndClient.RPC
-  ( RPCResponse (..),
-    addInvoice,
-    coerceRPCResponse,
-    initWallet,
-    newAddress,
-    subscribeInvoices,
-    unlockWallet,
-  )
 import LndClient.Utils
 import Network.HTTP.Client (responseStatus)
 import Network.HTTP.Types.Status (status404)
