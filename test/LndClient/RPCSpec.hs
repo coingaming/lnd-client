@@ -50,14 +50,6 @@ import LndClient.Data.AddInvoice as AddInvoice
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.LndEnv
-  ( LndB64WalletPassword (..),
-    LndEnv (..),
-    LndHexMacaroon (..),
-    LndTlsCert (..),
-    LndTlsKey (..),
-    LndUrl (..),
-    newLndEnv,
-  )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.Newtypes
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
@@ -79,75 +71,28 @@ import System.IO (stdout)
 import Test.Hspec
 import UnliftIO (MonadUnliftIO (..), UnliftIO (..))
 
--- Katip-related stuff, might be needed to
--- capture and assert expected logs
-data LogFormat = Bracket | JSON deriving (Read)
-
 -- Environment of test App
 data Env
   = Env
       { envLnd :: LndEnv,
-        envEnv :: Text,
-        envLogFormat :: LogFormat,
         envKatipNS :: Namespace,
         envKatipCTX :: LogContexts,
         envKatipLE :: LogEnv
       }
 
--- Will parse system environment variables for simplicity
-data RawConfig
-  = RawConfig
-      -- LndClient
-      { rawConfigLndB64WalletPassword :: Text,
-        rawConfigLndTlsCert :: ByteString,
-        rawConfigLndTlsKey :: ByteString,
-        rawConfigLndHexMacaroon :: ByteString,
-        rawConfigLndUrl :: String,
-        -- katip
-        rawConfigEnv :: Text,
-        rawConfigLogFormat :: LogFormat
-      }
-
-rawConfig :: IO RawConfig
-rawConfig =
-  parse (header "LndClient config") $
-    RawConfig
-      <$> var
-        (str <=< nonempty)
-        "LND_CLIENT_LND_B64_WALLET_PASSWORD"
-        (keep <> help "")
-      <*> var (str <=< nonempty) "LND_CLIENT_LND_TLS_CERT" (keep <> help "")
-      <*> var (str <=< nonempty) "LND_CLIENT_LND_TLS_KEY" (keep <> help "")
-      <*> var (str <=< nonempty) "LND_CLIENT_LND_HEX_MACAROON" (keep <> help "")
-      <*> var (str <=< nonempty) "LND_CLIENT_LND_URL" (keep <> help "")
-      <*> var (str <=< nonempty) "LND_CLIENT_ENV" (keep <> help "")
-      <*> var (auto <=< nonempty) "LND_CLIENT_LOG_FORMAT" (keep <> help "")
-
-newEnv' :: KatipContextT IO Env
-newEnv' = liftIO rawConfig >>= newEnv
-
-newEnv :: RawConfig -> KatipContextT IO Env
-newEnv rc = do
+readEnv :: KatipContextT IO Env
+readEnv = do
   le <- getLogEnv
   ctx <- getKatipContext
   ns <- getKatipNamespace
-  case newLndEnv
-    (LndB64WalletPassword $ rawConfigLndB64WalletPassword rc)
-    (LndTlsCert $ rawConfigLndTlsCert rc)
-    (LndTlsKey $ rawConfigLndTlsKey rc)
-    (LndHexMacaroon $ rawConfigLndHexMacaroon rc)
-    (LndUrl $ rawConfigLndUrl rc) of
-    Left x -> fail x
-    Right lndEnv ->
-      return
-        Env
-          { envLnd = lndEnv,
-            envEnv = rawConfigEnv rc,
-            envLogFormat = rawConfigLogFormat rc,
-            envKatipLE = le,
-            envKatipCTX = ctx,
-            envKatipNS = ns
-          }
+  lndEnv <- liftIO $ readLndEnv
+  return
+    Env
+      { envLnd = lndEnv,
+        envKatipLE = le,
+        envKatipCTX = ctx,
+        envKatipNS = ns
+      }
 
 runKatip :: KatipContextT IO a -> IO a
 runKatip x = do
@@ -164,7 +109,7 @@ runKatip x = do
   runKatipContextT le (mempty :: LogContexts) mempty x
 
 withEnv :: (Env -> IO ()) -> IO ()
-withEnv = bracket (runKatip newEnv') (closeScribes . envKatipLE)
+withEnv = bracket (runKatip readEnv) (closeScribes . envKatipLE)
 
 newtype AppM m a
   = AppM
