@@ -284,7 +284,7 @@ spec = around withEnv $ do
                    }|]
     it "rpc-succeeds" $ \env -> do
       req <- openChannelRequest env
-      shouldBeOk $ flip openChannel req
+      shouldBeOk (flip openChannel req) env
   describe "SubscribeInvoices" $ do
     it "invoice-jsonify" $ \_ ->
       Success
@@ -361,11 +361,12 @@ spec = around withEnv $ do
             value = MoneyAmount 1000,
             descriptionHash = Nothing
           }
+    openChannelRequest :: Env -> IO OpenChannelRequest
     openChannelRequest env = do
-      pubKey <- somePubKey env
+      x <- somePubKey env
       return
         OpenChannelRequest
-          { nodePubkey = pubKey,
+          { nodePubkey = x,
             localFundingAmount = "1000",
             pushSat = "1000",
             targetConf = Nothing,
