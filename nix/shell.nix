@@ -1,6 +1,4 @@
 let nixpkgs = import ./nixpkgs.nix;
-    nixpkgs20 = import ./nixpkgs20.nix;
-    pkgs20 = import nixpkgs20 {};
 in
 {
   pkgs ? null,
@@ -29,7 +27,7 @@ stdenv.mkDerivation {
     haskell-ide
     /* Apps */
     bitcoin
-    pkgs20.lnd
+    lnd
     /* Utils */
     git
     nix-prefetch-scripts

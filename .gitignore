@@ -10,3 +10,4 @@ postgres_data/
 dist*
 postgres.log
 result
+nohup.out
