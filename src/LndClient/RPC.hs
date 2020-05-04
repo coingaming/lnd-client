@@ -11,6 +11,7 @@ module LndClient.RPC
     addInvoice,
     initWallet,
     openChannel,
+    getPeers,
     subscribeInvoices,
     RPCResponse (..),
     coerceRPCResponse,
@@ -47,6 +48,7 @@ import LndClient.Data.LndEnv
   )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
+import LndClient.Data.Peer (PeerList (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
@@ -81,6 +83,7 @@ data RpcName
   | InitWallet
   | SubscribeInvoices
   | OpenChannel
+  | GetPeers
   deriving (Generic)
 
 instance ToJSON RpcName
@@ -158,7 +161,7 @@ rpc
         case rpcSubHandler of
           Nothing -> do
             res <- liftIO $ httpLbs req2 manager
-            -- liftIO $ print res
+            liftIO $ print res
             return $ RPCResponse $ eitherDecode <$> res
           Just subHandler -> do
             let req3 = setRequestManager manager req2
@@ -317,5 +320,25 @@ openChannel env req = rpc $ rpcArgs env
           rpcRetryAttempt = 0,
           rpcSuccessCond = stdRpcCond,
           rpcName = OpenChannel,
+          rpcSubHandler = Nothing
+        }
+
+getPeers ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  VoidRequest ->
+  m (LndResult (RPCResponse PeerList))
+getPeers env req = rpc $ rpcArgs env
+  where
+    rpcArgs rpcEnv =
+      RpcArgs
+        { rpcEnv,
+          rpcMethod = GET,
+          rpcUrlPath = "/v1/peers",
+          rpcUrlQuery = [],
+          rpcReqBody = Just req,
+          rpcRetryAttempt = 0,
+          rpcSuccessCond = stdRpcCond,
+          rpcName = GetPeers,
           rpcSubHandler = Nothing
         }

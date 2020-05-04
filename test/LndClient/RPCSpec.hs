@@ -58,16 +58,20 @@ import LndClient.Data.LndEnv
     newLndEnv,
   )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
-import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Newtypes
+import LndClient.Data.OpenChannel (OpenChannelRequest (..))
+import LndClient.Data.Peer (Peer (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
+import LndClient.Data.Void (VoidRequest (..))
 import LndClient.RPC
   ( RPCResponse (..),
     addInvoice,
     coerceRPCResponse,
+    getPeers,
     initWallet,
     newAddress,
+    openChannel,
     subscribeInvoices,
     unlockWallet,
   )
@@ -260,8 +264,8 @@ spec = around withEnv $ do
       Success
         ( OpenChannelRequest
             { nodePubkey = "key",
-              localFundingAmount = 1000,
-              pushSat = 1000,
+              localFundingAmount = "1000",
+              pushSat = "1000",
               targetConf = Nothing,
               satPerByte = Nothing,
               private = Nothing,
@@ -278,6 +282,9 @@ spec = around withEnv $ do
           local_funding_amount: "1000",
           push_sat: "1000"
                    }|]
+    it "rpc-succeeds" $ \env -> do
+      req <- openChannelRequest env
+      shouldBeOk $ flip openChannel req
   describe "SubscribeInvoices" $ do
     it "invoice-jsonify" $ \_ ->
       Success
@@ -344,6 +351,8 @@ spec = around withEnv $ do
                                   && AddInvoice.value addInvoiceRequest
                                   == Invoice.value this
                             )
+  describe "Peers" $ do
+    it "rpc-succeeds" $ shouldBeOk $ flip getPeers voidRequest
   where
     addInvoiceRequest =
       hashifyAddInvoiceRequest $
@@ -351,6 +360,22 @@ spec = around withEnv $ do
           { memo = Just "HELLO",
             value = MoneyAmount 1000,
             descriptionHash = Nothing
+          }
+    openChannelRequest env = do
+      pubKey <- somePubKey env
+      return
+        OpenChannelRequest
+          { nodePubkey = pubKey,
+            localFundingAmount = "1000",
+            pushSat = "1000",
+            targetConf = Nothing,
+            satPerByte = Nothing,
+            private = Nothing,
+            minHtlcMsat = Nothing,
+            remoteCsvDelay = Nothing,
+            minConfs = Nothing,
+            spendUnconfirmed = Nothing,
+            closeAddress = Nothing
           }
     initWalletSeed =
       [ "absent",
@@ -378,6 +403,11 @@ spec = around withEnv $ do
         "wave",
         "fall"
       ]
+    voidRequest = VoidRequest
+    somePubKey env = do
+      res <- runApp env $ coerceRPCResponse =<< getPeers (envLnd env) voidRequest
+      let peersList = head $ peers res
+      return $ pubKey peersList
     initWalletRequest =
       InitWalletRequest
         { walletPassword = "ZGV2ZWxvcGVy",
@@ -390,27 +420,3 @@ spec = around withEnv $ do
                             LndSuccess _ -> True
                             _ -> False
                         )
---describe "OpenChannel" $ do
---  it "request-jsonify" $ \_ ->
---    True
---    Success
---      ( OpenChannelRequest
---          { nodePubkey = "key",
---            localFundingAmount = 1000,
---            pushSat = 1000,
---            targetConf = Nothing,
---            satPerByte = Nothing,
---            private = Nothing,
---            minHtlcMsat = Nothing,
---            remoteCsvDelay = Nothing,
---            minConfs = Nothing,
---            spendUnconfirmed = Nothing,
---            closeAddress = Nothing
---          }
---      )
---      `shouldBe` fromJSON
---        [aesonQQ|{
---          node_pubkey: "key",
---          local_funding_amount: "1000",
---          push_sat: "1000"
---                   }|]

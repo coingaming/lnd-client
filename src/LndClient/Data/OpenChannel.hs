@@ -24,8 +24,8 @@ instance (FromJSON a) => FromJSON (ResultWrapper a) where
 data OpenChannelRequest
   = OpenChannelRequest
       { nodePubkey :: Text,
-        localFundingAmount :: Integer,
-        pushSat :: Integer,
+        localFundingAmount :: Text,
+        pushSat :: Text,
         targetConf :: Maybe Integer,
         satPerByte :: Maybe Integer,
         private :: Maybe Bool,
@@ -48,7 +48,7 @@ instance FromJSON OpenChannelRequest where
 
 data ChannelPoint
   = ChannelPoint
-      { fundingTxidBytes :: String,
+      { fundingTxidBytes :: Maybe String,
         fundingTxidStr :: String,
         outputIndex :: Integer
       }
