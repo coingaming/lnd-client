@@ -25,10 +25,14 @@ import Control.Exception (bracket)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (MonadReader, ReaderT, asks, local, runReaderT)
 import Control.Monad.Trans.Class (lift)
+import Crypto.Hash.SHA256 (hash)
 import Data.Aeson (Result (..), fromJSON, toJSON)
 import Data.Aeson.QQ
 import Data.ByteString (ByteString)
+import Data.ByteString.Base16 (decode)
+import Data.ByteString.Base64 (encode)
 import Data.Text (Text, pack)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Env
   ( (<=<),
     auto,
@@ -364,20 +368,23 @@ spec = around withEnv $ do
     openChannelRequest :: Env -> IO OpenChannelRequest
     openChannelRequest env = do
       x <- somePubKey env
-      return
-        OpenChannelRequest
-          { nodePubkey = x,
-            localFundingAmount = "1000",
-            pushSat = "1000",
-            targetConf = Nothing,
-            satPerByte = Nothing,
-            private = Nothing,
-            minHtlcMsat = Nothing,
-            remoteCsvDelay = Nothing,
-            minConfs = Nothing,
-            spendUnconfirmed = Nothing,
-            closeAddress = Nothing
-          }
+      let (pubKeyHex, _) = decode (encodeUtf8 x)
+      let req =
+            OpenChannelRequest
+              { nodePubkey = decodeUtf8 (encode pubKeyHex),
+                localFundingAmount = "1000",
+                pushSat = "1000",
+                targetConf = Nothing,
+                satPerByte = Nothing,
+                private = Nothing,
+                minHtlcMsat = Nothing,
+                remoteCsvDelay = Nothing,
+                minConfs = Nothing,
+                spendUnconfirmed = Nothing,
+                closeAddress = Nothing
+              }
+      print req
+      return req
     initWalletSeed =
       [ "absent",
         "betray",

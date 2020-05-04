@@ -156,7 +156,7 @@ rpc
                 req1
                 (\b -> req1 {requestBody = RequestBodyLBS $ encode b})
                 rpcReqBody
-        -- liftIO $ print $ encode rpcReqBody
+        liftIO $ print $ encode rpcReqBody
         manager <- liftIO $ coerce $ envLndTlsManagerBuilder rpcEnv
         case rpcSubHandler of
           Nothing -> do
