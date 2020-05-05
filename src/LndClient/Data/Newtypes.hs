@@ -12,11 +12,12 @@ import Codec.QRCode (ToText)
 import Data.Aeson (FromJSON (..), ToJSON, Value (..))
 import Data.Scientific (toBoundedInteger)
 import Data.Text (Text, unpack)
+import Data.Word (Word64)
 import Database.Persist.Class (PersistField)
 import Database.Persist.Sql (PersistFieldSql)
 import Text.Read (readMaybe)
 
-newtype AddIndex = AddIndex Int
+newtype AddIndex = AddIndex Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
 newtype PaymentRequest = PaymentRequest Text
@@ -25,7 +26,7 @@ newtype PaymentRequest = PaymentRequest Text
 newtype RHash = RHash Text
   deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
-newtype MoneyAmount = MoneyAmount Int
+newtype MoneyAmount = MoneyAmount Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
 instance FromJSON AddIndex where
