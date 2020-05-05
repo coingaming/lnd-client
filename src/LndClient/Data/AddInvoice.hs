@@ -16,7 +16,7 @@ import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.Newtypes
 import LndClient.Utils (stdParseJSON, stdToJSON)
 
-data AddInvoiceRequest
+newtype AddInvoiceRequest
   = AddInvoiceRequest
       { result :: Invoice
       }
