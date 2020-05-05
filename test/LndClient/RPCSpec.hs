@@ -372,7 +372,7 @@ spec = around withEnv $ do
       let req =
             OpenChannelRequest
               { nodePubkey = decodeUtf8 (encode pubKeyHex),
-                localFundingAmount = "1000",
+                localFundingAmount = "20000",
                 pushSat = "1000",
                 targetConf = Nothing,
                 satPerByte = Nothing,

@@ -3,13 +3,15 @@
 module LndClient.Data.Peer
   ( Peer (..),
     PeerList (..),
+    LightningAddress (..),
+    ConnectPeerRequest (..),
   )
 where
 
-import Data.Aeson (FromJSON (..))
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import LndClient.Utils (stdParseJSON)
+import LndClient.Utils (stdParseJSON, stdToJSON)
 
 data Peer
   = Peer
@@ -29,3 +31,29 @@ newtype PeerList
 
 instance FromJSON PeerList where
   parseJSON = stdParseJSON
+
+data LightningAddress
+  = LightningAddress
+      { pubkey :: Text,
+        host :: Text
+      }
+  deriving (Generic, Show, Eq)
+
+instance FromJSON LightningAddress where
+  parseJSON = stdParseJSON
+
+instance ToJSON LightningAddress where
+  toJSON = stdToJSON
+
+data ConnectPeerRequest
+  = ConnectPeerRequest
+      { addr :: LightningAddress,
+        perm :: Bool
+      }
+  deriving (Generic, Show, Eq)
+
+instance FromJSON ConnectPeerRequest where
+  parseJSON = stdParseJSON
+
+instance ToJSON ConnectPeerRequest where
+  toJSON = stdToJSON

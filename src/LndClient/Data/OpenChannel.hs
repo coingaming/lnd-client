@@ -49,8 +49,8 @@ instance FromJSON OpenChannelRequest where
 data ChannelPoint
   = ChannelPoint
       { fundingTxidBytes :: Maybe String,
-        fundingTxidStr :: String,
-        outputIndex :: Integer
+        fundingTxidStr :: Maybe String,
+        outputIndex :: Maybe Integer
       }
   deriving (Generic, Show, Eq)
 

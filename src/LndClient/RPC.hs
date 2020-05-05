@@ -12,6 +12,7 @@ module LndClient.RPC
     initWallet,
     openChannel,
     getPeers,
+    connectPeer,
     subscribeInvoices,
     RPCResponse (..),
     coerceRPCResponse,
@@ -48,7 +49,7 @@ import LndClient.Data.LndEnv
   )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
-import LndClient.Data.Peer (PeerList (..))
+import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
@@ -84,6 +85,7 @@ data RpcName
   | SubscribeInvoices
   | OpenChannel
   | GetPeers
+  | ConnectPeer
   deriving (Generic)
 
 instance ToJSON RpcName
@@ -340,5 +342,25 @@ getPeers env req = rpc $ rpcArgs env
           rpcRetryAttempt = 0,
           rpcSuccessCond = stdRpcCond,
           rpcName = GetPeers,
+          rpcSubHandler = Nothing
+        }
+
+connectPeer ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  ConnectPeerRequest ->
+  m (LndResult (RPCResponse VoidResponse))
+connectPeer env req = rpc $ rpcArgs env
+  where
+    rpcArgs rpcEnv =
+      RpcArgs
+        { rpcEnv,
+          rpcMethod = POST,
+          rpcUrlPath = "/v1/peers",
+          rpcUrlQuery = [],
+          rpcReqBody = Just req,
+          rpcRetryAttempt = 0,
+          rpcSuccessCond = stdRpcCond,
+          rpcName = ConnectPeer,
           rpcSubHandler = Nothing
         }
