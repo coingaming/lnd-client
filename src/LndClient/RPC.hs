@@ -13,6 +13,7 @@ module LndClient.RPC
     openChannel,
     getPeers,
     connectPeer,
+    getInfo,
     subscribeInvoices,
     RPCResponse (..),
     coerceRPCResponse,
@@ -39,6 +40,7 @@ import Katip
     sl,
   )
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
+import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..), ResultWrapper (..))
 import LndClient.Data.LndEnv
@@ -88,6 +90,7 @@ data RpcName
   | OpenChannel
   | GetPeers
   | ConnectPeer
+  | GetInfo
   deriving (Generic)
 
 instance ToJSON RpcName
@@ -373,5 +376,25 @@ connectPeer env req = rpc $ rpcArgs env
           rpcRetryAttempt = 0,
           rpcSuccessCond = stdRpcCond,
           rpcName = ConnectPeer,
+          rpcSubHandler = Nothing
+        }
+
+getInfo ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  VoidRequest ->
+  m (LndResult (RPCResponse GetInfoResponse))
+getInfo env req = rpc $ rpcArgs env
+  where
+    rpcArgs rpcEnv =
+      RpcArgs
+        { rpcEnv,
+          rpcMethod = GET,
+          rpcUrlPath = "/v1/getinfo",
+          rpcUrlQuery = [],
+          rpcReqBody = Just req,
+          rpcRetryAttempt = 0,
+          rpcSuccessCond = stdRpcCond,
+          rpcName = GetInfo,
           rpcSubHandler = Nothing
         }

@@ -62,10 +62,12 @@ import LndClient.Data.Peer (Peer (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..))
+import LndClient.QRCode
 import LndClient.RPC
   ( RPCResponse (..),
     addInvoice,
     coerceRPCResponse,
+    getInfo,
     getPeers,
     initWallet,
     newAddress,
@@ -73,7 +75,6 @@ import LndClient.RPC
     subscribeInvoices,
     unlockWallet,
   )
-import LndClient.QRCode
 import LndClient.Utils
 import Network.HTTP.Client (responseStatus)
 import Network.HTTP.Types.Status (status404)
@@ -90,12 +91,22 @@ data Env
         envKatipLE :: LogEnv
       }
 
+merchantEnv :: Env -> Env
+merchantEnv env = do
+  let lndEnv = envLnd env
+  env
+    { envLnd =
+        lndEnv
+          { envLndUrl = LndUrl "https://localhost:8003"
+          }
+    }
+
 readEnv :: KatipContextT IO Env
 readEnv = do
   le <- getLogEnv
   ctx <- getKatipContext
   ns <- getKatipNamespace
-  lndEnv <- liftIO $ readLndEnv
+  lndEnv <- liftIO readLndEnv
   return
     Env
       { envLnd = lndEnv,
@@ -311,6 +322,11 @@ spec = around withEnv $ do
                             )
   describe "Peers" $ do
     it "rpc-succeeds" $ shouldBeOk $ flip getPeers voidRequest
+  --    it "connect-peer-rpc-succeeds" $ \env -> do
+  --
+  describe "GetInfo" $ do
+    it "rpc-succeeds" $ \env -> do
+      shouldBeOk (flip getInfo voidRequest) (merchantEnv env)
   where
     addInvoiceRequest =
       hashifyAddInvoiceRequest $
