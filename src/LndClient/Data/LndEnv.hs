@@ -9,6 +9,7 @@ module LndClient.Data.LndEnv
     LndTlsManagerBuilder (..),
     LndUrl (..),
     newLndEnv,
+    readLndEnv,
   )
 where
 
@@ -16,6 +17,7 @@ import Data.ByteString (ByteString)
 import Data.Coerce (coerce)
 import Data.Default (def)
 import Data.Text (Text)
+import Env hiding (def)
 import Network.Connection (TLSSettings (..))
 import Network.HTTP.Client (Manager, newManager)
 import Network.HTTP.Client.TLS (mkManagerSettings)
@@ -42,6 +44,15 @@ newtype LndHexMacaroon = LndHexMacaroon ByteString
 
 newtype LndUrl = LndUrl String
 
+data RawConfig
+  = RawConfig
+      { rawConfigLndB64WalletPassword :: Text,
+        rawConfigLndTlsCert :: ByteString,
+        rawConfigLndTlsKey :: ByteString,
+        rawConfigLndHexMacaroon :: ByteString,
+        rawConfigLndUrl :: String
+      }
+
 data LndEnv
   = LndEnv
       { envLndB64WalletPassword :: LndB64WalletPassword,
@@ -49,6 +60,31 @@ data LndEnv
         envLndHexMacaroon :: LndHexMacaroon,
         envLndUrl :: LndUrl
       }
+
+rawConfig :: IO RawConfig
+rawConfig =
+  parse (header "LndClient config") $
+    RawConfig
+      <$> var
+        (str <=< nonempty)
+        "LND_CLIENT_LND_B64_WALLET_PASSWORD"
+        (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_LND_TLS_CERT" (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_LND_TLS_KEY" (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_LND_HEX_MACAROON" (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_LND_URL" (keep <> help "")
+
+readLndEnv :: IO LndEnv
+readLndEnv = do
+  rc <- rawConfig
+  case newLndEnv
+    (LndB64WalletPassword $ rawConfigLndB64WalletPassword rc)
+    (LndTlsCert $ rawConfigLndTlsCert rc)
+    (LndTlsKey $ rawConfigLndTlsKey rc)
+    (LndHexMacaroon $ rawConfigLndHexMacaroon rc)
+    (LndUrl $ rawConfigLndUrl rc) of
+    Left x -> fail x
+    Right x -> return x
 
 newLndEnv ::
   LndB64WalletPassword ->

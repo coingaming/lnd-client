@@ -16,6 +16,7 @@ module LndClient.RPC
     subscribeInvoices,
     RPCResponse (..),
     coerceRPCResponse,
+    maybeRPCResponse,
   )
 where
 
@@ -51,9 +52,10 @@ import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
+import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
-import LndClient.Utils (LndResult (..), coerceLndResult, doExpBackOff)
+import LndClient.Utils (coerceLndResult, doExpBackOff)
 import Network.HTTP.Client
   ( RequestBody (RequestBodyLBS),
     Response (..),
@@ -102,6 +104,15 @@ data RpcArgs a b m
         rpcName :: RpcName,
         rpcSubHandler :: Maybe (ByteString -> m ())
       }
+
+maybeRPCResponse :: LndResult (RPCResponse a) -> Maybe a
+maybeRPCResponse res0 =
+  case res0 of
+    LndSuccess (RPCResponse res1) ->
+      case responseBody res1 of
+        Right res2 -> Just res2
+        _ -> Nothing
+    _ -> Nothing
 
 coerceRPCResponse :: (Show a, MonadIO m) => LndResult (RPCResponse a) -> m a
 coerceRPCResponse x = do

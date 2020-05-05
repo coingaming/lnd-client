@@ -7,7 +7,6 @@ module LndClient.Utils
     coerceLndResult,
     stdToJSON,
     stdParseJSON,
-    LndResult (..),
   )
 where
 
@@ -26,14 +25,9 @@ import Data.Aeson
 import Data.Aeson.Casing (aesonDrop, snakeCase)
 import Data.Aeson.Types (Parser)
 import GHC.Generics (Generic, Rep (..))
+import LndClient.Data.Types
 import Network.HTTP.Client (HttpException (..), queryString, requestHeaders)
 import UnliftIO (MonadUnliftIO, toIO)
-
-data LndResult a
-  = LndSuccess a
-  | LndFail a
-  | LndHttpException HttpException
-  deriving (Show)
 
 stdToJSON :: (Generic a, GToJSON Zero (Rep a)) => a -> Value
 stdToJSON =
