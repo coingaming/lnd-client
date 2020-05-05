@@ -17,7 +17,7 @@ alias bitcoin-cli="bitcoin-cli -datadir=$BTCD_DIR"
 export LND_MERCHANT_DIR="$THIS_DIR/.lnd-merchant"
 alias lncli-merchant="lncli -n regtest --lnddir=$LND_MERCHANT_DIR"
 export LND_CUSTOMER_DIR="$THIS_DIR/.lnd-customer"
-alias lncli-customer="lncli -n regtest --lnddir=$LND_CUSTOMER_DIR"
+alias lncli-customer="lncli -n regtest --lnddir=$LND_CUSTOMER_DIR --rpcserver=localhost:11009"
 
 #
 # app
