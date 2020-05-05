@@ -196,9 +196,14 @@ spec = around withEnv $ do
       toJSON addInvoiceRequest
         `shouldBe` [aesonQQ|
             {
-              memo: "HELLO",
-              value: 1000,
-              description_hash: "NzPNl3/46xi5hzV+Is7Zn0YJfzHssjnoeK5jdg6D5NU="
+              result: {
+                         r_hash: "",
+                         memo: "HELLO",
+                         add_index: "8",
+                         value: 1000,
+                         payment_request: "req",
+                         description_hash: "NzPNl3/46xi5hzV+Is7Zn0YJfzHssjnoeK5jdg6D5NU="
+                      }
             }
           |]
     it "response-jsonify" $ \_ ->
@@ -251,26 +256,27 @@ spec = around withEnv $ do
           local_funding_amount: "1000",
           push_sat: "1000"
                    }|]
-    it "rpc-succeeds" $ \env -> do
-      req <- openChannelRequest env
-      shouldBeOk (flip openChannel req) env
+  --  TODO Requires connecting peer, and creating 100 BTC blocks
+  --  it "rpc-succeeds" $ \env -> do
+  --      req <- openChannelRequest env
+  --      shouldBeOk (flip openChannel req) env
   describe "SubscribeInvoices" $ do
     it "invoice-jsonify" $ \_ ->
       Success
         ( Invoice
             { rHash = RHash "hello",
               amtPaidSat = Nothing,
-              creationDate = "11.11.2011",
+              creationDate = Nothing,
               settleDate = Nothing,
-              value = MoneyAmount 123,
-              expiry = "3600",
+              value = MoneyAmount 1000,
+              expiry = Nothing,
               settled = Nothing,
               settleIndex = Nothing,
-              descriptionHash = Just "world",
-              memo = Just "my invoice",
+              descriptionHash = Nothing,
+              memo = Nothing,
               paymentRequest = Just "req",
               fallbackAddr = Nothing,
-              cltvExpiry = "40",
+              cltvExpiry = Nothing,
               private = Nothing,
               addIndex = "8",
               state = Nothing
@@ -279,13 +285,8 @@ spec = around withEnv $ do
         `shouldBe` fromJSON
           [aesonQQ|{
                     r_hash: "hello",
-                    creation_date: "11.11.2011",
-                    value: "123",
-                    expiry: "3600",
-                    description_hash: "world",
-                    memo: "my invoice",
+                    value: "1000",
                     payment_request: "req",
-                    cltv_expiry: "40",
                     add_index: "8"
                    }|]
     it "rpc-succeeds" $ \env -> do
@@ -303,11 +304,11 @@ spec = around withEnv $ do
                 coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
             i <- takeMVar x
             return (res, i)
-      result <- race subscribeInv runTest
+      subResult <- race subscribeInv runTest
       --
       --TODO Optimize handling LndResult(LndSuccess, LndFail, LndHttpException)
       --
-      case result of
+      case subResult of
         Left f -> case f of
           LndSuccess _ -> fail "HTTP success"
           LndFail lndFail -> fail (show lndFail)
@@ -315,46 +316,56 @@ spec = around withEnv $ do
         Right (res, i) ->
           i
             `shouldSatisfy` ( \this ->
-                                AddInvoice.rHash res
-                                  == Invoice.rHash this
-                                  && AddInvoice.value addInvoiceRequest
-                                  == Invoice.value this
+                                AddInvoice.rHash res == Invoice.rHash this
                             )
   describe "Peers" $ do
     it "rpc-succeeds" $ shouldBeOk $ flip getPeers voidRequest
-  --    it "connect-peer-rpc-succeeds" $ \env -> do
-  --
   describe "GetInfo" $ do
     it "rpc-succeeds" $ \env -> do
       shouldBeOk (flip getInfo voidRequest) (merchantEnv env)
   where
+    invoice =
+      Invoice
+        { rHash = RHash "",
+          memo = Just "HELLO",
+          amtPaidSat = Nothing,
+          creationDate = Nothing,
+          settleDate = Nothing,
+          expiry = Nothing,
+          settled = Nothing,
+          settleIndex = Nothing,
+          paymentRequest = Just "req",
+          fallbackAddr = Nothing,
+          cltvExpiry = Nothing,
+          private = Nothing,
+          addIndex = "8",
+          state = Nothing,
+          value = MoneyAmount 1000,
+          descriptionHash = Nothing
+        }
     addInvoiceRequest =
       hashifyAddInvoiceRequest $
-        AddInvoiceRequest
-          { memo = Just "HELLO",
-            value = MoneyAmount 1000,
-            descriptionHash = Nothing
-          }
-    openChannelRequest :: Env -> IO OpenChannelRequest
-    openChannelRequest env = do
-      x <- somePubKey env
-      let (pubKeyHex, _) = decode (encodeUtf8 x)
-      let req =
-            OpenChannelRequest
-              { nodePubkey = decodeUtf8 (encode pubKeyHex),
-                localFundingAmount = "20000",
-                pushSat = "1000",
-                targetConf = Nothing,
-                satPerByte = Nothing,
-                private = Nothing,
-                minHtlcMsat = Nothing,
-                remoteCsvDelay = Nothing,
-                minConfs = Nothing,
-                spendUnconfirmed = Nothing,
-                closeAddress = Nothing
-              }
-      print req
-      return req
+        AddInvoiceRequest {result = invoice}
+    --    openChannelRequest :: Env -> IO OpenChannelRequest
+    --    openChannelRequest env = do
+    --      x <- somePubKey env
+    --      let (pubKeyHex, _) = decode (encodeUtf8 x)
+    --      let req =
+    --            OpenChannelRequest
+    --              { nodePubkey = decodeUtf8 (encode pubKeyHex),
+    --                localFundingAmount = "20000",
+    --                pushSat = "1000",
+    --                targetConf = Nothing,
+    --                satPerByte = Nothing,
+    --                private = Nothing,
+    --                minHtlcMsat = Nothing,
+    --                remoteCsvDelay = Nothing,
+    --                minConfs = Nothing,
+    --                spendUnconfirmed = Nothing,
+    --                closeAddress = Nothing
+    --              }
+    --      print req
+    --      return req
     initWalletSeed =
       [ "absent",
         "betray",
@@ -382,10 +393,10 @@ spec = around withEnv $ do
         "fall"
       ]
     voidRequest = VoidRequest
-    somePubKey env = do
-      res <- runApp env $ coerceRPCResponse =<< getPeers (envLnd env) voidRequest
-      let peersList = head $ peers res
-      return $ pubKey peersList
+    --    somePubKey env = do
+    --      res <- runApp env $ coerceRPCResponse =<< getPeers (envLnd env) voidRequest
+    --      let peersList = head $ peers res
+    --      return $ pubKey peersList
     initWalletRequest =
       InitWalletRequest
         { walletPassword = "ZGV2ZWxvcGVy",

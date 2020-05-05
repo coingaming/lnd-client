@@ -6,11 +6,11 @@ module LndClient.Data.Invoice
   )
 where
 
-import Data.Aeson (FromJSON (..))
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import LndClient.Data.Newtypes
-import LndClient.Utils (stdParseJSON)
+import LndClient.Utils (stdParseJSON, stdToJSON)
 
 newtype ResultWrapper a
   = ResultWrapper
@@ -25,17 +25,17 @@ data Invoice
   = Invoice
       { rHash :: RHash,
         amtPaidSat :: Maybe Text,
-        creationDate :: Text,
+        creationDate :: Maybe Text,
         settleDate :: Maybe Text,
         value :: MoneyAmount,
-        expiry :: Text,
+        expiry :: Maybe Text,
         settled :: Maybe Bool,
         settleIndex :: Maybe Text,
         descriptionHash :: Maybe Text,
         memo :: Maybe Text,
         paymentRequest :: Maybe Text,
         fallbackAddr :: Maybe Text,
-        cltvExpiry :: Text,
+        cltvExpiry :: Maybe Text,
         private :: Maybe Bool,
         addIndex :: Text,
         state :: Maybe Text
@@ -44,3 +44,6 @@ data Invoice
 
 instance FromJSON Invoice where
   parseJSON = stdParseJSON
+
+instance ToJSON Invoice where
+  toJSON = stdToJSON
