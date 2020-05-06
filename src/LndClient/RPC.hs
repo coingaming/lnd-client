@@ -382,9 +382,8 @@ connectPeer env req = rpc $ rpcArgs env
 getInfo ::
   (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
-  VoidRequest ->
   m (LndResult (RPCResponse GetInfoResponse))
-getInfo env req = rpc $ rpcArgs env
+getInfo env = rpc $ rpcArgs env
   where
     rpcArgs rpcEnv =
       RpcArgs
@@ -392,7 +391,7 @@ getInfo env req = rpc $ rpcArgs env
           rpcMethod = GET,
           rpcUrlPath = "/v1/getinfo",
           rpcUrlQuery = [],
-          rpcReqBody = Just req,
+          rpcReqBody = Nothing :: Maybe VoidRequest,
           rpcRetryAttempt = 0,
           rpcSuccessCond = stdRpcCond,
           rpcName = GetInfo,

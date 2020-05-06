@@ -61,7 +61,6 @@ import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (Peer (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
-import LndClient.Data.Void (VoidRequest (..))
 import LndClient.QRCode
 import LndClient.RPC
   ( RPCResponse (..),
@@ -319,7 +318,7 @@ spec = around withEnv $ do
     it "rpc-succeeds" $ shouldBeOk getPeers
   describe "GetInfo" $ do
     it "rpc-succeeds" $ \env -> do
-      shouldBeOk (flip getInfo voidRequest) (merchantEnv env)
+      shouldBeOk getInfo (merchantEnv env)
   where
     addInvoiceRequest =
       ResultWrapper
@@ -375,7 +374,6 @@ spec = around withEnv $ do
         "wave",
         "fall"
       ]
-    voidRequest = VoidRequest
     --    somePubKey env = do
     --      res <- runApp env $ coerceRPCResponse =<< getPeers (envLnd env) voidRequest
     --      let peersList = head $ peers res
