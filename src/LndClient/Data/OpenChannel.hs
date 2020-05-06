@@ -14,6 +14,9 @@ import LndClient.Utils (stdParseJSON, stdToJSON)
 data OpenChannelRequest
   = OpenChannelRequest
       { nodePubkey :: Text,
+        --
+        --TODO move amounts to MoneyAmount type
+        --
         localFundingAmount :: Text,
         pushSat :: Text,
         targetConf :: Maybe Integer,
