@@ -180,6 +180,8 @@ spec = around withEnv $ do
                               status404 == responseStatus x
                             _ -> False
                         )
+    it "rpc-succeeds-merchant" $ \env -> do
+      shouldBeOk (flip initWallet initWalletRequest) (merchantEnv env)
   describe "UnlockWallet" $ do
     it "request-jsonify" $ \_ ->
       toJSON (UnlockWalletRequest "FOO" 123)
