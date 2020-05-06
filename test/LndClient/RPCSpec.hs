@@ -195,11 +195,9 @@ spec = around withEnv $ do
       toJSON addInvoiceRequest
         `shouldBe` [aesonQQ|
             {
-              result: {
-                         memo: "HELLO",
-                         value: 1000,
-                         description_hash: "NzPNl3/46xi5hzV+Is7Zn0YJfzHssjnoeK5jdg6D5NU="
-                      }
+                 memo: "HELLO",
+                 value: 1000,
+                 description_hash: "NzPNl3/46xi5hzV+Is7Zn0YJfzHssjnoeK5jdg6D5NU="
             }
           |]
     it "response-jsonify" $ \_ ->
@@ -321,9 +319,8 @@ spec = around withEnv $ do
       shouldBeOk getInfo (merchantEnv env)
   where
     addInvoiceRequest =
-      ResultWrapper
-        $ hashifyAddInvoiceRequest
-        $ AddInvoiceRequest
+      hashifyAddInvoiceRequest $
+        AddInvoiceRequest
           { memo = Just "HELLO",
             value = MoneyAmount 1000,
             descriptionHash = Nothing
