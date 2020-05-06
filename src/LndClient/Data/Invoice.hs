@@ -2,7 +2,6 @@
 
 module LndClient.Data.Invoice
   ( Invoice (..),
-    ResultWrapper (..),
   )
 where
 
@@ -11,15 +10,6 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 import LndClient.Data.Newtypes
 import LndClient.Utils (stdParseJSON, stdToJSON)
-
-newtype ResultWrapper a
-  = ResultWrapper
-      { result :: a
-      }
-  deriving (Generic, Show)
-
-instance (FromJSON a) => FromJSON (ResultWrapper a) where
-  parseJSON = stdParseJSON
 
 data Invoice
   = Invoice

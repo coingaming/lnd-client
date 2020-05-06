@@ -3,7 +3,6 @@
 module LndClient.Data.OpenChannel
   ( OpenChannelRequest (..),
     ChannelPoint (..),
-    ResultWrapper (..),
   )
 where
 
@@ -11,15 +10,6 @@ import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import LndClient.Utils (stdParseJSON, stdToJSON)
-
-newtype ResultWrapper a
-  = ResultWrapper
-      { result :: a
-      }
-  deriving (Generic, Show)
-
-instance (FromJSON a) => FromJSON (ResultWrapper a) where
-  parseJSON = stdParseJSON
 
 data OpenChannelRequest
   = OpenChannelRequest

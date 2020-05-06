@@ -42,7 +42,7 @@ import Katip
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
-import LndClient.Data.Invoice (Invoice (..), ResultWrapper (..))
+import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.LndEnv
   ( LndB64WalletPassword (..),
     LndEnv (..),
@@ -51,6 +51,7 @@ import LndClient.Data.LndEnv
     LndUrl (..),
   )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
+import LndClient.Data.Newtypes (ResultWrapper (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))

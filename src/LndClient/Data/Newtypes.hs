@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module LndClient.Data.Newtypes
@@ -5,15 +6,18 @@ module LndClient.Data.Newtypes
     PaymentRequest (..),
     RHash (..),
     MoneyAmount (..),
+    ResultWrapper (..),
   )
 where
 
 import Codec.QRCode (ToText)
-import Data.Aeson (FromJSON (..), ToJSON, Value (..))
+import Data.Aeson (FromJSON (..), ToJSON (..), Value (..))
 import Data.Scientific (toBoundedInteger)
 import Data.Text (Text, unpack)
 import Database.Persist.Class (PersistField)
 import Database.Persist.Sql (PersistFieldSql)
+import GHC.Generics (Generic)
+import LndClient.Utils (stdParseJSON, stdToJSON)
 import Text.Read (readMaybe)
 
 newtype AddIndex = AddIndex Int
@@ -33,6 +37,18 @@ instance FromJSON AddIndex where
 
 instance FromJSON MoneyAmount where
   parseJSON = intParser MoneyAmount "MoneyAmount"
+
+newtype ResultWrapper a
+  = ResultWrapper
+      { result :: a
+      }
+  deriving (Generic, Show)
+
+instance (FromJSON a) => FromJSON (ResultWrapper a) where
+  parseJSON = stdParseJSON
+
+instance ToJSON a => ToJSON (ResultWrapper a) where
+  toJSON = stdToJSON
 
 intParser ::
   (Integral t, Bounded t, Read t, Monad m) =>

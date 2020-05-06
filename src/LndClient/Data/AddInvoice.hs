@@ -13,7 +13,7 @@ import Data.ByteString.Base64 (encode)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import GHC.Generics (Generic)
 import LndClient.Data.Invoice (Invoice (..))
-import LndClient.Data.Newtypes
+import LndClient.Data.Newtypes (AddIndex (..), PaymentRequest (..), RHash (..))
 import LndClient.Utils (stdParseJSON, stdToJSON)
 
 newtype AddInvoiceRequest
