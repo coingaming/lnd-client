@@ -197,11 +197,8 @@ spec = around withEnv $ do
         `shouldBe` [aesonQQ|
             {
               result: {
-                         r_hash: "",
                          memo: "HELLO",
-                         add_index: "8",
                          value: 1000,
-                         payment_request: "req",
                          description_hash: "NzPNl3/46xi5hzV+Is7Zn0YJfzHssjnoeK5jdg6D5NU="
                       }
             }
@@ -324,28 +321,14 @@ spec = around withEnv $ do
     it "rpc-succeeds" $ \env -> do
       shouldBeOk (flip getInfo voidRequest) (merchantEnv env)
   where
-    invoice =
-      Invoice
-        { rHash = RHash "",
-          memo = Just "HELLO",
-          amtPaidSat = Nothing,
-          creationDate = Nothing,
-          settleDate = Nothing,
-          expiry = Nothing,
-          settled = Nothing,
-          settleIndex = Nothing,
-          paymentRequest = Just "req",
-          fallbackAddr = Nothing,
-          cltvExpiry = Nothing,
-          private = Nothing,
-          addIndex = "8",
-          state = Nothing,
-          value = MoneyAmount 1000,
-          descriptionHash = Nothing
-        }
     addInvoiceRequest =
-      hashifyAddInvoiceRequest $
-        AddInvoiceRequest {result = invoice}
+      ResultWrapper
+        $ hashifyAddInvoiceRequest
+        $ AddInvoiceRequest
+          { memo = Just "HELLO",
+            value = MoneyAmount 1000,
+            descriptionHash = Nothing
+          }
     --    openChannelRequest :: Env -> IO OpenChannelRequest
     --    openChannelRequest env = do
     --      x <- somePubKey env

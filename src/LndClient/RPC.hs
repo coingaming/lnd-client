@@ -273,7 +273,7 @@ newAddress env = rpc $ rpcArgs env
 addInvoice ::
   (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
-  AddInvoiceRequest ->
+  ResultWrapper AddInvoiceRequest ->
   m (LndResult (RPCResponse AddInvoiceResponse))
 addInvoice env req = rpc $ rpcArgs env
   where
