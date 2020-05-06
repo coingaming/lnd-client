@@ -25,11 +25,15 @@ import Control.Exception (bracket)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (MonadReader, ReaderT, asks, local, runReaderT)
 import Control.Monad.Trans.Class (lift)
+import Crypto.Hash.SHA256 (hash)
 import Data.Aeson (Result (..), fromJSON, toJSON)
 import Data.Aeson.QQ
 import Data.ByteString (ByteString)
+import Data.ByteString.Base16 (decode)
+import Data.ByteString.Base64 (encode)
 import Data.Maybe
 import Data.Text (Text, pack)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Env
   ( (<=<),
     auto,
@@ -52,9 +56,24 @@ import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
+import LndClient.Data.Newtypes
+import LndClient.Data.OpenChannel (OpenChannelRequest (..))
+import LndClient.Data.Peer (Peer (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.QRCode
+import LndClient.RPC
+  ( RPCResponse (..),
+    addInvoice,
+    coerceRPCResponse,
+    getInfo,
+    getPeers,
+    initWallet,
+    newAddress,
+    openChannel,
+    subscribeInvoices,
+    unlockWallet,
+  )
 import LndClient.Utils
 import Network.HTTP.Client (responseStatus)
 import Network.HTTP.Types.Status (status404)
@@ -71,12 +90,22 @@ data Env
         envKatipLE :: LogEnv
       }
 
+merchantEnv :: Env -> Env
+merchantEnv env = do
+  let lndEnv = envLnd env
+  env
+    { envLnd =
+        lndEnv
+          { envLndUrl = LndUrl "https://localhost:8003"
+          }
+    }
+
 readEnv :: KatipContextT IO Env
 readEnv = do
   le <- getLogEnv
   ctx <- getKatipContext
   ns <- getKatipNamespace
-  lndEnv <- liftIO $ readLndEnv
+  lndEnv <- liftIO readLndEnv
   return
     Env
       { envLnd = lndEnv,
@@ -151,6 +180,8 @@ spec = around withEnv $ do
                               status404 == responseStatus x
                             _ -> False
                         )
+    it "rpc-succeeds-merchant" $ \env -> do
+      shouldBeOk (flip initWallet initWalletRequest) (merchantEnv env)
   describe "UnlockWallet" $ do
     it "request-jsonify" $ \_ ->
       toJSON (UnlockWalletRequest "FOO" 123)
@@ -166,9 +197,9 @@ spec = around withEnv $ do
       toJSON addInvoiceRequest
         `shouldBe` [aesonQQ|
             {
-              memo: "HELLO",
-              value: 1000,
-              description_hash: "NzPNl3/46xi5hzV+Is7Zn0YJfzHssjnoeK5jdg6D5NU="
+                 memo: "HELLO",
+                 value: 1000,
+                 description_hash: "NzPNl3/46xi5hzV+Is7Zn0YJfzHssjnoeK5jdg6D5NU="
             }
           |]
     it "response-jsonify" $ \_ ->
@@ -198,38 +229,60 @@ spec = around withEnv $ do
       Success (NewAddressResponse "HELLO")
         `shouldBe` fromJSON [aesonQQ|{address: "HELLO"}|]
     it "rpc-succeeds" $ shouldBeOk newAddress
+  describe "OpenChannel" $ do
+    it "response-jsonify" $ \_ ->
+      Success
+        ( OpenChannelRequest
+            { nodePubkey = "key",
+              localFundingAmount = "1000",
+              pushSat = "1000",
+              targetConf = Nothing,
+              satPerByte = Nothing,
+              private = Nothing,
+              minHtlcMsat = Nothing,
+              remoteCsvDelay = Nothing,
+              minConfs = Nothing,
+              spendUnconfirmed = Nothing,
+              closeAddress = Nothing
+            }
+        )
+        `shouldBe` fromJSON
+          [aesonQQ|{
+          node_pubkey: "key",
+          local_funding_amount: "1000",
+          push_sat: "1000"
+                   }|]
+  --  TODO Requires connecting peer, and creating 100 BTC blocks
+  --  it "rpc-succeeds" $ \env -> do
+  --      req <- openChannelRequest env
+  --      shouldBeOk (flip openChannel req) env
   describe "SubscribeInvoices" $ do
     it "invoice-jsonify" $ \_ ->
       Success
         ( Invoice
             { rHash = RHash "hello",
               amtPaidSat = Nothing,
-              creationDate = "11.11.2011",
+              creationDate = Nothing,
               settleDate = Nothing,
-              value = MoneyAmount 123,
-              expiry = "3600",
+              value = MoneyAmount 1000,
+              expiry = Nothing,
               settled = Nothing,
               settleIndex = Nothing,
-              descriptionHash = Just "world",
-              memo = Just "my invoice",
+              descriptionHash = Nothing,
+              memo = Nothing,
               paymentRequest = Just "req",
               fallbackAddr = Nothing,
-              cltvExpiry = "40",
+              cltvExpiry = Nothing,
               private = Nothing,
-              addIndex = Just "8",
+              addIndex = "8",
               state = Nothing
             }
         )
         `shouldBe` fromJSON
           [aesonQQ|{
                     r_hash: "hello",
-                    creation_date: "11.11.2011",
-                    value: "123",
-                    expiry: "3600",
-                    description_hash: "world",
-                    memo: "my invoice",
+                    value: "1000",
                     payment_request: "req",
-                    cltv_expiry: "40",
                     add_index: "8"
                    }|]
     it "rpc-succeeds" $ \env -> do
@@ -247,11 +300,11 @@ spec = around withEnv $ do
                 coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
             i <- takeMVar x
             return (res, i)
-      result <- race subscribeInv runTest
+      subResult <- race subscribeInv runTest
       --
       --TODO Optimize handling LndResult(LndSuccess, LndFail, LndHttpException)
       --
-      case result of
+      case subResult of
         Left f -> case f of
           LndSuccess _ -> fail "HTTP success"
           LndFail lndFail -> fail (show lndFail)
@@ -259,11 +312,13 @@ spec = around withEnv $ do
         Right (res, i) ->
           i
             `shouldSatisfy` ( \this ->
-                                AddInvoice.rHash res
-                                  == Invoice.rHash this
-                                  && AddInvoice.value addInvoiceRequest
-                                  == Invoice.value this
+                                AddInvoice.rHash res == Invoice.rHash this
                             )
+  describe "Peers" $ do
+    it "rpc-succeeds" $ shouldBeOk getPeers
+  describe "GetInfo" $ do
+    it "rpc-succeeds" $ \env -> do
+      shouldBeOk getInfo (merchantEnv env)
   where
     addInvoiceRequest =
       hashifyAddInvoiceRequest $
@@ -272,6 +327,26 @@ spec = around withEnv $ do
             value = MoneyAmount 1000,
             descriptionHash = Nothing
           }
+    --    openChannelRequest :: Env -> IO OpenChannelRequest
+    --    openChannelRequest env = do
+    --      x <- somePubKey env
+    --      let (pubKeyHex, _) = decode (encodeUtf8 x)
+    --      let req =
+    --            OpenChannelRequest
+    --              { nodePubkey = decodeUtf8 (encode pubKeyHex),
+    --                localFundingAmount = "20000",
+    --                pushSat = "1000",
+    --                targetConf = Nothing,
+    --                satPerByte = Nothing,
+    --                private = Nothing,
+    --                minHtlcMsat = Nothing,
+    --                remoteCsvDelay = Nothing,
+    --                minConfs = Nothing,
+    --                spendUnconfirmed = Nothing,
+    --                closeAddress = Nothing
+    --              }
+    --      print req
+    --      return req
     initWalletSeed =
       [ "absent",
         "betray",
@@ -298,6 +373,10 @@ spec = around withEnv $ do
         "wave",
         "fall"
       ]
+    --    somePubKey env = do
+    --      res <- runApp env $ coerceRPCResponse =<< getPeers (envLnd env) voidRequest
+    --      let peersList = head $ peers res
+    --      return $ pubKey peersList
     initWalletRequest =
       InitWalletRequest
         { walletPassword = "ZGV2ZWxvcGVy",

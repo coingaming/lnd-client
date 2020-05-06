@@ -10,6 +10,10 @@ module LndClient.RPC
     newAddress,
     addInvoice,
     initWallet,
+    openChannel,
+    getPeers,
+    connectPeer,
+    getInfo,
     subscribeInvoices,
     RPCResponse (..),
     coerceRPCResponse,
@@ -36,8 +40,9 @@ import Katip
     sl,
   )
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
+import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
-import LndClient.Data.Invoice (Invoice (..), ResultWrapper (..))
+import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.LndEnv
   ( LndB64WalletPassword (..),
     LndEnv (..),
@@ -46,6 +51,9 @@ import LndClient.Data.LndEnv
     LndUrl (..),
   )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
+import LndClient.Data.Newtypes (ResultWrapper (..))
+import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
+import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
@@ -80,6 +88,10 @@ data RpcName
   | AddInvoice
   | InitWallet
   | SubscribeInvoices
+  | OpenChannel
+  | GetPeers
+  | ConnectPeer
+  | GetInfo
   deriving (Generic)
 
 instance ToJSON RpcName
@@ -161,12 +173,12 @@ rpc
                 req1
                 (\b -> req1 {requestBody = RequestBodyLBS $ encode b})
                 rpcReqBody
-        -- liftIO $ print $ encode rpcReqBody
+        --  liftIO $ print $ encode rpcReqBody
         manager <- liftIO $ coerce $ envLndTlsManagerBuilder rpcEnv
         case rpcSubHandler of
           Nothing -> do
             res <- liftIO $ httpLbs req2 manager
-            -- liftIO $ print res
+            --      liftIO $ print res
             return $ RPCResponse $ eitherDecode <$> res
           Just subHandler -> do
             let req3 = setRequestManager manager req2
@@ -271,7 +283,7 @@ addInvoice env req = rpc $ rpcArgs env
           rpcMethod = POST,
           rpcUrlPath = "/v1/invoices",
           rpcUrlQuery = [],
-          rpcReqBody = Just req,
+          rpcReqBody = Just $ ResultWrapper req,
           rpcRetryAttempt = 0,
           rpcSuccessCond = stdRpcCond,
           rpcName = AddInvoice,
@@ -307,3 +319,81 @@ subscribeInvoices env req invoiceHandler = rpc $ rpcArgs env
       Left e ->
         $(logTM) ErrorS $ logStr $ "failed to parse subscription invoice " <> e
       Right (ResultWrapper (i :: Invoice)) -> invoiceHandler i
+
+openChannel ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  OpenChannelRequest ->
+  m (LndResult (RPCResponse ChannelPoint))
+openChannel env req = rpc $ rpcArgs env
+  where
+    rpcArgs rpcEnv =
+      RpcArgs
+        { rpcEnv,
+          rpcMethod = POST,
+          rpcUrlPath = "/v1/channels",
+          rpcUrlQuery = [],
+          rpcReqBody = Just req,
+          rpcRetryAttempt = 0,
+          rpcSuccessCond = stdRpcCond,
+          rpcName = OpenChannel,
+          rpcSubHandler = Nothing
+        }
+
+getPeers ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  m (LndResult (RPCResponse PeerList))
+getPeers env = rpc $ rpcArgs env
+  where
+    rpcArgs rpcEnv =
+      RpcArgs
+        { rpcEnv,
+          rpcMethod = GET,
+          rpcUrlPath = "/v1/peers",
+          rpcUrlQuery = [],
+          rpcReqBody = Nothing :: Maybe VoidRequest,
+          rpcRetryAttempt = 0,
+          rpcSuccessCond = stdRpcCond,
+          rpcName = GetPeers,
+          rpcSubHandler = Nothing
+        }
+
+connectPeer ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  ConnectPeerRequest ->
+  m (LndResult (RPCResponse VoidResponse))
+connectPeer env req = rpc $ rpcArgs env
+  where
+    rpcArgs rpcEnv =
+      RpcArgs
+        { rpcEnv,
+          rpcMethod = POST,
+          rpcUrlPath = "/v1/peers",
+          rpcUrlQuery = [],
+          rpcReqBody = Just req,
+          rpcRetryAttempt = 0,
+          rpcSuccessCond = stdRpcCond,
+          rpcName = ConnectPeer,
+          rpcSubHandler = Nothing
+        }
+
+getInfo ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  m (LndResult (RPCResponse GetInfoResponse))
+getInfo env = rpc $ rpcArgs env
+  where
+    rpcArgs rpcEnv =
+      RpcArgs
+        { rpcEnv,
+          rpcMethod = GET,
+          rpcUrlPath = "/v1/getinfo",
+          rpcUrlQuery = [],
+          rpcReqBody = Nothing :: Maybe VoidRequest,
+          rpcRetryAttempt = 0,
+          rpcSuccessCond = stdRpcCond,
+          rpcName = GetInfo,
+          rpcSubHandler = Nothing
+        }

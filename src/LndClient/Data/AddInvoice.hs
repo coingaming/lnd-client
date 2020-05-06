@@ -18,9 +18,9 @@ import LndClient.Utils (stdParseJSON, stdToJSON)
 
 data AddInvoiceRequest
   = AddInvoiceRequest
-      { memo :: Maybe Text,
-        value :: MoneyAmount,
-        descriptionHash :: Maybe Text
+      { value :: MoneyAmount,
+        descriptionHash :: Maybe Text,
+        memo :: Maybe Text
       }
   deriving (Generic, Show)
 
