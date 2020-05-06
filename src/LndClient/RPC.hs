@@ -343,9 +343,8 @@ openChannel env req = rpc $ rpcArgs env
 getPeers ::
   (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
-  VoidRequest ->
   m (LndResult (RPCResponse PeerList))
-getPeers env req = rpc $ rpcArgs env
+getPeers env = rpc $ rpcArgs env
   where
     rpcArgs rpcEnv =
       RpcArgs
@@ -353,7 +352,7 @@ getPeers env req = rpc $ rpcArgs env
           rpcMethod = GET,
           rpcUrlPath = "/v1/peers",
           rpcUrlQuery = [],
-          rpcReqBody = Just req,
+          rpcReqBody = Nothing :: Maybe VoidRequest,
           rpcRetryAttempt = 0,
           rpcSuccessCond = stdRpcCond,
           rpcName = GetPeers,

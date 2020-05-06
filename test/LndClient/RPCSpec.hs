@@ -316,7 +316,7 @@ spec = around withEnv $ do
                                 AddInvoice.rHash res == Invoice.rHash this
                             )
   describe "Peers" $ do
-    it "rpc-succeeds" $ shouldBeOk $ flip getPeers voidRequest
+    it "rpc-succeeds" $ shouldBeOk getPeers
   describe "GetInfo" $ do
     it "rpc-succeeds" $ \env -> do
       shouldBeOk (flip getInfo voidRequest) (merchantEnv env)
