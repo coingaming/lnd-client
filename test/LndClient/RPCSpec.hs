@@ -23,7 +23,7 @@ import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Concurrent.Thread.Delay (delay)
 import Control.Exception (bracket)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Reader (MonadReader, ReaderT, asks, local, runReaderT)
+import Control.Monad.Reader (MonadReader, ReaderT, asks, join, local, runReaderT)
 import Control.Monad.Trans.Class (lift)
 import Crypto.Hash.SHA256 (hash)
 import Data.Aeson (Result (..), fromJSON, toJSON)
@@ -107,10 +107,10 @@ custEnv env = do
 
 btcClient :: IO Client
 btcClient = do
-  user <- Char8.pack . btcRpcUser <$> btcEnv
-  pass <- Char8.pack . btcRpcPassword <$> btcEnv
-  url <- btcRpcUrl <$> btcEnv
-  getClient url user pass
+  let user = Char8.pack . btcRpcUser <$> btcEnv
+  let pass = Char8.pack . btcRpcPassword <$> btcEnv
+  let url = btcRpcUrl <$> btcEnv
+  join (getClient <$> url <*> user <*> pass)
 
 readEnv :: KatipContextT IO Env
 readEnv = do
