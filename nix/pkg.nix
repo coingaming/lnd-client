@@ -7,7 +7,7 @@
 , monad-time, mtl, persistent, qrcode-core, qrcode-juicypixels
 , QuickCheck, quickcheck-instances, resource-pool, retry
 , scientific, scotty, stdenv, text, time, tls, transformers
-, unbounded-delays, unliftio, unordered-containers, wai, warp
+, unbounded-delays, unliftio, unordered-containers, wai, warp, network-bitcoin
 }:
 mkDerivation {
   pname = "lnd-client";
@@ -34,7 +34,7 @@ mkDerivation {
     monad-logger monad-time mtl persistent qrcode-core
     qrcode-juicypixels QuickCheck quickcheck-instances resource-pool
     retry scientific scotty text time tls transformers unbounded-delays
-    unliftio unordered-containers wai warp
+    unliftio unordered-containers wai warp network-bitcoin
   ];
   prePatch = "hpack";
   homepage = "https://github.com/githubuser/lnd-client#readme";
