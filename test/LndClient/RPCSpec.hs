@@ -107,9 +107,9 @@ custEnv env = do
 
 btcClient :: IO Client
 btcClient = do
-  user <- Char8.pack . btcRpcUser <$> btcConfig
-  pass <- Char8.pack . btcRpcPassword <$> btcConfig
-  url <- btcRpcUrl <$> btcConfig
+  user <- Char8.pack . btcRpcUser <$> btcEnv
+  pass <- Char8.pack . btcRpcPassword <$> btcEnv
+  url <- btcRpcUrl <$> btcEnv
   getClient url user pass
 
 readEnv :: KatipContextT IO Env
