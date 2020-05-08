@@ -295,6 +295,7 @@ spec = around withEnv $ do
               }
       _ <- runApp env $ connectPeer (envLnd env) connectPeerRequest
       _ <- generateToAddress client 100 btcAddress Nothing
+      _ <- delay 3000000
       req <- openChannelRequest env
       shouldBeOk (flip openChannel req) env
   describe "SubscribeInvoices" $ do
