@@ -46,6 +46,7 @@ dependencies:
 - base64-bytestring
 - base16-bytestring
 - cryptohash-sha256
+- network-bitcoin
 - transformers
 - cryptonite
 - jose

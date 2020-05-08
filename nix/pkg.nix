@@ -4,10 +4,11 @@
 , cryptohash-sha256, cryptonite, data-default, envparse, hpack
 , hspec, hspec-wai, http-client, http-client-tls, http-conduit
 , http-types, jose, JuicyPixels, katip, lens, monad-logger
-, monad-time, mtl, persistent, qrcode-core, qrcode-juicypixels
-, QuickCheck, quickcheck-instances, resource-pool, retry
-, scientific, scotty, stdenv, text, time, tls, transformers
-, unbounded-delays, unliftio, unordered-containers, wai, warp
+, monad-time, mtl, network-bitcoin, persistent, qrcode-core
+, qrcode-juicypixels, QuickCheck, quickcheck-instances
+, resource-pool, retry, scientific, scotty, stdenv, text, time, tls
+, transformers, unbounded-delays, unliftio, unordered-containers
+, wai, warp
 }:
 mkDerivation {
   pname = "lnd-client";
@@ -19,7 +20,7 @@ mkDerivation {
     crypto-pubkey-openssh crypto-pubkey-types cryptohash-sha256
     cryptonite data-default envparse hspec hspec-wai http-client
     http-client-tls http-conduit http-types jose JuicyPixels katip lens
-    monad-logger monad-time mtl persistent qrcode-core
+    monad-logger monad-time mtl network-bitcoin persistent qrcode-core
     qrcode-juicypixels QuickCheck quickcheck-instances resource-pool
     retry scientific scotty text time tls transformers unbounded-delays
     unliftio unordered-containers wai warp
@@ -31,7 +32,7 @@ mkDerivation {
     crypto-pubkey-openssh crypto-pubkey-types cryptohash-sha256
     cryptonite data-default envparse hspec hspec-wai http-client
     http-client-tls http-conduit http-types jose JuicyPixels katip lens
-    monad-logger monad-time mtl persistent qrcode-core
+    monad-logger monad-time mtl network-bitcoin persistent qrcode-core
     qrcode-juicypixels QuickCheck quickcheck-instances resource-pool
     retry scientific scotty text time tls transformers unbounded-delays
     unliftio unordered-containers wai warp

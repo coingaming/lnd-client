@@ -13,7 +13,8 @@ import LndClient.Utils (stdToJSON)
 data InitWalletRequest
   = InitWalletRequest
       { walletPassword :: Text, -- base64
-        cipherSeedMnemonic :: [Text]
+        cipherSeedMnemonic :: [Text],
+        aezeedPassphrase :: Maybe Text
         --
         --  TODO : channel_backups
         --

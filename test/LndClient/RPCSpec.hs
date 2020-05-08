@@ -23,7 +23,7 @@ import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Concurrent.Thread.Delay (delay)
 import Control.Exception (bracket)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Reader (MonadReader, ReaderT, asks, local, runReaderT)
+import Control.Monad.Reader (MonadReader, ReaderT, asks, join, local, runReaderT)
 import Control.Monad.Trans.Class (lift)
 import Crypto.Hash.SHA256 (hash)
 import Data.Aeson (Result (..), fromJSON, toJSON)
@@ -32,7 +32,7 @@ import Data.ByteString (ByteString)
 import Data.ByteString.Base16 (decode)
 import Data.ByteString.Base64 (encode)
 import Data.Maybe
-import Data.Text (Text, pack)
+import Data.Text as Text (Text, pack)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Env
   ( (<=<),
@@ -52,13 +52,15 @@ import LndClient.Data.AddInvoice as AddInvoice
     AddInvoiceResponse (..),
     hashifyAddInvoiceRequest,
   )
+import LndClient.Data.BtcEnv
+import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.Newtypes
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
-import LndClient.Data.Peer (Peer (..), PeerList (..))
+import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.QRCode
@@ -75,6 +77,8 @@ import LndClient.RPC
     unlockWallet,
   )
 import LndClient.Utils
+import Network.Bitcoin (Client, getClient)
+import Network.Bitcoin.Mining (generateToAddress)
 import Network.HTTP.Client (responseStatus)
 import Network.HTTP.Types.Status (status404)
 import System.IO (stdout)
@@ -90,8 +94,8 @@ data Env
         envKatipLE :: LogEnv
       }
 
-merchantEnv :: Env -> Env
-merchantEnv env = do
+custEnv :: Env -> Env
+custEnv env = do
   let lndEnv = envLnd env
   env
     { envLnd =
@@ -99,6 +103,14 @@ merchantEnv env = do
           { envLndUrl = LndUrl "https://localhost:8003"
           }
     }
+
+btcClient :: IO Client
+btcClient = do
+  env <- btcEnv
+  let user = btcRpcUser env
+  let pass = btcRpcPassword env
+  let url = btcRpcUrl env
+  getClient url user pass
 
 readEnv :: KatipContextT IO Env
 readEnv = do
@@ -180,8 +192,7 @@ spec = around withEnv $ do
                               status404 == responseStatus x
                             _ -> False
                         )
-    it "rpc-succeeds-merchant" $ \env -> do
-      shouldBeOk (flip initWallet initWalletRequest) (merchantEnv env)
+    it "rpc-succeeds-customer" $ \env -> shouldBeOk (flip initWallet initWalletRequestCust) (custEnv env)
   describe "UnlockWallet" $ do
     it "request-jsonify" $ \_ ->
       toJSON (UnlockWalletRequest "FOO" 123)
@@ -229,13 +240,30 @@ spec = around withEnv $ do
       Success (NewAddressResponse "HELLO")
         `shouldBe` fromJSON [aesonQQ|{address: "HELLO"}|]
     it "rpc-succeeds" $ shouldBeOk newAddress
+  describe "Peers" $ do
+    it "rpc-succeeds" $ shouldBeOk getPeers
+  describe "ConnectPeer" $ do
+    it "rpc-succeeds" $ \env -> do
+      _ <- runApp env $ initWallet (envLnd env) initWalletRequest
+      _ <- runApp (custEnv env) $ initWallet (envLnd $ custEnv env) initWalletRequestCust
+      GetInfoResponse nodePubKey <- runApp env $ coerceRPCResponse =<< getInfo (envLnd $ custEnv env)
+      let connectPeerRequest =
+            ConnectPeerRequest
+              { addr =
+                  LightningAddress
+                    { pubkey = nodePubKey,
+                      host = "localhost:9734"
+                    },
+                perm = False
+              }
+      shouldBeOk (flip connectPeer connectPeerRequest) env
   describe "OpenChannel" $ do
     it "response-jsonify" $ \_ ->
       Success
         ( OpenChannelRequest
             { nodePubkey = "key",
-              localFundingAmount = "1000",
-              pushSat = "1000",
+              localFundingAmount = MoneyAmount 1000,
+              pushSat = Just $ MoneyAmount 1000,
               targetConf = Nothing,
               satPerByte = Nothing,
               private = Nothing,
@@ -252,10 +280,24 @@ spec = around withEnv $ do
           local_funding_amount: "1000",
           push_sat: "1000"
                    }|]
-  --  TODO Requires connecting peer, and creating 100 BTC blocks
-  --  it "rpc-succeeds" $ \env -> do
-  --      req <- openChannelRequest env
-  --      shouldBeOk (flip openChannel req) env
+    it "rpc-succeeds" $ \env -> do
+      NewAddressResponse btcAddress <- runApp env $ coerceRPCResponse =<< newAddress (envLnd env)
+      client <- btcClient
+      GetInfoResponse custPubKey <- runApp env $ coerceRPCResponse =<< getInfo (envLnd $ custEnv env)
+      let connectPeerRequest =
+            ConnectPeerRequest
+              { addr =
+                  LightningAddress
+                    { pubkey = custPubKey,
+                      host = "localhost:9734"
+                    },
+                perm = False
+              }
+      _ <- runApp env $ connectPeer (envLnd env) connectPeerRequest
+      _ <- generateToAddress client 100 btcAddress Nothing
+      _ <- delay 3000000
+      req <- openChannelRequest env
+      shouldBeOk (flip openChannel req) env
   describe "SubscribeInvoices" $ do
     it "invoice-jsonify" $ \_ ->
       Success
@@ -314,11 +356,9 @@ spec = around withEnv $ do
             `shouldSatisfy` ( \this ->
                                 AddInvoice.rHash res == Invoice.rHash this
                             )
-  describe "Peers" $ do
-    it "rpc-succeeds" $ shouldBeOk getPeers
   describe "GetInfo" $ do
     it "rpc-succeeds" $ \env -> do
-      shouldBeOk getInfo (merchantEnv env)
+      shouldBeOk getInfo (custEnv env)
   where
     addInvoiceRequest =
       hashifyAddInvoiceRequest $
@@ -327,26 +367,26 @@ spec = around withEnv $ do
             value = MoneyAmount 1000,
             descriptionHash = Nothing
           }
-    --    openChannelRequest :: Env -> IO OpenChannelRequest
-    --    openChannelRequest env = do
-    --      x <- somePubKey env
-    --      let (pubKeyHex, _) = decode (encodeUtf8 x)
-    --      let req =
-    --            OpenChannelRequest
-    --              { nodePubkey = decodeUtf8 (encode pubKeyHex),
-    --                localFundingAmount = "20000",
-    --                pushSat = "1000",
-    --                targetConf = Nothing,
-    --                satPerByte = Nothing,
-    --                private = Nothing,
-    --                minHtlcMsat = Nothing,
-    --                remoteCsvDelay = Nothing,
-    --                minConfs = Nothing,
-    --                spendUnconfirmed = Nothing,
-    --                closeAddress = Nothing
-    --              }
-    --      print req
-    --      return req
+    openChannelRequest :: Env -> IO OpenChannelRequest
+    openChannelRequest env = do
+      x <- somePubKey env
+      let (pubKeyHex, _) = decode (encodeUtf8 x)
+      let req =
+            OpenChannelRequest
+              { nodePubkey = decodeUtf8 (encode pubKeyHex),
+                localFundingAmount = MoneyAmount 20000,
+                pushSat = Just $ MoneyAmount 1000,
+                targetConf = Nothing,
+                satPerByte = Nothing,
+                private = Nothing,
+                minHtlcMsat = Nothing,
+                remoteCsvDelay = Nothing,
+                minConfs = Nothing,
+                spendUnconfirmed = Nothing,
+                closeAddress = Nothing
+              }
+      print req
+      return req
     initWalletSeed =
       [ "absent",
         "betray",
@@ -373,14 +413,47 @@ spec = around withEnv $ do
         "wave",
         "fall"
       ]
-    --    somePubKey env = do
-    --      res <- runApp env $ coerceRPCResponse =<< getPeers (envLnd env) voidRequest
-    --      let peersList = head $ peers res
-    --      return $ pubKey peersList
+    initWalletSeedCust =
+      [ "absent",
+        "dilemma",
+        "mango",
+        "firm",
+        "hero",
+        "green",
+        "wide",
+        "rebel",
+        "pigeon",
+        "custom",
+        "town",
+        "stadium",
+        "shock",
+        "bind",
+        "ocean",
+        "seek",
+        "enforce",
+        "during",
+        "bird",
+        "honey",
+        "enrich",
+        "number",
+        "wealth",
+        "thunder"
+      ]
+    somePubKey env = do
+      res <- runApp env $ coerceRPCResponse =<< getPeers (envLnd env)
+      let peersList = head $ peers res
+      return $ pubKey peersList
     initWalletRequest =
       InitWalletRequest
         { walletPassword = "ZGV2ZWxvcGVy",
+          aezeedPassphrase = Nothing,
           cipherSeedMnemonic = initWalletSeed
+        }
+    initWalletRequestCust =
+      InitWalletRequest
+        { walletPassword = "ZGV2ZWxvcGVy",
+          aezeedPassphrase = Just "ZGV2ZWxvcGVy",
+          cipherSeedMnemonic = initWalletSeedCust
         }
     shouldBeOk this env = do
       res <- runApp env $ this $ envLnd env

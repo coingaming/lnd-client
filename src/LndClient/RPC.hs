@@ -173,12 +173,12 @@ rpc
                 req1
                 (\b -> req1 {requestBody = RequestBodyLBS $ encode b})
                 rpcReqBody
-        --  liftIO $ print $ encode rpcReqBody
+        --liftIO $ print $ encode rpcReqBody
         manager <- liftIO $ coerce $ envLndTlsManagerBuilder rpcEnv
         case rpcSubHandler of
           Nothing -> do
             res <- liftIO $ httpLbs req2 manager
-            --      liftIO $ print res
+            liftIO $ print res
             return $ RPCResponse $ eitherDecode <$> res
           Just subHandler -> do
             let req3 = setRequestManager manager req2

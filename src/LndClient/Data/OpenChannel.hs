@@ -9,6 +9,7 @@ where
 import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
+import LndClient.Data.Newtypes (MoneyAmount)
 import LndClient.Utils (stdParseJSON, stdToJSON)
 
 data OpenChannelRequest
@@ -17,8 +18,8 @@ data OpenChannelRequest
         --
         --TODO move amounts to MoneyAmount type
         --
-        localFundingAmount :: Text,
-        pushSat :: Text,
+        localFundingAmount :: MoneyAmount,
+        pushSat :: Maybe MoneyAmount,
         targetConf :: Maybe Integer,
         satPerByte :: Maybe Integer,
         private :: Maybe Bool,

@@ -39,6 +39,13 @@ packages:
       sha256: cbec4c7bd57508339510f18df64827dbd65eb7ede00db07a463a36aecdda077c
   original:
     hackage: cryptonite-0.26@sha256:43c722f3770c31f4c5376e7aa42645b104834103312e217aa7fe79316416d6df,17352
+- completed:
+    hackage: network-bitcoin-1.9.1@sha256:f950326eef853c8ce5a15a2fc65ed0291669b60b3138538629469fbeaf447d96,2420
+    pantry-tree:
+      size: 851
+      sha256: 9e1136ae25b7bec92afb03dae5833946bf0596518a8c92a65c09eef7f5c4c2ac
+  original:
+    hackage: network-bitcoin-1.9.1@sha256:f950326eef853c8ce5a15a2fc65ed0291669b60b3138538629469fbeaf447d96,2420
 snapshots:
 - completed:
     size: 524996
