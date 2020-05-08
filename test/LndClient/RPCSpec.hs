@@ -31,7 +31,6 @@ import Data.Aeson.QQ
 import Data.ByteString (ByteString)
 import Data.ByteString.Base16 (decode)
 import Data.ByteString.Base64 (encode)
-import Data.ByteString.Char8 as Char8 (pack)
 import Data.Maybe
 import Data.Text as Text (Text, pack)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
@@ -107,8 +106,8 @@ custEnv env = do
 
 btcClient :: IO Client
 btcClient = do
-  let user = Char8.pack . btcRpcUser <$> btcEnv
-  let pass = Char8.pack . btcRpcPassword <$> btcEnv
+  let user = btcRpcUser <$> btcEnv
+  let pass = btcRpcPassword <$> btcEnv
   let url = btcRpcUrl <$> btcEnv
   join (getClient <$> url <*> user <*> pass)
 
