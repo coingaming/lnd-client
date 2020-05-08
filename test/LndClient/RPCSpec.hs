@@ -106,10 +106,11 @@ custEnv env = do
 
 btcClient :: IO Client
 btcClient = do
-  let user = btcRpcUser <$> btcEnv
-  let pass = btcRpcPassword <$> btcEnv
-  let url = btcRpcUrl <$> btcEnv
-  join (getClient <$> url <*> user <*> pass)
+  env <- btcEnv
+  let user = btcRpcUser env
+  let pass = btcRpcPassword env
+  let url = btcRpcUrl env
+  getClient url user pass
 
 readEnv :: KatipContextT IO Env
 readEnv = do
