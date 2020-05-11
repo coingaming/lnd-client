@@ -187,12 +187,13 @@ spec = around withEnv $ do
           initWallet (envLnd env) initWalletRequest
       res
         `shouldSatisfy` ( \case
-                            LndSuccess _ -> True
-                            LndFail (RPCResponse x) ->
+                            LndSuccess _ _ -> True
+                            LndFail _ (RPCResponse x) ->
                               status404 == responseStatus x
                             _ -> False
                         )
-    it "rpc-succeeds-customer" $ \env -> shouldBeOk (flip initWallet initWalletRequestCust) (custEnv env)
+    it "rpc-succeeds-customer" $ \env ->
+      shouldBeOk (`initWallet` initWalletRequestCust) (custEnv env)
   describe "UnlockWallet" $ do
     it "request-jsonify" $ \_ ->
       toJSON (UnlockWalletRequest "FOO" 123)
@@ -348,9 +349,9 @@ spec = around withEnv $ do
       --
       case subResult of
         Left f -> case f of
-          LndSuccess _ -> fail "HTTP success"
-          LndFail lndFail -> fail (show lndFail)
-          LndHttpException e -> fail (show e)
+          LndSuccess _ _ -> fail "HTTP success"
+          LndFail _ lndFail -> fail (show lndFail)
+          LndHttpException _ e -> fail (show e)
         Right (res, i) ->
           i
             `shouldSatisfy` ( \this ->
@@ -459,6 +460,6 @@ spec = around withEnv $ do
       res <- runApp env $ this $ envLnd env
       res
         `shouldSatisfy` ( \case
-                            LndSuccess _ -> True
+                            LndSuccess _ _ -> True
                             _ -> False
                         )

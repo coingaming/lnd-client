@@ -69,6 +69,7 @@ dependencies:
 - qrcode-core
 - qrcode-juicypixels
 - JuicyPixels
+- chronos
 
 library:
   source-dirs: src
