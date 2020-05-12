@@ -3,6 +3,7 @@
 
 module LndClient.Data.Newtypes
   ( AddIndex (..),
+    SettleIndex (..),
     PaymentRequest (..),
     RHash (..),
     MoneyAmount (..),
@@ -24,6 +25,9 @@ import Text.Read (readMaybe)
 newtype AddIndex = AddIndex Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
+newtype SettleIndex = SettleIndex Word64
+  deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
+
 newtype PaymentRequest = PaymentRequest Text
   deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq, ToText)
 
@@ -35,6 +39,9 @@ newtype MoneyAmount = MoneyAmount Word64
 
 instance FromJSON AddIndex where
   parseJSON = intParser AddIndex "AddIndex"
+
+instance FromJSON SettleIndex where
+  parseJSON = intParser SettleIndex "SettleIndex"
 
 instance FromJSON MoneyAmount where
   parseJSON = intParser MoneyAmount "MoneyAmount"

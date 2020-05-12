@@ -317,7 +317,7 @@ spec = around withEnv $ do
               fallbackAddr = Nothing,
               cltvExpiry = Nothing,
               private = Nothing,
-              addIndex = "8",
+              addIndex = AddIndex 8,
               state = Nothing
             }
         )
