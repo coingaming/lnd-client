@@ -13,6 +13,7 @@ module LndClient.RPC
     openChannel,
     getPeers,
     connectPeer,
+    sendPayment,
     getInfo,
     subscribeInvoices,
     RPCResponse (..),
@@ -54,6 +55,7 @@ import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.Newtypes (ResultWrapper (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
+import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
@@ -92,6 +94,7 @@ data RpcName
   | GetPeers
   | ConnectPeer
   | GetInfo
+  | SendPayment
   deriving (Generic)
 
 instance ToJSON RpcName
@@ -395,5 +398,25 @@ getInfo env = rpc $ rpcArgs env
           rpcRetryAttempt = 0,
           rpcSuccessCond = stdRpcCond,
           rpcName = GetInfo,
+          rpcSubHandler = Nothing
+        }
+
+sendPayment ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  SendPaymentRequest ->
+  m (LndResult (RPCResponse SendPaymentResponse))
+sendPayment env req = rpc $ rpcArgs env
+  where
+    rpcArgs rpcEnv =
+      RpcArgs
+        { rpcEnv,
+          rpcMethod = POST,
+          rpcUrlPath = "/v1/channels/transactions",
+          rpcUrlQuery = [],
+          rpcReqBody = Just req,
+          rpcRetryAttempt = 0,
+          rpcSuccessCond = stdRpcCond,
+          rpcName = SendPayment,
           rpcSubHandler = Nothing
         }

@@ -61,6 +61,7 @@ import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.Newtypes
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..), PeerList (..))
+import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.QRCode
@@ -73,6 +74,7 @@ import LndClient.RPC
     initWallet,
     newAddress,
     openChannel,
+    sendPayment,
     subscribeInvoices,
     unlockWallet,
   )
@@ -356,9 +358,40 @@ spec = around withEnv $ do
             `shouldSatisfy` ( \this ->
                                 AddInvoice.rHash res == Invoice.rHash this
                             )
-  describe "GetInfo" $ do
-    it "rpc-succeeds" $ \env -> do
-      shouldBeOk getInfo (custEnv env)
+    it "rpc-succeeds-send-payment" $ \env -> do
+      invoice <- runApp env $ coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
+      x <- newEmptyMVar
+      let sendPaymentRequest =
+            SendPaymentRequest $ AddInvoice.paymentRequest invoice
+      let subscribeInv =
+            runApp env $
+              subscribeInvoices
+                (envLnd env)
+                (SubscribeInvoicesRequest Nothing Nothing)
+                (liftIO . putMVar x)
+      let runTest = do
+            _ <- delay 3000000
+            res <-
+              runApp env $
+                coerceRPCResponse =<< sendPayment (envLnd $ custEnv env) sendPaymentRequest
+            i <- takeMVar x
+            return (res, i)
+      subResult <- race subscribeInv runTest
+      --
+      --TODO Optimize handling LndResult(LndSuccess, LndFail, LndHttpException)
+      --
+      case subResult of
+        Left f -> case f of
+          LndSuccess _ -> fail "HTTP success"
+          LndFail lndFail -> fail (show lndFail)
+          LndHttpException e -> fail (show e)
+        Right (res, i) ->
+          i
+            `shouldSatisfy` ( \this ->
+                                SendPaymentResponse.state res == "settled"
+                            )
+  describe "GetInfo" $ it "rpc-succeeds" $ \env -> do
+    shouldBeOk getInfo (custEnv env)
   where
     addInvoiceRequest =
       hashifyAddInvoiceRequest $
