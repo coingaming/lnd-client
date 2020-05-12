@@ -20,14 +20,14 @@ data Invoice
         value :: MoneyAmount,
         expiry :: Maybe Text,
         settled :: Maybe Bool,
-        settleIndex :: Maybe Text,
+        settleIndex :: Maybe SettleIndex,
         descriptionHash :: Maybe Text,
         memo :: Maybe Text,
         paymentRequest :: Maybe Text,
         fallbackAddr :: Maybe Text,
         cltvExpiry :: Maybe Text,
         private :: Maybe Bool,
-        addIndex :: Text,
+        addIndex :: AddIndex,
         state :: Maybe Text
       }
   deriving (Generic, Show, Eq)

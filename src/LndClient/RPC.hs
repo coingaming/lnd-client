@@ -22,6 +22,7 @@ module LndClient.RPC
   )
 where
 
+import Chronos (SubsecondPrecision (SubsecondPrecisionAuto), encodeTimespan)
 import Control.Concurrent.Thread.Delay (delay)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Aeson (FromJSON, ToJSON, eitherDecode, encode)
@@ -30,16 +31,10 @@ import Data.ByteString.Lazy (fromStrict)
 import Data.Coerce (coerce)
 import qualified Data.Conduit.List as CL
 import Data.Either (isRight)
+import Data.Text as T (pack)
 import Data.Text.Encoding (encodeUtf8)
 import GHC.Generics (Generic)
-import Katip
-  ( KatipContext,
-    Severity (..),
-    katipAddContext,
-    logStr,
-    logTM,
-    sl,
-  )
+import Katip (KatipContext, Severity (..), katipAddContext, logStr, logTM, sl)
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
@@ -115,7 +110,7 @@ data RpcArgs a b m
 maybeRPCResponse :: LndResult (RPCResponse a) -> Maybe a
 maybeRPCResponse res0 =
   case res0 of
-    LndSuccess (RPCResponse res1) ->
+    LndSuccess _ (RPCResponse res1) ->
       case responseBody res1 of
         Right res2 -> Just res2
         _ -> Nothing
@@ -148,16 +143,31 @@ rpc
       $(logTM) InfoS "is running..."
       this <- doExpBackOff rpcRetryAttempt rpcSuccessCond expr
       case this of
-        (LndSuccess _) -> $(logTM) InfoS "succeeded"
-        (LndFail (RPCResponse res)) ->
+        (LndSuccess et _) ->
+          $(logTM) InfoS
+            $ logStr
+            $ "succeeded, elapsed time = "
+              <> showElapsedTime et
+              <> " seconds"
+        (LndFail et (RPCResponse res)) ->
           $(logTM) ErrorS
             $ logStr
             $ "failed with HTTP status "
-              <> (show . statusCode . responseStatus $ res)
-        (LndHttpException e) ->
-          $(logTM) ErrorS $ logStr $ "failed with HttpException " <> show e
+              <> (T.pack . show . statusCode . responseStatus $ res)
+              <> ", elapsed time = "
+              <> showElapsedTime et
+              <> " seconds"
+        (LndHttpException et e) ->
+          $(logTM) ErrorS
+            $ logStr
+            $ "failed with HttpException "
+              <> T.pack (show e)
+              <> ", elapsed time = "
+              <> showElapsedTime et
+              <> " seconds"
       return this
     where
+      showElapsedTime = encodeTimespan SubsecondPrecisionAuto
       expr = do
         req0 <- liftIO $ parseRequest $ coerce (envLndUrl rpcEnv) <> rpcUrlPath
         let req1 =
