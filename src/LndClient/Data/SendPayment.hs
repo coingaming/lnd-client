@@ -9,19 +9,21 @@ where
 import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
-import LndClient.Data.Newtypes (PaymentRequest (..))
+import LndClient.Data.Newtypes (MoneyAmount (..), PaymentRequest (..))
 import LndClient.Utils (stdParseJSON, stdToJSON)
 
-newtype SendPaymentRequest
+data SendPaymentRequest
   = SendPaymentRequest
-      { payment_request :: PaymentRequest
+      { paymentRequest :: PaymentRequest,
+        amt :: MoneyAmount
       }
   deriving (Generic, Show)
 
 data SendPaymentResponse
   = SendPaymentResponse
-      { state :: Text,
-        preimage :: Text
+      { paymentError :: Text,
+        paymentPreimage :: Text,
+        paymentHash :: Text
       }
   deriving (Generic, Show, Eq)
 
