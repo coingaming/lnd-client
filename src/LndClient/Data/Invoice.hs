@@ -10,6 +10,7 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 import LndClient.Data.Newtypes
 import LndClient.Utils (stdParseJSON, stdToJSON)
+import Universum
 
 data Invoice
   = Invoice

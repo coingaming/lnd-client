@@ -11,6 +11,7 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 import LndClient.Data.Newtypes (MoneyAmount)
 import LndClient.Utils (stdParseJSON, stdToJSON)
+import Universum
 
 data OpenChannelRequest
   = OpenChannelRequest

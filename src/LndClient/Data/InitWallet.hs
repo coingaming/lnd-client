@@ -9,6 +9,7 @@ import Data.Aeson (ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import LndClient.Utils (stdToJSON)
+import Universum
 
 data InitWalletRequest
   = InitWalletRequest

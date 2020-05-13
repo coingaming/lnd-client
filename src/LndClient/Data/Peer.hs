@@ -12,6 +12,7 @@ import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import LndClient.Utils (stdParseJSON, stdToJSON)
+import Universum
 
 data Peer
   = Peer

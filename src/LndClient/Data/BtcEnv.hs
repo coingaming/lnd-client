@@ -6,12 +6,13 @@ where
 
 import Data.ByteString (ByteString)
 import Env hiding (def)
+import Universum
 
 data BtcEnv
   = BtcEnv
       { btcRpcUser :: ByteString,
         btcRpcPassword :: ByteString,
-        btcRpcUrl :: String
+        btcRpcUrl :: Text
       }
 
 btcEnv :: IO BtcEnv

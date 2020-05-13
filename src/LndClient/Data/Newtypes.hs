@@ -11,7 +11,7 @@ module LndClient.Data.Newtypes
   )
 where
 
-import Codec.QRCode (ToText)
+import Codec.QRCode as QR (ToText)
 import Data.Aeson (FromJSON (..), ToJSON (..), Value (..))
 import Data.Scientific (toBoundedInteger)
 import Data.Text (Text, unpack)
@@ -21,6 +21,7 @@ import Database.Persist.Sql (PersistFieldSql)
 import GHC.Generics (Generic)
 import LndClient.Utils (stdParseJSON, stdToJSON)
 import Text.Read (readMaybe)
+import Universum
 
 newtype AddIndex = AddIndex Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
@@ -29,7 +30,7 @@ newtype SettleIndex = SettleIndex Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
 newtype PaymentRequest = PaymentRequest Text
-  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq, ToText)
+  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq, QR.ToText)
 
 newtype RHash = RHash Text
   deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq)
@@ -59,7 +60,7 @@ instance ToJSON a => ToJSON (ResultWrapper a) where
   toJSON = stdToJSON
 
 intParser ::
-  (Integral t, Bounded t, Read t, Monad m) =>
+  (Integral t, Bounded t, Read t, MonadFail m) =>
   (t -> a) ->
   String ->
   Value ->

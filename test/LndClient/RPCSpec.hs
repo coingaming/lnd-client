@@ -19,9 +19,7 @@ where
 
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Async (race)
-import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Concurrent.Thread.Delay (delay)
-import Control.Exception (bracket)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (MonadReader, ReaderT, asks, join, local, runReaderT)
 import Control.Monad.Trans.Class (lift)
@@ -32,8 +30,7 @@ import Data.ByteString (ByteString)
 import Data.ByteString.Base16 (decode)
 import Data.ByteString.Base64 (encode)
 import Data.Maybe
-import Data.Text as Text (Text, pack)
-import Data.Text.Encoding (decodeUtf8, encodeUtf8)
+import Data.Text as Text (unpack)
 import Env
   ( (<=<),
     auto,
@@ -83,6 +80,7 @@ import Network.HTTP.Client (responseStatus)
 import Network.HTTP.Types.Status (status404)
 import System.IO (stdout)
 import Test.Hspec
+import Universum
 import UnliftIO (MonadUnliftIO (..), UnliftIO (..))
 
 -- Environment of test App
@@ -108,9 +106,9 @@ btcClient :: IO Client
 btcClient = do
   env <- btcEnv
   let user = btcRpcUser env
-  let pass = btcRpcPassword env
+  let passw = btcRpcPassword env
   let url = btcRpcUrl env
-  getClient url user pass
+  getClient (unpack url) user passw
 
 readEnv :: KatipContextT IO Env
 readEnv = do
@@ -442,8 +440,10 @@ spec = around withEnv $ do
       ]
     somePubKey env = do
       res <- runApp env $ coerceRPCResponse =<< getPeers (envLnd env)
-      let peersList = head $ peers res
-      return $ pubKey peersList
+      let mPeer = safeHead $ peers res
+      case mPeer of
+        Just peer -> return $ pubKey peer
+        Nothing -> return ""
     initWalletRequest =
       InitWalletRequest
         { walletPassword = "ZGV2ZWxvcGVy",

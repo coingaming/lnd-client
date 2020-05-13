@@ -11,10 +11,11 @@ import Crypto.Hash.SHA256 (hash)
 import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.ByteString.Base64 (encode)
 import Data.Text (Text)
-import Data.Text.Encoding (decodeUtf8, encodeUtf8)
+--import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import GHC.Generics (Generic)
 import LndClient.Data.Newtypes
 import LndClient.Utils (stdParseJSON, stdToJSON)
+import Universum
 
 data AddInvoiceRequest
   = AddInvoiceRequest

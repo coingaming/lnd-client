@@ -24,6 +24,7 @@ description:         Please see the README on GitHub at <https://github.com/gith
 #
 dependencies:
 - base >= 4.7 && < 5
+- universum
 - envparse
 - bytestring
 - text
@@ -73,6 +74,8 @@ dependencies:
 
 library:
   source-dirs: src
+  default-extensions:
+  - NoImplicitPrelude
   ghc-options:
   # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
   # Enable all warnings with -Weverything, then disable the ones we don’t care about
@@ -95,6 +98,8 @@ tests:
   lnd-client-test:
     main:                Spec.hs
     source-dirs:         test
+    default-extensions:
+    - NoImplicitPrelude
     ghc-options:
     # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
     # Enable all warnings with -Weverything, then disable the ones we don’t care about

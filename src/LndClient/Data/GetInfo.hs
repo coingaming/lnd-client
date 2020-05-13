@@ -9,6 +9,7 @@ import Data.Aeson (FromJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import LndClient.Utils (stdParseJSON)
+import Universum
 
 newtype GetInfoResponse
   = GetInfoResponse

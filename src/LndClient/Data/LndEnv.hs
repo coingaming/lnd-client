@@ -31,6 +31,7 @@ import Network.TLS
     supportedCiphers,
   )
 import Network.TLS.Extra.Cipher (ciphersuite_default)
+import Universum
 
 newtype LndB64WalletPassword = LndB64WalletPassword Text
 

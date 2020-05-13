@@ -29,7 +29,7 @@ import Data.Aeson (FromJSON, ToJSON, eitherDecode, encode)
 import Data.Bifunctor (second)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS (pack)
-import Data.ByteString.Lazy (fromStrict)
+import Data.ByteString.Lazy as Lazy (fromStrict)
 import Data.Coerce (coerce)
 import qualified Data.Conduit.List as CL
 import Data.Either (isRight)
@@ -75,6 +75,7 @@ import Network.HTTP.Simple (httpSink, setRequestManager)
 import Network.HTTP.Types.Method (StdMethod (..), renderStdMethod)
 import Network.HTTP.Types.Status (ok200, status404, statusCode)
 import Network.HTTP.Types.URI (Query, renderQuery)
+import Universum
 import UnliftIO
 
 newtype RPCResponse a
@@ -121,7 +122,7 @@ coerceRPCResponse :: (Show a, MonadIO m) => LndResult (RPCResponse a) -> m a
 coerceRPCResponse x = do
   RPCResponse y <- coerceLndResult x
   case responseBody y of
-    Left e -> fail e
+    Left e -> liftIO $ fail e
     Right z -> return z
 
 rpc ::
@@ -332,7 +333,7 @@ subscribeInvoices env req invoiceHandler = rpc $ rpcArgs env
           rpcName = SubscribeInvoices,
           rpcSubHandler = Just subHandler
         }
-    subHandler x = case eitherDecode $ fromStrict x of
+    subHandler x = case eitherDecode $ Lazy.fromStrict x of
       Left e ->
         $(logTM) ErrorS $ logStr $ "failed to parse subscription invoice " <> e
       Right (ResultWrapper (i :: Invoice)) -> invoiceHandler i
