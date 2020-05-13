@@ -4,6 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 
 module LndClient.RPC
   ( unlockWallet,
@@ -25,13 +26,16 @@ import Chronos (SubsecondPrecision (SubsecondPrecisionAuto), encodeTimespan)
 import Control.Concurrent.Thread.Delay (delay)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Aeson (FromJSON, ToJSON, eitherDecode, encode)
+import Data.Bifunctor (second)
 import Data.ByteString (ByteString)
+import qualified Data.ByteString.Char8 as BS (pack)
 import Data.ByteString.Lazy (fromStrict)
 import Data.Coerce (coerce)
 import qualified Data.Conduit.List as CL
 import Data.Either (isRight)
+import Data.Maybe (catMaybes)
 import Data.Text as T (pack)
-import Data.Text.Encoding (encodeUtf8)
+import Data.Word (Word64)
 import GHC.Generics (Generic)
 import Katip (KatipContext, Severity (..), katipAddContext, logStr, logTM, sl)
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
@@ -46,7 +50,7 @@ import LndClient.Data.LndEnv
     LndUrl (..),
   )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
-import LndClient.Data.Newtypes (ResultWrapper (..))
+import LndClient.Data.Newtypes
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
@@ -309,10 +313,13 @@ subscribeInvoices ::
 subscribeInvoices env req invoiceHandler = rpc $ rpcArgs env
   where
     query =
-      [ ("add_index", SubscribeInvoices.addIndex),
-        ("settle_index", SubscribeInvoices.settleIndex)
-      ]
-        >>= (\(t, f) -> maybe [] (\x -> [(t, Just $ encodeUtf8 x)]) $ f req)
+      second (Just . BS.pack . show)
+        <$> catMaybes
+          [ ("add_index",)
+              <$> (coerce <$> SubscribeInvoices.addIndex req :: Maybe Word64),
+            ("settle_index",)
+              <$> (coerce <$> SubscribeInvoices.settleIndex req)
+          ]
     rpcArgs rpcEnv =
       RpcArgs
         { rpcEnv,
