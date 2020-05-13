@@ -18,6 +18,8 @@ with pkgs';
 let haskell-ide = import (
       fetchTarball "https://github.com/tim2CF/ultimate-haskell-ide/tarball/master"
     ) {};
+    proto3-suite-src = fetchTarball "https://github.com/awakesecurity/proto3-suite/tarball/ca03aa9d846d88b0762e40f9588b4927de22f798";
+    proto3-suite = import (proto3-suite-src + "/release.nix") {};
 in
 
 stdenv.mkDerivation {
@@ -29,6 +31,7 @@ stdenv.mkDerivation {
     bitcoin
     lnd
     /* Utils */
+    proto3-suite.proto3-suite-linux
     git
     nix-prefetch-scripts
     openssh
