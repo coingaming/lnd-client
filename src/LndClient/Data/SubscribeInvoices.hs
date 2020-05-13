@@ -3,13 +3,10 @@ module LndClient.Data.SubscribeInvoices
   )
 where
 
---import Data.Text (Text)
-import Data.Word (Word64)
-
---import LndClient.Data.Newtypes (AddIndex (..))
+import LndClient.Data.Newtypes
 
 data SubscribeInvoicesRequest
   = SubscribeInvoicesRequest
-      { addIndex :: Maybe Word64,
-        settleIndex :: Maybe Word64
+      { addIndex :: Maybe AddIndex,
+        settleIndex :: Maybe SettleIndex
       }
