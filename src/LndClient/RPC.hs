@@ -32,7 +32,7 @@ import Data.Coerce (coerce)
 import qualified Data.Conduit.List as CL
 import Data.Either (isRight)
 import Data.Text as T (pack)
-import Data.Text.Encoding (encodeUtf8)
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import GHC.Generics (Generic)
 import Katip (KatipContext, Severity (..), katipAddContext, logStr, logTM, sl)
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
@@ -51,7 +51,7 @@ import LndClient.Data.Newtypes (ResultWrapper (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
-import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
+import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..), getAddIndexText, getSettleIndexText)
 import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
@@ -312,8 +312,8 @@ subscribeInvoices ::
 subscribeInvoices env req invoiceHandler = rpc $ rpcArgs env
   where
     query =
-      [ ("add_index", SubscribeInvoices.addIndex),
-        ("settle_index", SubscribeInvoices.settleIndex)
+      [ ("add_index", SubscribeInvoices.getAddIndexText),
+        ("settle_index", SubscribeInvoices.getSettleIndexText)
       ]
         >>= (\(t, f) -> maybe [] (\x -> [(t, Just $ encodeUtf8 x)]) $ f req)
     rpcArgs rpcEnv =

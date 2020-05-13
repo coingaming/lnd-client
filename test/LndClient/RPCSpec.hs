@@ -372,7 +372,7 @@ spec = around withEnv $ do
             runApp env $
               subscribeInvoices
                 (envLnd env)
-                (SubscribeInvoicesRequest (Just addIndex) Nothing)
+                (SubscribeInvoicesRequest Nothing Nothing)
                 (liftIO . putMVar x)
       let runTest = do
             _ <- delay 3000000
@@ -387,7 +387,7 @@ spec = around withEnv $ do
       --
       case subResult of
         Left f -> case f of
-          LndSuccess _ -> fail "HTTP success"
+          LndSuccess _ _ -> fail "HTTP success"
           LndFail lndFail -> fail (show lndFail)
           LndHttpException e -> fail (show e)
         Right (_, i) ->
