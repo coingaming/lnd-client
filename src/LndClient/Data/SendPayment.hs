@@ -22,7 +22,7 @@ data SendPaymentRequest
 data SendPaymentResponse
   = SendPaymentResponse
       { paymentError :: Text,
-        paymentPreimage :: Text,
+        paymentPreimage :: Maybe Text,
         paymentHash :: Text
       }
   deriving (Generic, Show, Eq)

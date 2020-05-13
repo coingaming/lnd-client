@@ -29,7 +29,7 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Aeson (FromJSON, ToJSON, eitherDecode, encode)
 import Data.Bifunctor (second)
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Char8 as BS (pack)
+import qualified Data.ByteString.Char8 as BS (pack, unpack)
 import Data.ByteString.Lazy (fromStrict)
 import Data.Coerce (coerce)
 import qualified Data.Conduit.List as CL
@@ -55,7 +55,7 @@ import LndClient.Data.Newtypes
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
-import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..), getAddIndexText, getSettleIndexText)
+import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
@@ -337,7 +337,7 @@ subscribeInvoices env req invoiceHandler = rpc $ rpcArgs env
         }
     subHandler x = case eitherDecode $ fromStrict x of
       Left e ->
-        $(logTM) ErrorS $ logStr $ "failed to parse subscription invoice " <> e
+        $(logTM) ErrorS $ logStr $ "failed to parse subscription invoice " <> e <> " Response: " <> (BS.unpack x)
       Right (ResultWrapper (i :: Invoice)) -> invoiceHandler i
 
 openChannel ::

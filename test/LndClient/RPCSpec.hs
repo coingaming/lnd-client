@@ -361,18 +361,21 @@ spec = around withEnv $ do
                             )
     it "rpc-succeeds-send-payment" $ \env -> do
       invoice <- runApp env $ coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
+      NewAddressResponse btcAddress <- runApp env $ coerceRPCResponse =<< newAddress (envLnd $ custEnv env)
       x <- newEmptyMVar
+      client <- btcClient
+      _ <- generateToAddress client 100 btcAddress Nothing
       let sendPaymentRequest =
             SendPaymentRequest
-              { paymentRequest = (AddInvoice.paymentRequest invoice),
+              { paymentRequest = AddInvoice.paymentRequest invoice,
                 amt = (MoneyAmount 1000)
               }
-      let AddIndex addIndex = AddInvoice.addIndex invoice
+      let addIdx = AddInvoice.addIndex invoice
       let subscribeInv =
             runApp env $
               subscribeInvoices
                 (envLnd env)
-                (SubscribeInvoicesRequest Nothing Nothing)
+                (SubscribeInvoicesRequest (Just addIdx) Nothing)
                 (liftIO . putMVar x)
       let runTest = do
             _ <- delay 3000000
@@ -388,8 +391,8 @@ spec = around withEnv $ do
       case subResult of
         Left f -> case f of
           LndSuccess _ _ -> fail "HTTP success"
-          LndFail lndFail -> fail (show lndFail)
-          LndHttpException e -> fail (show e)
+          LndFail _ lndFail -> fail (show lndFail)
+          LndHttpException _ e -> fail (show e)
         Right (_, i) ->
           i
             `shouldSatisfy` ( \_ -> True
