@@ -5,11 +5,8 @@ module LndClient.Data.GetInfo
   )
 where
 
-import Data.Aeson (FromJSON (..))
-import Data.Text (Text)
-import GHC.Generics (Generic)
+import LndClient.Import.External
 import LndClient.Utils (stdParseJSON)
-import Universum
 
 newtype GetInfoResponse
   = GetInfoResponse

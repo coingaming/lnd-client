@@ -4,9 +4,8 @@ module LndClient.Data.BtcEnv
   )
 where
 
-import Data.ByteString (ByteString)
 import Env hiding (def)
-import Universum
+import LndClient.Import.External
 
 data BtcEnv
   = BtcEnv

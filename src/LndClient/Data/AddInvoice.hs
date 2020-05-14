@@ -7,14 +7,10 @@ module LndClient.Data.AddInvoice
   )
 where
 
-import Crypto.Hash.SHA256 (hash)
-import Data.Aeson (FromJSON (..), ToJSON (..))
-import Data.ByteString.Base64 (encode)
-import Data.Text (Text)
-import GHC.Generics (Generic)
+import Data.ByteString.Base64 as B64 (encode)
 import LndClient.Data.Newtypes
+import LndClient.Import.External
 import LndClient.Utils (stdParseJSON, stdToJSON)
-import Universum
 
 data AddInvoiceRequest
   = AddInvoiceRequest
@@ -41,4 +37,4 @@ instance FromJSON AddInvoiceResponse where
 hashifyAddInvoiceRequest :: AddInvoiceRequest -> AddInvoiceRequest
 hashifyAddInvoiceRequest x = x {descriptionHash = mh}
   where
-    mh = decodeUtf8 . encode . hash . encodeUtf8 <$> memo x
+    mh = decodeUtf8 . B64.encode . hash . encodeUtf8 <$> memo x

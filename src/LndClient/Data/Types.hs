@@ -1,8 +1,8 @@
 module LndClient.Data.Types (LndResult (..)) where
 
 import Chronos (Timespan)
+import LndClient.Import.External
 import Network.HTTP.Client (HttpException)
-import Universum
 
 data LndResult a
   = LndSuccess Timespan a

@@ -5,12 +5,9 @@ module LndClient.Data.Invoice
   )
 where
 
-import Data.Aeson (FromJSON (..), ToJSON (..))
-import Data.Text (Text)
-import GHC.Generics (Generic)
 import LndClient.Data.Newtypes
+import LndClient.Import.External
 import LndClient.Utils (stdParseJSON, stdToJSON)
-import Universum
 
 data Invoice
   = Invoice

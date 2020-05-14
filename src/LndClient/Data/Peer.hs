@@ -8,11 +8,8 @@ module LndClient.Data.Peer
   )
 where
 
-import Data.Aeson (FromJSON (..), ToJSON (..))
-import Data.Text (Text)
-import GHC.Generics (Generic)
+import LndClient.Import.External
 import LndClient.Utils (stdParseJSON, stdToJSON)
-import Universum
 
 data Peer
   = Peer

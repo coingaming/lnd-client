@@ -21,12 +21,7 @@ import Codec.QRCode as QR
     encodeAutomatic,
   )
 import Codec.QRCode.JuicyPixels (toImage, toPngDataUrlT)
-import Data.Aeson (FromJSON, ToJSON)
-import Data.Text
-import Data.Text.Lazy (toStrict)
-import Database.Persist.Class (PersistField)
-import Database.Persist.Sql (PersistFieldSql)
-import Universum
+import LndClient.Import.External
 
 newtype QRPixels = QRPixels (Image Pixel8)
 

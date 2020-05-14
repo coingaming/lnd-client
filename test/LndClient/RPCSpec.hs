@@ -20,28 +20,9 @@ where
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Async (race)
 import Control.Concurrent.Thread.Delay (delay)
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Reader (MonadReader, ReaderT, asks, join, local, runReaderT)
-import Control.Monad.Trans.Class (lift)
-import Crypto.Hash.SHA256 (hash)
-import Data.Aeson (Result (..), fromJSON, toJSON)
 import Data.Aeson.QQ
-import Data.ByteString (ByteString)
 import Data.ByteString.Base16 (decode)
-import Data.ByteString.Base64 (encode)
-import Data.Maybe
-import Data.Text as Text (unpack)
-import Env
-  ( (<=<),
-    auto,
-    header,
-    help,
-    keep,
-    nonempty,
-    parse,
-    str,
-    var,
-  )
+import Data.ByteString.Base64 as B64 (encode)
 import Katip
 import LndClient
 import LndClient.Data.AddInvoice as AddInvoice
@@ -60,6 +41,7 @@ import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..), PeerList (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
+import LndClient.Import.External
 import LndClient.QRCode
 import LndClient.RPC
   ( RPCResponse (..),
@@ -76,12 +58,7 @@ import LndClient.RPC
 import LndClient.Utils
 import Network.Bitcoin (Client, getClient)
 import Network.Bitcoin.Mining (generateToAddress)
-import Network.HTTP.Client (responseStatus)
-import Network.HTTP.Types.Status (status404)
-import System.IO (stdout)
 import Test.Hspec
-import Universum
-import UnliftIO (MonadUnliftIO (..), UnliftIO (..))
 
 -- Environment of test App
 data Env
@@ -372,7 +349,7 @@ spec = around withEnv $ do
       let (pubKeyHex, _) = decode (encodeUtf8 x)
       let req =
             OpenChannelRequest
-              { nodePubkey = decodeUtf8 (encode pubKeyHex),
+              { nodePubkey = decodeUtf8 (B64.encode pubKeyHex),
                 localFundingAmount = MoneyAmount 20000,
                 pushSat = Just $ MoneyAmount 1000,
                 targetConf = Nothing,

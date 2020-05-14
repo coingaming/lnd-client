@@ -24,19 +24,10 @@ where
 
 import Chronos (SubsecondPrecision (SubsecondPrecisionAuto), encodeTimespan)
 import Control.Concurrent.Thread.Delay (delay)
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Data.Aeson (FromJSON, ToJSON, eitherDecode, encode)
-import Data.Bifunctor (second)
-import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS (pack)
 import Data.ByteString.Lazy as Lazy (fromStrict)
-import Data.Coerce (coerce)
 import qualified Data.Conduit.List as CL
-import Data.Either (isRight)
-import Data.Maybe (catMaybes)
 import Data.Text as T (pack)
-import Data.Word (Word64)
-import GHC.Generics (Generic)
 import Katip (KatipContext, Severity (..), katipAddContext, logStr, logTM, sl)
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.GetInfo
@@ -57,6 +48,7 @@ import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesR
 import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
+import LndClient.Import.External
 import LndClient.Utils (coerceLndResult, doExpBackOff)
 import Network.HTTP.Client
   ( RequestBody (RequestBodyLBS),
@@ -75,8 +67,6 @@ import Network.HTTP.Simple (httpSink, setRequestManager)
 import Network.HTTP.Types.Method (StdMethod (..), renderStdMethod)
 import Network.HTTP.Types.Status (ok200, status404, statusCode)
 import Network.HTTP.Types.URI (Query, renderQuery)
-import Universum
-import UnliftIO
 
 newtype RPCResponse a
   = RPCResponse (Response (Either String a))
@@ -193,7 +183,7 @@ rpc
         case rpcSubHandler of
           Nothing -> do
             res <- liftIO $ httpLbs req2 manager
-            liftIO $ print res
+            --liftIO $ print res
             return $ RPCResponse $ eitherDecode <$> res
           Just subHandler -> do
             let req3 = setRequestManager manager req2

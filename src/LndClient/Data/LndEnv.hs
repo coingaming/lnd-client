@@ -13,11 +13,8 @@ module LndClient.Data.LndEnv
   )
 where
 
-import Data.ByteString (ByteString)
-import Data.Coerce (coerce)
-import Data.Default (def)
-import Data.Text (Text)
 import Env hiding (def)
+import LndClient.Import.External
 import Network.Connection (TLSSettings (..))
 import Network.HTTP.Client (Manager, newManager)
 import Network.HTTP.Client.TLS (mkManagerSettings)
@@ -31,7 +28,6 @@ import Network.TLS
     supportedCiphers,
   )
 import Network.TLS.Extra.Cipher (ciphersuite_default)
-import Universum
 
 newtype LndB64WalletPassword = LndB64WalletPassword Text
 

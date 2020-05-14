@@ -12,16 +12,8 @@ module LndClient.Data.Newtypes
 where
 
 import Codec.QRCode as QR (ToText)
-import Data.Aeson (FromJSON (..), ToJSON (..), Value (..))
-import Data.Scientific (toBoundedInteger)
-import Data.Text (Text, unpack)
-import Data.Word (Word64)
-import Database.Persist.Class (PersistField)
-import Database.Persist.Sql (PersistFieldSql)
-import GHC.Generics (Generic)
+import LndClient.Import.External
 import LndClient.Utils (stdParseJSON, stdToJSON)
-import Text.Read (readMaybe)
-import Universum
 
 newtype AddIndex = AddIndex Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
