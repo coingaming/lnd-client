@@ -31,6 +31,7 @@ stdenv.mkDerivation {
     bitcoin
     lnd
     /* Utils */
+    grpc
     proto3-suite.proto3-suite-linux
     git
     nix-prefetch-scripts
