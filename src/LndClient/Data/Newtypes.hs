@@ -12,6 +12,7 @@ module LndClient.Data.Newtypes
 where
 
 import Codec.QRCode as QR (ToText)
+import Data.Text.Lazy as TL (Text)
 import LndClient.Import.External
 import LndClient.Utils (stdParseJSON, stdToJSON)
 
@@ -21,11 +22,11 @@ newtype AddIndex = AddIndex Word64
 newtype SettleIndex = SettleIndex Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
-newtype PaymentRequest = PaymentRequest Text
-  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq, QR.ToText)
+newtype PaymentRequest = PaymentRequest TL.Text
+  deriving (PersistField, PersistFieldSql, Show, Eq, QR.ToText)
 
-newtype RHash = RHash Text
-  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq)
+newtype RHash = RHash ByteString
+  deriving (PersistField, PersistFieldSql, Show, Eq)
 
 newtype MoneyAmount = MoneyAmount Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)

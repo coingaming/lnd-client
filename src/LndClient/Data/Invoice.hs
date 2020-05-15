@@ -7,12 +7,11 @@ where
 
 import LndClient.Data.Newtypes
 import LndClient.Import.External
-import LndClient.Utils (stdParseJSON, stdToJSON)
 
 data Invoice
   = Invoice
       { rHash :: RHash,
-        amtPaidSat :: Maybe Text,
+        amtPaidSat :: Maybe MoneyAmount,
         creationDate :: Maybe Text,
         settleDate :: Maybe Text,
         value :: MoneyAmount,
@@ -29,9 +28,3 @@ data Invoice
         state :: Maybe Text
       }
   deriving (Generic, Show, Eq)
-
-instance FromJSON Invoice where
-  parseJSON = stdParseJSON
-
-instance ToJSON Invoice where
-  toJSON = stdToJSON

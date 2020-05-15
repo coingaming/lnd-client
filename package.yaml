@@ -56,6 +56,13 @@ dependencies:
 - qrcode-juicypixels
 - JuicyPixels
 - chronos
+- grpc-haskell
+- grpc-haskell-core
+- proto3-suite
+- proto3-wire
+- containers
+- deepseq
+- vector
 
 library:
   source-dirs: src
@@ -74,7 +81,6 @@ library:
   - -Wno-safe # Don’t use Safe Haskell warnings
   - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
   - -Wno-monomorphism-restriction # Don’t warn if the monomorphism restriction is used
-  - -Wno-implicit-prelude
   dependencies:
   - hspec
   - hspec-wai
@@ -98,7 +104,6 @@ tests:
     - -Wno-safe # Don’t use Safe Haskell warnings
     - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
     - -Wno-monomorphism-restriction # Don’t warn if the monomorphism restriction is used
-    - -Wno-implicit-prelude
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
