@@ -13,8 +13,10 @@ where
 
 import Codec.QRCode (ToText)
 import Data.Aeson (FromJSON (..), ToJSON (..), Value (..))
+import Data.ByteString (ByteString)
 import Data.Scientific (toBoundedInteger)
-import Data.Text (Text, unpack)
+import Data.Text (unpack)
+import Data.Text.Lazy as TL (Text)
 import Data.Word (Word64)
 import Database.Persist.Class (PersistField)
 import Database.Persist.Sql (PersistFieldSql)
@@ -28,11 +30,11 @@ newtype AddIndex = AddIndex Word64
 newtype SettleIndex = SettleIndex Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
-newtype PaymentRequest = PaymentRequest Text
-  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq, ToText)
+newtype PaymentRequest = PaymentRequest TL.Text
+  deriving (PersistField, PersistFieldSql, Show, Eq, ToText)
 
-newtype RHash = RHash Text
-  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq)
+newtype RHash = RHash ByteString
+  deriving (PersistField, PersistFieldSql, Show, Eq)
 
 newtype MoneyAmount = MoneyAmount Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)

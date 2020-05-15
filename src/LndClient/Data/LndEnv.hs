@@ -20,6 +20,7 @@ import Data.Text (Text)
 import Env hiding (def)
 import Network.Connection (TLSSettings (..))
 import Network.GRPC.HighLevel.Generated
+import Network.GRPC.LowLevel.Client
 import Network.HTTP.Client (Manager, newManager)
 import Network.HTTP.Client.TLS (mkManagerSettings)
 import Network.TLS
@@ -65,11 +66,7 @@ data LndEnv
         envLndTlsManagerBuilder :: LndTlsManagerBuilder,
         envLndHexMacaroon :: LndHexMacaroon,
         envLndUrl :: LndUrl,
-        --
-        -- TODO : LndHost LndPort newtypes
-        --
-        envLndHost :: Host,
-        envLndPort :: Port
+        envLndGrpcConfig :: ClientConfig
       }
 
 rawConfig :: IO RawConfig
@@ -133,8 +130,29 @@ newLndEnv pwd cert key mac url host port =
                   mkManagerSettings settings Nothing,
               envLndHexMacaroon = mac,
               envLndUrl = url,
-              envLndHost = host,
-              envLndPort = port
+              envLndGrpcConfig =
+                ClientConfig
+                  { clientServerHost = host,
+                    clientServerPort = port,
+                    clientArgs = [],
+                    clientSSLConfig =
+                      Just $
+                        ClientSSLConfig
+                          { --
+                            -- TODO : workaround it
+                            -- remove hardcode
+                            -- for example write to temporary file
+                            -- when env is created
+                            -- or take this as parameter
+                            -- or fork library and refactor it to work with
+                            -- pure values instead of file names
+                            --
+                            serverRootCert = Just "/app/.lnd-merchant/tls.cert",
+                            clientSSLKeyCertPair = Nothing,
+                            clientMetadataPlugin = Nothing
+                          },
+                    clientAuthority = Nothing
+                  }
             }
   )
     <$> credentialLoadX509FromMemory (coerce cert) (coerce key)
