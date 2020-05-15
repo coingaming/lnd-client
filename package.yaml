@@ -56,6 +56,13 @@ dependencies:
 - qrcode-juicypixels
 - JuicyPixels
 - chronos
+- grpc-haskell
+- grpc-haskell-core
+- proto3-suite
+- proto3-wire
+- containers
+- deepseq
+- vector
 
 library:
   source-dirs: src

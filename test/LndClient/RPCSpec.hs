@@ -180,35 +180,11 @@ spec = around withEnv $ do
           |]
     it "rpc-succeeds" $ shouldBeOk unlockWallet
   describe "AddInvoice" $ do
-    it "request-jsonify" $ \_ ->
-      toJSON addInvoiceRequest
-        `shouldBe` [aesonQQ|
-            {
-                 memo: "HELLO",
-                 value: 1000,
-                 description_hash: "NzPNl3/46xi5hzV+Is7Zn0YJfzHssjnoeK5jdg6D5NU="
-            }
-          |]
-    it "response-jsonify" $ \_ ->
-      Success
-        ( AddInvoiceResponse
-            (RHash "hello")
-            (PaymentRequest "world")
-            (AddIndex 123)
-        )
-        `shouldBe` fromJSON
-          [aesonQQ|
-             {
-               r_hash: "hello",
-               payment_request: "world",
-               add_index: "123"
-             }
-           |]
     it "rpc-succeeds" $ shouldBeOk $ flip addInvoice addInvoiceRequest
     it "generate-qrcode" $ \env -> do
       res <-
         runApp env $
-          coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
+          coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
       let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
       isJust qr `shouldBe` True
   describe "NewAddress" $ do
@@ -315,7 +291,7 @@ spec = around withEnv $ do
             _ <- delay 3000000
             res <-
               runApp env $
-                coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
+                coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
             i <- takeMVar x
             return (res, i)
       subResult <- race subscribeInv runTest

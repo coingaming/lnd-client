@@ -15,7 +15,7 @@ import LndClient.Utils (stdParseJSON, stdToJSON)
 data AddInvoiceRequest
   = AddInvoiceRequest
       { value :: MoneyAmount,
-        descriptionHash :: Maybe Text,
+        descriptionHash :: Maybe ByteString,
         memo :: Maybe Text
       }
   deriving (Generic, Show)
@@ -28,13 +28,7 @@ data AddInvoiceResponse
       }
   deriving (Generic, Show, Eq)
 
-instance ToJSON AddInvoiceRequest where
-  toJSON = stdToJSON
-
-instance FromJSON AddInvoiceResponse where
-  parseJSON = stdParseJSON
-
 hashifyAddInvoiceRequest :: AddInvoiceRequest -> AddInvoiceRequest
 hashifyAddInvoiceRequest x = x {descriptionHash = mh}
   where
-    mh = decodeUtf8 . B64.encode . hash . encodeUtf8 <$> memo x
+    mh = hash . encodeUtf8 <$> memo x
