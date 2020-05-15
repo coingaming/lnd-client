@@ -13,6 +13,7 @@ module LndClient.Data.LndEnv
   )
 where
 
+import Data.Default as Import (def)
 import Env hiding (def)
 import LndClient.Import.External
 import Network.Connection (TLSSettings (..))

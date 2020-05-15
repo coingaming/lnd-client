@@ -28,6 +28,7 @@ import qualified Data.Vector as Hs (Vector)
 import qualified Data.Word as Hs (Word16, Word32, Word64)
 import qualified GHC.Enum as Hs
 import qualified GHC.Generics as Hs
+import LndClient.Import.External
 import LndGrpc.Orphans
 import Network.GRPC.HighLevel.Client as HsGRPC
 import Network.GRPC.HighLevel.Generated as HsGRPC

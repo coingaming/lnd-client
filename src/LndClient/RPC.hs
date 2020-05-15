@@ -31,6 +31,7 @@ import qualified Data.ByteString.Char8 as BS (pack)
 import Data.ByteString.Lazy as Lazy (fromStrict)
 import qualified Data.Conduit.List as CL
 import Data.Text as T (pack)
+import Data.Text.Lazy as TL (fromStrict, toStrict)
 import Katip (KatipContext, Severity (..), katipAddContext, logStr, logTM, sl)
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
@@ -76,6 +77,7 @@ import Network.HTTP.Simple (httpSink, setRequestManager)
 import Network.HTTP.Types.Method (StdMethod (..), renderStdMethod)
 import Network.HTTP.Types.Status (ok200, status404, statusCode)
 import Network.HTTP.Types.URI (Query, renderQuery)
+import Proto3.Suite.Class
 
 newtype RPCResponse a
   = RPCResponse (Response (Either String a))

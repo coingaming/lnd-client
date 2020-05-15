@@ -6,6 +6,7 @@ module LndGrpc.Orphans where
 
 import Data.ByteString
 import qualified Data.Map as M
+import LndClient.Import.External
 import Proto3.Suite.JSONPB
 
 instance {-# OVERLAPPING #-} ToSchema (OverrideToSchema (M.Map a ByteString)) where

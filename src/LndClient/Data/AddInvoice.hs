@@ -7,10 +7,8 @@ module LndClient.Data.AddInvoice
   )
 where
 
-import Data.ByteString.Base64 as B64 (encode)
 import LndClient.Data.Newtypes
 import LndClient.Import.External
-import LndClient.Utils (stdParseJSON, stdToJSON)
 
 data AddInvoiceRequest
   = AddInvoiceRequest
