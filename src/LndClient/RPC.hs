@@ -1,6 +1,9 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE GADTs #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -22,23 +25,28 @@ module LndClient.RPC
   )
 where
 
-import Chronos (SubsecondPrecision (SubsecondPrecisionAuto), encodeTimespan)
+import Chronos (SubsecondPrecision (SubsecondPrecisionAuto), encodeTimespan, stopwatch)
 import Control.Concurrent.Thread.Delay (delay)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Aeson (FromJSON, ToJSON, eitherDecode, encode)
 import Data.Bifunctor (second)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS (pack)
-import Data.ByteString.Lazy (fromStrict)
+import Data.ByteString.Lazy as BL (fromStrict)
 import Data.Coerce (coerce)
 import qualified Data.Conduit.List as CL
 import Data.Either (isRight)
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, fromMaybe)
 import Data.Text as T (pack)
+import Data.Text.Encoding (decodeUtf8)
+import Data.Text.Lazy as TL (fromStrict, toStrict)
 import Data.Word (Word64)
 import GHC.Generics (Generic)
 import Katip (KatipContext, Severity (..), katipAddContext, logStr, logTM, sl)
-import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
+import LndClient.Data.AddInvoice as AddInvoice
+  ( AddInvoiceRequest (..),
+    AddInvoiceResponse (..),
+  )
 import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
@@ -58,6 +66,9 @@ import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
 import LndClient.Utils (coerceLndResult, doExpBackOff)
+import qualified LndGrpc as GRPC
+import Network.GRPC.HighLevel.Generated
+import Network.GRPC.LowLevel.Client
 import Network.HTTP.Client
   ( RequestBody (RequestBodyLBS),
     Response (..),
@@ -75,6 +86,7 @@ import Network.HTTP.Simple (httpSink, setRequestManager)
 import Network.HTTP.Types.Method (StdMethod (..), renderStdMethod)
 import Network.HTTP.Types.Status (ok200, status404, statusCode)
 import Network.HTTP.Types.URI (Query, renderQuery)
+import Proto3.Suite.Class
 import UnliftIO
 
 newtype RPCResponse a
@@ -284,24 +296,77 @@ newAddress env = rpc $ rpcArgs env
           rpcSubHandler = Nothing
         }
 
+--
+-- TODO
+-- better generic utils for request/parsing
+-- handle exceptions
+-- fix RHash type
+-- fix PaymentRequest type
+-- rm RPCResponse (we don't have HTTP-related low level details anymore)
+--
 addInvoice ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (MonadIO m) =>
   LndEnv ->
   AddInvoiceRequest ->
-  m (LndResult (RPCResponse AddInvoiceResponse))
-addInvoice env req = rpc $ rpcArgs env
+  m (LndResult AddInvoiceResponse)
+addInvoice env req =
+  liftIO $ withGRPCClient conf $ \client -> do
+    method <- GRPC.lightningAddInvoice <$> GRPC.lightningClient client
+    (ts, rawGrpc) <- stopwatch . method $ ClientNormalRequest grpcReq 1 meta
+    case rawGrpc of
+      --
+      -- TODO : patterns here are not exhaustive and compiler don't warn about it
+      -- for some reason. Investigate and/or fix
+      --
+      ClientNormalResponse grpcRes _ _ _ _ ->
+        return $ LndSuccess ts $
+          AddInvoiceResponse
+            { rHash =
+                RHash . decodeUtf8 $
+                  GRPC.addInvoiceResponseRHash grpcRes,
+              paymentRequest =
+                PaymentRequest . TL.toStrict $
+                  GRPC.addInvoiceResponsePaymentRequest grpcRes,
+              addIndex =
+                AddIndex $
+                  GRPC.addInvoiceResponseAddIndex grpcRes
+            }
+      ClientErrorResponse err -> do
+        print err
+        fail "ClientErrorResponse"
   where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = POST,
-          rpcUrlPath = "/v1/invoices",
-          rpcUrlQuery = [],
-          rpcReqBody = Just $ ResultWrapper req,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = AddInvoice,
-          rpcSubHandler = Nothing
+    meta = [("macaroon", coerce $ envLndHexMacaroon env)]
+    conf =
+      ClientConfig
+        { clientServerHost = envLndHost env,
+          clientServerPort = envLndPort env,
+          clientArgs = [],
+          clientSSLConfig =
+            Just $
+              ClientSSLConfig
+                { --
+                  -- TODO : workaround it
+                  -- remove hardcode
+                  -- for example write to temporary file on startup
+                  --
+                  serverRootCert = Just "/app/.lnd-merchant/tls.cert",
+                  clientSSLKeyCertPair = Nothing,
+                  clientMetadataPlugin = Nothing
+                },
+          clientAuthority = Nothing
+        }
+    grpcReq :: GRPC.Invoice
+    grpcReq =
+      --
+      -- TODO : handle invoiceValue overflow
+      --
+      def
+        { GRPC.invoiceValue =
+            fromIntegral (coerce . AddInvoice.value $ req :: Word64),
+          GRPC.invoiceMemo =
+            maybe def TL.fromStrict $ AddInvoice.memo req,
+          GRPC.invoiceDescriptionHash =
+            fromMaybe def $ AddInvoice.descriptionHash req
         }
 
 subscribeInvoices ::
@@ -332,7 +397,7 @@ subscribeInvoices env req invoiceHandler = rpc $ rpcArgs env
           rpcName = SubscribeInvoices,
           rpcSubHandler = Just subHandler
         }
-    subHandler x = case eitherDecode $ fromStrict x of
+    subHandler x = case eitherDecode $ BL.fromStrict x of
       Left e ->
         $(logTM) ErrorS $ logStr $ "failed to parse subscription invoice " <> e
       Right (ResultWrapper (i :: Invoice)) -> invoiceHandler i
