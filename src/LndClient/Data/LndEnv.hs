@@ -19,6 +19,7 @@ import Data.Default (def)
 import Data.Text (Text)
 import Env hiding (def)
 import Network.Connection (TLSSettings (..))
+import Network.GRPC.HighLevel.Generated
 import Network.HTTP.Client (Manager, newManager)
 import Network.HTTP.Client.TLS (mkManagerSettings)
 import Network.TLS
@@ -50,7 +51,12 @@ data RawConfig
         rawConfigLndTlsCert :: ByteString,
         rawConfigLndTlsKey :: ByteString,
         rawConfigLndHexMacaroon :: ByteString,
-        rawConfigLndUrl :: String
+        rawConfigLndUrl :: String,
+        rawConfigLndHost :: ByteString,
+        --
+        -- TODO : use Word32
+        --
+        rawConfigLndPort :: Int
       }
 
 data LndEnv
@@ -58,7 +64,12 @@ data LndEnv
       { envLndB64WalletPassword :: LndB64WalletPassword,
         envLndTlsManagerBuilder :: LndTlsManagerBuilder,
         envLndHexMacaroon :: LndHexMacaroon,
-        envLndUrl :: LndUrl
+        envLndUrl :: LndUrl,
+        --
+        -- TODO : LndHost LndPort newtypes
+        --
+        envLndHost :: Host,
+        envLndPort :: Port
       }
 
 rawConfig :: IO RawConfig
@@ -73,6 +84,8 @@ rawConfig =
       <*> var (str <=< nonempty) "LND_CLIENT_LND_TLS_KEY" (keep <> help "")
       <*> var (str <=< nonempty) "LND_CLIENT_LND_HEX_MACAROON" (keep <> help "")
       <*> var (str <=< nonempty) "LND_CLIENT_LND_URL" (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_LND_HOST" (keep <> help "")
+      <*> var (auto <=< nonempty) "LND_CLIENT_LND_PORT" (keep <> help "")
 
 readLndEnv :: IO LndEnv
 readLndEnv = do
@@ -82,7 +95,9 @@ readLndEnv = do
     (LndTlsCert $ rawConfigLndTlsCert rc)
     (LndTlsKey $ rawConfigLndTlsKey rc)
     (LndHexMacaroon $ rawConfigLndHexMacaroon rc)
-    (LndUrl $ rawConfigLndUrl rc) of
+    (LndUrl $ rawConfigLndUrl rc)
+    (Host $ rawConfigLndHost rc)
+    (Port $ rawConfigLndPort rc) of
     Left x -> fail x
     Right x -> return x
 
@@ -92,8 +107,10 @@ newLndEnv ::
   LndTlsKey ->
   LndHexMacaroon ->
   LndUrl ->
+  Host ->
+  Port ->
   Either String LndEnv
-newLndEnv pwd cert key mac url =
+newLndEnv pwd cert key mac url host port =
   ( \x509 ->
       --
       --  TODO : proper certificate handlers
@@ -115,7 +132,9 @@ newLndEnv pwd cert key mac url =
                 LndTlsManagerBuilder . newManager $
                   mkManagerSettings settings Nothing,
               envLndHexMacaroon = mac,
-              envLndUrl = url
+              envLndUrl = url,
+              envLndHost = host,
+              envLndPort = port
             }
   )
     <$> credentialLoadX509FromMemory (coerce cert) (coerce key)

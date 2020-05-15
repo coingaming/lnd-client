@@ -84,7 +84,6 @@ self: super:
       lnd = pkgs20.lnd;
       haskellPackages = super.haskell.packages.ghc865.extend(
         self': super': {
-          proto3-suite = dontCheck (doJailbreak super'.proto3-suite);
           hspec-wai = hspec-wai;
           hspec-wai-json = hspec-wai-json;
           scotty = scotty;
