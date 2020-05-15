@@ -53,7 +53,7 @@ import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesR
 import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
-import LndClient.Import.External hiding (def)
+import LndClient.Import.External
 import LndClient.Utils (coerceLndResult, doExpBackOff)
 import qualified LndGrpc as GRPC
 import Network.GRPC.HighLevel.Generated
