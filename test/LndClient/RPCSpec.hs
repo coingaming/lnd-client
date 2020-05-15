@@ -18,7 +18,7 @@ module LndClient.RPCSpec
 where
 
 import Control.Concurrent (forkIO)
-import Control.Concurrent.Async (race)
+import Control.Concurrent.Async (async, link)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Concurrent.Thread.Delay (delay)
 import Control.Exception (bracket)
@@ -276,63 +276,28 @@ spec = around withEnv $ do
       req <- openChannelRequest env
       shouldBeOk (flip openChannel req) env
   describe "SubscribeInvoices" $ do
-    it "invoice-jsonify" $ \_ ->
-      Success
-        ( Invoice
-            { rHash = RHash "hello",
-              amtPaidSat = Nothing,
-              creationDate = Nothing,
-              settleDate = Nothing,
-              value = MoneyAmount 1000,
-              expiry = Nothing,
-              settled = Nothing,
-              settleIndex = Nothing,
-              descriptionHash = Nothing,
-              memo = Nothing,
-              paymentRequest = Just "req",
-              fallbackAddr = Nothing,
-              cltvExpiry = Nothing,
-              private = Nothing,
-              addIndex = AddIndex 8,
-              state = Nothing
-            }
-        )
-        `shouldBe` fromJSON
-          [aesonQQ|{
-                    r_hash: "hello",
-                    value: "1000",
-                    payment_request: "req",
-                    add_index: "8"
-                   }|]
     it "rpc-succeeds" $ \env -> do
       x <- newEmptyMVar
-      let subscribeInv =
-            runApp env $
-              subscribeInvoices
-                (envLnd env)
-                (SubscribeInvoicesRequest Nothing Nothing)
-                (liftIO . putMVar x)
-      let runTest = do
-            _ <- delay 3000000
-            res <-
-              runApp env $
-                coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
-            i <- takeMVar x
-            return (res, i)
-      subResult <- race subscribeInv runTest
-      --
-      --TODO Optimize handling LndResult(LndSuccess, LndFail, LndHttpException)
-      --
-      case subResult of
-        Left f -> case f of
-          LndSuccess _ _ -> fail "HTTP success"
-          LndFail _ lndFail -> fail (show lndFail)
-          LndHttpException _ e -> fail (show e)
-        Right (res, i) ->
-          i
-            `shouldSatisfy` ( \this ->
-                                AddInvoice.rHash res == Invoice.rHash this
-                            )
+      -- can't use proper "race" there
+      -- because of this
+      -- https://github.com/awakesecurity/gRPC-haskell/issues/104
+      -- will use low-level async + link for now
+      link
+        =<< ( async $ runApp env $
+                subscribeInvoices
+                  (envLnd env)
+                  (SubscribeInvoicesRequest Nothing Nothing)
+                  (liftIO . putMVar x)
+            )
+      _ <- delay 3000000
+      originalInvoice <-
+        runApp env $
+          coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
+      resultingInvoice <- takeMVar x
+      resultingInvoice
+        `shouldSatisfy` ( \this ->
+                            AddInvoice.rHash originalInvoice == Invoice.rHash this
+                        )
   describe "GetInfo" $ do
     it "rpc-succeeds" $ \env -> do
       shouldBeOk getInfo (custEnv env)

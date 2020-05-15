@@ -29,17 +29,13 @@ import Chronos (SubsecondPrecision (SubsecondPrecisionAuto), encodeTimespan, sto
 import Control.Concurrent.Thread.Delay (delay)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Aeson (FromJSON, ToJSON, eitherDecode, encode)
-import Data.Bifunctor (second)
 import Data.ByteString (ByteString)
-import qualified Data.ByteString.Char8 as BS (pack)
-import Data.ByteString.Lazy as BL (fromStrict)
 import Data.Coerce (coerce)
 import qualified Data.Conduit.List as CL
 import Data.Either (isRight)
-import Data.Maybe (catMaybes, fromMaybe)
+import Data.Maybe (fromMaybe)
 import Data.Text as T (pack)
-import Data.Text.Encoding (decodeUtf8)
-import Data.Text.Lazy as TL (fromStrict, toStrict)
+import Data.Text.Lazy as TL (fromStrict)
 import Data.Word (Word64)
 import GHC.Generics (Generic)
 import Katip (KatipContext, Severity (..), katipAddContext, logStr, logTM, sl)
@@ -68,7 +64,6 @@ import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
 import LndClient.Utils (coerceLndResult, doExpBackOff)
 import qualified LndGrpc as GRPC
 import Network.GRPC.HighLevel.Generated
-import Network.GRPC.LowLevel.Client
 import Network.HTTP.Client
   ( RequestBody (RequestBodyLBS),
     Response (..),
@@ -216,6 +211,10 @@ rpc
                 $ Left "subscription don't have response body"
                   <$ res
 
+grpcMeta :: LndEnv -> MetadataMap
+grpcMeta env =
+  [("macaroon", coerce $ envLndHexMacaroon env)]
+
 initWallet ::
   (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
@@ -310,9 +309,10 @@ addInvoice ::
   AddInvoiceRequest ->
   m (LndResult AddInvoiceResponse)
 addInvoice env req =
-  liftIO $ withGRPCClient conf $ \client -> do
+  liftIO $ withGRPCClient (envLndGrpcConfig env) $ \client -> do
     method <- GRPC.lightningAddInvoice <$> GRPC.lightningClient client
-    (ts, rawGrpc) <- stopwatch . method $ ClientNormalRequest grpcReq 1 meta
+    (ts, rawGrpc) <-
+      stopwatch . method $ ClientNormalRequest grpcReq 1 $ grpcMeta env
     case rawGrpc of
       --
       -- TODO : patterns here are not exhaustive and compiler don't warn about it
@@ -322,10 +322,10 @@ addInvoice env req =
         return $ LndSuccess ts $
           AddInvoiceResponse
             { rHash =
-                RHash . decodeUtf8 $
+                RHash $
                   GRPC.addInvoiceResponseRHash grpcRes,
               paymentRequest =
-                PaymentRequest . TL.toStrict $
+                PaymentRequest $
                   GRPC.addInvoiceResponsePaymentRequest grpcRes,
               addIndex =
                 AddIndex $
@@ -335,26 +335,6 @@ addInvoice env req =
         print err
         fail "ClientErrorResponse"
   where
-    meta = [("macaroon", coerce $ envLndHexMacaroon env)]
-    conf =
-      ClientConfig
-        { clientServerHost = envLndHost env,
-          clientServerPort = envLndPort env,
-          clientArgs = [],
-          clientSSLConfig =
-            Just $
-              ClientSSLConfig
-                { --
-                  -- TODO : workaround it
-                  -- remove hardcode
-                  -- for example write to temporary file on startup
-                  --
-                  serverRootCert = Just "/app/.lnd-merchant/tls.cert",
-                  clientSSLKeyCertPair = Nothing,
-                  clientMetadataPlugin = Nothing
-                },
-          clientAuthority = Nothing
-        }
     grpcReq :: GRPC.Invoice
     grpcReq =
       --
@@ -370,37 +350,65 @@ addInvoice env req =
         }
 
 subscribeInvoices ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (MonadIO m) =>
   LndEnv ->
   SubscribeInvoicesRequest ->
-  (Invoice -> m ()) ->
-  m (LndResult (RPCResponse VoidResponse))
-subscribeInvoices env req invoiceHandler = rpc $ rpcArgs env
+  --
+  -- TODO : replace IO with m if possible
+  --
+  (Invoice -> IO ()) ->
+  m (LndResult ())
+subscribeInvoices env req invoiceHandler =
+  liftIO $ withGRPCClient (envLndGrpcConfig env) $ \client -> do
+    method <- GRPC.lightningSubscribeInvoices <$> GRPC.lightningClient client
+    (ts, rawGrpc) <-
+      stopwatch . method $
+        ClientReaderRequest grpcReq 3600 (grpcMeta env) (\_ _ s -> streamHandler s)
+    case rawGrpc of
+      ClientReaderResponse {} ->
+        return $ LndFail ts ()
+      ClientErrorResponse err -> do
+        print err
+        fail "ClientErrorResponse"
   where
-    query =
-      second (Just . BS.pack . show)
-        <$> catMaybes
-          [ ("add_index",)
-              <$> (coerce <$> SubscribeInvoices.addIndex req :: Maybe Word64),
-            ("settle_index",)
-              <$> (coerce <$> SubscribeInvoices.settleIndex req)
-          ]
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = GET,
-          rpcUrlPath = "/v1/invoices/subscribe",
-          rpcUrlQuery = query,
-          rpcReqBody = Nothing :: Maybe VoidRequest,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = SubscribeInvoices,
-          rpcSubHandler = Just subHandler
+    streamHandler stream = do
+      msg <- stream
+      case msg of
+        Left e -> fail $ "SubscribeInvoices error " <> show e
+        Right Nothing -> fail "SubscribeInvoices got Nothing"
+        Right (Just i) -> do
+          --
+          -- TODO : handle all fields and types overflow
+          --
+          invoiceHandler $
+            Invoice
+              { rHash = RHash $ GRPC.invoiceRHash i,
+                amtPaidSat =
+                  Just . MoneyAmount $ fromIntegral $ GRPC.invoiceAmtPaidSat i,
+                creationDate = Nothing,
+                settleDate = Nothing,
+                value = MoneyAmount $ fromIntegral $ GRPC.invoiceValue i,
+                expiry = Nothing,
+                settled = Nothing,
+                settleIndex = Nothing,
+                descriptionHash = Nothing,
+                memo = Nothing,
+                paymentRequest = Nothing,
+                fallbackAddr = Nothing,
+                cltvExpiry = Nothing,
+                private = Nothing,
+                addIndex = AddIndex $ GRPC.invoiceAddIndex i,
+                state = Nothing
+              }
+          streamHandler stream
+    grpcReq :: GRPC.InvoiceSubscription
+    grpcReq =
+      def
+        { GRPC.invoiceSubscriptionAddIndex =
+            maybe def coerce $ SubscribeInvoices.addIndex req,
+          GRPC.invoiceSubscriptionSettleIndex =
+            maybe def coerce $ SubscribeInvoices.settleIndex req
         }
-    subHandler x = case eitherDecode $ BL.fromStrict x of
-      Left e ->
-        $(logTM) ErrorS $ logStr $ "failed to parse subscription invoice " <> e
-      Right (ResultWrapper (i :: Invoice)) -> invoiceHandler i
 
 openChannel ::
   (KatipContext m, MonadUnliftIO m) =>
