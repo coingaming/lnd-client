@@ -6,10 +6,8 @@ module LndClient.Data.OpenChannel
   )
 where
 
-import Data.Aeson (FromJSON (..), ToJSON (..))
-import Data.Text (Text)
-import GHC.Generics (Generic)
 import LndClient.Data.Newtypes (MoneyAmount)
+import LndClient.Import.External
 import LndClient.Utils (stdParseJSON, stdToJSON)
 
 data OpenChannelRequest

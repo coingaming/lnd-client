@@ -4,6 +4,7 @@ module LndClient.Data.SubscribeInvoices
 where
 
 import LndClient.Data.Newtypes
+import LndClient.Import.External
 
 data SubscribeInvoicesRequest
   = SubscribeInvoicesRequest

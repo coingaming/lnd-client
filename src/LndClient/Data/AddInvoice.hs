@@ -7,12 +7,8 @@ module LndClient.Data.AddInvoice
   )
 where
 
-import Crypto.Hash.SHA256 (hash)
-import Data.ByteString (ByteString)
-import Data.Text (Text)
-import Data.Text.Encoding (encodeUtf8)
-import GHC.Generics (Generic)
 import LndClient.Data.Newtypes
+import LndClient.Import.External
 
 data AddInvoiceRequest
   = AddInvoiceRequest

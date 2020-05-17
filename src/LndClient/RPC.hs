@@ -27,17 +27,9 @@ where
 
 import Chronos (SubsecondPrecision (SubsecondPrecisionAuto), encodeTimespan, stopwatch)
 import Control.Concurrent.Thread.Delay (delay)
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Data.Aeson (FromJSON, ToJSON, eitherDecode, encode)
-import Data.ByteString (ByteString)
-import Data.Coerce (coerce)
 import qualified Data.Conduit.List as CL
-import Data.Either (isRight)
-import Data.Maybe (fromMaybe)
 import Data.Text as T (pack)
 import Data.Text.Lazy as TL (fromStrict)
-import Data.Word (Word64)
-import GHC.Generics (Generic)
 import Katip (KatipContext, Severity (..), katipAddContext, logStr, logTM, sl)
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
@@ -61,6 +53,7 @@ import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesR
 import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
+import LndClient.Import.External
 import LndClient.Utils (coerceLndResult, doExpBackOff)
 import qualified LndGrpc as GRPC
 import Network.GRPC.HighLevel.Generated
@@ -82,7 +75,6 @@ import Network.HTTP.Types.Method (StdMethod (..), renderStdMethod)
 import Network.HTTP.Types.Status (ok200, status404, statusCode)
 import Network.HTTP.Types.URI (Query, renderQuery)
 import Proto3.Suite.Class
-import UnliftIO
 
 newtype RPCResponse a
   = RPCResponse (Response (Either String a))
@@ -128,7 +120,7 @@ coerceRPCResponse :: (Show a, MonadIO m) => LndResult (RPCResponse a) -> m a
 coerceRPCResponse x = do
   RPCResponse y <- coerceLndResult x
   case responseBody y of
-    Left e -> fail e
+    Left e -> liftIO $ fail e
     Right z -> return z
 
 rpc ::
@@ -199,7 +191,7 @@ rpc
         case rpcSubHandler of
           Nothing -> do
             res <- liftIO $ httpLbs req2 manager
-            liftIO $ print res
+            --liftIO $ print res
             return $ RPCResponse $ eitherDecode <$> res
           Just subHandler -> do
             let req3 = setRequestManager manager req2

@@ -13,11 +13,9 @@ module LndClient.Data.LndEnv
   )
 where
 
-import Data.ByteString (ByteString)
-import Data.Coerce (coerce)
-import Data.Default (def)
-import Data.Text (Text)
+import Data.Default as Import (def)
 import Env hiding (def)
+import LndClient.Import.External
 import Network.Connection (TLSSettings (..))
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel.Client
@@ -138,16 +136,7 @@ newLndEnv pwd cert key mac url host port =
                     clientSSLConfig =
                       Just $
                         ClientSSLConfig
-                          { --
-                            -- TODO : workaround it
-                            -- remove hardcode
-                            -- for example write to temporary file
-                            -- when env is created
-                            -- or take this as parameter
-                            -- or fork library and refactor it to work with
-                            -- pure values instead of file names
-                            --
-                            serverRootCert = Just "/app/.lnd-merchant/tls.cert",
+                          { serverRootCert = Just $ coerce cert,
                             clientSSLKeyCertPair = Nothing,
                             clientMetadataPlugin = Nothing
                           },

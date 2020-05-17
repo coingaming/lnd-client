@@ -54,35 +54,35 @@ packages:
   original:
     hackage: swagger2-2.3.1.1
 - completed:
-    size: 109758
+    size: 110250
     subdir: core
-    url: https://github.com/awakesecurity/gRPC-haskell/archive/595cb6a3bfbc50348af44d4bbd981ba0c02e45dd.tar.gz
+    url: https://github.com/coingaming/gRPC-haskell/archive/8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a.tar.gz
     cabal-file:
       size: 3306
       sha256: 4bacd90915321750db570042cd05ada01b9b83c79f6bf6b6ccdef1889b383efa
     name: grpc-haskell-core
     version: 0.0.0.0
-    sha256: 7d59fb25f05cc3254ff777172b36c35f18fa44be4b23100c265d1cc47de6026c
+    sha256: d9c150a855b85b5ebc1c22c2fcc0ea171ee0fdee46dd626a115f8405cb5c4502
     pantry-tree:
       size: 2543
-      sha256: 3b55c73d396d519aa35708ad44f967752a189caa431e045b865bd15ecfceaa95
+      sha256: f3068aefface90c7cc81139a6c5482f363b07087c254631225c573fee512035c
   original:
     subdir: core
-    url: https://github.com/awakesecurity/gRPC-haskell/archive/595cb6a3bfbc50348af44d4bbd981ba0c02e45dd.tar.gz
+    url: https://github.com/coingaming/gRPC-haskell/archive/8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a.tar.gz
 - completed:
-    size: 109758
-    url: https://github.com/awakesecurity/gRPC-haskell/archive/595cb6a3bfbc50348af44d4bbd981ba0c02e45dd.tar.gz
+    size: 110250
+    url: https://github.com/coingaming/gRPC-haskell/archive/8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a.tar.gz
     cabal-file:
       size: 6044
       sha256: 20b32a3b2f8a4a6db8cf0f9995e159c60d6a93e6e64ef8a4b7429a1fdb1036fa
     name: grpc-haskell
     version: 0.0.1.0
-    sha256: 7d59fb25f05cc3254ff777172b36c35f18fa44be4b23100c265d1cc47de6026c
+    sha256: d9c150a855b85b5ebc1c22c2fcc0ea171ee0fdee46dd626a115f8405cb5c4502
     pantry-tree:
-      size: 7243
-      sha256: 11185296ee05e259f8aa2195cb1997aeb6cd4f0f37aee441f09ddef52a4bf626
+      size: 7299
+      sha256: 54faf14001920d7fe0f4fd8dd3fb237db845f0ca8de8b2df5c00191902f2bbcf
   original:
-    url: https://github.com/awakesecurity/gRPC-haskell/archive/595cb6a3bfbc50348af44d4bbd981ba0c02e45dd.tar.gz
+    url: https://github.com/coingaming/gRPC-haskell/archive/8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a.tar.gz
 - completed:
     size: 78528
     url: https://github.com/awakesecurity/proto3-suite/archive/ca03aa9d846d88b0762e40f9588b4927de22f798.tar.gz

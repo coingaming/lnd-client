@@ -12,23 +12,9 @@ where
 
 import Chronos (stopwatch)
 import Control.Exception (Handler (..), catches, throwIO)
-import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Retry (exponentialBackoff, limitRetries, retrying)
-import Data.Aeson
-  ( GFromJSON,
-    GToJSON,
-    Value,
-    Zero,
-    genericParseJSON,
-    genericToJSON,
-    omitNothingFields,
-  )
-import Data.Aeson.Casing (aesonDrop, snakeCase)
-import Data.Aeson.Types (Parser)
-import GHC.Generics (Generic, Rep (..))
 import LndClient.Data.Types
-import Network.HTTP.Client (HttpException (..), queryString, requestHeaders)
-import UnliftIO (MonadUnliftIO, toIO)
+import LndClient.Import.External
 
 stdToJSON :: (Generic a, GToJSON Zero (Rep a)) => a -> Value
 stdToJSON =
@@ -39,13 +25,13 @@ stdParseJSON = genericParseJSON $ aesonDrop 0 snakeCase
 
 coerceLndResult :: (Show a, MonadIO m) => LndResult a -> m a
 coerceLndResult (LndSuccess _ x) = return x
-coerceLndResult (LndFail _ x) = fail $ "got LndFail " <> show x
+coerceLndResult (LndFail _ x) = liftIO $ fail $ "got LndFail " <> show x
 coerceLndResult (LndHttpException _ e) = liftIO $ throwIO e
 
 doExpBackOff ::
   (MonadUnliftIO m) => Int -> (a -> Bool) -> m a -> m (LndResult a)
 doExpBackOff lim cond expr =
-  retrying policy when exprSafe
+  retrying policy whenX exprSafe
   where
     policy = exponentialBackoff 1000000 <> limitRetries lim
     --
@@ -54,7 +40,7 @@ doExpBackOff lim cond expr =
     -- very boolean blind and not obvious implementation in Control.Retry
     -- library works, but it's good to make PR with better sum type
     -- something like "data WhatToDo = Retry | Halt"
-    when _ x = return $ case x of
+    whenX _ x = return $ case x of
       LndSuccess _ _ -> False
       _ -> True
     exprSafe _ = do

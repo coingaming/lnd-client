@@ -6,8 +6,7 @@ module LndClient.Data.Void
   )
 where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), object)
-import GHC.Generics (Generic)
+import LndClient.Import.External
 
 data VoidRequest
   = VoidRequest

@@ -5,9 +5,8 @@ module LndClient.Data.Invoice
   )
 where
 
-import Data.Text (Text)
-import GHC.Generics (Generic)
 import LndClient.Data.Newtypes
+import LndClient.Import.External
 
 data Invoice
   = Invoice
