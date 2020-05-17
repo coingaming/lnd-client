@@ -7,9 +7,9 @@ mkDerivation {
   pname = "grpc-haskell-core";
   version = "0.0.0.0";
   src = fetchgit {
-    url = "https://github.com/awakesecurity/gRPC-haskell.git";
-    sha256 = "1iwcsqdcgvwi2gmm7kbd1ychz0wrx8f9r1qz0ywf0csdh75asxsa";
-    rev = "595cb6a3bfbc50348af44d4bbd981ba0c02e45dd";
+    url = "https://github.com/coingaming/gRPC-haskell.git";
+    sha256 = "0xzsjyxasp5wwjrnlq0d18ib82dh84q10c2fkzilf4lxk27dpw1c";
+    rev = "8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a";
     fetchSubmodules = true;
   };
   postUnpack = "sourceRoot+=/core; echo source root reset to $sourceRoot";

@@ -49,12 +49,12 @@ extra-deps:
   - cryptonite-0.26@sha256:43c722f3770c31f4c5376e7aa42645b104834103312e217aa7fe79316416d6df,17352
   - network-bitcoin-1.9.1@sha256:f950326eef853c8ce5a15a2fc65ed0291669b60b3138538629469fbeaf447d96,2420
   - swagger2-2.3.1.1
-  - github: awakesecurity/gRPC-haskell
-    commit: 595cb6a3bfbc50348af44d4bbd981ba0c02e45dd
+  - github: coingaming/gRPC-haskell
+    commit: 8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a
     subdirs:
       - core
-  - github: awakesecurity/gRPC-haskell
-    commit: 595cb6a3bfbc50348af44d4bbd981ba0c02e45dd
+  - github: coingaming/gRPC-haskell
+    commit: 8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a
   - github: awakesecurity/proto3-suite
     commit: ca03aa9d846d88b0762e40f9588b4927de22f798
   - github: awakesecurity/proto3-wire
