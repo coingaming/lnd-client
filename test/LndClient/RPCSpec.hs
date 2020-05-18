@@ -10,41 +10,17 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
-{-# OPTIONS_GHC -Wno-unused-imports #-}
 
 module LndClient.RPCSpec
   ( spec,
   )
 where
 
-import Control.Concurrent (forkIO)
-import Control.Concurrent.Async (race)
-import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
+import Control.Concurrent.Async (async, link)
 import Control.Concurrent.Thread.Delay (delay)
-import Control.Exception (bracket)
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Reader (MonadReader, ReaderT, asks, join, local, runReaderT)
-import Control.Monad.Trans.Class (lift)
-import Crypto.Hash.SHA256 (hash)
-import Data.Aeson (Result (..), fromJSON, toJSON)
 import Data.Aeson.QQ
-import Data.ByteString (ByteString)
 import Data.ByteString.Base16 (decode)
-import Data.ByteString.Base64 (encode)
-import Data.Maybe
-import Data.Text as Text (Text, pack)
-import Data.Text.Encoding (decodeUtf8, encodeUtf8)
-import Env
-  ( (<=<),
-    auto,
-    header,
-    help,
-    keep,
-    nonempty,
-    parse,
-    str,
-    var,
-  )
+import Data.ByteString.Base64 as B64 (encode)
 import Katip
 import LndClient
 import LndClient.Data.AddInvoice as AddInvoice
@@ -56,36 +32,17 @@ import LndClient.Data.BtcEnv
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
-import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
-import LndClient.Data.Newtypes
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..), PeerList (..))
-import LndClient.Data.SendPayment as SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
+import LndClient.Import.External
 import LndClient.QRCode
-import LndClient.RPC
-  ( RPCResponse (..),
-    addInvoice,
-    coerceRPCResponse,
-    getInfo,
-    getPeers,
-    initWallet,
-    newAddress,
-    openChannel,
-    sendPayment,
-    subscribeInvoices,
-    unlockWallet,
-  )
 import LndClient.Utils
 import Network.Bitcoin (Client, getClient)
 import Network.Bitcoin.Mining (generateToAddress)
-import Network.HTTP.Client (responseStatus)
-import Network.HTTP.Types.Status (status404)
-import System.IO (stdout)
 import Test.Hspec
-import UnliftIO (MonadUnliftIO (..), UnliftIO (..))
 
 -- Environment of test App
 data Env
@@ -110,9 +67,9 @@ btcClient :: IO Client
 btcClient = do
   env <- btcEnv
   let user = btcRpcUser env
-  let pass = btcRpcPassword env
+  let passw = btcRpcPassword env
   let url = btcRpcUrl env
-  getClient url user pass
+  getClient (unpack url) user passw
 
 readEnv :: KatipContextT IO Env
 readEnv = do
@@ -207,35 +164,11 @@ spec = around withEnv $ do
           |]
     it "rpc-succeeds" $ shouldBeOk unlockWallet
   describe "AddInvoice" $ do
-    it "request-jsonify" $ \_ ->
-      toJSON addInvoiceRequest
-        `shouldBe` [aesonQQ|
-            {
-                 memo: "HELLO",
-                 value: 1000,
-                 description_hash: "NzPNl3/46xi5hzV+Is7Zn0YJfzHssjnoeK5jdg6D5NU="
-            }
-          |]
-    it "response-jsonify" $ \_ ->
-      Success
-        ( AddInvoiceResponse
-            (RHash "hello")
-            (PaymentRequest "world")
-            (AddIndex 123)
-        )
-        `shouldBe` fromJSON
-          [aesonQQ|
-             {
-               r_hash: "hello",
-               payment_request: "world",
-               add_index: "123"
-             }
-           |]
     it "rpc-succeeds" $ shouldBeOk $ flip addInvoice addInvoiceRequest
     it "generate-qrcode" $ \env -> do
       res <-
         runApp env $
-          coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
+          coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
       let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
       isJust qr `shouldBe` True
   describe "NewAddress" $ do
@@ -284,7 +217,7 @@ spec = around withEnv $ do
           push_sat: "1000"
                    }|]
     it "rpc-succeeds" $ \env -> do
-      NewAddressResponse btcAddress <- runApp env $ coerceRPCResponse =<< newAddress (envLnd $ custEnv env)
+      NewAddressResponse btcAddress <- runApp env $ coerceRPCResponse =<< newAddress (envLnd env)
       client <- btcClient
       GetInfoResponse mercPubKey <- runApp env $ coerceRPCResponse =<< getInfo (envLnd env)
       let connectPeerRequest =
@@ -296,110 +229,37 @@ spec = around withEnv $ do
                     },
                 perm = False
               }
-      _ <- runApp env $ connectPeer (envLnd env) connectPeerRequest
+      _ <- runApp (custEnv env) $ connectPeer (envLnd $ custEnv env) connectPeerRequest
       _ <- generateToAddress client 100 btcAddress Nothing
       _ <- delay 3000000
-      req <- openChannelRequest $ custEnv env
-      shouldBeOk (flip openChannel req) (custEnv env)
+      req <- openChannelRequest env
+      shouldBeOk (`openChannel` req) env
   describe "SubscribeInvoices" $ do
-    it "invoice-jsonify" $ \_ ->
-      Success
-        ( Invoice
-            { rHash = RHash "hello",
-              amtPaidSat = Nothing,
-              creationDate = Nothing,
-              settleDate = Nothing,
-              value = MoneyAmount 1000,
-              expiry = Nothing,
-              settled = Nothing,
-              settleIndex = Nothing,
-              descriptionHash = Nothing,
-              memo = Nothing,
-              paymentRequest = Just "req",
-              fallbackAddr = Nothing,
-              cltvExpiry = Nothing,
-              private = Nothing,
-              addIndex = AddIndex 8,
-              state = Nothing
-            }
-        )
-        `shouldBe` fromJSON
-          [aesonQQ|{
-                    r_hash: "hello",
-                    value: "1000",
-                    payment_request: "req",
-                    add_index: "8"
-                   }|]
     it "rpc-succeeds" $ \env -> do
       x <- newEmptyMVar
-      let subscribeInv =
-            runApp env $
-              subscribeInvoices
-                (envLnd env)
-                (SubscribeInvoicesRequest Nothing Nothing)
-                (liftIO . putMVar x)
-      let runTest = do
-            _ <- delay 3000000
-            res <-
-              runApp env $
-                coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
-            i <- takeMVar x
-            return (res, i)
-      subResult <- race subscribeInv runTest
-      --
-      --TODO Optimize handling LndResult(LndSuccess, LndFail, LndHttpException)
-      --
-      case subResult of
-        Left f -> case f of
-          LndSuccess _ _ -> fail "HTTP success"
-          LndFail _ lndFail -> fail (show lndFail)
-          LndHttpException _ e -> fail (show e)
-        Right (res, i) ->
-          i
-            `shouldSatisfy` ( \this ->
-                                AddInvoice.rHash res == Invoice.rHash this
-                            )
-    it "rpc-succeeds-send-payment" $ \env -> do
-      invoice <- runApp env $ coerceRPCResponse =<< addInvoice (envLnd env) addInvoiceRequest
-      NewAddressResponse btcAddress <- runApp env $ coerceRPCResponse =<< newAddress (envLnd $ custEnv env)
-      x <- newEmptyMVar
-      client <- btcClient
-      _ <- generateToAddress client 100 btcAddress Nothing
-      let sendPaymentRequest =
-            SendPaymentRequest
-              { paymentRequest = AddInvoice.paymentRequest invoice,
-                amt = (MoneyAmount 1000)
-              }
-      let addIdx = AddInvoice.addIndex invoice
-      let subscribeInv =
-            runApp env $
-              subscribeInvoices
-                (envLnd env)
-                (SubscribeInvoicesRequest (Just addIdx) Nothing)
-                (liftIO . putMVar x)
-      let runTest = do
-            _ <- delay 3000000
-            res <-
-              runApp (custEnv env) $
-                coerceRPCResponse =<< sendPayment (envLnd $ custEnv env) sendPaymentRequest
-            i <- takeMVar x
-            return (res, i)
-      subResult <- race subscribeInv runTest
-      --
-      --TODO Optimize handling LndResult(LndSuccess, LndFail, LndHttpException)
-      --
-      case subResult of
-        Left f -> case f of
-          LndSuccess _ _ -> fail "HTTP success"
-          LndFail _ lndFail -> fail (show lndFail)
-          LndHttpException _ e -> fail (show e)
-        Right (_, i) ->
-          i
-            `shouldSatisfy` ( \_ -> True
-                              --                      Invoice.rHash this == "settled"
-                            )
-  describe "GetInfo" $ it "rpc-succeeds" $ \env -> do
-    shouldBeOk getInfo (custEnv env)
+      -- can't use proper "race" there
+      -- because of this
+      -- https://github.com/awakesecurity/gRPC-haskell/issues/104
+      -- will use low-level async + link for now
+      link
+        =<< ( async $ runApp env $
+                subscribeInvoices
+                  (envLnd env)
+                  (SubscribeInvoicesRequest Nothing Nothing)
+                  (liftIO . putMVar x)
+            )
+      _ <- delay 3000000
+      originalInvoice <-
+        runApp env $
+          coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
+      resultingInvoice <- takeMVar x
+      resultingInvoice
+        `shouldSatisfy` ( \this ->
+                            AddInvoice.rHash originalInvoice == Invoice.rHash this
+                        )
+  describe "GetInfo" $ do
+    it "rpc-succeeds" $ \env -> do
+      shouldBeOk getInfo (custEnv env)
   where
     addInvoiceRequest =
       hashifyAddInvoiceRequest $
@@ -414,7 +274,7 @@ spec = around withEnv $ do
       let (pubKeyHex, _) = decode (encodeUtf8 x)
       let req =
             OpenChannelRequest
-              { nodePubkey = decodeUtf8 (encode pubKeyHex),
+              { nodePubkey = decodeUtf8 (B64.encode pubKeyHex),
                 localFundingAmount = MoneyAmount 20000,
                 pushSat = Just $ MoneyAmount 1000,
                 targetConf = Nothing,
@@ -482,8 +342,10 @@ spec = around withEnv $ do
       ]
     somePubKey env = do
       res <- runApp env $ coerceRPCResponse =<< getPeers (envLnd env)
-      let peersList = head $ peers res
-      return $ pubKey peersList
+      let mPeer = safeHead $ peers res
+      case mPeer of
+        Just peer -> return $ pubKey peer
+        Nothing -> return ""
     initWalletRequest =
       InitWalletRequest
         { walletPassword = "ZGV2ZWxvcGVy",

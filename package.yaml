@@ -24,6 +24,7 @@ description:         Please see the README on GitHub at <https://github.com/gith
 #
 dependencies:
 - base >= 4.7 && < 5
+- universum
 - envparse
 - bytestring
 - text
@@ -39,27 +40,12 @@ dependencies:
 - aeson
 - aeson-casing
 - aeson-qq
-- time
 - unbounded-delays
-- QuickCheck
-- quickcheck-instances
 - base64-bytestring
 - base16-bytestring
 - cryptohash-sha256
 - network-bitcoin
 - transformers
-- cryptonite
-- jose
-- crypto-pubkey-openssh
-- crypto-pubkey-types
-- monad-logger
-- resource-pool
-- scotty
-- wai
-- warp
-- unordered-containers
-- monad-time
-- lens
 - unliftio
 - mtl
 - retry
@@ -70,9 +56,18 @@ dependencies:
 - qrcode-juicypixels
 - JuicyPixels
 - chronos
+- grpc-haskell
+- grpc-haskell-core
+- proto3-suite
+- proto3-wire
+- containers
+- deepseq
+- vector
 
 library:
   source-dirs: src
+  default-extensions:
+  - NoImplicitPrelude
   ghc-options:
   # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
   # Enable all warnings with -Weverything, then disable the ones we don’t care about
@@ -86,7 +81,6 @@ library:
   - -Wno-safe # Don’t use Safe Haskell warnings
   - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
   - -Wno-monomorphism-restriction # Don’t warn if the monomorphism restriction is used
-  - -Wno-implicit-prelude
   dependencies:
   - hspec
   - hspec-wai
@@ -95,6 +89,8 @@ tests:
   lnd-client-test:
     main:                Spec.hs
     source-dirs:         test
+    default-extensions:
+    - NoImplicitPrelude
     ghc-options:
     # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
     # Enable all warnings with -Weverything, then disable the ones we don’t care about
@@ -108,7 +104,6 @@ tests:
     - -Wno-safe # Don’t use Safe Haskell warnings
     - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
     - -Wno-monomorphism-restriction # Don’t warn if the monomorphism restriction is used
-    - -Wno-implicit-prelude
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N

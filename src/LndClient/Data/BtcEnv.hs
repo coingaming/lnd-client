@@ -4,14 +4,14 @@ module LndClient.Data.BtcEnv
   )
 where
 
-import Data.ByteString (ByteString)
 import Env hiding (def)
+import LndClient.Import.External
 
 data BtcEnv
   = BtcEnv
       { btcRpcUser :: ByteString,
         btcRpcPassword :: ByteString,
-        btcRpcUrl :: String
+        btcRpcUrl :: Text
       }
 
 btcEnv :: IO BtcEnv

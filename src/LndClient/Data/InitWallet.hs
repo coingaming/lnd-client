@@ -5,9 +5,7 @@ module LndClient.Data.InitWallet
   )
 where
 
-import Data.Aeson (ToJSON (..))
-import Data.Text (Text)
-import GHC.Generics (Generic)
+import LndClient.Import.External
 import LndClient.Utils (stdToJSON)
 
 data InitWalletRequest

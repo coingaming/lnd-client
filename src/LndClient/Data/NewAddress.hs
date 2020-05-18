@@ -5,9 +5,7 @@ module LndClient.Data.NewAddress
   )
 where
 
-import Data.Aeson (FromJSON (..))
-import Data.Text (Text)
-import GHC.Generics (Generic)
+import LndClient.Import.External
 import LndClient.Utils (stdParseJSON)
 
 newtype NewAddressResponse
