@@ -1,5 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module LndClient.Data.Newtypes
   ( AddIndex (..),
@@ -13,8 +15,10 @@ where
 
 import Codec.QRCode as QR (ToText)
 import Data.Text.Lazy as TL (Text)
+import LndClient.Class
+import LndClient.Data.Types
 import LndClient.Import.External
-import LndClient.Utils (stdParseJSON, stdToJSON)
+import LndClient.Utils (safeFromIntegral, stdParseJSON, stdToJSON)
 
 newtype AddIndex = AddIndex Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
@@ -39,6 +43,21 @@ instance FromJSON SettleIndex where
 
 instance FromJSON MoneyAmount where
   parseJSON = intParser MoneyAmount "MoneyAmount"
+
+instance ToGrpc MoneyAmount Int64 where
+  toGrpc x =
+    maybeToRight
+      (ToGrpcError "MoneyAmount overflow")
+      $ safeFromIntegral (coerce x :: Word64)
+
+instance FromGrpc RHash ByteString where
+  fromGrpc = Right . RHash
+
+instance FromGrpc AddIndex Word64 where
+  fromGrpc = Right . AddIndex
+
+instance FromGrpc PaymentRequest TL.Text where
+  fromGrpc = Right . PaymentRequest
 
 newtype ResultWrapper a
   = ResultWrapper
