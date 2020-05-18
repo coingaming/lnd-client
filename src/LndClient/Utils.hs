@@ -7,6 +7,7 @@ module LndClient.Utils
     coerceLndResult,
     stdToJSON,
     stdParseJSON,
+    safeFromIntegral,
   )
 where
 
@@ -25,8 +26,19 @@ stdParseJSON = genericParseJSON $ aesonDrop 0 snakeCase
 
 coerceLndResult :: (Show a, MonadIO m) => LndResult a -> m a
 coerceLndResult (LndSuccess _ x) = return x
-coerceLndResult (LndFail _ x) = liftIO $ fail $ "got LndFail " <> show x
 coerceLndResult (LndHttpException _ e) = liftIO $ throwIO e
+coerceLndResult x = liftIO $ fail $ "got error " <> show x
+
+safeFromIntegral ::
+  forall a b. (Integral a, Integral b, Bounded b) => a -> Maybe b
+safeFromIntegral x =
+  if (intX >= intMin) && (intX <= intMax)
+    then Just $ fromIntegral x
+    else Nothing
+  where
+    intX = fromIntegral x :: Integer
+    intMin = fromIntegral (minBound :: b) :: Integer
+    intMax = fromIntegral (maxBound :: b) :: Integer
 
 doExpBackOff ::
   (MonadUnliftIO m) => Int -> (a -> Bool) -> m a -> m (LndResult a)
