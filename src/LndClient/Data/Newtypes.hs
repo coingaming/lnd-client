@@ -27,7 +27,7 @@ newtype SettleIndex = SettleIndex Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
 
 newtype PaymentRequest = PaymentRequest TL.Text
-  deriving (PersistField, PersistFieldSql, Show, Eq, QR.ToText)
+  deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq, QR.ToText)
 
 newtype RHash = RHash ByteString
   deriving (PersistField, PersistFieldSql, Show, Eq)
@@ -58,6 +58,9 @@ instance FromGrpc AddIndex Word64 where
 
 instance FromGrpc PaymentRequest TL.Text where
   fromGrpc = Right . PaymentRequest
+
+instance ToGrpc PaymentRequest TL.Text where
+  toGrpc x = Right (coerce x :: TL.Text)
 
 newtype ResultWrapper a
   = ResultWrapper

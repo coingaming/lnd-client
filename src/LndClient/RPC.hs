@@ -17,6 +17,7 @@ module LndClient.RPC
     openChannel,
     getPeers,
     connectPeer,
+    sendPayment,
     getInfo,
     subscribeInvoices,
     RPCResponse (..),
@@ -49,6 +50,7 @@ import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.Newtypes
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
+import LndClient.Data.SendPayment as SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
@@ -90,6 +92,7 @@ data RpcName
   | GetPeers
   | ConnectPeer
   | GetInfo
+  | SendPayment
   deriving (Generic)
 
 instance ToJSON RpcName
@@ -475,3 +478,37 @@ getInfo env = rpc $ rpcArgs env
           rpcName = GetInfo,
           rpcSubHandler = Nothing
         }
+
+sendPayment ::
+  (MonadIO m) =>
+  LndEnv ->
+  SendPaymentRequest ->
+  m (LndResult SendPaymentResponse)
+sendPayment env req =
+  liftIO $ case toGrpc req of
+    Left e ->
+      --
+      -- TODO : remove fail everywhere, don't throw exceptions
+      -- work with pure values
+      --
+      fail $ show e
+    Right grpcReq ->
+      --
+      -- TODO : maybe make generic helper if possible
+      --
+      withGRPCClient (envLndGrpcConfig env) $ \client -> do
+        method <- GRPC.lightningSendPaymentSync <$> GRPC.lightningClient client
+        (ts, rawGrpc) <-
+          stopwatch . method $ ClientNormalRequest grpcReq 1 $ grpcMeta env
+        case rawGrpc of
+          --
+          -- TODO : patterns here are not exhaustive and compiler don't warn about it
+          -- for some reason. Investigate and/or fix
+          --
+          ClientNormalResponse grpcRes _ _ _ _ ->
+            case fromGrpc grpcRes of
+              Left e -> fail $ show e
+              Right res -> return $ LndSuccess ts res
+          ClientErrorResponse err -> do
+            print err
+            fail "ClientErrorResponse"
