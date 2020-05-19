@@ -8,8 +8,7 @@ module LndClient.Data.Peer
   )
 where
 
-import LndClient.Import.External
-import LndClient.Utils (stdParseJSON, stdToJSON)
+import LndClient.Import
 
 data Peer
   = Peer

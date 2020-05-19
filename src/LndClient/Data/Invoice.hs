@@ -5,8 +5,7 @@ module LndClient.Data.Invoice
   )
 where
 
-import LndClient.Data.Newtypes
-import LndClient.Import.External
+import LndClient.Import
 
 data Invoice
   = Invoice

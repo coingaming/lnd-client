@@ -1,4 +1,4 @@
-module LndClient.Data.Types (LndResult (..), GrpcParserError (..)) where
+module LndClient.Data.Type (LndResult (..), GrpcParserError (..)) where
 
 import Chronos (Timespan)
 import LndClient.Import.External

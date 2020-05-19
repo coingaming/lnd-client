@@ -9,11 +9,8 @@ module LndClient.Data.AddInvoice
 where
 
 import qualified Data.Text.Lazy as TL (Text)
-import LndClient.Class
-import LndClient.Data.Newtypes
-import LndClient.Import.External
+import LndClient.Import
 import qualified LndGrpc as GRPC
-import Proto3.Suite.Class
 
 data AddInvoiceRequest
   = AddInvoiceRequest
@@ -31,6 +28,11 @@ data AddInvoiceResponse
       }
   deriving (Generic, Show, Eq)
 
+--
+-- TODO : move this to smart constructor
+-- of AddInvoiceRequest and hide (don't export)
+-- default unsafe constructor
+--
 hashifyAddInvoiceRequest :: AddInvoiceRequest -> AddInvoiceRequest
 hashifyAddInvoiceRequest x = x {descriptionHash = mh}
   where

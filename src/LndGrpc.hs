@@ -29,7 +29,7 @@ import qualified Data.Word as Hs (Word16, Word32, Word64)
 import qualified GHC.Enum as Hs
 import qualified GHC.Generics as Hs
 import LndClient.Import.External
-import LndGrpc.Orphans
+import LndGrpc.Orphan
 import Network.GRPC.HighLevel.Client as HsGRPC
 import Network.GRPC.HighLevel.Generated as HsGRPC
 import Network.GRPC.HighLevel.Server as HsGRPC hiding (serverLoop)

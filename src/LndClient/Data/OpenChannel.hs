@@ -6,9 +6,7 @@ module LndClient.Data.OpenChannel
   )
 where
 
-import LndClient.Data.Newtypes (MoneyAmount)
-import LndClient.Import.External
-import LndClient.Utils (stdParseJSON, stdToJSON)
+import LndClient.Import
 
 data OpenChannelRequest
   = OpenChannelRequest

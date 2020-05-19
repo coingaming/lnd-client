@@ -27,11 +27,9 @@ module LndClient.RPC
 where
 
 import Chronos (SubsecondPrecision (SubsecondPrecisionAuto), encodeTimespan, stopwatch)
-import Control.Concurrent.Thread.Delay (delay)
 import qualified Data.Conduit.List as CL
 import Data.Text as T (pack)
 import Katip (KatipContext, Severity (..), katipAddContext, logStr, logTM, sl)
-import LndClient.Class
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
@@ -39,24 +37,14 @@ import LndClient.Data.AddInvoice as AddInvoice
 import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
-import LndClient.Data.LndEnv
-  ( LndB64WalletPassword (..),
-    LndEnv (..),
-    LndHexMacaroon (..),
-    LndTlsManagerBuilder (..),
-    LndUrl (..),
-  )
 import LndClient.Data.NewAddress (NewAddressResponse (..))
-import LndClient.Data.Newtypes
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
 import LndClient.Data.SendPayment as SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
-import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
-import LndClient.Import.External
-import LndClient.Utils (coerceLndResult, doExpBackOff)
+import LndClient.Import
 import qualified LndGrpc as GRPC
 import Network.GRPC.HighLevel.Generated
 import Network.HTTP.Client
@@ -76,7 +64,6 @@ import Network.HTTP.Simple (httpSink, setRequestManager)
 import Network.HTTP.Types.Method (StdMethod (..), renderStdMethod)
 import Network.HTTP.Types.Status (ok200, status404, statusCode)
 import Network.HTTP.Types.URI (Query, renderQuery)
-import Proto3.Suite.Class
 
 newtype RPCResponse a
   = RPCResponse (Response (Either String a))

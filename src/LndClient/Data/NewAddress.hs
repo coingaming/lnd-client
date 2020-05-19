@@ -5,8 +5,7 @@ module LndClient.Data.NewAddress
   )
 where
 
-import LndClient.Import.External
-import LndClient.Utils (stdParseJSON)
+import LndClient.Import
 
 newtype NewAddressResponse
   = NewAddressResponse

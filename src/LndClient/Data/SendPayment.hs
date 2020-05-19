@@ -8,11 +8,8 @@ module LndClient.Data.SendPayment
 where
 
 import qualified Data.Text.Lazy as TL (Text)
-import LndClient.Class
-import LndClient.Data.Newtypes (MoneyAmount (..), PaymentRequest (..))
-import LndClient.Import.External
+import LndClient.Import
 import qualified LndGrpc as GRPC
-import Proto3.Suite.Class
 
 data SendPaymentRequest
   = SendPaymentRequest

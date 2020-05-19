@@ -8,9 +8,8 @@ module LndClient.Class
   )
 where
 
-import LndClient.Data.Types
+import LndClient.Data.Type
 import LndClient.Import.External
-import Proto3.Suite.Class
 
 class HasDefault b => ToGrpc a b where
   toGrpc :: a -> Either GrpcParserError b

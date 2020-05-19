@@ -38,9 +38,8 @@ import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
-import LndClient.Import.External
+import LndClient.Import
 import LndClient.QRCode
-import LndClient.Utils
 import Network.Bitcoin as BTC (Client, getClient)
 import Network.Bitcoin.Mining (generateToAddress)
 import Network.GRPC.LowLevel.Client as GC

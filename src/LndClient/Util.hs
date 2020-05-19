@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module LndClient.Utils
+module LndClient.Util
   ( doExpBackOff,
     coerceLndResult,
     stdToJSON,
@@ -14,7 +14,7 @@ where
 import Chronos (stopwatch)
 import Control.Exception (Handler (..), catches, throwIO)
 import Control.Retry (exponentialBackoff, limitRetries, retrying)
-import LndClient.Data.Types
+import LndClient.Data.Type
 import LndClient.Import.External
 
 stdToJSON :: (Generic a, GToJSON Zero (Rep a)) => a -> Value

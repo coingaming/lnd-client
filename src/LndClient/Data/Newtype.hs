@@ -3,7 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module LndClient.Data.Newtypes
+module LndClient.Data.Newtype
   ( AddIndex (..),
     SettleIndex (..),
     PaymentRequest (..),
@@ -16,9 +16,9 @@ where
 import Codec.QRCode as QR (ToText)
 import Data.Text.Lazy as TL (Text)
 import LndClient.Class
-import LndClient.Data.Types
+import LndClient.Data.Type
 import LndClient.Import.External
-import LndClient.Utils (safeFromIntegral, stdParseJSON, stdToJSON)
+import LndClient.Util (safeFromIntegral, stdParseJSON, stdToJSON)
 
 newtype AddIndex = AddIndex Word64
   deriving (ToJSON, PersistField, PersistFieldSql, Show, Eq)
