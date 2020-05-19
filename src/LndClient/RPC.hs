@@ -50,7 +50,7 @@ import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.Newtypes
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
-import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
+import LndClient.Data.SendPayment as SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.Types
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
@@ -483,22 +483,56 @@ getInfo env = rpc $ rpcArgs env
           rpcSubHandler = Nothing
         }
 
+--sendPayment ::
+--  (KatipContext m, MonadUnliftIO m) =>
+--  LndEnv ->
+--  SendPaymentRequest ->
+--  m (LndResult (RPCResponse SendPaymentResponse))
+--sendPayment env req = rpc $ rpcArgs env
+--  where
+--    rpcArgs rpcEnv =
+--      RpcArgs
+--        { rpcEnv,
+--          rpcMethod = POST,
+--          rpcUrlPath = "/v1/channels/transactions",
+--          rpcUrlQuery = [],
+--          rpcReqBody = Just req,
+--          rpcRetryAttempt = 0,
+--          rpcSuccessCond = stdRpcCond,
+--          rpcName = SendPayment,
+--          rpcSubHandler = Nothing
+--        }
 sendPayment ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (MonadIO m) =>
   LndEnv ->
   SendPaymentRequest ->
-  m (LndResult (RPCResponse SendPaymentResponse))
-sendPayment env req = rpc $ rpcArgs env
+  m (LndResult SendPaymentResponse)
+sendPayment env req =
+  liftIO $ withGRPCClient (envLndGrpcConfig env) $ \client -> do
+    method <- GRPC.lightningSendPayment <$> GRPC.lightningClient client
+    (ts, rawGrpc) <-
+      stopwatch . method $ ClientNormalRequest grpcReq 1 $ grpcMeta env
+    case rawGrpc of
+      --
+      -- TODO : patterns here are not exhaustive and compiler don't warn about it
+      -- for some reason. Investigate and/or fix
+      --
+      ClientNormalResponse grpcRes _ _ _ _ ->
+        return $ LndSuccess ts $
+          SendPaymentResponse
+            { paymentError = GRPC.sendResponsePaymentError grpcRes,
+              paymentPreimage = GRPC.sendResponsePaymentPreimage grpcRes,
+              paymentHash = GRPC.sendResponsePaymentHash grpcRes
+            }
+      ClientErrorResponse err -> do
+        print err
+        fail "ClientErrorResponse"
   where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = POST,
-          rpcUrlPath = "/v1/channels/transactions",
-          rpcUrlQuery = [],
-          rpcReqBody = Just req,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = SendPayment,
-          rpcSubHandler = Nothing
+    grpcReq :: GRPC.SendRequest
+    grpcReq =
+      def
+        { GRPC.sendRequestAmt =
+            fromIntegral (coerce $ amt req),
+          GRPC.sendRequestPaymentRequest =
+            coerce $ SendPayment.paymentRequest req
         }
