@@ -30,8 +30,8 @@ import Chronos (SubsecondPrecision (SubsecondPrecisionAuto), encodeTimespan, sto
 import Control.Concurrent.Thread.Delay (delay)
 import qualified Data.Conduit.List as CL
 import Data.Text as T (pack)
-import Data.Text.Lazy as TL (fromStrict)
 import Katip (KatipContext, Severity (..), katipAddContext, logStr, logTM, sl)
+import LndClient.Class
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
@@ -157,6 +157,14 @@ rpc
             $ logStr
             $ "failed with HTTP status "
               <> (T.pack . show . statusCode . responseStatus $ res)
+              <> ", elapsed time = "
+              <> showElapsedTime et
+              <> " seconds"
+        (LndGrpcParserFail et e) ->
+          $(logTM) ErrorS
+            $ logStr
+            $ "failed with LndGrpcParserFail "
+              <> T.pack (show e)
               <> ", elapsed time = "
               <> showElapsedTime et
               <> " seconds"
@@ -304,45 +312,33 @@ addInvoice ::
   AddInvoiceRequest ->
   m (LndResult AddInvoiceResponse)
 addInvoice env req =
-  liftIO $ withGRPCClient (envLndGrpcConfig env) $ \client -> do
-    method <- GRPC.lightningAddInvoice <$> GRPC.lightningClient client
-    (ts, rawGrpc) <-
-      stopwatch . method $ ClientNormalRequest grpcReq 1 $ grpcMeta env
-    case rawGrpc of
+  liftIO $ case toGrpc req of
+    Left e ->
       --
-      -- TODO : patterns here are not exhaustive and compiler don't warn about it
-      -- for some reason. Investigate and/or fix
+      -- TODO : remove fail everywhere, don't throw exceptions
+      -- work with pure values
       --
-      ClientNormalResponse grpcRes _ _ _ _ ->
-        return $ LndSuccess ts $
-          AddInvoiceResponse
-            { rHash =
-                RHash $
-                  GRPC.addInvoiceResponseRHash grpcRes,
-              paymentRequest =
-                PaymentRequest $
-                  GRPC.addInvoiceResponsePaymentRequest grpcRes,
-              addIndex =
-                AddIndex $
-                  GRPC.addInvoiceResponseAddIndex grpcRes
-            }
-      ClientErrorResponse err -> do
-        print err
-        fail "ClientErrorResponse"
-  where
-    grpcReq :: GRPC.Invoice
-    grpcReq =
+      fail $ show e
+    Right grpcReq ->
       --
-      -- TODO : handle invoiceValue overflow
+      -- TODO : maybe make generic helper if possible
       --
-      def
-        { GRPC.invoiceValue =
-            fromIntegral (coerce . AddInvoice.value $ req :: Word64),
-          GRPC.invoiceMemo =
-            maybe def TL.fromStrict $ AddInvoice.memo req,
-          GRPC.invoiceDescriptionHash =
-            fromMaybe def $ AddInvoice.descriptionHash req
-        }
+      withGRPCClient (envLndGrpcConfig env) $ \client -> do
+        method <- GRPC.lightningAddInvoice <$> GRPC.lightningClient client
+        (ts, rawGrpc) <-
+          stopwatch . method $ ClientNormalRequest grpcReq 1 $ grpcMeta env
+        case rawGrpc of
+          --
+          -- TODO : patterns here are not exhaustive and compiler don't warn about it
+          -- for some reason. Investigate and/or fix
+          --
+          ClientNormalResponse grpcRes _ _ _ _ ->
+            case fromGrpc grpcRes of
+              Left e -> fail $ show e
+              Right res -> return $ LndSuccess ts res
+          ClientErrorResponse err -> do
+            print err
+            fail "ClientErrorResponse"
 
 subscribeInvoices ::
   (MonadIO m) =>
