@@ -21,6 +21,9 @@ class HasDefault b => FromGrpc a b where
 instance HasDefault a => ToGrpc a a where
   toGrpc = Right
 
+instance HasDefault a => FromGrpc a a where
+  fromGrpc = Right
+
 instance ToGrpc a b => ToGrpc (Maybe a) b where
   toGrpc = \case
     Nothing -> Right def

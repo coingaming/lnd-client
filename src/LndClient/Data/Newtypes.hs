@@ -59,6 +59,9 @@ instance FromGrpc AddIndex Word64 where
 instance FromGrpc PaymentRequest TL.Text where
   fromGrpc = Right . PaymentRequest
 
+instance ToGrpc PaymentRequest TL.Text where
+  toGrpc x = Right (coerce x :: TL.Text)
+
 newtype ResultWrapper a
   = ResultWrapper
       { result :: a

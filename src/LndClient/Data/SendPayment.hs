@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module LndClient.Data.SendPayment
   ( SendPaymentRequest (..),
@@ -6,9 +7,12 @@ module LndClient.Data.SendPayment
   )
 where
 
+import qualified Data.Text.Lazy as TL (Text)
+import LndClient.Class
 import LndClient.Data.Newtypes (MoneyAmount (..), PaymentRequest (..))
 import LndClient.Import.External
-import LndClient.Utils (stdParseJSON, stdToJSON)
+import qualified LndGrpc as GRPC
+import Proto3.Suite.Class
 
 data SendPaymentRequest
   = SendPaymentRequest
@@ -19,14 +23,27 @@ data SendPaymentRequest
 
 data SendPaymentResponse
   = SendPaymentResponse
-      { paymentError :: Text,
-        paymentPreimage :: Maybe Text,
-        paymentHash :: Text
+      { paymentError :: TL.Text,
+        paymentPreimage :: ByteString,
+        paymentHash :: ByteString
       }
   deriving (Generic, Show, Eq)
 
-instance ToJSON SendPaymentRequest where
-  toJSON = stdToJSON
+instance ToGrpc SendPaymentRequest GRPC.SendRequest where
+  toGrpc x =
+    msg
+      <$> (toGrpc $ amt x)
+      <*> (toGrpc $ paymentRequest x)
+    where
+      msg gAmt gPaymentRequest =
+        def
+          { GRPC.sendRequestAmt = gAmt,
+            GRPC.sendRequestPaymentRequest = gPaymentRequest
+          }
 
-instance FromJSON SendPaymentResponse where
-  parseJSON = stdParseJSON
+instance FromGrpc SendPaymentResponse GRPC.SendResponse where
+  fromGrpc x =
+    SendPaymentResponse
+      <$> (fromGrpc $ GRPC.sendResponsePaymentError x)
+      <*> (fromGrpc $ GRPC.sendResponsePaymentPreimage x)
+      <*> (fromGrpc $ GRPC.sendResponsePaymentHash x)

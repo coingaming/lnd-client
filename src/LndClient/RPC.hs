@@ -202,7 +202,7 @@ rpc
         case rpcSubHandler of
           Nothing -> do
             res <- liftIO $ httpLbs req2 manager
-            liftIO $ print res
+            -- liftIO $ print res
             return $ RPCResponse $ eitherDecode <$> res
           Just subHandler -> do
             let req3 = setRequestManager manager req2
@@ -479,56 +479,36 @@ getInfo env = rpc $ rpcArgs env
           rpcSubHandler = Nothing
         }
 
---sendPayment ::
---  (KatipContext m, MonadUnliftIO m) =>
---  LndEnv ->
---  SendPaymentRequest ->
---  m (LndResult (RPCResponse SendPaymentResponse))
---sendPayment env req = rpc $ rpcArgs env
---  where
---    rpcArgs rpcEnv =
---      RpcArgs
---        { rpcEnv,
---          rpcMethod = POST,
---          rpcUrlPath = "/v1/channels/transactions",
---          rpcUrlQuery = [],
---          rpcReqBody = Just req,
---          rpcRetryAttempt = 0,
---          rpcSuccessCond = stdRpcCond,
---          rpcName = SendPayment,
---          rpcSubHandler = Nothing
---        }
 sendPayment ::
   (MonadIO m) =>
   LndEnv ->
   SendPaymentRequest ->
   m (LndResult SendPaymentResponse)
 sendPayment env req =
-  liftIO $ withGRPCClient (envLndGrpcConfig env) $ \client -> do
-    method <- GRPC.lightningSendPayment <$> GRPC.lightningClient client
-    (ts, rawGrpc) <-
-      stopwatch . method $ ClientNormalRequest grpcReq 1 $ grpcMeta env
-    case rawGrpc of
+  liftIO $ case toGrpc req of
+    Left e ->
       --
-      -- TODO : patterns here are not exhaustive and compiler don't warn about it
-      -- for some reason. Investigate and/or fix
+      -- TODO : remove fail everywhere, don't throw exceptions
+      -- work with pure values
       --
-      ClientNormalResponse grpcRes _ _ _ _ ->
-        return $ LndSuccess ts $
-          SendPaymentResponse
-            { paymentError = GRPC.sendResponsePaymentError grpcRes,
-              paymentPreimage = GRPC.sendResponsePaymentPreimage grpcRes,
-              paymentHash = GRPC.sendResponsePaymentHash grpcRes
-            }
-      ClientErrorResponse err -> do
-        print err
-        fail "ClientErrorResponse"
-  where
-    grpcReq :: GRPC.SendRequest
-    grpcReq =
-      def
-        { GRPC.sendRequestAmt =
-            fromIntegral (coerce $ amt req),
-          GRPC.sendRequestPaymentRequest =
-            coerce $ SendPayment.paymentRequest req
-        }
+      fail $ show e
+    Right grpcReq ->
+      --
+      -- TODO : maybe make generic helper if possible
+      --
+      withGRPCClient (envLndGrpcConfig env) $ \client -> do
+        method <- GRPC.lightningSendPaymentSync <$> GRPC.lightningClient client
+        (ts, rawGrpc) <-
+          stopwatch . method $ ClientNormalRequest grpcReq 1 $ grpcMeta env
+        case rawGrpc of
+          --
+          -- TODO : patterns here are not exhaustive and compiler don't warn about it
+          -- for some reason. Investigate and/or fix
+          --
+          ClientNormalResponse grpcRes _ _ _ _ ->
+            case fromGrpc grpcRes of
+              Left e -> fail $ show e
+              Right res -> return $ LndSuccess ts res
+          ClientErrorResponse err -> do
+            print err
+            fail "ClientErrorResponse"
