@@ -47,4 +47,4 @@ instance FromGrpc a b => FromGrpc (Maybe a) b where
       else Just <$> fromGrpc x
 
 instance FromGrpc a b => FromGrpc [a] (Vector b) where
-  fromGrpc = (mapM fromGrpc) . toList
+  fromGrpc = mapM fromGrpc . toList

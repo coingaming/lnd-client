@@ -1,17 +1,19 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module LndClient.Data.NewAddress
   ( NewAddressResponse (..),
   )
 where
 
+import Data.Text.Lazy as TL
 import LndClient.Import
+import qualified LndGrpc as GRPC
 
 newtype NewAddressResponse
   = NewAddressResponse
-      { address :: Text
+      { address :: TL.Text
       }
-  deriving (Generic, Show, Eq)
+  deriving (Show, Eq)
 
-instance FromJSON NewAddressResponse where
-  parseJSON = stdParseJSON
+instance FromGrpc NewAddressResponse GRPC.NewAddressResponse where
+  fromGrpc x =
+    NewAddressResponse
+      <$> fromGrpc (GRPC.newAddressResponseAddress x)
