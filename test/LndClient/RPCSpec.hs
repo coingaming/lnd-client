@@ -271,6 +271,9 @@ spec = around withEnv $ do
   describe "SubscribeInvoicesAndSettleIt" $
     do
       it "rpc-succeeds" $ \env -> do
+        NewAddressResponse btcAddress <- runApp (custEnv env) $ coerceRPCResponse =<< newAddress (envLnd $ custEnv env)
+        client <- btcClient
+        _ <- generateToAddress client 100 btcAddress Nothing
         invoice <- runApp env $ coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
         x <- newEmptyMVar
         let sendPaymentRequest =
@@ -286,7 +289,7 @@ spec = around withEnv $ do
                     (liftIO . putMVar x)
               )
         _ <- delay 3000000
-        _ <-
+        payment <-
           runApp (custEnv env) $
             coerceLndResult =<< sendPayment (envLnd $ custEnv env) sendPaymentRequest
         resultingInvoice <- takeMVar x
