@@ -36,6 +36,7 @@ import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
+import LndClient.Factory
 import LndClient.QRCode
 import Network.Bitcoin as BTC (Client, getClient)
 import Network.Bitcoin.Mining (generateToAddress)
@@ -205,7 +206,7 @@ spec = around withEnv $ do
   describe "ConnectPeer" $ do
     it "rpc-succeeds" $ \env -> do
       _ <- runApp env $ initWallet (envLnd env) initWalletRequest
-      _ <- runApp (custEnv env) $ initWallet (envLnd $ custEnv env) initWalletRequestCust
+      _ <- runApp (custEnv env) $ initTestWallet (envLnd $ custEnv env)
       GetInfoResponse nodePubKey <- runApp env $ coerceRPCResponse =<< getInfo (envLnd $ custEnv env)
       let connectPeerRequest =
             ConnectPeerRequest
