@@ -16,7 +16,7 @@ module LndClient.RPC
     addInvoice,
     initWallet,
     openChannel,
-    getPeers,
+    listPeers,
     connectPeer,
     sendPayment,
     getInfo,
@@ -36,7 +36,7 @@ import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
-import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
+import LndClient.Data.Peer (ConnectPeerRequest (..), Peer (..))
 import LndClient.Data.SendPayment as SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
@@ -300,63 +300,27 @@ openChannel env req = rpc $ rpcArgs env
           rpcSubHandler = Nothing
         }
 
-getPeers ::
-  (KatipContext m, MonadUnliftIO m) =>
+listPeers ::
+  (MonadIO m) =>
   LndEnv ->
-  m (Either LndError (RPCResponse PeerList))
-getPeers env = rpc $ rpcArgs env
-  where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = GET,
-          rpcUrlPath = "/v1/peers",
-          rpcUrlQuery = [],
-          rpcReqBody = Nothing :: Maybe VoidRequest,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = GetPeers,
-          rpcSubHandler = Nothing
-        }
+  m (Either LndError [Peer])
+listPeers env =
+  grpcSync GRPC.lightningListPeers 1 env (def :: GRPC.ListPeersRequest)
 
 connectPeer ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (MonadIO m) =>
   LndEnv ->
   ConnectPeerRequest ->
-  m (Either LndError (RPCResponse VoidResponse))
-connectPeer env req = rpc $ rpcArgs env
-  where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = POST,
-          rpcUrlPath = "/v1/peers",
-          rpcUrlQuery = [],
-          rpcReqBody = Just req,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = ConnectPeer,
-          rpcSubHandler = Nothing
-        }
+  m (Either LndError ())
+connectPeer =
+  grpcSync GRPC.lightningConnectPeer 1
 
 getInfo ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (MonadIO m) =>
   LndEnv ->
-  m (Either LndError (RPCResponse GetInfoResponse))
-getInfo env = rpc $ rpcArgs env
-  where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = GET,
-          rpcUrlPath = "/v1/getinfo",
-          rpcUrlQuery = [],
-          rpcReqBody = Nothing :: Maybe VoidRequest,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = GetInfo,
-          rpcSubHandler = Nothing
-        }
+  m (Either LndError GetInfoResponse)
+getInfo env =
+  grpcSync GRPC.lightningGetInfo 1 env GRPC.GetInfoRequest
 
 sendPayment ::
   (MonadIO m) =>

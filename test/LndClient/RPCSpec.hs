@@ -32,7 +32,7 @@ import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
-import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..), PeerList (..))
+import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
@@ -46,9 +46,9 @@ import Test.Hspec
 --
 -- TODO : remove me
 --
-coerceLndResult :: (Show a, MonadIO m) => Either LndError a -> m a
+coerceLndResult :: (MonadIO m) => Either LndError a -> m a
 coerceLndResult (Right x) = return x
-coerceLndResult (Left x) = liftIO $ fail $ "got error " <> show x
+coerceLndResult (Left x) = liftIO $ fail $ "coerceLndResult failed " <> show x
 
 --
 -- TODO : remove me
@@ -201,12 +201,12 @@ spec = around withEnv $ do
         `shouldBe` fromJSON [aesonQQ|{address: "HELLO"}|]
     it "rpc-succeeds" $ shouldBeOk newAddress
   describe "Peers" $ do
-    it "rpc-succeeds" $ shouldBeOk getPeers
+    it "rpc-succeeds" $ shouldBeOk listPeers
   describe "ConnectPeer" $ do
     it "rpc-succeeds" $ \env -> do
       _ <- runApp env $ initWallet (envLnd env) initWalletRequest
       _ <- runApp (custEnv env) $ initWallet (envLnd $ custEnv env) initWalletRequestCust
-      GetInfoResponse nodePubKey <- runApp env $ coerceRPCResponse =<< getInfo (envLnd $ custEnv env)
+      GetInfoResponse nodePubKey <- runApp env $ coerceLndResult =<< getInfo (envLnd $ custEnv env)
       let connectPeerRequest =
             ConnectPeerRequest
               { addr =
@@ -243,7 +243,7 @@ spec = around withEnv $ do
     it "rpc-succeeds" $ \env -> do
       NewAddressResponse btcAddress <- runApp (custEnv env) $ coerceRPCResponse =<< newAddress (envLnd $ custEnv env)
       client <- btcClient
-      GetInfoResponse mercPubKey <- runApp env $ coerceRPCResponse =<< getInfo (envLnd env)
+      GetInfoResponse mercPubKey <- runApp env $ coerceLndResult =<< getInfo (envLnd env)
       let connectPeerRequest =
             ConnectPeerRequest
               { addr =
@@ -393,8 +393,8 @@ spec = around withEnv $ do
         "thunder"
       ]
     somePubKey env = do
-      res <- runApp env $ coerceRPCResponse =<< getPeers (envLnd env)
-      let mPeer = safeHead $ peers res
+      res <- runApp env $ coerceLndResult =<< listPeers (envLnd env)
+      let mPeer = safeHead res
       case mPeer of
         Just peer -> return $ pubKey peer
         Nothing -> return ""
