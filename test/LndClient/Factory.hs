@@ -1,5 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module LndClient.Factory
   ( initTestWallet,
@@ -7,17 +9,15 @@ module LndClient.Factory
 where
 
 import Katip (KatipContext)
+import LndClient
 import LndClient.Data.InitWallet (InitWalletRequest (..))
-import LndClient.Data.LndEnv
-import LndClient.Data.Types
 import LndClient.Data.Void
-import LndClient.Import.External
-import LndClient.RPC
+import UnliftIO (MonadUnliftIO)
 
 initTestWallet ::
   (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
-  m (LndResult (RPCResponse VoidResponse))
+  m (Either LndError (RPCResponse VoidResponse))
 initTestWallet env =
   initWallet env initWalletRequest
   where
