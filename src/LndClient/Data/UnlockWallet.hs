@@ -5,8 +5,7 @@ module LndClient.Data.UnlockWallet
   )
 where
 
-import LndClient.Import.External
-import LndClient.Utils (stdToJSON)
+import LndClient.Import
 
 data UnlockWalletRequest
   = UnlockWalletRequest

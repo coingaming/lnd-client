@@ -13,9 +13,9 @@ module LndClient.Data.LndEnv
   )
 where
 
-import Data.Default as Import (def)
+import Data.Default (def)
 import Env hiding (def)
-import LndClient.Import.External
+import LndClient.Import.External hiding (def)
 import Network.Connection (TLSSettings (..))
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel.Client

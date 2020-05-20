@@ -28,8 +28,7 @@ import qualified Data.Vector as Hs (Vector)
 import qualified Data.Word as Hs (Word16, Word32, Word64)
 import qualified GHC.Enum as Hs
 import qualified GHC.Generics as Hs
-import LndClient.Import.External
-import LndGrpc.Orphans
+import LndGrpc.Orphan
 import Network.GRPC.HighLevel.Client as HsGRPC
 import Network.GRPC.HighLevel.Generated as HsGRPC
 import Network.GRPC.HighLevel.Server as HsGRPC hiding (serverLoop)
@@ -42,6 +41,7 @@ import qualified Proto3.Suite.JSONPB as HsJSONPB
 import Proto3.Suite.JSONPB ((.:), (.=))
 import qualified Proto3.Suite.Types as HsProtobuf
 import qualified Proto3.Wire as HsProtobuf
+import Universum
 import qualified Unsafe.Coerce as Hs
 import qualified Prelude as Hs
 
