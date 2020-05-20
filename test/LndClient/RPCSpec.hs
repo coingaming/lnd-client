@@ -289,7 +289,7 @@ spec = around withEnv $ do
                     (liftIO . putMVar x)
               )
         _ <- delay 3000000
-        payment <-
+        _ <-
           runApp (custEnv env) $
             coerceLndResult =<< sendPayment (envLnd $ custEnv env) sendPaymentRequest
         resultingInvoice <- takeMVar x
