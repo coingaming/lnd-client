@@ -5,8 +5,7 @@ module LndClient.Data.InitWallet
   )
 where
 
-import LndClient.Import.External
-import LndClient.Utils (stdToJSON)
+import LndClient.Import
 
 data InitWalletRequest
   = InitWalletRequest
