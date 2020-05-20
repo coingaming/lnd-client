@@ -1,5 +1,4 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 
 module LndClient.Data.AddInvoice
   ( AddInvoiceRequest (..),

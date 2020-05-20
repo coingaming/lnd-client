@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
-
 module LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
