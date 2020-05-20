@@ -38,12 +38,29 @@ import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
-import LndClient.Import
 import LndClient.QRCode
 import Network.Bitcoin as BTC (Client, getClient)
 import Network.Bitcoin.Mining (generateToAddress)
 import Network.GRPC.LowLevel.Client as GC
+import Network.HTTP.Client
 import Test.Hspec
+
+--
+-- TODO : remove me
+--
+coerceLndResult :: (Show a, MonadIO m) => Either LndError a -> m a
+coerceLndResult (Right x) = return x
+coerceLndResult (Left x) = liftIO $ fail $ "got error " <> show x
+
+--
+-- TODO : remove me
+--
+coerceRPCResponse :: (Show a, MonadIO m) => Either LndError (RPCResponse a) -> m a
+coerceRPCResponse x = do
+  RPCResponse y <- coerceLndResult x
+  case responseBody y of
+    Left e -> liftIO $ fail e
+    Right z -> return z
 
 -- Environment of test App
 data Env
@@ -156,9 +173,8 @@ spec = around withEnv $ do
           initWallet (envLnd env) initWalletRequest
       res
         `shouldSatisfy` ( \case
-                            LndSuccess _ _ -> True
-                            LndFail _ (RPCResponse x) ->
-                              status404 == responseStatus x
+                            Right (RPCResponse x) ->
+                              responseStatus x `elem` [status404, status200]
                             _ -> False
                         )
     it "rpc-succeeds-customer" $ \env ->
@@ -254,9 +270,9 @@ spec = around withEnv $ do
       link
         =<< ( async $ runApp env $
                 subscribeInvoices
+                  (liftIO . putMVar x)
                   (envLnd env)
                   (SubscribeInvoicesRequest Nothing Nothing)
-                  (liftIO . putMVar x)
             )
       _ <- delay 3000000
       originalInvoice <-
@@ -280,9 +296,9 @@ spec = around withEnv $ do
         link
           =<< ( async $ runApp env $
                   subscribeInvoices
+                    (liftIO . putMVar x)
                     (envLnd env)
                     (SubscribeInvoicesRequest Nothing Nothing)
-                    (liftIO . putMVar x)
               )
         _ <- delay 3000000
         _ <-
@@ -395,8 +411,4 @@ spec = around withEnv $ do
         }
     shouldBeOk this env = do
       res <- runApp env $ this $ envLnd env
-      res
-        `shouldSatisfy` ( \case
-                            LndSuccess _ _ -> True
-                            _ -> False
-                        )
+      res `shouldSatisfy` isRight

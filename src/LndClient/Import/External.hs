@@ -31,7 +31,7 @@ import Database.Persist.Class as Import (PersistField)
 import Database.Persist.Sql as Import (PersistFieldSql)
 import GHC.Generics as Import (Generic, Rep (..))
 import Network.HTTP.Client as Import (HttpException (..), queryString, requestHeaders, responseStatus)
-import Network.HTTP.Types.Status as Import (status404)
+import Network.HTTP.Types.Status as Import (status200, status404)
 import Proto3.Suite.Class as Import (HasDefault (..), def)
 import Text.Read as Import (readMaybe)
 import Universum as Import

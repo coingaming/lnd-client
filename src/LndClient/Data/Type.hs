@@ -1,17 +1,13 @@
-module LndClient.Data.Type (LndResult (..), GrpcParserError (..)) where
+module LndClient.Data.Type (LndError (..)) where
 
 import Chronos (Timespan)
 import LndClient.Import.External
 import Network.HTTP.Client (HttpException)
 
-data LndResult a
-  = LndSuccess Timespan a
-  | LndFail Timespan a
-  | LndGrpcParserFail Timespan GrpcParserError
-  | LndHttpException Timespan HttpException
-  deriving (Show)
-
-data GrpcParserError
+data LndError
   = ToGrpcError Text
   | FromGrpcError Text
+  | GrpcError Text
+  | LndFail Timespan Text
+  | LndHttpException Timespan HttpException
   deriving (Show)

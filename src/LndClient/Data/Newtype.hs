@@ -44,17 +44,32 @@ instance FromJSON SettleIndex where
 instance FromJSON MoneyAmount where
   parseJSON = intParser MoneyAmount "MoneyAmount"
 
+instance ToGrpc AddIndex Word64 where
+  toGrpc = Right . coerce
+
+instance ToGrpc SettleIndex Word64 where
+  toGrpc = Right . coerce
+
 instance ToGrpc MoneyAmount Int64 where
   toGrpc x =
     maybeToRight
       (ToGrpcError "MoneyAmount overflow")
       $ safeFromIntegral (coerce x :: Word64)
 
+instance FromGrpc MoneyAmount Int64 where
+  fromGrpc x =
+    maybeToRight
+      (ToGrpcError "MoneyAmount overflow")
+      $ MoneyAmount <$> safeFromIntegral x
+
 instance FromGrpc RHash ByteString where
   fromGrpc = Right . RHash
 
 instance FromGrpc AddIndex Word64 where
   fromGrpc = Right . AddIndex
+
+instance FromGrpc SettleIndex Word64 where
+  fromGrpc = Right . SettleIndex
 
 instance FromGrpc PaymentRequest TL.Text where
   fromGrpc = Right . PaymentRequest
