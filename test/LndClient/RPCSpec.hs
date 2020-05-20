@@ -115,6 +115,7 @@ runKatip x = do
   handleScribe <-
     mkHandleScribeWithFormatter
       bracketFormat
+      --jsonFormat
       ColorIfTerminal
       stdout
       (permitItem DebugS)

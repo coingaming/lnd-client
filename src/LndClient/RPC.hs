@@ -26,7 +26,6 @@ module LndClient.RPC
 where
 
 import qualified Data.Conduit.List as CL
-import Katip (KatipContext, Severity (..), katipAddContext, logTM, sl)
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
@@ -74,7 +73,7 @@ data RpcName
   | InitWallet
   | SubscribeInvoices
   | OpenChannel
-  | GetPeers
+  | ListPeers
   | ConnectPeer
   | GetInfo
   | SendPayment
@@ -243,15 +242,15 @@ newAddress env = rpc $ rpcArgs env
 -- rm RPCResponse (we don't have HTTP-related low level details anymore)
 --
 addInvoice ::
-  (MonadIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   AddInvoiceRequest ->
   m (Either LndError AddInvoiceResponse)
 addInvoice =
-  grpcSync GRPC.lightningAddInvoice 1
+  grpcSync AddInvoice GRPC.lightningAddInvoice 1
 
 subscribeInvoices ::
-  (MonadIO m) =>
+  (KatipContext m) =>
   --
   -- TODO : replace IO with m if possible
   --
@@ -260,7 +259,8 @@ subscribeInvoices ::
   SubscribeInvoicesRequest ->
   m (Either LndError Invoice)
 subscribeInvoices invoiceHandler =
-  grpcReader
+  grpcSubscribe
+    SubscribeInvoices
     GRPC.lightningSubscribeInvoices
     3600
     (\_ _ s -> streamHandler s)
@@ -301,43 +301,45 @@ openChannel env req = rpc $ rpcArgs env
         }
 
 listPeers ::
-  (MonadIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   m (Either LndError [Peer])
 listPeers env =
-  grpcSync GRPC.lightningListPeers 1 env (def :: GRPC.ListPeersRequest)
+  grpcSync ListPeers GRPC.lightningListPeers 1 env (def :: GRPC.ListPeersRequest)
 
 connectPeer ::
-  (MonadIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   ConnectPeerRequest ->
   m (Either LndError ())
 connectPeer =
-  grpcSync GRPC.lightningConnectPeer 1
+  grpcSync ConnectPeer GRPC.lightningConnectPeer 1
 
 getInfo ::
-  (MonadIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   m (Either LndError GetInfoResponse)
 getInfo env =
-  grpcSync GRPC.lightningGetInfo 1 env GRPC.GetInfoRequest
+  grpcSync GetInfo GRPC.lightningGetInfo 1 env GRPC.GetInfoRequest
 
 sendPayment ::
-  (MonadIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   SendPaymentRequest ->
   m (Either LndError SendPaymentResponse)
 sendPayment =
-  grpcSync GRPC.lightningSendPaymentSync 1
+  grpcSync SendPayment GRPC.lightningSendPaymentSync 1
 
 --
 -- TODO : add logging and elapsed time logs
 --
-grpcReader ::
+grpcSubscribe ::
   ( MonadIO m,
+    KatipContext m,
     ToGrpc a gA,
     FromGrpc b gB
   ) =>
+  RpcName ->
   ( GRPC.Lightning ClientRequest ClientResult ->
     ClientRequest 'ServerStreaming gA response1 ->
     IO (ClientResult streamType gB)
@@ -354,9 +356,10 @@ grpcReader ::
   LndEnv ->
   a ->
   m (Either LndError b)
-grpcReader method timeout handler env req =
-  liftIO $
-    case toGrpc req of
+grpcSubscribe rpcName method timeout handler env req =
+  katipAddContext (sl "rpcName" rpcName) $ do
+    $(logTM) InfoS "rpc is running..."
+    (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e
       Right grpcReq ->
         withGRPCClient (envLndGrpcConfig env) $ \client -> do
@@ -366,13 +369,23 @@ grpcReader method timeout handler env req =
               ClientReaderRequest grpcReq timeout (grpcMeta env) handler
           return $ case rawGrpc of
             ClientNormalResponse grpcRes _ _ _ _ -> fromGrpc grpcRes
-            _ -> Left $ GrpcError "TODO IMPLEMENT ERROR DEBUG"
+            _ -> Left $ GrpcError "TODO IMPLEMENT ERROR DATA CONSTRUCTOR"
+    --
+    -- TODO : better logs?
+    --
+    katipAddContext (sl "elapsedSeconds" (showElapsedSeconds ts)) $ do
+      if isRight res
+        then $(logTM) ErrorS $ "rpc failed"
+        else $(logTM) InfoS $ "rpc succeeded"
+      return res
 
 grpcSync ::
   ( MonadIO m,
+    KatipContext m,
     ToGrpc a gA,
     FromGrpc b gB
   ) =>
+  RpcName ->
   ( GRPC.Lightning ClientRequest ClientResult ->
     ClientRequest 'Normal gA response2 ->
     IO (ClientResult streamType gB)
@@ -384,13 +397,26 @@ grpcSync ::
   LndEnv ->
   a ->
   m (Either LndError b)
-grpcSync method timeout env req =
-  liftIO $ case toGrpc req of
-    Left e -> return $ Left e
-    Right grpcReq ->
-      withGRPCClient (envLndGrpcConfig env) $ \client -> do
-        method' <- method <$> GRPC.lightningClient client
-        rawGrpc <- method' $ ClientNormalRequest grpcReq timeout $ grpcMeta env
-        return $ case rawGrpc of
-          ClientNormalResponse grpcRes _ _ _ _ -> fromGrpc grpcRes
-          _ -> Left $ GrpcError "TODO IMPLEMENT ERROR DEBUG"
+grpcSync rpcName method timeout env req = do
+  katipAddContext (sl "rpcName" rpcName) $ do
+    $(logTM) InfoS "rpc is running..."
+    (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
+      Left e -> return $ Left e
+      Right grpcReq ->
+        withGRPCClient (envLndGrpcConfig env) $ \client -> do
+          method' <- method <$> GRPC.lightningClient client
+          rawGrpc <- method' $ ClientNormalRequest grpcReq timeout $ grpcMeta env
+          return $ case rawGrpc of
+            ClientNormalResponse grpcRes _ _ _ _ -> fromGrpc grpcRes
+            _ -> Left $ GrpcError "TODO IMPLEMENT ERROR DATA CONSTRUCTOR"
+    --
+    -- TODO : better logs?
+    --
+    katipAddContext (sl "elapsedSeconds" (showElapsedSeconds ts)) $ do
+      if isRight res
+        then $(logTM) ErrorS $ "rpc failed"
+        else $(logTM) InfoS $ "rpc succeeded"
+      return res
+
+showElapsedSeconds :: Timespan -> Text
+showElapsedSeconds = encodeTimespan SubsecondPrecisionAuto
