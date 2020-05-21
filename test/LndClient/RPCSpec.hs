@@ -139,17 +139,16 @@ spec = around withEnv $ do
     it "rpc-succeeds-merchant" $ \env -> do
       res <-
         runApp env $
-          initWallet (envLnd env) initWalletRequest
-      res `shouldSatisfy` successOrUnimplemented
+          lazyInitWallet (envLnd env) initWalletRequest
+      res `shouldSatisfy` isRight
     it "rpc-succeeds-customer" $ \env -> do
       res <-
         runApp env $
-          initWallet (envLnd $ custEnv env) initWalletRequestCust
-      res `shouldSatisfy` successOrUnimplemented
-  describe "UnlockWallet" $ do
-    it "rpc-succeeds" $ \env -> do
-      res <- runApp env $ unlockWallet (envLnd env)
-      res `shouldSatisfy` successOrUnimplemented
+          lazyInitWallet (envLnd $ custEnv env) initWalletRequestCust
+      res `shouldSatisfy` isRight
+  describe "LazyUnlockWallet"
+    $ it "rpc-succeeds"
+    $ shouldBeOk lazyUnlockWallet
   describe "AddInvoice" $ do
     it "rpc-succeeds" $ shouldBeOk $ flip addInvoice addInvoiceRequest
     it "generate-qrcode" $ \env -> do
@@ -166,8 +165,8 @@ spec = around withEnv $ do
     it "rpc-succeeds" $ shouldBeOk listPeers
   describe "ConnectPeer" $ do
     it "rpc-succeeds" $ \env -> do
-      _ <- runApp env $ initWallet (envLnd env) initWalletRequest
-      _ <- runApp (custEnv env) $ initWallet (envLnd $ custEnv env) initWalletRequestCust
+      _ <- runApp env $ lazyInitWallet (envLnd env) initWalletRequest
+      _ <- runApp (custEnv env) $ lazyInitWallet (envLnd $ custEnv env) initWalletRequestCust
       GetInfoResponse nodePubKey <- runApp env $ coerceLndResult =<< getInfo (envLnd $ custEnv env)
       let connectPeerRequest =
             ConnectPeerRequest
@@ -363,15 +362,3 @@ spec = around withEnv $ do
     shouldBeOk this env = do
       res <- runApp env $ this $ envLnd env
       res `shouldSatisfy` isRight
-    successOrUnimplemented =
-      \case
-        Right _ ->
-          True
-        Left
-          ( GrpcError
-              ( ClientIOError
-                  (GRPCIOBadStatusCode StatusUnimplemented _)
-                )
-            ) -> True
-        Left _ ->
-          False

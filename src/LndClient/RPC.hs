@@ -10,6 +10,8 @@
 
 module LndClient.RPC
   ( unlockWallet,
+    lazyUnlockWallet,
+    lazyInitWallet,
     newAddress,
     addInvoice,
     initWallet,
@@ -50,9 +52,11 @@ import qualified WalletUnlockerGrpc as GRPC
 
 data RpcName
   = UnlockWallet
+  | InitWallet
+  | LazyUnlockWallet
+  | LazyInitWallet
   | NewAddress
   | AddInvoice
-  | InitWallet
   | SubscribeInvoices
   | OpenChannelSync
   | ListPeers
@@ -99,7 +103,7 @@ unlockWallet ::
   m (Either LndError ())
 unlockWallet env =
   grpcSync
-    InitWallet
+    UnlockWallet
     GRPC.walletUnlockerClient
     GRPC.walletUnlockerUnlockWallet
     grpcDefaultTimeout
@@ -108,6 +112,39 @@ unlockWallet env =
       { walletPassword = coerce $ envLndWalletPassword env,
         recoveryWindow = 0
       }
+
+lazyUnlockWallet ::
+  (KatipContext m) =>
+  LndEnv ->
+  m (Either LndError ())
+lazyUnlockWallet env =
+  katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
+    $(logTM) InfoS "RPC is running..."
+    unlocked <- isRight <$> getInfo (env {envLndLogErrors = False})
+    if unlocked
+      then do
+        $(logTM) InfoS "Wallet is already unlocked, doing nothing"
+        return $ Right ()
+      else unlockWallet env
+
+lazyInitWallet ::
+  (KatipContext m) =>
+  LndEnv ->
+  InitWalletRequest ->
+  m (Either LndError ())
+lazyInitWallet env req =
+  katipAddContext (sl "RpcName" LazyInitWallet) $ do
+    $(logTM) InfoS "RPC is running..."
+    unlockRes <- lazyUnlockWallet $ env {envLndLogErrors = False}
+    if isRight unlockRes
+      then return unlockRes
+      else do
+        initRes <- initWallet env req
+        if isRight initRes
+          then lazyUnlockWallet env
+          else do
+            $(logTM) ErrorS "Wallet initialization failed"
+            return initRes
 
 newAddress ::
   (KatipContext m) =>
@@ -263,8 +300,8 @@ grpcSubscribe ::
   a ->
   m (Either LndError b)
 grpcSubscribe rpcName method timeout handler env req =
-  katipAddContext (sl "rpcName" rpcName) $ do
-    $(logTM) InfoS "rpc is running..."
+  katipAddContext (sl "RpcName" rpcName) $ do
+    $(logTM) InfoS "RPC is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e
       Right grpcReq ->
@@ -290,10 +327,15 @@ grpcSubscribe rpcName method timeout handler env req =
     --
     -- TODO : better logs?
     --
-    katipAddContext (sl "elapsedSeconds" (showElapsedSeconds ts)) $ do
-      if isRight res
-        then $(logTM) ErrorS "rpc failed"
-        else $(logTM) InfoS "rpc succeeded"
+    katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $ do
+      case res of
+        Left e -> do
+          let logMsg = logStr ("RPC failed with error " <> show e :: Text)
+          if envLndLogErrors env
+            then $(logTM) ErrorS logMsg
+            else $(logTM) InfoS logMsg
+        Right _ ->
+          $(logTM) InfoS "RPC succeeded"
       return res
 
 grpcSync ::
@@ -316,8 +358,8 @@ grpcSync ::
   a ->
   m (Either LndError b)
 grpcSync rpcName service method timeout env req =
-  katipAddContext (sl "rpcName" rpcName) $ do
-    $(logTM) InfoS "rpc is running..."
+  katipAddContext (sl "RpcName" rpcName) $ do
+    $(logTM) InfoS "RPC is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e
       Right grpcReq ->
@@ -338,12 +380,15 @@ grpcSync rpcName service method timeout env req =
     --
     -- TODO : better logs?
     --
-    katipAddContext (sl "elapsedSeconds" (showElapsedSeconds ts)) $ do
+    katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $ do
       case res of
-        Left e ->
-          $(logTM) ErrorS $ logStr ("rpc failed with error " <> show e :: Text)
+        Left e -> do
+          let logMsg = logStr ("RPC failed with error " <> show e :: Text)
+          if envLndLogErrors env
+            then $(logTM) ErrorS logMsg
+            else $(logTM) InfoS logMsg
         Right _ ->
-          $(logTM) InfoS "rpc succeeded"
+          $(logTM) InfoS "RPC succeeded"
       return res
 
 showElapsedSeconds :: Timespan -> Text

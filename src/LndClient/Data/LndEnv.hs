@@ -35,7 +35,8 @@ data LndEnv
   = LndEnv
       { envLndWalletPassword :: LndWalletPassword,
         envLndHexMacaroon :: LndHexMacaroon,
-        envLndGrpcConfig :: ClientConfig
+        envLndGrpcConfig :: ClientConfig,
+        envLndLogErrors :: Bool
       }
 
 rawConfig :: IO RawConfig
@@ -76,6 +77,7 @@ newLndEnv pwd cert mac host port =
     LndEnv
       { envLndWalletPassword = pwd,
         envLndHexMacaroon = mac,
+        envLndLogErrors = True,
         envLndGrpcConfig =
           ClientConfig
             { clientServerHost = host,
