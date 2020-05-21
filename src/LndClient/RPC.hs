@@ -5,8 +5,6 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedLists #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TupleSections #-}
 
@@ -21,6 +19,8 @@ module LndClient.RPC
     sendPayment,
     getInfo,
     subscribeInvoices,
+    grpcSync,
+    grpcSubscribe,
   )
 where
 
@@ -123,7 +123,7 @@ newAddress env req =
     NewAddress
     GRPC.lightningClient
     GRPC.lightningNewAddress
-    1
+    grpcDefaultTimeout
     env
     (GRPC.NewAddressRequest $ Enumerated $ Right req)
 
@@ -145,7 +145,7 @@ addInvoice =
     AddInvoice
     GRPC.lightningClient
     GRPC.lightningAddInvoice
-    1
+    grpcDefaultTimeout
 
 subscribeInvoices ::
   (KatipContext m) =>
@@ -188,7 +188,7 @@ openChannelSync =
     OpenChannelSync
     GRPC.lightningClient
     GRPC.lightningOpenChannelSync
-    1
+    grpcDefaultTimeout
 
 listChannels ::
   (KatipContext m) =>
@@ -239,7 +239,7 @@ listPeers env =
     ListPeers
     GRPC.lightningClient
     GRPC.lightningListPeers
-    1
+    grpcDefaultTimeout
     env
     (def :: GRPC.ListPeersRequest)
 
@@ -253,7 +253,7 @@ connectPeer =
     ConnectPeer
     GRPC.lightningClient
     GRPC.lightningConnectPeer
-    1
+    grpcDefaultTimeout
 
 getInfo ::
   (KatipContext m) =>
@@ -264,7 +264,7 @@ getInfo env =
     GetInfo
     GRPC.lightningClient
     GRPC.lightningGetInfo
-    1
+    grpcDefaultTimeout
     env
     GRPC.GetInfoRequest
 
@@ -278,7 +278,7 @@ sendPayment =
     SendPayment
     GRPC.lightningClient
     GRPC.lightningSendPaymentSync
-    1
+    grpcDefaultTimeout
 
 --
 -- TODO : add logging and elapsed time logs
@@ -391,4 +391,4 @@ grpcSync rpcName service method timeout env req =
       return res
 
 showElapsedSeconds :: Timespan -> Text
-showElapsedSeconds = encodeTimespan SubsecondPrecisionAuto
+showElapsedSeconds = fromStrict . encodeTimespan SubsecondPrecisionAuto

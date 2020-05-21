@@ -3,13 +3,12 @@ module LndClient.Data.GetInfo
   )
 where
 
-import qualified Data.Text.Lazy as TL
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
 newtype GetInfoResponse
   = GetInfoResponse
-      { identity_pubkey :: TL.Text
+      { identity_pubkey :: Text
       }
   deriving (Eq, Show)
 

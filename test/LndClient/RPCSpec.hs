@@ -3,9 +3,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralisedNewtypeDeriving #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module LndClient.RPCSpec
   ( spec,
@@ -15,7 +13,6 @@ where
 import Control.Concurrent.Async (async, link)
 import Control.Concurrent.Thread.Delay (delay)
 import Data.ByteString.Base16 (decode)
-import LndClient
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
@@ -30,12 +27,13 @@ import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
+import LndClient.Import
 import LndClient.QRCode
+import LndClient.RPC
 import qualified LndGrpc as GRPC
 import Network.Bitcoin as BTC (Client, getClient)
 import Network.Bitcoin.Mining (generateToAddress)
 import Network.GRPC.HighLevel.Generated
-import Network.GRPC.LowLevel.Client as GC
 import Test.Hspec
 
 --
@@ -61,14 +59,9 @@ custEnv env = do
   env
     { envLnd =
         lndEnv
-          { envLndUrl = LndUrl "https://localhost:8003",
-            envLndGrpcConfig =
-              GC.ClientConfig
-                { clientServerPort = 11009,
-                  clientServerHost = clientServerHost grpcConfig,
-                  clientArgs = clientArgs grpcConfig,
-                  clientSSLConfig = clientSSLConfig grpcConfig,
-                  clientAuthority = clientAuthority grpcConfig
+          { envLndGrpcConfig =
+              grpcConfig
+                { clientServerPort = 11009
                 }
           }
     }

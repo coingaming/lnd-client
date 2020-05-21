@@ -7,7 +7,6 @@ module LndClient.Data.AddInvoice
   )
 where
 
-import qualified Data.Text.Lazy as TL (Text)
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
@@ -15,7 +14,7 @@ data AddInvoiceRequest
   = AddInvoiceRequest
       { value :: MoneyAmount,
         descriptionHash :: Maybe ByteString,
-        memo :: Maybe TL.Text
+        memo :: Maybe Text
       }
   deriving (Generic, Show)
 
@@ -40,9 +39,9 @@ hashifyAddInvoiceRequest x = x {descriptionHash = mh}
 instance ToGrpc AddInvoiceRequest GRPC.Invoice where
   toGrpc x =
     msg
-      <$> (toGrpc $ memo x)
-      <*> (toGrpc $ value x)
-      <*> (toGrpc $ descriptionHash x)
+      <$> toGrpc (memo x)
+      <*> toGrpc (value x)
+      <*> toGrpc (descriptionHash x)
     where
       msg gMemo gValue gDescH =
         def
@@ -54,6 +53,6 @@ instance ToGrpc AddInvoiceRequest GRPC.Invoice where
 instance FromGrpc AddInvoiceResponse GRPC.AddInvoiceResponse where
   fromGrpc x =
     AddInvoiceResponse
-      <$> (fromGrpc $ GRPC.addInvoiceResponseRHash x)
-      <*> (fromGrpc $ GRPC.addInvoiceResponsePaymentRequest x)
-      <*> (fromGrpc $ GRPC.addInvoiceResponseAddIndex x)
+      <$> fromGrpc (GRPC.addInvoiceResponseRHash x)
+      <*> fromGrpc (GRPC.addInvoiceResponsePaymentRequest x)
+      <*> fromGrpc (GRPC.addInvoiceResponseAddIndex x)

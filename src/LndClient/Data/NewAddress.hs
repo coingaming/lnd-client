@@ -3,13 +3,12 @@ module LndClient.Data.NewAddress
   )
 where
 
-import Data.Text.Lazy as TL
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
 newtype NewAddressResponse
   = NewAddressResponse
-      { address :: TL.Text
+      { address :: Text
       }
   deriving (Show, Eq)
 

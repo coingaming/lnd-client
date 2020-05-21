@@ -26,7 +26,7 @@ import LndClient.Import.External
 newtype QRPixels = QRPixels (Image Pixel8)
 
 newtype QRPngDataUrl = QRPngDataUrl Text
-  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq)
+  deriving (PersistField, PersistFieldSql, Show, Eq)
 
 data QROpts
   = QROpts
@@ -49,5 +49,5 @@ qrPixels opts x = QRPixels . toImage (qrBorder opts) (qrScale opts) <$> qrGeneri
 
 qrPngDataUrl :: QR.ToText a => QROpts -> a -> Maybe QRPngDataUrl
 qrPngDataUrl opts x =
-  QRPngDataUrl . toStrict . toPngDataUrlT (qrBorder opts) (qrScale opts)
+  QRPngDataUrl . toPngDataUrlT (qrBorder opts) (qrScale opts)
     <$> qrGeneric x
