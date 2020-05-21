@@ -26,7 +26,7 @@ import LndClient.Import.External
 newtype QRPixels = QRPixels (Image Pixel8)
 
 newtype QRPngDataUrl = QRPngDataUrl Text
-  deriving (FromJSON, ToJSON, PersistField, PersistFieldSql, Show, Eq)
+  deriving (PersistField, PersistFieldSql, Show, Eq)
 
 data QROpts
   = QROpts

@@ -23,39 +23,22 @@ description:         Please see the README on GitHub at <https://github.com/gith
 # TODO : rm unused dependencies!!!
 #
 dependencies:
+# foundation
 - base >= 4.7 && < 5
 - universum
-- envparse
-- bytestring
-- text
-- katip
-- tls
-- http-client
-- http-client-tls
-- http-types
-- http-conduit
-- conduit
-- data-default
-- connection
-- aeson
-- aeson-casing
-- aeson-qq
-- unbounded-delays
-- base64-bytestring
-- base16-bytestring
-- cryptohash-sha256
-- network-bitcoin
-- transformers
-- unliftio
-- mtl
-- retry
-- async
-- persistent
-- scientific
-- qrcode-core
-- qrcode-juicypixels
-- JuicyPixels
+# time
 - chronos
+- unbounded-delays
+# storage
+- persistent
+# logging
+- katip
+# byte and text
+- bytestring
+- base16-bytestring
+- text
+- aeson
+# protobuf and gRPC
 - grpc-haskell
 - grpc-haskell-core
 - proto3-suite
@@ -63,6 +46,19 @@ dependencies:
 - containers
 - deepseq
 - vector
+# images
+- qrcode-core
+- qrcode-juicypixels
+- JuicyPixels
+# system and threading
+- envparse
+- async
+# crypto
+- cryptohash-sha256
+# bitcoin
+- network-bitcoin
+# general
+- unliftio
 
 library:
   source-dirs: src
@@ -70,6 +66,8 @@ library:
   - NoImplicitPrelude
   - MultiParamTypeClasses
   - LambdaCase
+  - OverloadedStrings
+  - ScopedTypeVariables
   ghc-options:
   # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
   # Enable all warnings with -Weverything, then disable the ones we don’t care about
@@ -95,6 +93,8 @@ tests:
     - NoImplicitPrelude
     - MultiParamTypeClasses
     - LambdaCase
+    - OverloadedStrings
+    - ScopedTypeVariables
     ghc-options:
     # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
     # Enable all warnings with -Weverything, then disable the ones we don’t care about
