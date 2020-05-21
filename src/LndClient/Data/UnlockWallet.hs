@@ -1,21 +1,29 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module LndClient.Data.UnlockWallet
   ( UnlockWalletRequest (..),
   )
 where
 
 import LndClient.Import
+import qualified WalletUnlockerGrpc as GRPC
 
 data UnlockWalletRequest
   = UnlockWalletRequest
-      { walletPassword :: Text,
-        recoveryWindow :: Int
+      { walletPassword :: ByteString,
+        recoveryWindow :: Int32
         --
         --  TODO : channel_backups
         --
       }
-  deriving (Generic)
+  deriving (Eq)
 
-instance ToJSON UnlockWalletRequest where
-  toJSON = stdToJSON
+instance ToGrpc UnlockWalletRequest GRPC.UnlockWalletRequest where
+  toGrpc x =
+    msg
+      <$> toGrpc (walletPassword x)
+      <*> toGrpc (recoveryWindow x)
+    where
+      msg gWalletPassword gRecoveryWindow =
+        def
+          { GRPC.unlockWalletRequestWalletPassword = gWalletPassword,
+            GRPC.unlockWalletRequestRecoveryWindow = gRecoveryWindow
+          }

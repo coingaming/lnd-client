@@ -1,56 +1,66 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module LndClient.Data.Peer
   ( Peer (..),
-    PeerList (..),
     LightningAddress (..),
     ConnectPeerRequest (..),
   )
 where
 
+import Data.Text.Lazy as TL
 import LndClient.Import
+import qualified LndGrpc as GRPC
 
 data Peer
   = Peer
-      { pubKey :: Text,
-        address :: Text
+      { pubKey :: TL.Text,
+        address :: TL.Text
       }
-  deriving (Generic, Show, Eq)
+  deriving (Eq, Show)
 
-instance FromJSON Peer where
-  parseJSON = stdParseJSON
-
-newtype PeerList
-  = PeerList
-      { peers :: [Peer]
-      }
-  deriving (Generic, Show, Eq)
-
-instance FromJSON PeerList where
-  parseJSON = stdParseJSON
+instance FromGrpc Peer GRPC.Peer where
+  fromGrpc x =
+    Peer
+      <$> fromGrpc (GRPC.peerPubKey x)
+      <*> fromGrpc (GRPC.peerAddress x)
 
 data LightningAddress
   = LightningAddress
-      { pubkey :: Text,
-        host :: Text
+      { pubkey :: TL.Text,
+        host :: TL.Text
       }
-  deriving (Generic, Show, Eq)
+  deriving (Eq)
 
-instance FromJSON LightningAddress where
-  parseJSON = stdParseJSON
-
-instance ToJSON LightningAddress where
-  toJSON = stdToJSON
+instance ToGrpc LightningAddress GRPC.LightningAddress where
+  toGrpc x =
+    msg
+      <$> toGrpc (pubkey x)
+      <*> toGrpc (host x)
+    where
+      msg gPubkey gHost =
+        def
+          { GRPC.lightningAddressPubkey = gPubkey,
+            GRPC.lightningAddressHost = gHost
+          }
 
 data ConnectPeerRequest
   = ConnectPeerRequest
       { addr :: LightningAddress,
         perm :: Bool
       }
-  deriving (Generic, Show, Eq)
+  deriving (Eq)
 
-instance FromJSON ConnectPeerRequest where
-  parseJSON = stdParseJSON
+instance ToGrpc ConnectPeerRequest GRPC.ConnectPeerRequest where
+  toGrpc x =
+    msg
+      <$> toGrpc (addr x)
+      <*> toGrpc (perm x)
+    where
+      msg gAddr gPerm =
+        def
+          { GRPC.connectPeerRequestAddr = gAddr,
+            GRPC.connectPeerRequestPerm = gPerm
+          }
 
-instance ToJSON ConnectPeerRequest where
-  toJSON = stdToJSON
+instance FromGrpc [Peer] GRPC.ListPeersResponse where
+  fromGrpc = fromGrpc . GRPC.listPeersResponsePeers

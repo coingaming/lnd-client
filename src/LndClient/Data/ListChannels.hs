@@ -57,9 +57,9 @@ instance FromGrpc ListChannelsResponse GRPC.ListChannelsResponse where
     ListChannelsResponse
       <$> (fromGrpc $ GRPC.listChannelsResponseChannels x)
 
-instance FromGrpc [Channel] (Vector GRPC.Channel) where
-  fromGrpc x =
-    mapM fromGrpc (toList x)
+--instance FromGrpc [Channel] (Vector GRPC.Channel) where
+--  fromGrpc x =
+--    mapM fromGrpc (toList x)
 
 instance FromGrpc Channel GRPC.Channel where
   fromGrpc x =

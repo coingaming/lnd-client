@@ -15,59 +15,40 @@ module LndClient.RPC
     newAddress,
     addInvoice,
     initWallet,
-    openChannel,
-    getPeers,
+    openChannelSync,
+    listPeers,
     connectPeer,
     sendPayment,
     getInfo,
     subscribeInvoices,
-    RPCResponse (..),
   )
 where
 
-import qualified Data.Conduit.List as CL
-import Katip (KatipContext, Severity (..), katipAddContext, logTM, sl)
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
-import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseChannelResponse (..))
+import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
 import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (ListChannelsRequest (..), ListChannelsResponse (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
-import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
-import LndClient.Data.SendPayment as SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
-import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
+import LndClient.Data.Peer (ConnectPeerRequest (..), Peer (..))
+import LndClient.Data.SendPayment as SendPayment
+  ( SendPaymentRequest (..),
+    SendPaymentResponse (..),
+  )
+import LndClient.Data.SubscribeInvoices as SubscribeInvoices
+  ( SubscribeInvoicesRequest (..),
+  )
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
-import LndClient.Data.Void (VoidRequest (..), VoidResponse (..))
 import LndClient.Import
 import qualified LndGrpc as GRPC
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel
-import Network.HTTP.Client
-  ( RequestBody (RequestBodyLBS),
-    Response (..),
-    httpLbs,
-    method,
-    parseRequest,
-    queryString,
-    requestBody,
-    requestHeaders,
-    responseStatus,
-    responseTimeout,
-    responseTimeoutNone,
-  )
-import Network.HTTP.Simple (httpSink, setRequestManager)
-import Network.HTTP.Types.Method (StdMethod (..), renderStdMethod)
-import Network.HTTP.Types.Status (ok200, status404)
-import Network.HTTP.Types.URI (Query, renderQuery)
-
-newtype RPCResponse a
-  = RPCResponse (Response (Either String a))
-  deriving (Show)
+import qualified WalletUnlockerGrpc as GRPC
 
 data RpcName
   = UnlockWallet
@@ -75,8 +56,10 @@ data RpcName
   | AddInvoice
   | InitWallet
   | SubscribeInvoices
-  | OpenChannel
-  | GetPeers
+  | OpenChannelSync
+  | ListChannels
+  | CloseChannel
+  | ListPeers
   | ConnectPeer
   | GetInfo
   | SendPayment
@@ -84,176 +67,88 @@ data RpcName
 
 instance ToJSON RpcName
 
-data RpcArgs a b m
-  = RpcArgs
-      { rpcEnv :: LndEnv,
-        rpcMethod :: StdMethod,
-        rpcUrlPath :: String,
-        rpcUrlQuery :: Query,
-        rpcReqBody :: Maybe a,
-        rpcRetryAttempt :: Int,
-        rpcSuccessCond :: RPCResponse b -> Bool,
-        rpcName :: RpcName,
-        rpcSubHandler :: Maybe (ByteString -> m ())
-      }
-
-rpc ::
-  (ToJSON a, FromJSON b, Show b, KatipContext m, MonadUnliftIO m) =>
-  RpcArgs a b m ->
-  m (Either LndError (RPCResponse b))
-rpc
-  RpcArgs
-    { rpcEnv,
-      rpcMethod,
-      rpcUrlPath,
-      rpcUrlQuery,
-      rpcReqBody,
-      rpcRetryAttempt,
-      rpcSuccessCond,
-      rpcName,
-      rpcSubHandler
-    } =
-    katipAddContext (sl "rpcName" rpcName) $ do
-      $(logTM) InfoS "is running..."
-      doExpBackOff rpcRetryAttempt rpcSuccessCond expr
-    where
-      expr = do
-        req0 <- liftIO $ parseRequest $ coerce (envLndUrl rpcEnv) <> rpcUrlPath
-        let req1 =
-              req0
-                { method = renderStdMethod rpcMethod,
-                  queryString = renderQuery False rpcUrlQuery,
-                  requestHeaders =
-                    [ ("Content-Type", "application/json"),
-                      ( "Grpc-Metadata-macaroon",
-                        coerce $ envLndHexMacaroon rpcEnv
-                      )
-                    ]
-                }
-        let req2 =
-              maybe
-                req1
-                (\b -> req1 {requestBody = RequestBodyLBS $ encode b})
-                rpcReqBody
-        --liftIO $ print $ encode rpcReqBody
-        manager <- liftIO $ coerce $ envLndTlsManagerBuilder rpcEnv
-        case rpcSubHandler of
-          Nothing -> do
-            res <- liftIO $ httpLbs req2 manager
-            --liftIO $ print res
-            return $ RPCResponse $ eitherDecode <$> res
-          Just subHandler -> do
-            let req3 = setRequestManager manager req2
-            let req4 = req3 {responseTimeout = responseTimeoutNone}
-            httpSink req4 $ \res -> do
-              CL.mapM_ subHandler
-              return
-                $ RPCResponse
-                $ Left "subscription don't have response body"
-                  <$ res
-
 grpcMeta :: LndEnv -> MetadataMap
 grpcMeta env =
   [("macaroon", coerce $ envLndHexMacaroon env)]
 
+grpcDefaultTimeout :: Int
+grpcDefaultTimeout = 5
+
 initWallet ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   InitWalletRequest ->
-  m (Either LndError (RPCResponse VoidResponse))
+  m (Either LndError ())
 initWallet env req = do
-  res <- rpc $ rpcArgs env
+  res <-
+    grpcSync
+      InitWallet
+      GRPC.walletUnlockerClient
+      GRPC.walletUnlockerInitWallet
+      grpcDefaultTimeout
+      env
+      req
   --
   -- NOTE : some LND bullshit - it crashes if other RPC performed after that too soon
   --
   _ <- liftIO $ delay 5000000
   return res
-  where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = POST,
-          rpcUrlPath = "/v1/initwallet",
-          rpcUrlQuery = [],
-          rpcReqBody = Just req,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = InitWallet,
-          rpcSubHandler = Nothing
-        }
 
 --
 --  TODO : implement recovery_window and channel_backups
 --
 unlockWallet ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (KatipContext m) =>
   LndEnv ->
-  m (Either LndError (RPCResponse VoidResponse))
+  m (Either LndError ())
 unlockWallet env =
-  rpc $ rpcArgs env
-  where
-    rpcReqBody rpcEnv =
-      Just
-        UnlockWalletRequest
-          { walletPassword = coerce $ envLndB64WalletPassword rpcEnv,
-            recoveryWindow = 0
-          }
-    rpcSuccessCond (RPCResponse res) =
-      let ss = responseStatus res in ss == ok200 || ss == status404
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = POST,
-          rpcUrlPath = "/v1/unlockwallet",
-          rpcUrlQuery = [],
-          rpcReqBody = rpcReqBody rpcEnv,
-          rpcRetryAttempt = 5,
-          rpcSuccessCond,
-          rpcName = UnlockWallet,
-          rpcSubHandler = Nothing
-        }
-
-stdRpcCond :: RPCResponse a -> Bool
-stdRpcCond (RPCResponse res) =
-  (responseStatus res == ok200) && isRight (responseBody res)
+  grpcSync
+    InitWallet
+    GRPC.walletUnlockerClient
+    GRPC.walletUnlockerUnlockWallet
+    grpcDefaultTimeout
+    env
+    UnlockWalletRequest
+      { walletPassword = coerce $ envLndWalletPassword env,
+        recoveryWindow = 0
+      }
 
 newAddress ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (KatipContext m) =>
   LndEnv ->
-  m (Either LndError (RPCResponse NewAddressResponse))
-newAddress env = rpc $ rpcArgs env
-  where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = GET,
-          rpcUrlPath = "/v1/newaddress",
-          rpcUrlQuery = [("type", Just "1")],
-          rpcReqBody = Nothing :: Maybe VoidRequest,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = NewAddress,
-          rpcSubHandler = Nothing
-        }
+  GRPC.AddressType ->
+  m (Either LndError NewAddressResponse)
+newAddress env req =
+  grpcSync
+    NewAddress
+    GRPC.lightningClient
+    GRPC.lightningNewAddress
+    1
+    env
+    (GRPC.NewAddressRequest $ Enumerated $ Right req)
 
 --
 -- TODO
--- better generic utils for request/parsing
+--
 -- handle exceptions
 -- fix RHash type
 -- fix PaymentRequest type
 -- rm RPCResponse (we don't have HTTP-related low level details anymore)
 --
 addInvoice ::
-  (MonadIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   AddInvoiceRequest ->
   m (Either LndError AddInvoiceResponse)
 addInvoice =
-  grpcSync GRPC.lightningAddInvoice 1
+  grpcSync
+    AddInvoice
+    GRPC.lightningClient
+    GRPC.lightningAddInvoice
+    1
 
 subscribeInvoices ::
-  (MonadIO m) =>
+  (KatipContext m) =>
   --
   -- TODO : replace IO with m if possible
   --
@@ -262,7 +157,8 @@ subscribeInvoices ::
   SubscribeInvoicesRequest ->
   m (Either LndError Invoice)
 subscribeInvoices invoiceHandler =
-  grpcReader
+  grpcSubscribe
+    SubscribeInvoices
     GRPC.lightningSubscribeInvoices
     3600
     (\_ _ s -> streamHandler s)
@@ -282,42 +178,39 @@ subscribeInvoices invoiceHandler =
             Left e -> fail $ show e
           streamHandler stream
 
-openChannel ::
-  (KatipContext m, MonadUnliftIO m) =>
+openChannelSync ::
+  (KatipContext m) =>
   LndEnv ->
   OpenChannelRequest ->
-  m (Either LndError (RPCResponse ChannelPoint))
-openChannel env req = rpc $ rpcArgs env
-  where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = POST,
-          rpcUrlPath = "/v1/channels",
-          rpcUrlQuery = [],
-          rpcReqBody = Just req,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = OpenChannel,
-          rpcSubHandler = Nothing
-        }
+  m (Either LndError ChannelPoint)
+openChannelSync =
+  grpcSync
+    OpenChannelSync
+    GRPC.lightningClient
+    GRPC.lightningOpenChannelSync
+    1
 
 listChannels ::
-  (MonadIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   ListChannelsRequest ->
   m (Either LndError ListChannelsResponse)
 listChannels =
-  grpcSync GRPC.lightningListChannels 1
+  grpcSync
+    ListChannels
+    GRPC.lightningClient
+    GRPC.lightningListChannels
+    1
 
 closeChannel ::
-  (MonadIO m) =>
-  (CloseChannelResponse -> IO ()) ->
+  (KatipContext m) =>
+  (CloseStatusUpdate -> IO ()) ->
   LndEnv ->
   CloseChannelRequest ->
-  m (Either LndError CloseChannelResponse)
+  m (Either LndError CloseStatusUpdate)
 closeChannel closeHandler =
-  grpcReader
+  grpcSubscribe
+    CloseChannel
     GRPC.lightningCloseChannel
     3600
     (\_ _ s -> streamHandler s)
@@ -337,80 +230,66 @@ closeChannel closeHandler =
             Left e -> fail $ show e
           streamHandler stream
 
-getPeers ::
-  (KatipContext m, MonadUnliftIO m) =>
+listPeers ::
+  (KatipContext m) =>
   LndEnv ->
-  m (Either LndError (RPCResponse PeerList))
-getPeers env = rpc $ rpcArgs env
-  where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = GET,
-          rpcUrlPath = "/v1/peers",
-          rpcUrlQuery = [],
-          rpcReqBody = Nothing :: Maybe VoidRequest,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = GetPeers,
-          rpcSubHandler = Nothing
-        }
+  m (Either LndError [Peer])
+listPeers env =
+  grpcSync
+    ListPeers
+    GRPC.lightningClient
+    GRPC.lightningListPeers
+    1
+    env
+    (def :: GRPC.ListPeersRequest)
 
 connectPeer ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   ConnectPeerRequest ->
-  m (Either LndError (RPCResponse VoidResponse))
-connectPeer env req = rpc $ rpcArgs env
-  where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = POST,
-          rpcUrlPath = "/v1/peers",
-          rpcUrlQuery = [],
-          rpcReqBody = Just req,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = ConnectPeer,
-          rpcSubHandler = Nothing
-        }
+  m (Either LndError ())
+connectPeer =
+  grpcSync
+    ConnectPeer
+    GRPC.lightningClient
+    GRPC.lightningConnectPeer
+    1
 
 getInfo ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (KatipContext m) =>
   LndEnv ->
-  m (Either LndError (RPCResponse GetInfoResponse))
-getInfo env = rpc $ rpcArgs env
-  where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = GET,
-          rpcUrlPath = "/v1/getinfo",
-          rpcUrlQuery = [],
-          rpcReqBody = Nothing :: Maybe VoidRequest,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = GetInfo,
-          rpcSubHandler = Nothing
-        }
+  m (Either LndError GetInfoResponse)
+getInfo env =
+  grpcSync
+    GetInfo
+    GRPC.lightningClient
+    GRPC.lightningGetInfo
+    1
+    env
+    GRPC.GetInfoRequest
 
 sendPayment ::
-  (MonadIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   SendPaymentRequest ->
   m (Either LndError SendPaymentResponse)
 sendPayment =
-  grpcSync GRPC.lightningSendPaymentSync 1
+  grpcSync
+    SendPayment
+    GRPC.lightningClient
+    GRPC.lightningSendPaymentSync
+    1
 
 --
 -- TODO : add logging and elapsed time logs
 --
-grpcReader ::
+grpcSubscribe ::
   ( MonadIO m,
+    KatipContext m,
     ToGrpc a gA,
     FromGrpc b gB
   ) =>
+  RpcName ->
   ( GRPC.Lightning ClientRequest ClientResult ->
     ClientRequest 'ServerStreaming gA response1 ->
     IO (ClientResult streamType gB)
@@ -427,9 +306,10 @@ grpcReader ::
   LndEnv ->
   a ->
   m (Either LndError b)
-grpcReader method timeout handler env req =
-  liftIO $
-    case toGrpc req of
+grpcSubscribe rpcName method timeout handler env req =
+  katipAddContext (sl "rpcName" rpcName) $ do
+    $(logTM) InfoS "rpc is running..."
+    (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e
       Right grpcReq ->
         withGRPCClient (envLndGrpcConfig env) $ \client -> do
@@ -438,15 +318,37 @@ grpcReader method timeout handler env req =
             method' $
               ClientReaderRequest grpcReq timeout (grpcMeta env) handler
           return $ case rawGrpc of
-            ClientNormalResponse grpcRes _ _ _ _ -> fromGrpc grpcRes
-            _ -> Left $ GrpcError "TODO IMPLEMENT ERROR DEBUG"
+            --
+            -- TODO : here probably ReaderResponse should be valid?
+            --
+            ClientNormalResponse grpcRes _ _ _ _ ->
+              fromGrpc grpcRes
+            ClientErrorResponse err ->
+              Left $ GrpcError err
+            ClientWriterResponse {} ->
+              Left $ GrpcUnexpectedResult "ClientWriterResponse"
+            ClientReaderResponse {} ->
+              Left $ GrpcUnexpectedResult "ClientReaderResponse"
+            ClientBiDiResponse {} ->
+              Left $ GrpcUnexpectedResult "ClientBiDiResponse"
+    --
+    -- TODO : better logs?
+    --
+    katipAddContext (sl "elapsedSeconds" (showElapsedSeconds ts)) $ do
+      if isRight res
+        then $(logTM) ErrorS "rpc failed"
+        else $(logTM) InfoS "rpc succeeded"
+      return res
 
 grpcSync ::
   ( MonadIO m,
+    KatipContext m,
     ToGrpc a gA,
     FromGrpc b gB
   ) =>
-  ( GRPC.Lightning ClientRequest ClientResult ->
+  RpcName ->
+  (Client -> IO client) ->
+  ( client ->
     ClientRequest 'Normal gA response2 ->
     IO (ClientResult streamType gB)
   ) ->
@@ -457,13 +359,36 @@ grpcSync ::
   LndEnv ->
   a ->
   m (Either LndError b)
-grpcSync method timeout env req =
-  liftIO $ case toGrpc req of
-    Left e -> return $ Left e
-    Right grpcReq ->
-      withGRPCClient (envLndGrpcConfig env) $ \client -> do
-        method' <- method <$> GRPC.lightningClient client
-        rawGrpc <- method' $ ClientNormalRequest grpcReq timeout $ grpcMeta env
-        return $ case rawGrpc of
-          ClientNormalResponse grpcRes _ _ _ _ -> fromGrpc grpcRes
-          _ -> Left $ GrpcError "TODO IMPLEMENT ERROR DEBUG"
+grpcSync rpcName service method timeout env req =
+  katipAddContext (sl "rpcName" rpcName) $ do
+    $(logTM) InfoS "rpc is running..."
+    (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
+      Left e -> return $ Left e
+      Right grpcReq ->
+        withGRPCClient (envLndGrpcConfig env) $ \client -> do
+          method' <- method <$> service client
+          rawGrpc <- method' $ ClientNormalRequest grpcReq timeout $ grpcMeta env
+          return $ case rawGrpc of
+            ClientNormalResponse grpcRes _ _ _ _ ->
+              fromGrpc grpcRes
+            ClientErrorResponse err ->
+              Left $ GrpcError err
+            ClientWriterResponse {} ->
+              Left $ GrpcUnexpectedResult "ClientWriterResponse"
+            ClientReaderResponse {} ->
+              Left $ GrpcUnexpectedResult "ClientReaderResponse"
+            ClientBiDiResponse {} ->
+              Left $ GrpcUnexpectedResult "ClientBiDiResponse"
+    --
+    -- TODO : better logs?
+    --
+    katipAddContext (sl "elapsedSeconds" (showElapsedSeconds ts)) $ do
+      case res of
+        Left e ->
+          $(logTM) ErrorS $ logStr ("rpc failed with error " <> show e :: Text)
+        Right _ ->
+          $(logTM) InfoS "rpc succeeded"
+      return res
+
+showElapsedSeconds :: Timespan -> Text
+showElapsedSeconds = encodeTimespan SubsecondPrecisionAuto

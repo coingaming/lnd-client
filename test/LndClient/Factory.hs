@@ -8,22 +8,19 @@ module LndClient.Factory
   )
 where
 
-import Katip (KatipContext)
 import LndClient
 import LndClient.Data.InitWallet (InitWalletRequest (..))
-import LndClient.Data.Void
-import UnliftIO (MonadUnliftIO)
 
 initTestWallet ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (KatipContext m) =>
   LndEnv ->
-  m (Either LndError (RPCResponse VoidResponse))
+  m (Either LndError ())
 initTestWallet env =
   initWallet env initWalletRequest
   where
     initWalletRequest =
       InitWalletRequest
-        { walletPassword = "ZGV2ZWxvcGVy",
+        { walletPassword = "developer",
           aezeedPassphrase = Nothing,
           cipherSeedMnemonic = initWalletSeed
         }

@@ -3,6 +3,7 @@
 
 module LndClient.Data.CloseChannel
   ( CloseChannelRequest (..),
+    CloseStatusUpdate (..),
   )
 where
 
@@ -20,17 +21,12 @@ data CloseChannelRequest
       }
   deriving (Generic, Show)
 
-data CloseStatusUpdate
-  = CloseStatusUpdate
-      { closePending :: PendingUpdate,
-        chanClose :: ChannelCloseUpdate
-      }
-  deriving (Generic, Show)
+data CloseStatusUpdate = Pending PendingUpdate | Close ChannelCloseUpdate | NothingUpdate
 
 data PendingUpdate
   = PendingUpdate
       { txid :: ByteString,
-        outputIndex :: Int32
+        outputIndex :: Word32
       }
   deriving (Generic, Show)
 
@@ -76,7 +72,19 @@ instance ToGrpc ChannelPoint GRPC.ChannelPoint where
 
 instance FromGrpc CloseStatusUpdate GRPC.CloseStatusUpdate where
   fromGrpc x =
-    CloseStatusUpdate
-      <$> (fromGrpc $ GRPC.CloseStatusUpdateUpdateClosePending x)
-      <*> (fromGrpc $ GRPC.CloseStatusUpdateUpdateChanClose x)
-      <*> (fromGrpc $ GRPC.addInvoiceResponseAddIndex x)
+    case x of
+      GRPC.CloseStatusUpdate (Just (GRPC.CloseStatusUpdateUpdateChanClose a)) -> Close <$> (fromGrpc a)
+      GRPC.CloseStatusUpdate (Just (GRPC.CloseStatusUpdateUpdateClosePending a)) -> Pending <$> (fromGrpc a)
+      GRPC.CloseStatusUpdate Nothing -> Right NothingUpdate
+
+instance FromGrpc PendingUpdate GRPC.PendingUpdate where
+  fromGrpc x =
+    PendingUpdate
+      <$> (fromGrpc $ GRPC.pendingUpdateTxid x)
+      <*> (fromGrpc $ GRPC.pendingUpdateOutputIndex x)
+
+instance FromGrpc ChannelCloseUpdate GRPC.ChannelCloseUpdate where
+  fromGrpc x =
+    ChannelCloseUpdate
+      <$> (fromGrpc $ GRPC.channelCloseUpdateClosingTxid x)
+      <*> (fromGrpc $ GRPC.channelCloseUpdateSuccess x)
