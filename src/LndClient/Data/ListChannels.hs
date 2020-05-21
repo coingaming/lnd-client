@@ -4,6 +4,7 @@
 module LndClient.Data.ListChannels
   ( ListChannelsRequest (..),
     ListChannelsResponse (..),
+    Channel (..),
   )
 where
 

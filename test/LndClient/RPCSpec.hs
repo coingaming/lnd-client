@@ -12,16 +12,21 @@ where
 
 import Control.Concurrent.Async (async, link)
 import Control.Concurrent.Thread.Delay (delay)
+import Data.ByteString as BS (reverse)
 import Data.ByteString.Base16 (decode)
+import Data.ByteString.Char8 (split)
+import Data.Maybe (fromMaybe)
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
     hashifyAddInvoiceRequest,
   )
 import LndClient.Data.BtcEnv
+import LndClient.Data.CloseChannel (ChannelPoint (..), CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
+import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..), ListChannelsResponse (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
@@ -146,8 +151,9 @@ spec = around withEnv $ do
         runApp env $
           initWallet (envLnd $ custEnv env) initWalletRequestCust
       res `shouldSatisfy` successOrUnimplemented
-  describe "UnlockWallet" $ do
-    it "rpc-succeeds" $ \env -> do
+  describe "UnlockWallet"
+    $ it "rpc-succeeds"
+    $ \env -> do
       res <- runApp env $ unlockWallet (envLnd env)
       res `shouldSatisfy` successOrUnimplemented
   describe "AddInvoice" $ do
@@ -158,14 +164,16 @@ spec = around withEnv $ do
           coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
       let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
       isJust qr `shouldBe` True
-  describe "NewAddress" $ do
-    it "rpc-succeeds"
-      $ shouldBeOk
-      $ flip newAddress GRPC.AddressTypeWITNESS_PUBKEY_HASH
-  describe "Peers" $ do
-    it "rpc-succeeds" $ shouldBeOk listPeers
-  describe "ConnectPeer" $ do
-    it "rpc-succeeds" $ \env -> do
+  describe "NewAddress"
+    $ it "rpc-succeeds"
+    $ shouldBeOk
+    $ flip newAddress GRPC.AddressTypeWITNESS_PUBKEY_HASH
+  describe "Peers"
+    $ it "rpc-succeeds"
+    $ shouldBeOk listPeers
+  describe "ConnectPeer"
+    $ it "rpc-succeeds"
+    $ \env -> do
       _ <- runApp env $ initWallet (envLnd env) initWalletRequest
       _ <- runApp (custEnv env) $ initWallet (envLnd $ custEnv env) initWalletRequestCust
       GetInfoResponse nodePubKey <- runApp env $ coerceLndResult =<< getInfo (envLnd $ custEnv env)
@@ -179,8 +187,9 @@ spec = around withEnv $ do
                 perm = False
               }
       shouldBeOk (flip connectPeer connectPeerRequest) env
-  describe "OpenChannel" $ do
-    it "rpc-succeeds" $ \env -> do
+  describe "OpenChannel"
+    $ it "rpc-succeeds"
+    $ \env -> do
       NewAddressResponse btcAddress <-
         runApp (custEnv env) $
           coerceLndResult
@@ -203,8 +212,64 @@ spec = around withEnv $ do
       _ <- delay 3000000
       req <- openChannelRequest (custEnv env)
       shouldBeOk (`openChannelSync` req) (custEnv env)
-  describe "SubscribeInvoices" $ do
-    it "rpc-succeeds" $ \env -> do
+  describe "ListChannelAndClose"
+    $ it "rpc-succeeds"
+    $ \env -> do
+      NewAddressResponse btcAddress <-
+        runApp (custEnv env) $
+          coerceLndResult
+            =<< newAddress
+              (envLnd $ custEnv env)
+              GRPC.AddressTypeWITNESS_PUBKEY_HASH
+      client <- btcClient
+      GetInfoResponse mercPubKey <- runApp env $ coerceLndResult =<< getInfo (envLnd env)
+      let connectPeerRequest =
+            ConnectPeerRequest
+              { addr =
+                  LightningAddress
+                    { pubkey = mercPubKey,
+                      host = "localhost:9735"
+                    },
+                perm = False
+              }
+      _ <- runApp (custEnv env) $ connectPeer (envLnd $ custEnv env) connectPeerRequest
+      _ <- generateToAddress client 100 (toStrict btcAddress) Nothing
+      _ <- delay 3000000
+      req <- openChannelRequest (custEnv env)
+      _ <- runApp (custEnv env) $ openChannelSync (envLnd $ custEnv env) req
+      ListChannelsResponse channelList <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
+      print $ length channelList
+      let firstChannel :: Channel = case safeHead channelList of
+            Just channel -> channel
+            Nothing -> Channel {remotePubkey = "", channelPoint = ""}
+      print firstChannel
+      let nStr :: ByteString = encodeUtf8 $ LndClient.Data.ListChannels.channelPoint firstChannel
+      let fundingTxids :: [ByteString] = split ':' nStr
+      let fundingTxid :: ByteString = fromMaybe "" $ safeHead fundingTxids
+      print fundingTxid
+      let (fundingTxidHex, _) = decode fundingTxid
+      x <- newEmptyMVar
+      link
+        =<< ( async $ runApp env $
+                closeChannel
+                  (liftIO . putMVar x)
+                  (envLnd env)
+                  (CloseChannelRequest (ChannelPoint (BS.reverse fundingTxidHex) 0) True Nothing Nothing Nothing)
+            )
+      _ <- delay 3000000
+      ListChannelsResponse channelList2 <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
+      print $ length channelList2
+      closeUpdateStatus <- takeMVar x
+      print closeUpdateStatus
+      True `shouldSatisfy` (\_ -> True)
+  --print x
+  --      channelList <-
+  --        runApp env $
+  --          coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
+  --      print channelList
+  describe "SubscribeInvoices"
+    $ it "rpc-succeeds"
+    $ \env -> do
       x <- newEmptyMVar
       -- can't use proper "race" there
       -- because of this
@@ -222,46 +287,49 @@ spec = around withEnv $ do
         runApp env $
           coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
       resultingInvoice <- takeMVar x
+      print resultingInvoice
       resultingInvoice
         `shouldSatisfy` ( \this ->
                             AddInvoice.rHash originalInvoice == Invoice.rHash this
                         )
-  describe "SubscribeInvoicesAndSettleIt" $
-    do
-      it "rpc-succeeds" $ \env -> do
-        NewAddressResponse btcAddress <-
-          runApp (custEnv env) $
-            coerceLndResult
-              =<< newAddress
-                (envLnd $ custEnv env)
-                GRPC.AddressTypeWITNESS_PUBKEY_HASH
-        client <- btcClient
-        _ <- generateToAddress client 100 (toStrict btcAddress) Nothing
-        invoice <- runApp env $ coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
-        x <- newEmptyMVar
-        let sendPaymentRequest =
-              SendPaymentRequest
-                { paymentRequest = (AddInvoice.paymentRequest invoice),
-                  amt = (MoneyAmount 1000)
-                }
-        link
-          =<< ( async $ runApp env $
-                  subscribeInvoices
-                    (liftIO . putMVar x)
-                    (envLnd env)
-                    (SubscribeInvoicesRequest Nothing Nothing)
-              )
-        _ <- delay 3000000
-        _ <-
-          runApp (custEnv env) $
-            coerceLndResult =<< sendPayment (envLnd $ custEnv env) sendPaymentRequest
-        resultingInvoice <- takeMVar x
-        resultingInvoice
-          `shouldSatisfy` ( \this ->
-                              AddInvoice.rHash invoice == Invoice.rHash this
-                          )
-  describe "GetInfo" $ do
-    it "rpc-succeeds" $ \env -> do
+  describe "SubscribeInvoicesAndSettleIt"
+    $ it "rpc-succeeds"
+    $ \env -> do
+      NewAddressResponse btcAddress <-
+        runApp (custEnv env) $
+          coerceLndResult
+            =<< newAddress
+              (envLnd $ custEnv env)
+              GRPC.AddressTypeWITNESS_PUBKEY_HASH
+      client <- btcClient
+      _ <- generateToAddress client 100 (toStrict btcAddress) Nothing
+      invoice <- runApp env $ coerceLndResult =<< addInvoice (envLnd env) addInvoiceRequest
+      x <- newEmptyMVar
+      let sendPaymentRequest =
+            SendPaymentRequest
+              { paymentRequest = (AddInvoice.paymentRequest invoice),
+                amt = (MoneyAmount 1000)
+              }
+      link
+        =<< ( async $ runApp env $
+                subscribeInvoices
+                  (liftIO . putMVar x)
+                  (envLnd env)
+                  (SubscribeInvoicesRequest Nothing Nothing)
+            )
+      _ <- delay 3000000
+      _ <-
+        runApp (custEnv env) $
+          coerceLndResult =<< sendPayment (envLnd $ custEnv env) sendPaymentRequest
+      resultingInvoice <- takeMVar x
+      print resultingInvoice
+      resultingInvoice
+        `shouldSatisfy` ( \this ->
+                            AddInvoice.rHash invoice == Invoice.rHash this
+                        )
+  describe "GetInfo"
+    $ it "rpc-succeeds"
+    $ \env -> do
       shouldBeOk getInfo (custEnv env)
   where
     addInvoiceRequest =
@@ -346,7 +414,7 @@ spec = around withEnv $ do
       res <- runApp env $ coerceLndResult =<< listPeers (envLnd env)
       let mPeer = safeHead res
       case mPeer of
-        Just peer -> return $ pubKey peer
+        Just pPeer -> return $ pubKey pPeer
         Nothing -> fail "no any peers connected"
     initWalletRequest =
       InitWalletRequest

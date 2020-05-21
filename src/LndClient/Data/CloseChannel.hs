@@ -4,6 +4,7 @@
 module LndClient.Data.CloseChannel
   ( CloseChannelRequest (..),
     CloseStatusUpdate (..),
+    ChannelPoint (..),
   )
 where
 
@@ -15,13 +16,14 @@ data CloseChannelRequest
   = CloseChannelRequest
       { channelPoint :: ChannelPoint,
         force :: Bool,
-        targetConf :: Int32,
-        satPerByte :: Int64,
-        deliveryAddress :: TL.Text
+        targetConf :: Maybe Int32,
+        satPerByte :: Maybe Int64,
+        deliveryAddress :: Maybe TL.Text
       }
   deriving (Generic, Show)
 
 data CloseStatusUpdate = Pending PendingUpdate | Close ChannelCloseUpdate | NothingUpdate
+  deriving (Generic, Show)
 
 data PendingUpdate
   = PendingUpdate
@@ -39,7 +41,8 @@ data ChannelCloseUpdate
 
 data ChannelPoint
   = ChannelPoint
-      { fundingTxidBytes :: ByteString
+      { fundingTxidBytes :: ByteString,
+        outputIndex2 :: Word32
       }
   deriving (Generic, Show, Eq)
 
@@ -64,10 +67,12 @@ instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
 instance ToGrpc ChannelPoint GRPC.ChannelPoint where
   toGrpc x =
     msg <$> (toGrpc $ fundingTxidBytes x)
+      <*> (toGrpc $ outputIndex2 x)
     where
-      msg gFundingTxidBytes =
+      msg gFundingTxidBytes gOutputIndex =
         def
-          { GRPC.channelPointFundingTxid = Just $ GRPC.ChannelPointFundingTxidFundingTxidBytes gFundingTxidBytes
+          { GRPC.channelPointFundingTxid = GRPC.ChannelPointFundingTxidFundingTxidBytes <$> gFundingTxidBytes,
+            GRPC.channelPointOutputIndex = gOutputIndex
           }
 
 instance FromGrpc CloseStatusUpdate GRPC.CloseStatusUpdate where

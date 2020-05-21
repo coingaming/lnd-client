@@ -14,6 +14,8 @@ module LndClient.RPC
     addInvoice,
     initWallet,
     openChannelSync,
+    listChannels,
+    closeChannel,
     listPeers,
     connectPeer,
     sendPayment,
