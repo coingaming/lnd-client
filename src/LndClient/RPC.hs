@@ -21,11 +21,9 @@ module LndClient.RPC
     sendPayment,
     getInfo,
     subscribeInvoices,
-    RPCResponse (..),
   )
 where
 
-import qualified Data.Conduit.List as CL
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
@@ -36,35 +34,19 @@ import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), Peer (..))
-import LndClient.Data.SendPayment as SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
-import LndClient.Data.SubscribeInvoices as SubscribeInvoices (SubscribeInvoicesRequest (..))
+import LndClient.Data.SendPayment as SendPayment
+  ( SendPaymentRequest (..),
+    SendPaymentResponse (..),
+  )
+import LndClient.Data.SubscribeInvoices as SubscribeInvoices
+  ( SubscribeInvoicesRequest (..),
+  )
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
-import LndClient.Data.Void (VoidResponse (..))
 import LndClient.Import
 import qualified LndGrpc as GRPC
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel
-import Network.HTTP.Client
-  ( RequestBody (RequestBodyLBS),
-    Response (..),
-    httpLbs,
-    method,
-    parseRequest,
-    queryString,
-    requestBody,
-    requestHeaders,
-    responseStatus,
-    responseTimeout,
-    responseTimeoutNone,
-  )
-import Network.HTTP.Simple (httpSink, setRequestManager)
-import Network.HTTP.Types.Method (StdMethod (..), renderStdMethod)
-import Network.HTTP.Types.Status (ok200, status404)
-import Network.HTTP.Types.URI (Query, renderQuery)
-
-newtype RPCResponse a
-  = RPCResponse (Response (Either String a))
-  deriving (Show)
+import qualified WalletUnlockerGrpc as GRPC
 
 data RpcName
   = UnlockWallet
@@ -81,138 +63,51 @@ data RpcName
 
 instance ToJSON RpcName
 
-data RpcArgs a b m
-  = RpcArgs
-      { rpcEnv :: LndEnv,
-        rpcMethod :: StdMethod,
-        rpcUrlPath :: String,
-        rpcUrlQuery :: Query,
-        rpcReqBody :: Maybe a,
-        rpcRetryAttempt :: Int,
-        rpcSuccessCond :: RPCResponse b -> Bool,
-        rpcName :: RpcName,
-        rpcSubHandler :: Maybe (ByteString -> m ())
-      }
-
-rpc ::
-  (ToJSON a, FromJSON b, Show b, KatipContext m, MonadUnliftIO m) =>
-  RpcArgs a b m ->
-  m (Either LndError (RPCResponse b))
-rpc
-  RpcArgs
-    { rpcEnv,
-      rpcMethod,
-      rpcUrlPath,
-      rpcUrlQuery,
-      rpcReqBody,
-      rpcRetryAttempt,
-      rpcSuccessCond,
-      rpcName,
-      rpcSubHandler
-    } =
-    katipAddContext (sl "rpcName" rpcName) $ do
-      $(logTM) InfoS "is running..."
-      doExpBackOff rpcRetryAttempt rpcSuccessCond expr
-    where
-      expr = do
-        req0 <- liftIO $ parseRequest $ coerce (envLndUrl rpcEnv) <> rpcUrlPath
-        let req1 =
-              req0
-                { method = renderStdMethod rpcMethod,
-                  queryString = renderQuery False rpcUrlQuery,
-                  requestHeaders =
-                    [ ("Content-Type", "application/json"),
-                      ( "Grpc-Metadata-macaroon",
-                        coerce $ envLndHexMacaroon rpcEnv
-                      )
-                    ]
-                }
-        let req2 =
-              maybe
-                req1
-                (\b -> req1 {requestBody = RequestBodyLBS $ encode b})
-                rpcReqBody
-        --liftIO $ print $ encode rpcReqBody
-        manager <- liftIO $ coerce $ envLndTlsManagerBuilder rpcEnv
-        case rpcSubHandler of
-          Nothing -> do
-            res <- liftIO $ httpLbs req2 manager
-            --liftIO $ print res
-            return $ RPCResponse $ eitherDecode <$> res
-          Just subHandler -> do
-            let req3 = setRequestManager manager req2
-            let req4 = req3 {responseTimeout = responseTimeoutNone}
-            httpSink req4 $ \res -> do
-              CL.mapM_ subHandler
-              return
-                $ RPCResponse
-                $ Left "subscription don't have response body"
-                  <$ res
-
 grpcMeta :: LndEnv -> MetadataMap
 grpcMeta env =
   [("macaroon", coerce $ envLndHexMacaroon env)]
 
+grpcDefaultTimeout :: Int
+grpcDefaultTimeout = 5
+
 initWallet ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (KatipContext m) =>
   LndEnv ->
   InitWalletRequest ->
-  m (Either LndError (RPCResponse VoidResponse))
+  m (Either LndError ())
 initWallet env req = do
-  res <- rpc $ rpcArgs env
+  res <-
+    grpcSync
+      InitWallet
+      GRPC.walletUnlockerClient
+      GRPC.walletUnlockerInitWallet
+      grpcDefaultTimeout
+      env
+      req
   --
   -- NOTE : some LND bullshit - it crashes if other RPC performed after that too soon
   --
   _ <- liftIO $ delay 5000000
   return res
-  where
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = POST,
-          rpcUrlPath = "/v1/initwallet",
-          rpcUrlQuery = [],
-          rpcReqBody = Just req,
-          rpcRetryAttempt = 0,
-          rpcSuccessCond = stdRpcCond,
-          rpcName = InitWallet,
-          rpcSubHandler = Nothing
-        }
 
 --
 --  TODO : implement recovery_window and channel_backups
 --
 unlockWallet ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (KatipContext m) =>
   LndEnv ->
-  m (Either LndError (RPCResponse VoidResponse))
+  m (Either LndError ())
 unlockWallet env =
-  rpc $ rpcArgs env
-  where
-    rpcReqBody rpcEnv =
-      Just
-        UnlockWalletRequest
-          { walletPassword = coerce $ envLndB64WalletPassword rpcEnv,
-            recoveryWindow = 0
-          }
-    rpcSuccessCond (RPCResponse res) =
-      let ss = responseStatus res in ss == ok200 || ss == status404
-    rpcArgs rpcEnv =
-      RpcArgs
-        { rpcEnv,
-          rpcMethod = POST,
-          rpcUrlPath = "/v1/unlockwallet",
-          rpcUrlQuery = [],
-          rpcReqBody = rpcReqBody rpcEnv,
-          rpcRetryAttempt = 5,
-          rpcSuccessCond,
-          rpcName = UnlockWallet,
-          rpcSubHandler = Nothing
-        }
-
-stdRpcCond :: RPCResponse a -> Bool
-stdRpcCond (RPCResponse res) =
-  (responseStatus res == ok200) && isRight (responseBody res)
+  grpcSync
+    InitWallet
+    GRPC.walletUnlockerClient
+    GRPC.walletUnlockerUnlockWallet
+    grpcDefaultTimeout
+    env
+    UnlockWalletRequest
+      { walletPassword = coerce $ envLndWalletPassword env,
+        recoveryWindow = 0
+      }
 
 newAddress ::
   (KatipContext m) =>
@@ -222,6 +117,7 @@ newAddress ::
 newAddress env req =
   grpcSync
     NewAddress
+    GRPC.lightningClient
     GRPC.lightningNewAddress
     1
     env
@@ -241,7 +137,11 @@ addInvoice ::
   AddInvoiceRequest ->
   m (Either LndError AddInvoiceResponse)
 addInvoice =
-  grpcSync AddInvoice GRPC.lightningAddInvoice 1
+  grpcSync
+    AddInvoice
+    GRPC.lightningClient
+    GRPC.lightningAddInvoice
+    1
 
 subscribeInvoices ::
   (KatipContext m) =>
@@ -280,14 +180,24 @@ openChannelSync ::
   OpenChannelRequest ->
   m (Either LndError ChannelPoint)
 openChannelSync =
-  grpcSync OpenChannelSync GRPC.lightningOpenChannelSync 1
+  grpcSync
+    OpenChannelSync
+    GRPC.lightningClient
+    GRPC.lightningOpenChannelSync
+    1
 
 listPeers ::
   (KatipContext m) =>
   LndEnv ->
   m (Either LndError [Peer])
 listPeers env =
-  grpcSync ListPeers GRPC.lightningListPeers 1 env (def :: GRPC.ListPeersRequest)
+  grpcSync
+    ListPeers
+    GRPC.lightningClient
+    GRPC.lightningListPeers
+    1
+    env
+    (def :: GRPC.ListPeersRequest)
 
 connectPeer ::
   (KatipContext m) =>
@@ -295,14 +205,24 @@ connectPeer ::
   ConnectPeerRequest ->
   m (Either LndError ())
 connectPeer =
-  grpcSync ConnectPeer GRPC.lightningConnectPeer 1
+  grpcSync
+    ConnectPeer
+    GRPC.lightningClient
+    GRPC.lightningConnectPeer
+    1
 
 getInfo ::
   (KatipContext m) =>
   LndEnv ->
   m (Either LndError GetInfoResponse)
 getInfo env =
-  grpcSync GetInfo GRPC.lightningGetInfo 1 env GRPC.GetInfoRequest
+  grpcSync
+    GetInfo
+    GRPC.lightningClient
+    GRPC.lightningGetInfo
+    1
+    env
+    GRPC.GetInfoRequest
 
 sendPayment ::
   (KatipContext m) =>
@@ -310,7 +230,11 @@ sendPayment ::
   SendPaymentRequest ->
   m (Either LndError SendPaymentResponse)
 sendPayment =
-  grpcSync SendPayment GRPC.lightningSendPaymentSync 1
+  grpcSync
+    SendPayment
+    GRPC.lightningClient
+    GRPC.lightningSendPaymentSync
+    1
 
 --
 -- TODO : add logging and elapsed time logs
@@ -379,7 +303,8 @@ grpcSync ::
     FromGrpc b gB
   ) =>
   RpcName ->
-  ( GRPC.Lightning ClientRequest ClientResult ->
+  (Client -> IO client) ->
+  ( client ->
     ClientRequest 'Normal gA response2 ->
     IO (ClientResult streamType gB)
   ) ->
@@ -390,14 +315,14 @@ grpcSync ::
   LndEnv ->
   a ->
   m (Either LndError b)
-grpcSync rpcName method timeout env req =
+grpcSync rpcName service method timeout env req =
   katipAddContext (sl "rpcName" rpcName) $ do
     $(logTM) InfoS "rpc is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e
       Right grpcReq ->
         withGRPCClient (envLndGrpcConfig env) $ \client -> do
-          method' <- method <$> GRPC.lightningClient client
+          method' <- method <$> service client
           rawGrpc <- method' $ ClientNormalRequest grpcReq timeout $ grpcMeta env
           return $ case rawGrpc of
             ClientNormalResponse grpcRes _ _ _ _ ->

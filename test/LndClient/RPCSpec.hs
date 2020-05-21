@@ -16,7 +16,6 @@ where
 
 import Control.Concurrent.Async (async, link)
 import Control.Concurrent.Thread.Delay (delay)
-import Data.Aeson.QQ
 import Data.ByteString.Base16 (decode)
 import LndClient
 import LndClient.Data.AddInvoice as AddInvoice
@@ -33,11 +32,11 @@ import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
-import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.QRCode
 import qualified LndGrpc as GRPC
 import Network.Bitcoin as BTC (Client, getClient)
 import Network.Bitcoin.Mining (generateToAddress)
+import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel.Client as GC
 import Test.Hspec
 
@@ -146,36 +145,20 @@ runApp env app = runReaderT (unAppM app) env
 spec :: Spec
 spec = around withEnv $ do
   describe "InitWallet" $ do
-    it "request-jsonify" $ \_ ->
-      toJSON initWalletRequest
-        `shouldBe` [aesonQQ|
-            {
-               wallet_password: "ZGV2ZWxvcGVy",
-               cipher_seed_mnemonic: #{initWalletSeed}
-            }
-          |]
-    it "rpc-succeeds" $ \env -> do
+    it "rpc-succeeds-merchant" $ \env -> do
       res <-
         runApp env $
           initWallet (envLnd env) initWalletRequest
-      res
-        `shouldSatisfy` ( \case
-                            Right (RPCResponse x) ->
-                              responseStatus x `elem` [status404, status200]
-                            _ -> False
-                        )
-    it "rpc-succeeds-customer" $ \env ->
-      shouldBeOk (`initWallet` initWalletRequestCust) (custEnv env)
+      res `shouldSatisfy` successOrUnimplemented
+    it "rpc-succeeds-customer" $ \env -> do
+      res <-
+        runApp env $
+          initWallet (envLnd $ custEnv env) initWalletRequestCust
+      res `shouldSatisfy` successOrUnimplemented
   describe "UnlockWallet" $ do
-    it "request-jsonify" $ \_ ->
-      toJSON (UnlockWalletRequest "FOO" 123)
-        `shouldBe` [aesonQQ|
-            {
-               wallet_password: "FOO",
-               recovery_window: 123
-            }
-          |]
-    it "rpc-succeeds" $ shouldBeOk unlockWallet
+    it "rpc-succeeds" $ \env -> do
+      res <- runApp env $ unlockWallet (envLnd env)
+      res `shouldSatisfy` successOrUnimplemented
   describe "AddInvoice" $ do
     it "rpc-succeeds" $ shouldBeOk $ flip addInvoice addInvoiceRequest
     it "generate-qrcode" $ \env -> do
@@ -376,16 +359,28 @@ spec = around withEnv $ do
         Nothing -> fail "no any peers connected"
     initWalletRequest =
       InitWalletRequest
-        { walletPassword = "ZGV2ZWxvcGVy",
+        { walletPassword = "developer",
           aezeedPassphrase = Nothing,
           cipherSeedMnemonic = initWalletSeed
         }
     initWalletRequestCust =
       InitWalletRequest
-        { walletPassword = "ZGV2ZWxvcGVy",
-          aezeedPassphrase = Just "ZGV2ZWxvcGVy",
+        { walletPassword = "developer",
+          aezeedPassphrase = Just "developer",
           cipherSeedMnemonic = initWalletSeedCust
         }
     shouldBeOk this env = do
       res <- runApp env $ this $ envLnd env
       res `shouldSatisfy` isRight
+    successOrUnimplemented =
+      \case
+        Right _ ->
+          True
+        Left
+          ( GrpcError
+              ( ClientIOError
+                  (GRPCIOBadStatusCode StatusUnimplemented _)
+                )
+            ) -> True
+        Left _ ->
+          False

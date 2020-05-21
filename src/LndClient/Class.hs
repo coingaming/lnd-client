@@ -6,6 +6,7 @@ module LndClient.Class
   )
 where
 
+import Data.Vector (fromList)
 import LndClient.Data.Type
 import LndClient.Import.External
 
@@ -29,6 +30,9 @@ instance ToGrpc a b => ToGrpc (Maybe a) b where
 
 instance ToGrpc a b => ToGrpc a (Maybe b) where
   toGrpc x = Just <$> toGrpc x
+
+instance ToGrpc a b => ToGrpc [a] (Vector b) where
+  toGrpc = mapM toGrpc . fromList
 
 --
 -- FromGrpc instances

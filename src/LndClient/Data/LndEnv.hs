@@ -2,7 +2,7 @@
 
 module LndClient.Data.LndEnv
   ( LndEnv (..),
-    LndB64WalletPassword (..),
+    LndWalletPassword (..),
     LndTlsCert (..),
     LndTlsKey (..),
     LndHexMacaroon (..),
@@ -32,7 +32,7 @@ import Network.TLS
   )
 import Network.TLS.Extra.Cipher (ciphersuite_default)
 
-newtype LndB64WalletPassword = LndB64WalletPassword Text
+newtype LndWalletPassword = LndWalletPassword ByteString
 
 newtype LndTlsCert = LndTlsCert ByteString
 
@@ -46,7 +46,7 @@ newtype LndUrl = LndUrl String
 
 data RawConfig
   = RawConfig
-      { rawConfigLndB64WalletPassword :: Text,
+      { rawConfigLndWalletPassword :: ByteString,
         rawConfigLndTlsCert :: ByteString,
         rawConfigLndTlsKey :: ByteString,
         rawConfigLndHexMacaroon :: ByteString,
@@ -60,7 +60,7 @@ data RawConfig
 
 data LndEnv
   = LndEnv
-      { envLndB64WalletPassword :: LndB64WalletPassword,
+      { envLndWalletPassword :: LndWalletPassword,
         envLndTlsManagerBuilder :: LndTlsManagerBuilder,
         envLndHexMacaroon :: LndHexMacaroon,
         envLndUrl :: LndUrl,
@@ -73,7 +73,7 @@ rawConfig =
     RawConfig
       <$> var
         (str <=< nonempty)
-        "LND_CLIENT_LND_B64_WALLET_PASSWORD"
+        "LND_CLIENT_LND_WALLET_PASSWORD"
         (keep <> help "")
       <*> var (str <=< nonempty) "LND_CLIENT_LND_TLS_CERT" (keep <> help "")
       <*> var (str <=< nonempty) "LND_CLIENT_LND_TLS_KEY" (keep <> help "")
@@ -86,7 +86,7 @@ readLndEnv :: IO LndEnv
 readLndEnv = do
   rc <- rawConfig
   case newLndEnv
-    (LndB64WalletPassword $ rawConfigLndB64WalletPassword rc)
+    (LndWalletPassword $ rawConfigLndWalletPassword rc)
     (LndTlsCert $ rawConfigLndTlsCert rc)
     (LndTlsKey $ rawConfigLndTlsKey rc)
     (LndHexMacaroon $ rawConfigLndHexMacaroon rc)
@@ -97,7 +97,7 @@ readLndEnv = do
     Right x -> return x
 
 newLndEnv ::
-  LndB64WalletPassword ->
+  LndWalletPassword ->
   LndTlsCert ->
   LndTlsKey ->
   LndHexMacaroon ->
@@ -122,7 +122,7 @@ newLndEnv pwd cert key mac url host port =
                   clientSupported = def {supportedCiphers = ciphersuite_default}
                 }
        in LndEnv
-            { envLndB64WalletPassword = pwd,
+            { envLndWalletPassword = pwd,
               envLndTlsManagerBuilder =
                 LndTlsManagerBuilder . newManager $
                   mkManagerSettings settings Nothing,
