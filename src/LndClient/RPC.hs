@@ -31,9 +31,11 @@ import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
+import LndClient.Data.CloseChannels (CloseChannelsRequest (..))
 import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
+import LndClient.Data.ListChannels (ListChannelsRequest (..), ListChannelsResponse (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), PeerList (..))
@@ -299,6 +301,22 @@ openChannel env req = rpc $ rpcArgs env
           rpcName = OpenChannel,
           rpcSubHandler = Nothing
         }
+
+listChannels ::
+  (MonadIO m) =>
+  LndEnv ->
+  ListChannelsRequest ->
+  m (Either LndError ListChannelsResponse)
+listChannels =
+  grpcSync GRPC.lightningListChannels 1
+
+closeChannels ::
+  (MonadIO m) =>
+  LndEnv ->
+  CloseChannelRequest ->
+  m (Either LndError VoidResponse)
+closeChannels =
+  grpcSync GRPC.lightningCloseChannel 1
 
 getPeers ::
   (KatipContext m, MonadUnliftIO m) =>
