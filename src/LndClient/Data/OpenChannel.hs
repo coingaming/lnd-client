@@ -1,48 +1,74 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module LndClient.Data.OpenChannel
   ( OpenChannelRequest (..),
     ChannelPoint (..),
   )
 where
 
+import qualified Data.Text.Lazy as TL
 import LndClient.Import
+import qualified LndGrpc as GRPC
 
 data OpenChannelRequest
   = OpenChannelRequest
-      { nodePubkey :: Text,
+      { nodePubkey :: ByteString,
         --
         --TODO move amounts to MoneyAmount type
         --
         localFundingAmount :: MoneyAmount,
         pushSat :: Maybe MoneyAmount,
-        targetConf :: Maybe Integer,
-        satPerByte :: Maybe Integer,
+        targetConf :: Maybe Int32,
+        satPerByte :: Maybe Int64,
         private :: Maybe Bool,
-        minHtlcMsat :: Maybe Integer,
-        remoteCsvDelay :: Maybe Integer,
-        minConfs :: Maybe Integer,
+        minHtlcMsat :: Maybe Int64,
+        remoteCsvDelay :: Maybe Word32,
+        minConfs :: Maybe Int32,
         spendUnconfirmed :: Maybe Bool,
-        closeAddress :: Maybe String
+        closeAddress :: Maybe TL.Text
         --
         --TODO implement fundingShim field
         --
       }
-  deriving (Generic, Show, Eq)
+  deriving (Eq)
 
-instance ToJSON OpenChannelRequest where
-  toJSON = stdToJSON
-
-instance FromJSON OpenChannelRequest where
-  parseJSON = stdParseJSON
+instance ToGrpc OpenChannelRequest GRPC.OpenChannelRequest where
+  toGrpc x =
+    msg
+      <$> toGrpc (nodePubkey x)
+      <*> toGrpc (localFundingAmount x)
+      <*> toGrpc (pushSat x)
+      <*> toGrpc (targetConf x)
+      <*> toGrpc (satPerByte x)
+      <*> toGrpc (private x)
+      <*> toGrpc (minHtlcMsat x)
+      <*> toGrpc (remoteCsvDelay x)
+      <*> toGrpc (minConfs x)
+      <*> toGrpc (spendUnconfirmed x)
+      <*> toGrpc (closeAddress x)
+    where
+      msg x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 =
+        def
+          { GRPC.openChannelRequestNodePubkey = x0,
+            GRPC.openChannelRequestLocalFundingAmount = x1,
+            GRPC.openChannelRequestPushSat = x2,
+            GRPC.openChannelRequestTargetConf = x3,
+            GRPC.openChannelRequestSatPerByte = x4,
+            GRPC.openChannelRequestPrivate = x5,
+            GRPC.openChannelRequestMinHtlcMsat = x6,
+            GRPC.openChannelRequestRemoteCsvDelay = x7,
+            GRPC.openChannelRequestMinConfs = x8,
+            GRPC.openChannelRequestSpendUnconfirmed = x9,
+            GRPC.openChannelRequestCloseAddress = x10
+          }
 
 data ChannelPoint
   = ChannelPoint
-      { fundingTxidBytes :: Maybe String,
-        fundingTxidStr :: Maybe String,
-        outputIndex :: Maybe Integer
+      { fundingTxid :: Maybe GRPC.ChannelPointFundingTxid,
+        outputIndex :: Word32
       }
-  deriving (Generic, Show, Eq)
+  deriving (Show, Eq)
 
-instance FromJSON ChannelPoint where
-  parseJSON = stdParseJSON
+instance FromGrpc ChannelPoint GRPC.ChannelPoint where
+  fromGrpc x =
+    ChannelPoint
+      <$> Right (GRPC.channelPointFundingTxid x)
+      <*> fromGrpc (GRPC.channelPointOutputIndex x)

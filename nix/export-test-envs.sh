@@ -25,8 +25,7 @@ alias lncli-customer="lncli -n regtest --lnddir=$LND_CUSTOMER_DIR --rpcserver=lo
 # app
 #
 
-# LND_CLIENT_LND_ORIGINAL_WALLET_PASSWORD developer
-export  LND_CLIENT_LND_B64_WALLET_PASSWORD="ZGV2ZWxvcGVy";
+export  LND_CLIENT_LND_WALLET_PASSWORD="developer";
 
 export  LND_CLIENT_LND_TLS_CERT="
 -----BEGIN CERTIFICATE-----

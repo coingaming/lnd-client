@@ -1,17 +1,19 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module LndClient.Data.GetInfo
   ( GetInfoResponse (..),
   )
 where
 
+import qualified Data.Text.Lazy as TL
 import LndClient.Import
+import qualified LndGrpc as GRPC
 
 newtype GetInfoResponse
   = GetInfoResponse
-      { identity_pubkey :: Text
+      { identity_pubkey :: TL.Text
       }
-  deriving (Generic, Show, Eq)
+  deriving (Eq, Show)
 
-instance FromJSON GetInfoResponse where
-  parseJSON = stdParseJSON
+instance FromGrpc GetInfoResponse GRPC.GetInfoResponse where
+  fromGrpc x =
+    GetInfoResponse
+      <$> fromGrpc (GRPC.getInfoResponseIdentityPubkey x)
