@@ -31,7 +31,7 @@ import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
-import LndClient.Data.CloseChannels (CloseChannelsRequest (..))
+import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseChannelResponse (..))
 import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
@@ -310,13 +310,32 @@ listChannels ::
 listChannels =
   grpcSync GRPC.lightningListChannels 1
 
-closeChannels ::
+closeChannel ::
   (MonadIO m) =>
+  (CloseChannelResponse -> IO ()) ->
   LndEnv ->
   CloseChannelRequest ->
-  m (Either LndError VoidResponse)
-closeChannels =
-  grpcSync GRPC.lightningCloseChannel 1
+  m (Either LndError CloseChannelResponse)
+closeChannel closeHandler =
+  grpcReader
+    GRPC.lightningCloseChannel
+    3600
+    (\_ _ s -> streamHandler s)
+  where
+    streamHandler :: IO (Either GRPCIOError (Maybe GRPC.CloseStatusUpdate)) -> IO ()
+    streamHandler stream = do
+      msg <- stream
+      case msg of
+        Left e -> fail $ "CloseChannel error " <> show e
+        Right Nothing -> fail "CloseChannel got Nothing"
+        Right (Just gi) -> do
+          --
+          -- TODO : handle all fields and types overflow
+          --
+          case fromGrpc gi of
+            Right i -> closeHandler i
+            Left e -> fail $ show e
+          streamHandler stream
 
 getPeers ::
   (KatipContext m, MonadUnliftIO m) =>
