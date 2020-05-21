@@ -10,7 +10,6 @@ module LndClient.Data.Newtype
 where
 
 import Codec.QRCode as QR (ToText)
-import Data.Text.Lazy as TL (Text)
 import LndClient.Class
 import LndClient.Data.Type
 import LndClient.Import.External
@@ -22,7 +21,7 @@ newtype AddIndex = AddIndex Word64
 newtype SettleIndex = SettleIndex Word64
   deriving (PersistField, PersistFieldSql, Show, Eq)
 
-newtype PaymentRequest = PaymentRequest TL.Text
+newtype PaymentRequest = PaymentRequest Text
   deriving (PersistField, PersistFieldSql, Show, Eq, QR.ToText)
 
 newtype RHash = RHash ByteString
@@ -58,8 +57,8 @@ instance FromGrpc AddIndex Word64 where
 instance FromGrpc SettleIndex Word64 where
   fromGrpc = Right . SettleIndex
 
-instance FromGrpc PaymentRequest TL.Text where
+instance FromGrpc PaymentRequest Text where
   fromGrpc = Right . PaymentRequest
 
-instance ToGrpc PaymentRequest TL.Text where
-  toGrpc x = Right (coerce x :: TL.Text)
+instance ToGrpc PaymentRequest Text where
+  toGrpc x = Right (coerce x :: Text)

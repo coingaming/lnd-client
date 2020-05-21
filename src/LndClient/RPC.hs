@@ -347,4 +347,4 @@ grpcSync rpcName service method timeout env req =
       return res
 
 showElapsedSeconds :: Timespan -> Text
-showElapsedSeconds = encodeTimespan SubsecondPrecisionAuto
+showElapsedSeconds = fromStrict . encodeTimespan SubsecondPrecisionAuto

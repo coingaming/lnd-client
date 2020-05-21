@@ -4,7 +4,6 @@ module LndClient.Data.OpenChannel
   )
 where
 
-import qualified Data.Text.Lazy as TL
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
@@ -23,7 +22,7 @@ data OpenChannelRequest
         remoteCsvDelay :: Maybe Word32,
         minConfs :: Maybe Int32,
         spendUnconfirmed :: Maybe Bool,
-        closeAddress :: Maybe TL.Text
+        closeAddress :: Maybe Text
         --
         --TODO implement fundingShim field
         --

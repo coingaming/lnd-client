@@ -7,14 +7,13 @@ module LndClient.Data.Peer
   )
 where
 
-import Data.Text.Lazy as TL
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
 data Peer
   = Peer
-      { pubKey :: TL.Text,
-        address :: TL.Text
+      { pubKey :: Text,
+        address :: Text
       }
   deriving (Eq, Show)
 
@@ -26,8 +25,8 @@ instance FromGrpc Peer GRPC.Peer where
 
 data LightningAddress
   = LightningAddress
-      { pubkey :: TL.Text,
-        host :: TL.Text
+      { pubkey :: Text,
+        host :: Text
       }
   deriving (Eq)
 

@@ -3,14 +3,13 @@ module LndClient.Data.InitWallet
   )
 where
 
-import Data.Text.Lazy as TL
 import LndClient.Import
 import qualified WalletUnlockerGrpc as GRPC
 
 data InitWalletRequest
   = InitWalletRequest
       { walletPassword :: ByteString,
-        cipherSeedMnemonic :: [TL.Text],
+        cipherSeedMnemonic :: [Text],
         aezeedPassphrase :: Maybe ByteString
         --
         --  TODO : channel_backups
