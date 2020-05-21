@@ -1,15 +1,14 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 
 module LndClient.Factory
   ( initTestWallet,
   )
 where
 
-import LndClient
 import LndClient.Data.InitWallet (InitWalletRequest (..))
+import LndClient.Import
+import LndClient.RPC
 
 initTestWallet ::
   (KatipContext m) =>

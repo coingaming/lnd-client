@@ -6,7 +6,6 @@ module LndClient.Data.SendPayment
   )
 where
 
-import qualified Data.Text.Lazy as TL (Text)
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
@@ -19,7 +18,7 @@ data SendPaymentRequest
 
 data SendPaymentResponse
   = SendPaymentResponse
-      { paymentError :: TL.Text,
+      { paymentError :: Text,
         paymentPreimage :: ByteString,
         paymentHash :: ByteString
       }

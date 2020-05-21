@@ -5,7 +5,6 @@ module LndClient.Data.Invoice
   )
 where
 
-import qualified Data.Text.Lazy as TL
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
@@ -20,7 +19,7 @@ data Invoice
         settled :: Bool,
         settleIndex :: Maybe SettleIndex,
         descriptionHash :: ByteString,
-        memo :: TL.Text,
+        memo :: Text,
         paymentRequest :: PaymentRequest,
         -- fallbackAddr :: Maybe Text,
         -- cltvExpiry :: Maybe Text,
