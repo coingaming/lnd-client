@@ -91,7 +91,7 @@ initWallet env req = do
   --
   -- NOTE : some LND bullshit - it crashes if other RPC performed after that too soon
   --
-  _ <- liftIO $ delay 5000000
+  _ <- liftIO $ delay 10000000
   return res
 
 --
