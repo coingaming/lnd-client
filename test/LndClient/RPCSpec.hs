@@ -344,57 +344,59 @@ spec = around withEnv $ do
               }
       return req
     initWalletSeed =
-      [ "absent",
-        "betray",
-        "direct",
-        "scheme",
-        "sunset",
-        "mechanic",
-        "exhaust",
-        "suggest",
-        "boy",
-        "arena",
-        "sketch",
-        "bone",
-        "news",
-        "south",
-        "way",
-        "survey",
-        "clip",
-        "dutch",
-        "depart",
-        "green",
-        "furnace",
-        "wire",
-        "wave",
-        "fall"
-      ]
+      CipherSeedMnemonic
+        [ "absent",
+          "betray",
+          "direct",
+          "scheme",
+          "sunset",
+          "mechanic",
+          "exhaust",
+          "suggest",
+          "boy",
+          "arena",
+          "sketch",
+          "bone",
+          "news",
+          "south",
+          "way",
+          "survey",
+          "clip",
+          "dutch",
+          "depart",
+          "green",
+          "furnace",
+          "wire",
+          "wave",
+          "fall"
+        ]
     initWalletSeedCust =
-      [ "absent",
-        "dilemma",
-        "mango",
-        "firm",
-        "hero",
-        "green",
-        "wide",
-        "rebel",
-        "pigeon",
-        "custom",
-        "town",
-        "stadium",
-        "shock",
-        "bind",
-        "ocean",
-        "seek",
-        "enforce",
-        "during",
-        "bird",
-        "honey",
-        "enrich",
-        "number",
-        "wealth",
-        "thunder"
-      ]
+      CipherSeedMnemonic
+        [ "absent",
+          "dilemma",
+          "mango",
+          "firm",
+          "hero",
+          "green",
+          "wide",
+          "rebel",
+          "pigeon",
+          "custom",
+          "town",
+          "stadium",
+          "shock",
+          "bind",
+          "ocean",
+          "seek",
+          "enforce",
+          "during",
+          "bird",
+          "honey",
+          "enrich",
+          "number",
+          "wealth",
+          "thunder"
+        ]
     somePubKey env = do
       res <- runApp env $ coerceLndResult =<< listPeers (envLnd env)
       let mPeer = safeHead res
@@ -403,14 +405,14 @@ spec = around withEnv $ do
         Nothing -> fail "no any peers connected"
     initWalletRequest =
       InitWalletRequest
-        { walletPassword = "developer",
+        { walletPassword = LndWalletPassword "developer",
           aezeedPassphrase = Nothing,
           cipherSeedMnemonic = initWalletSeed
         }
     initWalletRequestCust =
       InitWalletRequest
-        { walletPassword = "developer",
-          aezeedPassphrase = Just "developer",
+        { walletPassword = LndWalletPassword "developer",
+          aezeedPassphrase = Just $ AezeedPassphrase "developer",
           cipherSeedMnemonic = initWalletSeedCust
         }
     shouldBeOk this env = do

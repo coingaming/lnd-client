@@ -19,33 +19,34 @@ initTestWallet env =
   where
     initWalletRequest =
       InitWalletRequest
-        { walletPassword = "developer",
+        { walletPassword = LndWalletPassword "developer",
           aezeedPassphrase = Nothing,
           cipherSeedMnemonic = initWalletSeed
         }
     initWalletSeed =
-      [ "absent",
-        "dilemma",
-        "mango",
-        "firm",
-        "hero",
-        "green",
-        "wide",
-        "rebel",
-        "pigeon",
-        "custom",
-        "town",
-        "stadium",
-        "shock",
-        "bind",
-        "ocean",
-        "seek",
-        "enforce",
-        "during",
-        "bird",
-        "honey",
-        "enrich",
-        "number",
-        "wealth",
-        "thunder"
-      ]
+      CipherSeedMnemonic
+        [ "absent",
+          "dilemma",
+          "mango",
+          "firm",
+          "hero",
+          "green",
+          "wide",
+          "rebel",
+          "pigeon",
+          "custom",
+          "town",
+          "stadium",
+          "shock",
+          "bind",
+          "ocean",
+          "seek",
+          "enforce",
+          "during",
+          "bird",
+          "honey",
+          "enrich",
+          "number",
+          "wealth",
+          "thunder"
+        ]
