@@ -24,8 +24,8 @@ data Invoice
         -- fallbackAddr :: Maybe Text,
         -- cltvExpiry :: Maybe Text,
         private :: Bool,
-        addIndex :: AddIndex
-        -- state :: Maybe Text
+        addIndex :: AddIndex,
+        state :: GRPC.Invoice_InvoiceState
       }
   deriving (Generic, Show, Eq)
 
@@ -47,4 +47,4 @@ instance FromGrpc Invoice GRPC.Invoice where
       -- <*> fromGrpc (GRPC.invoiceCltvExpiry x)
       <*> fromGrpc (GRPC.invoicePrivate x)
       <*> fromGrpc (GRPC.invoiceAddIndex x)
--- <*> fromGrpc (GRPC.invoiceState x)
+      <*> first (\e -> FromGrpcError $ "Invalid Invoice State" <> show e) (enumerated $ GRPC.invoiceState x)
