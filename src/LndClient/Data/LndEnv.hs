@@ -5,6 +5,8 @@ module LndClient.Data.LndEnv
     LndWalletPassword (..),
     LndTlsCert (..),
     LndHexMacaroon (..),
+    LndHost (..),
+    LndPort (..),
     newLndEnv,
     readLndEnv,
   )
