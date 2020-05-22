@@ -1,3 +1,5 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
 module LndClient.Data.LndEnv
   ( LndEnv (..),
     LndWalletPassword (..),
@@ -9,15 +11,28 @@ module LndClient.Data.LndEnv
 where
 
 import Env
+import LndClient.Class
 import LndClient.Import.External
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel.Client
 
 newtype LndWalletPassword = LndWalletPassword ByteString
+  deriving (PersistField, PersistFieldSql, Eq)
 
 newtype LndTlsCert = LndTlsCert ByteString
+  deriving (PersistField, PersistFieldSql, Eq)
 
 newtype LndHexMacaroon = LndHexMacaroon ByteString
+  deriving (PersistField, PersistFieldSql, Eq)
+
+newtype LndHost = LndHost ByteString
+  deriving (PersistField, PersistFieldSql, Eq)
+
+newtype LndPort = LndPort Int
+  deriving (PersistField, PersistFieldSql, Eq)
+
+instance ToGrpc LndWalletPassword ByteString where
+  toGrpc = Right . coerce
 
 data RawConfig
   = RawConfig
@@ -56,8 +71,8 @@ readLndEnv = do
     (LndWalletPassword $ rawConfigLndWalletPassword rc)
     (LndTlsCert $ rawConfigLndTlsCert rc)
     (LndHexMacaroon $ rawConfigLndHexMacaroon rc)
-    (Host $ rawConfigLndHost rc)
-    (Port $ rawConfigLndPort rc) of
+    (LndHost $ rawConfigLndHost rc)
+    (LndPort $ rawConfigLndPort rc) of
     Left x -> fail x
     Right x -> return x
 
@@ -65,13 +80,14 @@ newLndEnv ::
   LndWalletPassword ->
   LndTlsCert ->
   LndHexMacaroon ->
-  Host ->
-  Port ->
+  LndHost ->
+  LndPort ->
   Either String LndEnv
 newLndEnv pwd cert mac host port =
   --
-  -- TODO : implement smart constructor
-  -- verify certificate and all other data
+  -- TODO : implement smart constructors
+  -- verify certificate and all other data validity
+  -- host, port etc
   --
   Right $
     LndEnv
@@ -80,8 +96,8 @@ newLndEnv pwd cert mac host port =
         envLndLogErrors = True,
         envLndGrpcConfig =
           ClientConfig
-            { clientServerHost = host,
-              clientServerPort = port,
+            { clientServerHost = Host $ coerce host,
+              clientServerPort = Port $ coerce port,
               clientArgs = [],
               clientSSLConfig =
                 Just $

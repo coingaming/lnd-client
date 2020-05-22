@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module LndClient.Data.Newtype
@@ -6,10 +7,13 @@ module LndClient.Data.Newtype
     PaymentRequest (..),
     RHash (..),
     MoneyAmount (..),
+    CipherSeedMnemonic (..),
+    AezeedPassphrase (..),
   )
 where
 
 import Codec.QRCode as QR (ToText)
+import Data.Vector (fromList)
 import LndClient.Class
 import LndClient.Data.Type
 import LndClient.Import.External
@@ -29,6 +33,12 @@ newtype RHash = RHash ByteString
 
 newtype MoneyAmount = MoneyAmount Word64
   deriving (PersistField, PersistFieldSql, Show, Eq)
+
+newtype CipherSeedMnemonic = CipherSeedMnemonic [Text]
+  deriving (PersistField, PersistFieldSql, Eq)
+
+newtype AezeedPassphrase = AezeedPassphrase ByteString
+  deriving (PersistField, PersistFieldSql, Eq)
 
 instance ToGrpc AddIndex Word64 where
   toGrpc = Right . coerce
@@ -62,3 +72,9 @@ instance FromGrpc PaymentRequest Text where
 
 instance ToGrpc PaymentRequest Text where
   toGrpc x = Right (coerce x :: Text)
+
+instance ToGrpc CipherSeedMnemonic (Vector Text) where
+  toGrpc = Right . fromList . coerce
+
+instance ToGrpc AezeedPassphrase ByteString where
+  toGrpc = Right . coerce

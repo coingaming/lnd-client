@@ -8,9 +8,9 @@ import qualified WalletUnlockerGrpc as GRPC
 
 data InitWalletRequest
   = InitWalletRequest
-      { walletPassword :: ByteString,
-        cipherSeedMnemonic :: [Text],
-        aezeedPassphrase :: Maybe ByteString
+      { walletPassword :: LndWalletPassword,
+        cipherSeedMnemonic :: CipherSeedMnemonic,
+        aezeedPassphrase :: Maybe AezeedPassphrase
         --
         --  TODO : channel_backups
         --

@@ -8,7 +8,7 @@ import qualified WalletUnlockerGrpc as GRPC
 
 data UnlockWalletRequest
   = UnlockWalletRequest
-      { walletPassword :: ByteString,
+      { walletPassword :: LndWalletPassword,
         recoveryWindow :: Int32
         --
         --  TODO : channel_backups
