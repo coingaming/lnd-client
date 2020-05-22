@@ -210,59 +210,48 @@ spec = around withEnv $ do
       shouldBeOk (`openChannelSync` req) (custEnv env)
   describe "ListChannelAndClose"
     $ it "rpc-succeeds"
-    $ \env -> do
-      NewAddressResponse btcAddress <-
-        runApp (custEnv env) $
-          coerceLndResult
-            =<< newAddress
-              (envLnd $ custEnv env)
-              GRPC.AddressTypeWITNESS_PUBKEY_HASH
-      client <- btcClient
-      GetInfoResponse mercPubKey <- runApp env $ coerceLndResult =<< getInfo (envLnd env)
-      let connectPeerRequest =
-            ConnectPeerRequest
-              { addr =
-                  LightningAddress
-                    { pubkey = mercPubKey,
-                      host = "localhost:9735"
-                    },
-                perm = False
-              }
-      _ <- runApp (custEnv env) $ connectPeer (envLnd $ custEnv env) connectPeerRequest
-      _ <- generateToAddress client 100 (toStrict btcAddress) Nothing
-      _ <- delay 3000000
-      req <- openChannelRequest (custEnv env)
-      _ <- runApp (custEnv env) $ openChannelSync (envLnd $ custEnv env) req
-      ListChannelsResponse channelList <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
-      print $ length channelList
-      let firstChannel :: Channel = case safeHead channelList of
-            Just channel -> channel
-            Nothing -> Channel {remotePubkey = "", channelPoint = ""}
-      print firstChannel
-      let nStr :: ByteString = encodeUtf8 $ LndClient.Data.ListChannels.channelPoint firstChannel
-      let fundingTxids :: [ByteString] = split ':' nStr
-      let fundingTxid :: ByteString = fromMaybe "" $ safeHead fundingTxids
-      print fundingTxid
-      let (fundingTxidHex, _) = decode fundingTxid
-      x <- newEmptyMVar
-      link
-        =<< ( async $ runApp env $
-                closeChannel
-                  (liftIO . putMVar x)
-                  (envLnd env)
-                  (CloseChannelRequest (ChannelPoint (BS.reverse fundingTxidHex) 0) True Nothing Nothing Nothing)
-            )
-      _ <- delay 3000000
-      ListChannelsResponse channelList2 <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
-      print $ length channelList2
-      closeUpdateStatus <- takeMVar x
-      print closeUpdateStatus
-      True `shouldSatisfy` (\_ -> True)
-  --print x
-  --      channelList <-
-  --        runApp env $
-  --          coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
-  --      print channelList
+    $ \env ->
+      do
+        NewAddressResponse btcAddress <-
+          runApp (custEnv env) $
+            coerceLndResult
+              =<< newAddress
+                (envLnd $ custEnv env)
+                GRPC.AddressTypeWITNESS_PUBKEY_HASH
+        client <- btcClient
+        GetInfoResponse mercPubKey <- runApp env $ coerceLndResult =<< getInfo (envLnd env)
+        let connectPeerRequest =
+              ConnectPeerRequest
+                { addr =
+                    LightningAddress
+                      { pubkey = mercPubKey,
+                        host = "localhost:9735"
+                      },
+                  perm = False
+                }
+        _ <- runApp (custEnv env) $ connectPeer (envLnd $ custEnv env) connectPeerRequest
+        _ <- generateToAddress client 100 (toStrict btcAddress) Nothing
+        _ <- delay 3000000
+        req <- openChannelRequest (custEnv env)
+        _ <- runApp (custEnv env) $ openChannelSync (envLnd $ custEnv env) req
+        ListChannelsResponse channelList <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
+        let firstChannel :: Channel = fromMaybe (Channel "" "") $ safeHead channelList
+        let channelPointStr :: ByteString = encodeUtf8 $ LndClient.Data.ListChannels.channelPoint firstChannel
+        let fundingTxid :: ByteString = fromMaybe "" $ safeHead $ split ':' channelPointStr
+        let (fundingTxidHex, _) = decode fundingTxid
+        x <- newEmptyMVar
+        link
+          =<< ( async $ runApp env $
+                  closeChannel
+                    (liftIO . putMVar x)
+                    (envLnd env)
+                    (CloseChannelRequest (ChannelPoint (BS.reverse fundingTxidHex) 0) True Nothing Nothing Nothing)
+              )
+        _ <- delay 3000000
+        ListChannelsResponse channelList2 <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
+        _ <- takeMVar x
+        channelList2
+          `shouldSatisfy` (\list2 -> length channelList - length list2 == 1)
   describe "SubscribeInvoices"
     $ it "rpc-succeeds"
     $ \env -> do
