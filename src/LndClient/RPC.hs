@@ -16,6 +16,8 @@ module LndClient.RPC
     addInvoice,
     initWallet,
     openChannelSync,
+    listChannels,
+    closeChannel,
     listPeers,
     connectPeer,
     sendPayment,
@@ -30,9 +32,11 @@ import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
+import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
 import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
+import LndClient.Data.ListChannels (ListChannelsRequest (..), ListChannelsResponse (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), Peer (..))
@@ -59,6 +63,8 @@ data RpcName
   | AddInvoice
   | SubscribeInvoices
   | OpenChannelSync
+  | ListChannels
+  | CloseChannel
   | ListPeers
   | ConnectPeer
   | GetInfo
@@ -222,6 +228,46 @@ openChannelSync =
     GRPC.lightningClient
     GRPC.lightningOpenChannelSync
     grpcDefaultTimeout
+
+listChannels ::
+  (KatipContext m) =>
+  LndEnv ->
+  ListChannelsRequest ->
+  m (Either LndError ListChannelsResponse)
+listChannels =
+  grpcSync
+    ListChannels
+    GRPC.lightningClient
+    GRPC.lightningListChannels
+    1
+
+closeChannel ::
+  (KatipContext m) =>
+  (CloseStatusUpdate -> IO ()) ->
+  LndEnv ->
+  CloseChannelRequest ->
+  m (Either LndError CloseStatusUpdate)
+closeChannel closeHandler =
+  grpcSubscribe
+    CloseChannel
+    GRPC.lightningCloseChannel
+    3600
+    (\_ _ s -> streamHandler s)
+  where
+    streamHandler :: IO (Either GRPCIOError (Maybe GRPC.CloseStatusUpdate)) -> IO ()
+    streamHandler stream = do
+      msg <- stream
+      case msg of
+        Left e -> fail $ "CloseChannel error " <> show e
+        Right Nothing -> fail "CloseChannel got Nothing"
+        Right (Just gi) -> do
+          --
+          -- TODO : handle all fields and types overflow
+          --
+          case fromGrpc gi of
+            Right i -> closeHandler i
+            Left e -> fail $ show e
+          streamHandler stream
 
 listPeers ::
   (KatipContext m) =>
