@@ -9,6 +9,7 @@ module LndClient.Data.CloseChannel
 where
 
 import qualified Data.Text.Lazy as TL (Text)
+import LndClient.Data.ChannelPoint
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
@@ -39,13 +40,6 @@ data ChannelCloseUpdate
       }
   deriving (Generic, Show)
 
-data ChannelPoint
-  = ChannelPoint
-      { fundingTxidBytes :: ByteString,
-        outputIndex2 :: Word32
-      }
-  deriving (Generic, Show, Eq)
-
 instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
   toGrpc x =
     msg
@@ -62,17 +56,6 @@ instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
             GRPC.closeChannelRequestTargetConf = gTargetConf,
             GRPC.closeChannelRequestSatPerByte = gSatPerByte,
             GRPC.closeChannelRequestDeliveryAddress = gDeliveryAddress
-          }
-
-instance ToGrpc ChannelPoint GRPC.ChannelPoint where
-  toGrpc x =
-    msg <$> (toGrpc $ fundingTxidBytes x)
-      <*> (toGrpc $ outputIndex2 x)
-    where
-      msg gFundingTxidBytes gOutputIndex =
-        def
-          { GRPC.channelPointFundingTxid = GRPC.ChannelPointFundingTxidFundingTxidBytes <$> gFundingTxidBytes,
-            GRPC.channelPointOutputIndex = gOutputIndex
           }
 
 instance FromGrpc CloseStatusUpdate GRPC.CloseStatusUpdate where

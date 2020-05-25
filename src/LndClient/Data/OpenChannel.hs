@@ -4,6 +4,7 @@ module LndClient.Data.OpenChannel
   )
 where
 
+import LndClient.Data.ChannelPoint
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
@@ -58,16 +59,3 @@ instance ToGrpc OpenChannelRequest GRPC.OpenChannelRequest where
             GRPC.openChannelRequestSpendUnconfirmed = x9,
             GRPC.openChannelRequestCloseAddress = x10
           }
-
-data ChannelPoint
-  = ChannelPoint
-      { fundingTxid :: Maybe GRPC.ChannelPointFundingTxid,
-        outputIndex :: Word32
-      }
-  deriving (Show, Eq)
-
-instance FromGrpc ChannelPoint GRPC.ChannelPoint where
-  fromGrpc x =
-    ChannelPoint
-      <$> Right (GRPC.channelPointFundingTxid x)
-      <*> fromGrpc (GRPC.channelPointOutputIndex x)
