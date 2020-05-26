@@ -59,6 +59,8 @@ dependencies:
 - network-bitcoin
 # general
 - unliftio
+- x509
+- pem
 - extra
 
 library:
