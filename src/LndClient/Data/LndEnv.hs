@@ -103,9 +103,10 @@ newLndEnv pwd cert mac host port =
     validateCert c = do
       pemsM <- first (LndEnvError . LT.pack) $ Pem.pemParseBS $ coerce c
       pem <- note (LndEnvError $ LT.pack "No pem found") $ safeHead pemsM
-      case decodeSignedCertificate $ Pem.pemContent pem of
-        Left errStr -> Left $ LndEnvError $ LT.pack ("Certificate is not valid: " <> errStr)
-        Right _ -> Right c
+      bimap
+        (LndEnvError . LT.pack . ("Certificate is not valid: " <>))
+        (const c)
+        (decodeSignedCertificate $ Pem.pemContent pem)
     createLndEnv :: Int -> LndTlsCert -> LndEnv
     createLndEnv p c =
       LndEnv
