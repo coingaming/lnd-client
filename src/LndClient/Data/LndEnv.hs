@@ -13,7 +13,6 @@ module LndClient.Data.LndEnv
 where
 
 import Data.ByteString.Char8 as C8
-import Data.Either.Extra
 import qualified Data.PEM as Pem
 import Data.Text.Lazy as LT
 import Data.X509
@@ -93,7 +92,7 @@ newLndEnv ::
   LndPort ->
   Either LndError LndEnv
 newLndEnv pwd cert mac host port =
-  createLndEnv <$> (validatePort port) <*> (validateCert cert)
+  createLndEnv <$> validatePort port <*> validateCert cert
   where
     validatePort :: LndPort -> Either LndError Int
     validatePort p = do
@@ -102,7 +101,7 @@ newLndEnv pwd cert mac host port =
       maybeToRight (LndEnvError "Wrong port") maybePort
     validateCert :: LndTlsCert -> Either LndError LndTlsCert
     validateCert c = do
-      pemsM <- mapLeft (\err -> LndEnvError $ LT.pack err) $ Pem.pemParseBS $ coerce c
+      pemsM <- first (LndEnvError . LT.pack) $ Pem.pemParseBS $ coerce c
       pem <- note (LndEnvError $ LT.pack "No pem found") $ safeHead pemsM
       case decodeSignedCertificate $ Pem.pemContent pem of
         Left errStr -> Left $ LndEnvError $ LT.pack ("Certificate is not valid: " <> errStr)
