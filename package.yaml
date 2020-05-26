@@ -59,6 +59,7 @@ dependencies:
 - network-bitcoin
 # general
 - unliftio
+- extra
 
 library:
   source-dirs: src
