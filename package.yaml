@@ -59,7 +59,9 @@ dependencies:
 - network-bitcoin
 # general
 - unliftio
-
+- x509
+- network-uri
+- pem
 library:
   source-dirs: src
   default-extensions:
