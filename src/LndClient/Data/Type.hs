@@ -10,4 +10,5 @@ data LndError
   | GrpcError ClientError
   | GrpcUnexpectedResult Text
   | LndFail Timespan Text
+  | LndEnvError Text
   deriving (Show)

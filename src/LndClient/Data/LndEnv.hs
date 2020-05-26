@@ -15,10 +15,11 @@ where
 import Data.ByteString.Char8 as C8
 import Data.Either.Extra
 import qualified Data.PEM as Pem
-import Data.Text
+import Data.Text.Lazy as LT
 import Data.X509
 import Env
 import LndClient.Class
+import LndClient.Data.Type
 import LndClient.Import.External
 import LndClient.Util as U
 import Network.GRPC.HighLevel.Generated
@@ -81,7 +82,7 @@ readLndEnv = do
     (LndHexMacaroon $ rawConfigLndHexMacaroon rc)
     (LndHost $ rawConfigLndHost rc)
     (LndPort $ rawConfigLndPort rc) of
-    Left x -> fail x
+    Left x -> fail $ show x
     Right x -> return x
 
 newLndEnv ::
@@ -90,25 +91,21 @@ newLndEnv ::
   LndHexMacaroon ->
   LndHost ->
   LndPort ->
-  Either String LndEnv
-newLndEnv pwd cert mac host port = do
-  --
-  -- TODO : implement smart constructors
-  -- verify certificate and all other data validity
-  -- host, port etc
+  Either LndError LndEnv
+newLndEnv pwd cert mac host port =
   createLndEnv <$> (validatePort port) <*> (validateCert cert)
   where
-    validatePort :: LndPort -> Either String Int
+    validatePort :: LndPort -> Either LndError Int
     validatePort p = do
       let port32 :: Word32 = coerce p
       let maybePort :: Maybe Int = U.safeFromIntegral port32
-      maybeToRight "Wrong port" maybePort
-    validateCert :: LndTlsCert -> Either String LndTlsCert
+      maybeToRight (LndEnvError "Wrong port") maybePort
+    validateCert :: LndTlsCert -> Either LndError LndTlsCert
     validateCert c = do
-      pems <- mapLeft Data.Text.pack $ Pem.pemParseBS $ coerce c
-      pem <- note "No pem found" $ safeHead pems
+      pemsM <- mapLeft (\err -> LndEnvError $ LT.pack err) $ Pem.pemParseBS $ coerce c
+      pem <- note (LndEnvError $ LT.pack "No pem found") $ safeHead pemsM
       case decodeSignedCertificate $ Pem.pemContent pem of
-        Left errStr -> Left ("Certificate is not valid: " <> errStr)
+        Left errStr -> Left $ LndEnvError $ LT.pack ("Certificate is not valid: " <> errStr)
         Right _ -> Right c
     createLndEnv :: Int -> LndTlsCert -> LndEnv
     createLndEnv p c =

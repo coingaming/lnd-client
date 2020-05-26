@@ -64,7 +64,6 @@ dependencies:
 - pem
 - extra
 
->>>>>>> master
 library:
   source-dirs: src
   default-extensions:
