@@ -62,6 +62,9 @@ dependencies:
 - x509
 - network-uri
 - pem
+- extra
+
+>>>>>>> master
 library:
   source-dirs: src
   default-extensions:
@@ -85,7 +88,6 @@ library:
   - -Wno-monomorphism-restriction # Don’t warn if the monomorphism restriction is used
   dependencies:
   - hspec
-  - hspec-wai
 
 tests:
   lnd-client-test:
@@ -116,4 +118,3 @@ tests:
     dependencies:
     - lnd-client
     - hspec
-    - hspec-wai
