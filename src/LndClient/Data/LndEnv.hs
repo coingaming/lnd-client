@@ -21,7 +21,7 @@ import Data.X509
 import Env
 import LndClient.Class
 import LndClient.Data.Type
-import LndClient.Import.External
+import LndClient.Import.External as Ex
 import LndClient.Util as U
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel.Client
@@ -79,6 +79,27 @@ createLndPort p = do
   let maybePort :: Maybe Int = U.safeFromIntegral p
   maybeToRight (LndEnvError "Wrong port") $ LndPort <$> maybePort
 
+instance Read LndPort where
+  readsPrec _ x = do
+    let mX :: Maybe Word32 = readMaybe x
+    let eX :: Either LndError Word32 = maybeToRight (LndEnvError "Port parsing error") mX
+    case createLndPort =<< eX of
+      Right r -> [(r, "")]
+      Left _ -> case reads x of
+        [(r, "")] -> [(r, "")]
+        _ -> []
+
+instance FromJSON LndPort where
+  parseJSON x =
+    case x of
+      A.String s ->
+        case createLndPort ((read $ toString s) :: Word32) of
+          Right cert -> return cert
+          Left _ -> failure
+      _ -> failure
+    where
+      failure = fail $ "Json certificate parsing error: " <> " " <> show x
+
 instance ToGrpc LndWalletPassword Text where
   toGrpc = Right . coerce
 
@@ -97,7 +118,7 @@ data RawConfig
         rawConfigLndTlsCert :: LndTlsCert,
         rawConfigLndHexMacaroon :: LndHexMacaroon,
         rawConfigLndHost :: LndHost,
-        rawConfigLndPort :: Word32
+        rawConfigLndPort :: LndPort
       }
 
 data LndEnv
@@ -121,14 +142,13 @@ rawConfig =
 readLndEnv :: IO LndEnv
 readLndEnv = do
   rc <- rawConfig
-  lndPort <- either (fail . show) return $ createLndPort $ rawConfigLndPort rc
   return $
     newLndEnv
       (rawConfigLndWalletPassword rc)
       (rawConfigLndTlsCert rc)
       (rawConfigLndHexMacaroon rc)
       (rawConfigLndHost rc)
-      lndPort
+      (rawConfigLndPort rc)
 
 newLndEnv ::
   LndWalletPassword ->
