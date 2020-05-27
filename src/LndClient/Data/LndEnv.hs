@@ -1,7 +1,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module LndClient.Data.LndEnv
   ( LndEnv (..),
+    RawConfig (..),
     LndWalletPassword (..),
     LndTlsCert,
     LndHexMacaroon (..),
@@ -13,7 +15,7 @@ module LndClient.Data.LndEnv
   )
 where
 
-import Data.Aeson as A (FromJSON (..), Value (..))
+import Data.Aeson as A ((.:), FromJSON (..), Value (..))
 import Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
 import Data.Text.Lazy as LT
@@ -128,6 +130,15 @@ data LndEnv
         envLndGrpcConfig :: ClientConfig,
         envLndLogErrors :: Bool
       }
+
+instance FromJSON RawConfig where
+  parseJSON (Object v) =
+    RawConfig <$> v .: "lnd_wallet_password"
+      <*> v .: "lnd_tls_cert"
+      <*> v .: "lnd_hex_macaroon"
+      <*> v .: "lnd_host"
+      <*> v .: "lnd_port"
+  parseJSON _ = mzero
 
 rawConfig :: IO RawConfig
 rawConfig =
