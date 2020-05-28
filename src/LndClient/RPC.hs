@@ -75,7 +75,7 @@ instance ToJSON RpcName
 
 grpcMeta :: LndEnv -> MetadataMap
 grpcMeta env =
-  [("macaroon", coerce $ envLndHexMacaroon env)]
+  [("macaroon", encodeUtf8 (coerce (envLndHexMacaroon env) :: Text))]
 
 grpcDefaultTimeout :: Int
 grpcDefaultTimeout = 5

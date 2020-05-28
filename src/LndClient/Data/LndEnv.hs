@@ -1,58 +1,61 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module LndClient.Data.LndEnv
   ( LndEnv (..),
+    RawConfig,
     LndWalletPassword (..),
-    LndTlsCert (..),
+    LndTlsCert,
     LndHexMacaroon (..),
     LndHost (..),
-    LndPort (..),
+    LndPort,
     newLndEnv,
     readLndEnv,
+    createLndTlsCert,
+    createLndPort,
   )
 where
 
+import Data.Aeson as A ((.:), FromJSON (..), Value (..))
 import Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
+import Data.Scientific
+import Data.Text as T (unpack)
 import Data.Text.Lazy as LT
 import Data.X509
 import Env
 import LndClient.Class
 import LndClient.Data.Type
-import LndClient.Import.External
+import LndClient.Import.External as Ex
 import LndClient.Util as U
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel.Client
+import Text.Read
 
-newtype LndWalletPassword = LndWalletPassword ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+newtype LndWalletPassword = LndWalletPassword Text
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
 newtype LndTlsCert = LndTlsCert ByteString
   deriving (PersistField, PersistFieldSql, Eq)
 
-newtype LndHexMacaroon = LndHexMacaroon ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+newtype LndHexMacaroon = LndHexMacaroon Text
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
-newtype LndHost = LndHost ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+newtype LndHost = LndHost Text
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
-newtype LndPort = LndPort Word32
+newtype LndPort = LndPort Int
   deriving (PersistField, PersistFieldSql, Eq)
-
-instance ToGrpc LndWalletPassword ByteString where
-  toGrpc = Right . coerce
 
 data RawConfig
   = RawConfig
-      { rawConfigLndWalletPassword :: ByteString,
-        rawConfigLndTlsCert :: ByteString,
-        rawConfigLndHexMacaroon :: ByteString,
-        rawConfigLndHost :: ByteString,
-        --
-        -- TODO : use Word32
-        --
-        rawConfigLndPort :: Word32
+      { rawConfigLndWalletPassword :: LndWalletPassword,
+        rawConfigLndTlsCert :: LndTlsCert,
+        rawConfigLndHexMacaroon :: LndHexMacaroon,
+        rawConfigLndHost :: LndHost,
+        rawConfigLndPort :: LndPort
       }
+  deriving (Eq)
 
 data LndEnv
   = LndEnv
@@ -62,12 +65,80 @@ data LndEnv
         envLndLogErrors :: Bool
       }
 
+instance ToGrpc LndWalletPassword ByteString where
+  toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
+
+instance Read LndTlsCert where
+  readsPrec _ x =
+    case createLndTlsCert $ C8.pack x of
+      Right r -> [(r, "")]
+      Left _ -> case reads x of
+        [(r, "")] -> [(r, "")]
+        _ -> []
+
+instance FromJSON LndTlsCert where
+  parseJSON x =
+    case x of
+      A.String s ->
+        case createLndTlsCert $ C8.pack $ T.unpack s of
+          Right cert -> return cert
+          Left e -> failure e
+      e -> failure e
+    where
+      failure err = fail $ "Json certificate parsing error: " <> " " <> show err
+
+instance Read LndPort where
+  readsPrec _ x = do
+    let mX :: Maybe Word32 = readMaybe x
+    let eX :: Either LndError Word32 = maybeToRight (LndEnvError "Port parsing error") mX
+    case createLndPort =<< eX of
+      Right r -> [(r, "")]
+      Left _ -> case reads x of
+        [(r, "")] -> [(r, "")]
+        _ -> []
+
+instance FromJSON LndPort where
+  parseJSON x =
+    case x of
+      A.Number s -> do
+        let ePort = maybeToRight (LndEnvError "Port should be Int") $ toBoundedInteger s
+        case ePort >>= createLndPort of
+          Right lndPort -> return lndPort
+          Left err -> failure err
+      err -> failure err
+    where
+      failure err = fail $ "Json port loading error: " <> " " <> show err
+
+instance FromJSON RawConfig where
+  parseJSON (Object v) =
+    RawConfig <$> v .: "lnd_wallet_password"
+      <*> v .: "lnd_tls_cert"
+      <*> v .: "lnd_hex_macaroon"
+      <*> v .: "lnd_host"
+      <*> v .: "lnd_port"
+  parseJSON _ = mzero
+
+createLndTlsCert :: ByteString -> Either LndError LndTlsCert
+createLndTlsCert bs = do
+  pemsM <- first (LndEnvError . LT.pack) $ Pem.pemParseBS bs
+  pem <-
+    note (LndEnvError $ LT.pack "No pem found") $ safeHead pemsM
+  bimap
+    (LndEnvError . LT.pack . ("Certificate is not valid: " <>))
+    (const $ LndTlsCert bs)
+    (decodeSignedCertificate $ Pem.pemContent pem)
+
+createLndPort :: Word32 -> Either LndError LndPort
+createLndPort p = do
+  let maybePort :: Maybe Int = U.safeFromIntegral p
+  maybeToRight (LndEnvError "Wrong port") $ LndPort <$> maybePort
+
 rawConfig :: IO RawConfig
 rawConfig =
   parse (header "LndClient config") $
     RawConfig
       <$> var (str <=< nonempty) "LND_CLIENT_LND_WALLET_PASSWORD" (keep <> help "")
-      <*> var (str <=< nonempty) "LND_CLIENT_LND_TLS_CERT" (keep <> help "")
+      <*> var (auto <=< nonempty) "LND_CLIENT_LND_TLS_CERT" (keep <> help "")
       <*> var (str <=< nonempty) "LND_CLIENT_LND_HEX_MACAROON" (keep <> help "")
       <*> var (str <=< nonempty) "LND_CLIENT_LND_HOST" (keep <> help "")
       <*> var (auto <=< nonempty) "LND_CLIENT_LND_PORT" (keep <> help "")
@@ -75,14 +146,13 @@ rawConfig =
 readLndEnv :: IO LndEnv
 readLndEnv = do
   rc <- rawConfig
-  case newLndEnv
-    (LndWalletPassword $ rawConfigLndWalletPassword rc)
-    (LndTlsCert $ rawConfigLndTlsCert rc)
-    (LndHexMacaroon $ rawConfigLndHexMacaroon rc)
-    (LndHost $ rawConfigLndHost rc)
-    (LndPort $ rawConfigLndPort rc) of
-    Left x -> fail $ show x
-    Right x -> return x
+  return $
+    newLndEnv
+      (rawConfigLndWalletPassword rc)
+      (rawConfigLndTlsCert rc)
+      (rawConfigLndHexMacaroon rc)
+      (rawConfigLndHost rc)
+      (rawConfigLndPort rc)
 
 newLndEnv ::
   LndWalletPassword ->
@@ -90,41 +160,24 @@ newLndEnv ::
   LndHexMacaroon ->
   LndHost ->
   LndPort ->
-  Either LndError LndEnv
+  LndEnv
 newLndEnv pwd cert mac host port =
-  createLndEnv <$> validatePort port <*> validateCert cert
-  where
-    validatePort :: LndPort -> Either LndError Int
-    validatePort p = do
-      let port32 :: Word32 = coerce p
-      let maybePort :: Maybe Int = U.safeFromIntegral port32
-      maybeToRight (LndEnvError "Wrong port") maybePort
-    validateCert :: LndTlsCert -> Either LndError LndTlsCert
-    validateCert c = do
-      pemsM <- first (LndEnvError . LT.pack) $ Pem.pemParseBS $ coerce c
-      pem <- note (LndEnvError $ LT.pack "No pem found") $ safeHead pemsM
-      bimap
-        (LndEnvError . LT.pack . ("Certificate is not valid: " <>))
-        (const c)
-        (decodeSignedCertificate $ Pem.pemContent pem)
-    createLndEnv :: Int -> LndTlsCert -> LndEnv
-    createLndEnv p c =
-      LndEnv
-        { envLndWalletPassword = pwd,
-          envLndHexMacaroon = mac,
-          envLndLogErrors = True,
-          envLndGrpcConfig =
-            ClientConfig
-              { clientServerHost = Host $ coerce host,
-                clientServerPort = Port p,
-                clientArgs = [],
-                clientSSLConfig =
-                  Just $
-                    ClientSSLConfig
-                      { serverRootCert = Just $ coerce c,
-                        clientSSLKeyCertPair = Nothing,
-                        clientMetadataPlugin = Nothing
-                      },
-                clientAuthority = Nothing
-              }
-        }
+  LndEnv
+    { envLndWalletPassword = pwd,
+      envLndHexMacaroon = mac,
+      envLndLogErrors = True,
+      envLndGrpcConfig =
+        ClientConfig
+          { clientServerHost = Host $ encodeUtf8 (coerce host :: Text),
+            clientServerPort = Port $ coerce port,
+            clientArgs = [],
+            clientSSLConfig =
+              Just $
+                ClientSSLConfig
+                  { serverRootCert = Just $ coerce cert,
+                    clientSSLKeyCertPair = Nothing,
+                    clientMetadataPlugin = Nothing
+                  },
+            clientAuthority = Nothing
+          }
+    }
