@@ -20,25 +20,25 @@ import LndClient.Import.External
 import LndClient.Util (safeFromIntegral)
 
 newtype AddIndex = AddIndex Word64
-  deriving (PersistField, PersistFieldSql, Show, Eq)
+  deriving (PersistField, PersistFieldSql, Eq)
 
 newtype SettleIndex = SettleIndex Word64
-  deriving (PersistField, PersistFieldSql, Show, Eq)
+  deriving (PersistField, PersistFieldSql, Eq)
 
 newtype PaymentRequest = PaymentRequest Text
-  deriving (PersistField, PersistFieldSql, Show, Eq, QR.ToText)
+  deriving (PersistField, PersistFieldSql, Eq, QR.ToText)
 
 newtype RHash = RHash ByteString
-  deriving (PersistField, PersistFieldSql, Show, Eq)
+  deriving (PersistField, PersistFieldSql, Eq)
 
 newtype MoneyAmount = MoneyAmount Word64
-  deriving (PersistField, PersistFieldSql, Show, Eq)
+  deriving (PersistField, PersistFieldSql, Eq)
 
 newtype CipherSeedMnemonic = CipherSeedMnemonic [Text]
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON)
 
-newtype AezeedPassphrase = AezeedPassphrase ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+newtype AezeedPassphrase = AezeedPassphrase Text
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON)
 
 instance ToGrpc AddIndex Word64 where
   toGrpc = Right . coerce
@@ -77,4 +77,4 @@ instance ToGrpc CipherSeedMnemonic (Vector Text) where
   toGrpc = Right . fromList . coerce
 
 instance ToGrpc AezeedPassphrase ByteString where
-  toGrpc = Right . coerce
+  toGrpc x = Right $ encodeUtf8 (coerce x :: Text)

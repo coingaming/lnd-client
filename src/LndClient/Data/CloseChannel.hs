@@ -1,15 +1,13 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleInstances #-}
-
 module LndClient.Data.CloseChannel
   ( CloseChannelRequest (..),
     CloseStatusUpdate (..),
     ChannelPoint (..),
+    PendingUpdate (..),
+    ChannelCloseUpdate (..),
   )
 where
 
-import qualified Data.Text.Lazy as TL (Text)
-import LndClient.Data.ChannelPoint
+import LndClient.Data.ChannelPoint hiding (outputIndex)
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
@@ -19,26 +17,29 @@ data CloseChannelRequest
         force :: Bool,
         targetConf :: Maybe Int32,
         satPerByte :: Maybe Int64,
-        deliveryAddress :: Maybe TL.Text
+        deliveryAddress :: Maybe Text
       }
-  deriving (Generic, Show)
+  deriving (Eq)
 
-data CloseStatusUpdate = Pending PendingUpdate | Close ChannelCloseUpdate | NothingUpdate
-  deriving (Generic, Show)
+data CloseStatusUpdate
+  = Pending PendingUpdate
+  | Close ChannelCloseUpdate
+  | NothingUpdate
+  deriving (Eq)
 
 data PendingUpdate
   = PendingUpdate
       { txid :: ByteString,
         outputIndex :: Word32
       }
-  deriving (Generic, Show)
+  deriving (Eq)
 
 data ChannelCloseUpdate
   = ChannelCloseUpdate
       { closingTxid :: ByteString,
         success :: Bool
       }
-  deriving (Generic, Show)
+  deriving (Eq)
 
 instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
   toGrpc x =
@@ -61,9 +62,12 @@ instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
 instance FromGrpc CloseStatusUpdate GRPC.CloseStatusUpdate where
   fromGrpc x =
     case x of
-      GRPC.CloseStatusUpdate (Just (GRPC.CloseStatusUpdateUpdateChanClose a)) -> Close <$> (fromGrpc a)
-      GRPC.CloseStatusUpdate (Just (GRPC.CloseStatusUpdateUpdateClosePending a)) -> Pending <$> (fromGrpc a)
-      GRPC.CloseStatusUpdate Nothing -> Right NothingUpdate
+      GRPC.CloseStatusUpdate (Just (GRPC.CloseStatusUpdateUpdateChanClose a)) ->
+        Close <$> (fromGrpc a)
+      GRPC.CloseStatusUpdate (Just (GRPC.CloseStatusUpdateUpdateClosePending a)) ->
+        Pending <$> (fromGrpc a)
+      GRPC.CloseStatusUpdate Nothing ->
+        Right NothingUpdate
 
 instance FromGrpc PendingUpdate GRPC.PendingUpdate where
   fromGrpc x =

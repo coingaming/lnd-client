@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module LndClient.Data.SendPayment
   ( SendPaymentRequest (..),
     SendPaymentResponse (..),
@@ -14,7 +12,7 @@ data SendPaymentRequest
       { paymentRequest :: PaymentRequest,
         amt :: MoneyAmount
       }
-  deriving (Generic, Show)
+  deriving (Eq)
 
 data SendPaymentResponse
   = SendPaymentResponse
@@ -22,13 +20,13 @@ data SendPaymentResponse
         paymentPreimage :: ByteString,
         paymentHash :: ByteString
       }
-  deriving (Generic, Show, Eq)
+  deriving (Eq)
 
 instance ToGrpc SendPaymentRequest GRPC.SendRequest where
   toGrpc x =
     msg
-      <$> (toGrpc $ amt x)
-      <*> (toGrpc $ paymentRequest x)
+      <$> toGrpc (amt x)
+      <*> toGrpc (paymentRequest x)
     where
       msg gAmt gPaymentRequest =
         def
@@ -39,6 +37,6 @@ instance ToGrpc SendPaymentRequest GRPC.SendRequest where
 instance FromGrpc SendPaymentResponse GRPC.SendResponse where
   fromGrpc x =
     SendPaymentResponse
-      <$> (fromGrpc $ GRPC.sendResponsePaymentError x)
-      <*> (fromGrpc $ GRPC.sendResponsePaymentPreimage x)
-      <*> (fromGrpc $ GRPC.sendResponsePaymentHash x)
+      <$> fromGrpc (GRPC.sendResponsePaymentError x)
+      <*> fromGrpc (GRPC.sendResponsePaymentPreimage x)
+      <*> fromGrpc (GRPC.sendResponsePaymentHash x)

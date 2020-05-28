@@ -16,11 +16,10 @@ module LndClient.Data.LndEnv
   )
 where
 
-import Data.Aeson as A ((.:), FromJSON (..), Value (..))
+import Data.Aeson as A ((.:), Value (..))
 import Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
 import Data.Scientific
-import Data.Text as T (unpack)
 import Data.Text.Lazy as LT
 import Data.X509
 import Env
@@ -80,7 +79,7 @@ instance FromJSON LndTlsCert where
   parseJSON x =
     case x of
       A.String s ->
-        case createLndTlsCert $ C8.pack $ T.unpack s of
+        case createLndTlsCert $ encodeUtf8 s of
           Right cert -> return cert
           Left e -> failure e
       e -> failure e

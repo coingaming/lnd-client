@@ -12,7 +12,7 @@ data ChannelPoint
       { fundingTxidBytes :: ByteString,
         outputIndex :: Word32
       }
-  deriving (Show, Eq)
+  deriving (Eq)
 
 instance FromGrpc ChannelPoint GRPC.ChannelPoint where
   fromGrpc x =

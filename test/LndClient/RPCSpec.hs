@@ -17,7 +17,7 @@ where
 
 import Control.Concurrent.Async (async, link)
 import Control.Concurrent.Thread.Delay (delay)
-import Data.Aeson as AE (Result (..), fromJSON)
+import Data.Aeson as AE (Result (..))
 import Data.Aeson.QQ.Simple
 import Data.ByteString as BS (reverse)
 import Data.ByteString.Base16 as B16 (decode)
@@ -43,6 +43,7 @@ import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Import
 import LndClient.QRCode
 import LndClient.RPC
+import LndClient.TestOrphan ()
 import qualified LndGrpc as GRPC
 import Network.Bitcoin as BTC (Client, getClient)
 import Network.Bitcoin.Mining (generateToAddress)

@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module LndClient.Data.Invoice
   ( Invoice (..),
   )
@@ -27,7 +25,7 @@ data Invoice
         addIndex :: AddIndex,
         state :: GRPC.Invoice_InvoiceState
       }
-  deriving (Generic, Show, Eq)
+  deriving (Eq)
 
 instance FromGrpc Invoice GRPC.Invoice where
   fromGrpc x =
@@ -47,4 +45,6 @@ instance FromGrpc Invoice GRPC.Invoice where
       -- <*> fromGrpc (GRPC.invoiceCltvExpiry x)
       <*> fromGrpc (GRPC.invoicePrivate x)
       <*> fromGrpc (GRPC.invoiceAddIndex x)
-      <*> first (\e -> FromGrpcError $ "Invalid Invoice State" <> show e) (enumerated $ GRPC.invoiceState x)
+      <*> first
+        (\e -> FromGrpcError $ "Invalid Invoice State" <> show e)
+        (enumerated $ GRPC.invoiceState x)
