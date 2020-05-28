@@ -49,7 +49,7 @@ createLndTlsCert bs = do
     (decodeSignedCertificate $ Pem.pemContent pem)
 
 instance Read LndTlsCert where
-  readsPrec _ x = do
+  readsPrec _ x =
     case createLndTlsCert $ C8.pack x of
       Right r -> [(r, "")]
       Left _ -> case reads x of
@@ -105,15 +105,6 @@ instance FromJSON LndPort where
       err -> failure err
     where
       failure err = fail $ "Json port loading error: " <> " " <> show err
-
-instance ToGrpc LndWalletPassword Text where
-  toGrpc = Right . coerce
-
-instance ToGrpc LndHexMacaroon ByteString where
-  toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
-
-instance ToGrpc LndHost ByteString where
-  toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
 
 instance ToGrpc LndWalletPassword ByteString where
   toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
