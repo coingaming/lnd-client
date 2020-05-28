@@ -3,12 +3,12 @@
 
 module LndClient.Data.LndEnv
   ( LndEnv (..),
-    RawConfig (..),
+    RawConfig,
     LndWalletPassword (..),
-    LndTlsCert (..),
+    LndTlsCert,
     LndHexMacaroon (..),
     LndHost (..),
-    LndPort (..),
+    LndPort,
     newLndEnv,
     readLndEnv,
     createLndTlsCert,
@@ -33,10 +33,10 @@ import Network.GRPC.LowLevel.Client
 import Text.Read
 
 newtype LndWalletPassword = LndWalletPassword Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString, Show)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
 newtype LndTlsCert = LndTlsCert ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Show)
+  deriving (PersistField, PersistFieldSql, Eq)
 
 createLndTlsCert :: ByteString -> Either LndError LndTlsCert
 createLndTlsCert bs = do
@@ -71,13 +71,13 @@ instance ToGrpc LndTlsCert ByteString where
   toGrpc = Right . coerce
 
 newtype LndHexMacaroon = LndHexMacaroon Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString, Show)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
 newtype LndHost = LndHost Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString, Show)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
 newtype LndPort = LndPort Int
-  deriving (PersistField, PersistFieldSql, Eq, Show)
+  deriving (PersistField, PersistFieldSql, Eq)
 
 createLndPort :: Word32 -> Either LndError LndPort
 createLndPort p = do
@@ -98,8 +98,7 @@ instance FromJSON LndPort where
   parseJSON x =
     case x of
       A.Number s -> do
-        let maybeInt :: Maybe Int = toBoundedInteger s
-        let ePort = maybeToRight (LndEnvError "Port should be Int") $ maybeInt >>= safeFromIntegral
+        let ePort = maybeToRight (LndEnvError "Port should be Int") $ toBoundedInteger s
         case ePort >>= createLndPort of
           Right lndPort -> return lndPort
           Left err -> failure err
@@ -127,7 +126,7 @@ data RawConfig
         rawConfigLndHost :: LndHost,
         rawConfigLndPort :: LndPort
       }
-  deriving (Eq, Show)
+  deriving (Eq)
 
 data LndEnv
   = LndEnv
