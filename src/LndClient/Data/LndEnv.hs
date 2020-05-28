@@ -5,19 +5,22 @@ module LndClient.Data.LndEnv
   ( LndEnv (..),
     RawConfig (..),
     LndWalletPassword (..),
-    LndTlsCert,
+    LndTlsCert (..),
     LndHexMacaroon (..),
     LndHost (..),
     LndPort (..),
     newLndEnv,
     readLndEnv,
     createLndTlsCert,
+    createLndPort,
   )
 where
 
 import Data.Aeson as A ((.:), FromJSON (..), Value (..))
 import Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
+import Data.Scientific
+import Data.Text as T (unpack)
 import Data.Text.Lazy as LT
 import Data.X509
 import Env
@@ -30,10 +33,10 @@ import Network.GRPC.LowLevel.Client
 import Text.Read
 
 newtype LndWalletPassword = LndWalletPassword Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString, Show)
 
 newtype LndTlsCert = LndTlsCert ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, Show)
 
 createLndTlsCert :: ByteString -> Either LndError LndTlsCert
 createLndTlsCert bs = do
@@ -46,7 +49,7 @@ createLndTlsCert bs = do
     (decodeSignedCertificate $ Pem.pemContent pem)
 
 instance Read LndTlsCert where
-  readsPrec _ x =
+  readsPrec _ x = do
     case createLndTlsCert $ C8.pack x of
       Right r -> [(r, "")]
       Left _ -> case reads x of
@@ -57,24 +60,24 @@ instance FromJSON LndTlsCert where
   parseJSON x =
     case x of
       A.String s ->
-        case createLndTlsCert $ encodeUtf8 s of
+        case createLndTlsCert $ C8.pack $ T.unpack s of
           Right cert -> return cert
-          Left _ -> failure
-      _ -> failure
+          Left e -> failure e
+      e -> failure e
     where
-      failure = fail $ "Json certificate parsing error: " <> " " <> show x
+      failure err = fail $ "Json certificate parsing error: " <> " " <> show err
 
 instance ToGrpc LndTlsCert ByteString where
   toGrpc = Right . coerce
 
 newtype LndHexMacaroon = LndHexMacaroon Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString, Show)
 
 newtype LndHost = LndHost Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString, Show)
 
 newtype LndPort = LndPort Int
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, Show)
 
 createLndPort :: Word32 -> Either LndError LndPort
 createLndPort p = do
@@ -94,13 +97,15 @@ instance Read LndPort where
 instance FromJSON LndPort where
   parseJSON x =
     case x of
-      A.String s ->
-        case createLndPort ((read $ toString s) :: Word32) of
-          Right cert -> return cert
-          Left _ -> failure
-      _ -> failure
+      A.Number s -> do
+        let maybeInt :: Maybe Int = toBoundedInteger s
+        let ePort = maybeToRight (LndEnvError "Port should be Int") $ maybeInt >>= safeFromIntegral
+        case ePort >>= createLndPort of
+          Right lndPort -> return lndPort
+          Left err -> failure err
+      err -> failure err
     where
-      failure = fail $ "Json certificate parsing error: " <> " " <> show x
+      failure err = fail $ "Json port loading error: " <> " " <> show err
 
 instance ToGrpc LndWalletPassword Text where
   toGrpc = Right . coerce
@@ -122,6 +127,7 @@ data RawConfig
         rawConfigLndHost :: LndHost,
         rawConfigLndPort :: LndPort
       }
+  deriving (Eq, Show)
 
 data LndEnv
   = LndEnv
