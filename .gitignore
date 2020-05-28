@@ -11,3 +11,4 @@ dist*
 postgres.log
 result
 nohup.out
+.DS_Store
