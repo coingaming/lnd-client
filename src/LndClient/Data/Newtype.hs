@@ -29,7 +29,7 @@ newtype PaymentRequest = PaymentRequest Text
   deriving (PersistField, PersistFieldSql, Eq, QR.ToText)
 
 newtype RHash = RHash ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, Show)
 
 newtype MoneyAmount = MoneyAmount Word64
   deriving (PersistField, PersistFieldSql, Eq)
