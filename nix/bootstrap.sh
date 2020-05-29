@@ -52,3 +52,4 @@ cp /tmp/.ssh/* $HOME/.ssh/
 echo -e "Host *\n IdentityFile $HOME/.ssh/id_rsa.robot\n IdentitiesOnly yes\n UserKnownHostsFile $HOME/.ssh/known_hosts\n StrictHostKeyChecking no" > $HOME/.ssh/config
 chown -R nixbld1 /tmp/.ssh/
 git submodule update --init --recursive --depth 1
+./nix/upgrade-pkg.sh
