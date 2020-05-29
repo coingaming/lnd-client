@@ -16,11 +16,10 @@ module LndClient.Data.LndEnv
   )
 where
 
-import Data.Aeson as A ((.:), FromJSON (..), Value (..))
+import Data.Aeson as A ((.:), Value (..), eitherDecodeStrict)
 import Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
 import Data.Scientific
-import Data.Text as T (unpack)
 import Data.Text.Lazy as LT
 import Data.X509
 import Env
@@ -31,7 +30,6 @@ import LndClient.Import.External as Ex
 import LndClient.Util as U
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel.Client
-import Text.Read
 
 newtype LndWalletPassword = LndWalletPassword Text
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
@@ -74,37 +72,19 @@ instance ToGrpc LndWalletPassword ByteString where
   toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
 
 --
--- TODO test Read and FromJSON failed
+-- TODO test FromJSON failed
 --
-
-instance Read LndTlsCert where
-  readsPrec _ x =
-    case createLndTlsCert $ C8.pack x of
-      Right r -> [(r, "")]
-      Left _ -> case reads x of
-        [(r, "")] -> [(r, "")]
-        _ -> []
 
 instance FromJSON LndTlsCert where
   parseJSON x =
     case x of
       A.String s ->
-        case createLndTlsCert $ C8.pack $ T.unpack s of
+        case createLndTlsCert $ encodeUtf8 s of
           Right cert -> return cert
           Left e -> failure e
       e -> failure e
     where
       failure err = fail $ "Json certificate parsing error: " <> " " <> show err
-
-instance Read LndPort where
-  readsPrec _ x = do
-    let mX :: Maybe Word32 = readMaybe x
-    let eX :: Either LndError Word32 = maybeToRight (LndEnvError "Port parsing error") mX
-    case createLndPort =<< eX of
-      Right r -> [(r, "")]
-      Left _ -> case reads x of
-        [(r, "")] -> [(r, "")]
-        _ -> []
 
 instance FromJSON LndPort where
   parseJSON x =
@@ -148,16 +128,10 @@ createLndPort p = do
   maybeToRight (LndEnvError "Wrong port") $ LndPort <$> maybePort
 
 rawConfig :: IO RawConfig
-rawConfig =
-  parse (header "LndClient config") $
-    RawConfig
-      <$> var (str <=< nonempty) "LND_CLIENT_LND_WALLET_PASSWORD" (keep <> help "")
-      <*> var (auto <=< nonempty) "LND_CLIENT_LND_TLS_CERT" (keep <> help "")
-      <*> var (str <=< nonempty) "LND_CLIENT_LND_HEX_MACAROON" (keep <> help "")
-      <*> var (str <=< nonempty) "LND_CLIENT_LND_HOST" (keep <> help "")
-      <*> var (auto <=< nonempty) "LND_CLIENT_LND_PORT" (keep <> help "")
-      <*> var (auto <=< nonempty) "LND_CLIENT_LND_CIPHER_SEED_MNEMONIC" (keep <> help "")
-      <*> var (str <=< nonempty) "LND_CLIENT_LND_AEZEED_PASSPHRASE" (keep <> help "")
+rawConfig = parse (header "LndClient config") $ var (parseRawConfig <=< nonempty) "LND_CLIENT_ENV_DATA" (keep <> help "")
+  where
+    parseRawConfig :: String -> Either Error RawConfig
+    parseRawConfig strConfig = first UnreadError $ eitherDecodeStrict $ C8.pack strConfig
 
 readLndEnv :: IO LndEnv
 readLndEnv = do

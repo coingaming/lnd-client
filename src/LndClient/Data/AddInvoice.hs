@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module LndClient.Data.AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
@@ -16,7 +14,7 @@ data AddInvoiceRequest
         descriptionHash :: Maybe ByteString,
         memo :: Maybe Text
       }
-  deriving (Generic, Show)
+  deriving (Eq)
 
 data AddInvoiceResponse
   = AddInvoiceResponse
@@ -24,7 +22,7 @@ data AddInvoiceResponse
         paymentRequest :: PaymentRequest,
         addIndex :: AddIndex
       }
-  deriving (Generic, Show, Eq)
+  deriving (Eq)
 
 --
 -- TODO : move this to smart constructor
