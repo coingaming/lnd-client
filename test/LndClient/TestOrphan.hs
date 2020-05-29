@@ -11,8 +11,6 @@ import LndClient.Data.ChannelPoint
 import LndClient.Data.Invoice
 import LndClient.Import
 
-deriving instance Show RHash
-
 deriving instance Show MoneyAmount
 
 deriving instance Show SettleIndex
