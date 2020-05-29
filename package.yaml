@@ -63,6 +63,7 @@ dependencies:
 - pem
 - extra
 - scientific
+- aeson-casing
 
 library:
   source-dirs: src

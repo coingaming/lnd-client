@@ -25,6 +25,7 @@ import Data.Text.Lazy as LT
 import Data.X509
 import Env
 import LndClient.Class
+import LndClient.Data.Newtype
 import LndClient.Data.Type
 import LndClient.Import.External as Ex
 import LndClient.Util as U
@@ -53,7 +54,9 @@ data RawConfig
         rawConfigLndTlsCert :: LndTlsCert,
         rawConfigLndHexMacaroon :: LndHexMacaroon,
         rawConfigLndHost :: LndHost,
-        rawConfigLndPort :: LndPort
+        rawConfigLndPort :: LndPort,
+        rawConfigLndCipherSeedMnemonic :: CipherSeedMnemonic,
+        rawConfigLndAezeedPassphrase :: AezeedPassphrase
       }
   deriving (Eq)
 
@@ -62,11 +65,17 @@ data LndEnv
       { envLndWalletPassword :: LndWalletPassword,
         envLndHexMacaroon :: LndHexMacaroon,
         envLndGrpcConfig :: ClientConfig,
-        envLndLogErrors :: Bool
+        envLndLogErrors :: Bool,
+        envLndCipherSeedMnemonic :: CipherSeedMnemonic,
+        envLndAezeedPassphrase :: AezeedPassphrase
       }
 
 instance ToGrpc LndWalletPassword ByteString where
   toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
+
+--
+-- TODO test Read and FromJSON failed
+--
 
 instance Read LndTlsCert where
   readsPrec _ x =
@@ -109,6 +118,9 @@ instance FromJSON LndPort where
     where
       failure err = fail $ "Json port loading error: " <> " " <> show err
 
+--
+--TODO test fromJSON for not an Object input
+--
 instance FromJSON RawConfig where
   parseJSON (Object v) =
     RawConfig <$> v .: "lnd_wallet_password"
@@ -116,6 +128,8 @@ instance FromJSON RawConfig where
       <*> v .: "lnd_hex_macaroon"
       <*> v .: "lnd_host"
       <*> v .: "lnd_port"
+      <*> v .: "lnd_cipher_seed_mnemonic"
+      <*> v .: "lnd_aezeed_passphrase"
   parseJSON _ = mzero
 
 createLndTlsCert :: ByteString -> Either LndError LndTlsCert
@@ -142,6 +156,8 @@ rawConfig =
       <*> var (str <=< nonempty) "LND_CLIENT_LND_HEX_MACAROON" (keep <> help "")
       <*> var (str <=< nonempty) "LND_CLIENT_LND_HOST" (keep <> help "")
       <*> var (auto <=< nonempty) "LND_CLIENT_LND_PORT" (keep <> help "")
+      <*> var (auto <=< nonempty) "LND_CLIENT_LND_CIPHER_SEED_MNEMONIC" (keep <> help "")
+      <*> var (str <=< nonempty) "LND_CLIENT_LND_AEZEED_PASSPHRASE" (keep <> help "")
 
 readLndEnv :: IO LndEnv
 readLndEnv = do
@@ -153,6 +169,8 @@ readLndEnv = do
       (rawConfigLndHexMacaroon rc)
       (rawConfigLndHost rc)
       (rawConfigLndPort rc)
+      (rawConfigLndCipherSeedMnemonic rc)
+      (rawConfigLndAezeedPassphrase rc)
 
 newLndEnv ::
   LndWalletPassword ->
@@ -160,12 +178,16 @@ newLndEnv ::
   LndHexMacaroon ->
   LndHost ->
   LndPort ->
+  CipherSeedMnemonic ->
+  AezeedPassphrase ->
   LndEnv
-newLndEnv pwd cert mac host port =
+newLndEnv pwd cert mac host port seed aezeed =
   LndEnv
     { envLndWalletPassword = pwd,
       envLndHexMacaroon = mac,
       envLndLogErrors = True,
+      envLndCipherSeedMnemonic = seed,
+      envLndAezeedPassphrase = aezeed,
       envLndGrpcConfig =
         ClientConfig
           { clientServerHost = Host $ encodeUtf8 (coerce host :: Text),

@@ -13,6 +13,8 @@ module LndClient.Data.Newtype
 where
 
 import Codec.QRCode as QR (ToText)
+import Data.Aeson (FromJSON (..))
+import Data.ByteString.Char8 as C8
 import Data.Vector (fromList)
 import LndClient.Class
 import LndClient.Data.Type
@@ -35,10 +37,10 @@ newtype MoneyAmount = MoneyAmount Word64
   deriving (PersistField, PersistFieldSql, Show, Eq)
 
 newtype CipherSeedMnemonic = CipherSeedMnemonic [Text]
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, Read)
 
-newtype AezeedPassphrase = AezeedPassphrase ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+newtype AezeedPassphrase = AezeedPassphrase Text
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
 instance ToGrpc AddIndex Word64 where
   toGrpc = Right . coerce
@@ -77,4 +79,4 @@ instance ToGrpc CipherSeedMnemonic (Vector Text) where
   toGrpc = Right . fromList . coerce
 
 instance ToGrpc AezeedPassphrase ByteString where
-  toGrpc = Right . coerce
+  toGrpc x = Right $ encodeUtf8 (coerce x :: Text)

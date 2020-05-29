@@ -48,3 +48,7 @@ export LND_CLIENT_LND_HEX_MACAROON="0201036C6E6402CF01030A10634D5C8D3227E9F63529
 export LND_CLIENT_LND_HOST="localhost"
 
 export LND_CLIENT_LND_PORT="10009"
+
+export LND_CLIENT_LND_AEZEED_PASSPHRASE="absent,betray,direct,scheme,sunset,mechanic,exhaust,suggest,boy,arena,sketch,bone,news,south,way,survey,clip,dutch,depart,green,furnace,wire,wave,fall"
+
+export LND_CLIENT_LND_CIPHER_SEED_MNEMONIC="developer"
