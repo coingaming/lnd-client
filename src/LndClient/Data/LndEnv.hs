@@ -54,7 +54,7 @@ data RawConfig
         rawConfigLndHost :: LndHost,
         rawConfigLndPort :: LndPort,
         rawConfigLndCipherSeedMnemonic :: CipherSeedMnemonic,
-        rawConfigLndAezeedPassphrase :: AezeedPassphrase
+        rawConfigLndAezeedPassphrase :: Maybe AezeedPassphrase
       }
   deriving (Eq)
 
@@ -65,7 +65,7 @@ data LndEnv
         envLndGrpcConfig :: ClientConfig,
         envLndLogErrors :: Bool,
         envLndCipherSeedMnemonic :: CipherSeedMnemonic,
-        envLndAezeedPassphrase :: AezeedPassphrase
+        envLndAezeedPassphrase :: Maybe AezeedPassphrase
       }
 
 instance ToGrpc LndWalletPassword ByteString where
@@ -153,7 +153,7 @@ newLndEnv ::
   LndHost ->
   LndPort ->
   CipherSeedMnemonic ->
-  AezeedPassphrase ->
+  Maybe AezeedPassphrase ->
   LndEnv
 newLndEnv pwd cert mac host port seed aezeed =
   LndEnv
