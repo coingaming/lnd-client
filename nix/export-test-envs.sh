@@ -58,7 +58,6 @@ export LND_CLIENT_ENV_DATA='
       "wire",
       "wave",
       "fall"
-    ],
-    "lnd_aezeed_passphrase":"developer"
+    ]
 }
 '

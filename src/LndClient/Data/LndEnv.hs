@@ -16,7 +16,7 @@ module LndClient.Data.LndEnv
   )
 where
 
-import Data.Aeson as A ((.:), Value (..), eitherDecodeStrict)
+import Data.Aeson as A ((.:), (.:?), Value (..), eitherDecodeStrict)
 import Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
 import Data.Scientific
@@ -109,7 +109,7 @@ instance FromJSON RawConfig where
       <*> v .: "lnd_host"
       <*> v .: "lnd_port"
       <*> v .: "lnd_cipher_seed_mnemonic"
-      <*> v .: "lnd_aezeed_passphrase"
+      <*> v .:? "lnd_aezeed_passphrase"
   parseJSON _ = mzero
 
 createLndTlsCert :: ByteString -> Either LndError LndTlsCert

@@ -102,7 +102,8 @@ custEnv env = do
                   "number",
                   "wealth",
                   "thunder"
-                ]
+                ],
+            envLndAezeedPassphrase = Just $ AezeedPassphrase "developer"
           }
     }
 
