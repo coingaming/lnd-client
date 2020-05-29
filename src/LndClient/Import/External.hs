@@ -8,7 +8,7 @@ import Chronos as Import
   )
 import Control.Concurrent.Thread.Delay as Import (delay)
 import Crypto.Hash.SHA256 as Import (hash)
-import Data.Aeson as Import (ToJSON)
+import Data.Aeson as Import (FromJSON (..), ToJSON, fromJSON)
 import Data.ByteString as Import (ByteString)
 import Data.Coerce as Import (coerce)
 import Data.Text.Lazy as Import (Text, fromStrict, toStrict, unpack)
