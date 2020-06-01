@@ -83,9 +83,8 @@ grpcDefaultTimeout = 5
 initWallet ::
   (KatipContext m) =>
   LndEnv ->
-  InitWalletRequest ->
   m (Either LndError ())
-initWallet env req = do
+initWallet env = do
   res <-
     grpcSync
       InitWallet
@@ -93,7 +92,11 @@ initWallet env req = do
       GRPC.walletUnlockerInitWallet
       grpcDefaultTimeout
       env
-      req
+      InitWalletRequest
+        { walletPassword = coerce $ envLndWalletPassword env,
+          cipherSeedMnemonic = coerce $ envLndCipherSeedMnemonic env,
+          aezeedPassphrase = coerce $ envLndAezeedPassphrase env
+        }
   --
   -- NOTE : some LND bullshit - it crashes if other RPC performed after that too soon
   --
@@ -136,16 +139,15 @@ lazyUnlockWallet env =
 lazyInitWallet ::
   (KatipContext m) =>
   LndEnv ->
-  InitWalletRequest ->
   m (Either LndError ())
-lazyInitWallet env req =
+lazyInitWallet env =
   katipAddContext (sl "RpcName" LazyInitWallet) $ do
     $(logTM) InfoS "RPC is running..."
     unlockRes <- lazyUnlockWallet $ env {envLndLogErrors = False}
     if isRight unlockRes
       then return unlockRes
       else do
-        initRes <- initWallet env req
+        initRes <- initWallet env
         if isRight initRes
           then lazyUnlockWallet env
           else do

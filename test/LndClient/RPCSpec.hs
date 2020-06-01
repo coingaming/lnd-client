@@ -31,7 +31,6 @@ import LndClient.Data.AddInvoice as AddInvoice
 import LndClient.Data.BtcEnv
 import LndClient.Data.CloseChannel (ChannelPoint (..), CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
-import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..), ListChannelsResponse (..))
 import LndClient.Data.LndEnv
@@ -76,7 +75,35 @@ custEnv env = do
           { envLndGrpcConfig =
               grpcConfig
                 { clientServerPort = 11009
-                }
+                },
+            envLndCipherSeedMnemonic =
+              CipherSeedMnemonic
+                [ "absent",
+                  "betray",
+                  "direct",
+                  "scheme",
+                  "sunset",
+                  "mechanic",
+                  "exhaust",
+                  "suggest",
+                  "boy",
+                  "arena",
+                  "sketch",
+                  "bone",
+                  "news",
+                  "south",
+                  "way",
+                  "survey",
+                  "clip",
+                  "dutch",
+                  "depart",
+                  "green",
+                  "furnace",
+                  "wire",
+                  "wave",
+                  "fall"
+                ],
+            envLndAezeedPassphrase = Nothing
           }
     }
 
@@ -153,12 +180,12 @@ spec = around withEnv $ do
     it "rpc-succeeds-merchant" $ \env -> do
       res <-
         runApp env $
-          lazyInitWallet (envLnd env) initWalletRequest
+          lazyInitWallet (envLnd env)
       res `shouldSatisfy` isRight
     it "rpc-succeeds-customer" $ \env -> do
       res <-
         runApp env $
-          lazyInitWallet (envLnd $ custEnv env) initWalletRequestCust
+          lazyInitWallet (envLnd $ custEnv env)
       res `shouldSatisfy` isRight
   describe "LazyUnlockWallet"
     $ it "rpc-succeeds"
@@ -179,8 +206,8 @@ spec = around withEnv $ do
     it "rpc-succeeds" $ shouldBeOk listPeers
   describe "ConnectPeer" $ do
     it "rpc-succeeds" $ \env -> do
-      _ <- runApp env $ lazyInitWallet (envLnd env) initWalletRequest
-      _ <- runApp (custEnv env) $ lazyInitWallet (envLnd $ custEnv env) initWalletRequestCust
+      _ <- runApp env $ lazyInitWallet (envLnd env)
+      _ <- runApp (custEnv env) $ lazyInitWallet (envLnd $ custEnv env)
       GetInfoResponse nodePubKey <- runApp env $ coerceLndResult =<< getInfo (envLnd $ custEnv env)
       let connectPeerRequest =
             ConnectPeerRequest
@@ -358,78 +385,12 @@ spec = around withEnv $ do
                 closeAddress = Nothing
               }
       return req
-    initWalletSeed =
-      CipherSeedMnemonic
-        [ "absent",
-          "betray",
-          "direct",
-          "scheme",
-          "sunset",
-          "mechanic",
-          "exhaust",
-          "suggest",
-          "boy",
-          "arena",
-          "sketch",
-          "bone",
-          "news",
-          "south",
-          "way",
-          "survey",
-          "clip",
-          "dutch",
-          "depart",
-          "green",
-          "furnace",
-          "wire",
-          "wave",
-          "fall"
-        ]
-    initWalletSeedCust =
-      CipherSeedMnemonic
-        [ "absent",
-          "dilemma",
-          "mango",
-          "firm",
-          "hero",
-          "green",
-          "wide",
-          "rebel",
-          "pigeon",
-          "custom",
-          "town",
-          "stadium",
-          "shock",
-          "bind",
-          "ocean",
-          "seek",
-          "enforce",
-          "during",
-          "bird",
-          "honey",
-          "enrich",
-          "number",
-          "wealth",
-          "thunder"
-        ]
     somePubKey env = do
       res <- runApp env $ coerceLndResult =<< listPeers (envLnd env)
       let mPeer = safeHead res
       case mPeer of
         Just pPeer -> return $ pubKey pPeer
         Nothing -> fail "no any peers connected"
-    initWalletRequest =
-      InitWalletRequest
-        { walletPassword = LndWalletPassword "developer",
-          aezeedPassphrase = Nothing,
-          cipherSeedMnemonic = initWalletSeed
-        }
-    initWalletRequestCust =
-      InitWalletRequest
-        { walletPassword = LndWalletPassword "developer",
-          aezeedPassphrase = Just $ AezeedPassphrase "developer",
-          cipherSeedMnemonic = initWalletSeedCust
-        }
     shouldBeOk this env = do
       res <- runApp env $ this $ envLnd env
       res `shouldSatisfy` isRight

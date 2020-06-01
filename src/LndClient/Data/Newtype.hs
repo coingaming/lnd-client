@@ -13,6 +13,8 @@ module LndClient.Data.Newtype
 where
 
 import Codec.QRCode as QR (ToText)
+import Data.Aeson (FromJSON (..))
+import Data.ByteString.Char8 as C8
 import Data.Vector (fromList)
 import LndClient.Class
 import LndClient.Data.Type
