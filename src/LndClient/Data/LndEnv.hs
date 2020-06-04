@@ -14,7 +14,6 @@ module LndClient.Data.LndEnv
     createLndTlsCert,
     unLndTlsCert,
     createLndPort,
-    unLndPort,
   )
 where
 
@@ -131,11 +130,6 @@ createLndPort :: Word32 -> Either LndError LndPort
 createLndPort p = do
   let maybePort :: Maybe Int = U.safeFromIntegral p
   maybeToRight (LndEnvError "Wrong port") $ LndPort <$> maybePort
-
-unLndPort :: LndPort -> Either LndError Word32
-unLndPort lndPort = do
-  let maybePort :: Maybe Word32 = U.safeFromIntegral $ (coerce lndPort :: Int)
-  maybeToRight (LndEnvError "Port convertion to Word32 error") maybePort
 
 rawConfig :: IO RawConfig
 rawConfig = parse (header "LndClient config") $ var (parseRawConfig <=< nonempty) "LND_CLIENT_ENV_DATA" (keep <> help "")
