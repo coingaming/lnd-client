@@ -5,13 +5,14 @@ module LndClient.Data.LndEnv
   ( LndEnv (..),
     RawConfig,
     LndWalletPassword (..),
-    LndTlsCert (..),
+    LndTlsCert,
     LndHexMacaroon (..),
     LndHost (..),
-    LndPort (..),
+    LndPort,
     newLndEnv,
     readLndEnv,
     createLndTlsCert,
+    unLndTlsCert,
     createLndPort,
   )
 where
@@ -121,6 +122,9 @@ createLndTlsCert bs = do
     (LndEnvError . LT.pack . ("Certificate is not valid: " <>))
     (const $ LndTlsCert bs)
     (decodeSignedCertificate $ Pem.pemContent pem)
+
+unLndTlsCert :: LndTlsCert -> ByteString
+unLndTlsCert = coerce
 
 createLndPort :: Word32 -> Either LndError LndPort
 createLndPort p = do
