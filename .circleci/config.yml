@@ -1,3 +1,5 @@
+version: 2.1
+
 configure: &configure
   docker:
   - image: nixos/nix:2.3
@@ -13,14 +15,28 @@ filters: &filters
   filters:
     branches: {}
 
-version: 2
+commands:
+  restore_nix_cache:
+    steps:
+      - restore_cache:
+          keys:
+            - v0-nix
+  save_nix_cache:
+    steps:
+      - save_cache:
+          key: v0-nix
+          paths:
+            - /nix
+
 jobs:
   release:
     <<: *configure
     steps:
     - checkout
     - setup_remote_docker
+    - restore_nix_cache
     - *release
+    - save_nix_cache
 
 workflows:
   version: 2

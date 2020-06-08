@@ -348,7 +348,7 @@ grpcSubscribe ::
   a ->
   m (Either LndError b)
 grpcSubscribe rpcName method timeout handler env req =
-  katipAddContext (sl "RpcName" rpcName) $ do
+  katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
     $(logTM) InfoS "RPC is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e
@@ -406,7 +406,7 @@ grpcSync ::
   a ->
   m (Either LndError b)
 grpcSync rpcName service method timeout env req =
-  katipAddContext (sl "RpcName" rpcName) $ do
+  katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
     $(logTM) InfoS "RPC is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e

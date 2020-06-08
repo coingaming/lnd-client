@@ -14,6 +14,7 @@ module LndClient.Data.LndEnv
     createLndTlsCert,
     unLndTlsCert,
     createLndPort,
+    katipAddLndContext,
   )
 where
 
@@ -181,3 +182,14 @@ newLndEnv pwd cert mac host port seed aezeed =
             clientAuthority = Nothing
           }
     }
+
+katipAddLndContext :: (KatipContext m) => LndEnv -> m a -> m a
+katipAddLndContext env =
+  katipAddContext (sl "LndHost" h)
+    . katipAddContext (sl "LndPort" p)
+  where
+    c = envLndGrpcConfig env
+    h = case decodeUtf8' $ coerce $ clientServerHost c of
+      Left _ -> "NOT_UTF8"
+      Right x -> x
+    p = coerce $ clientServerPort c :: Int
