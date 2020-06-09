@@ -25,21 +25,21 @@ data CloseStatusUpdate
   = Pending PendingUpdate
   | Close ChannelCloseUpdate
   | NothingUpdate
-  deriving (Eq, Show)
+  deriving (Eq)
 
 data PendingUpdate
   = PendingUpdate
       { txid :: ByteString,
         outputIndex :: Word32
       }
-  deriving (Eq, Show)
+  deriving (Eq)
 
 data ChannelCloseUpdate
   = ChannelCloseUpdate
       { closingTxid :: ByteString,
         success :: Bool
       }
-  deriving (Eq, Show)
+  deriving (Eq)
 
 instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
   toGrpc x =
