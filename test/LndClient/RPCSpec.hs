@@ -404,9 +404,11 @@ spec = around withEnv $ do
                   (envLnd env)
             )
       _ <- delay 3000000
-      _ <-
+      paymentResult <-
         runApp (custEnv env) $
           coerceLndResult =<< sendPayment (envLnd $ custEnv env) sendPaymentRequest
+      print paymentResult
+      _ <- generateToAddress client 100 (toStrict btcAddress) Nothing
       resultingEvents <- takeMVar x
       print resultingEvents
       resultingEvents

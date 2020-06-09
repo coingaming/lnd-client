@@ -20,7 +20,7 @@ data SendPaymentResponse
         paymentPreimage :: ByteString,
         paymentHash :: ByteString
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance ToGrpc SendPaymentRequest GRPC.SendRequest where
   toGrpc x =
