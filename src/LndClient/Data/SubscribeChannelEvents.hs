@@ -14,13 +14,6 @@ data ChannelEventUpdate
       }
   deriving (Show)
 
---data ChannelEvent
---  = OpenChannel GRPC.Channel
---  | ClosedChannel GRPC.ChannelCloseSummary
---  | ActiveChannel GRPC.ChannelPoint
---  | InactiveChannel GRPC.ChannelPoint
---  | PendingOpenChannel GRPC.PendingUpdate
-
 instance FromGrpc ChannelEventUpdate GRPC.ChannelEventUpdate where
   fromGrpc x =
     ChannelEventUpdate

@@ -411,19 +411,6 @@ spec = around withEnv $ do
             value = MoneyAmount 1000,
             descriptionHash = Nothing
           }
-    --    closeChannelX :: Env -> Channel -> IO ()
-    --    closeChannelX env channel = do
-    --      x <- newEmptyMVar
-    --      let channelPointStr :: ByteString = encodeUtf8 $ LndClient.Data.ListChannels.channelPoint channel
-    --      let fundingTxid :: ByteString = fromMaybe "" $ safeHead $ split ':' channelPointStr
-    --      let (fundingTxidHex, _) = B16.decode fundingTxid
-    --      _ <-
-    --        runApp env $
-    --          closeChannel
-    --            (liftIO . putMVar x)
-    --            (envLnd env)
-    --            (CloseChannelRequest (ChannelPoint (BS.reverse fundingTxidHex) 0) True Nothing Nothing Nothing)
-    --      return ()
     openChannelRequest :: Env -> IO OpenChannelRequest
     openChannelRequest env = do
       x <- somePubKey env
