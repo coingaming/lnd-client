@@ -38,6 +38,7 @@ import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
+--import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Import
 import LndClient.QRCode
@@ -348,6 +349,68 @@ spec = around withEnv $ do
         `shouldSatisfy` ( \this ->
                             AddInvoice.rHash invoice == Invoice.rHash this
                         )
+  describe "SubscribeChannelEvents"
+    $ it "rpc-succeeds"
+    $ \env -> do
+      NewAddressResponse btcAddress <-
+        runApp (custEnv env) $
+          coerceLndResult
+            =<< newAddress
+              (envLnd $ custEnv env)
+              GRPC.AddressTypeWITNESS_PUBKEY_HASH
+      client <- btcClient
+      ListChannelsResponse channelList <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
+      _ <- sequence $ map (closeChannelX env) channelList
+      _ <- generateToAddress client 100 (toStrict btcAddress) Nothing
+      _ <- delay 1000000
+      x <- newEmptyMVar
+      pubKeyX <- somePubKey $ custEnv env
+      let (pubKeyHex, _) = B16.decode (encodeUtf8 pubKeyX)
+      let openChannelReq =
+            OpenChannelRequest
+              { nodePubkey = pubKeyHex,
+                localFundingAmount = MoneyAmount 20000,
+                pushSat = Nothing,
+                targetConf = Nothing,
+                satPerByte = Nothing,
+                private = Nothing,
+                minHtlcMsat = Nothing,
+                remoteCsvDelay = Nothing,
+                minConfs = Nothing,
+                spendUnconfirmed = Nothing,
+                closeAddress = Nothing
+              }
+      let addInvoiceReq =
+            hashifyAddInvoiceRequest $
+              AddInvoiceRequest
+                { memo = Just "HELLO",
+                  value = MoneyAmount 20000,
+                  descriptionHash = Nothing
+                }
+      _ <-
+        runApp env $
+          coerceLndResult =<< openChannelSync (envLnd $ custEnv env) openChannelReq
+      _ <- generateToAddress client 100 (toStrict btcAddress) Nothing
+      invoice <- runApp env $ coerceLndResult =<< addInvoice (envLnd env) addInvoiceReq
+      let sendPaymentRequest =
+            SendPaymentRequest
+              { paymentRequest = (AddInvoice.paymentRequest invoice),
+                amt = (MoneyAmount 20000)
+              }
+      link
+        =<< ( async $ runApp env $
+                subscribeChannelEvents
+                  (liftIO . putMVar x)
+                  (envLnd env)
+            )
+      _ <- delay 3000000
+      _ <-
+        runApp (custEnv env) $
+          coerceLndResult =<< sendPayment (envLnd $ custEnv env) sendPaymentRequest
+      resultingEvents <- takeMVar x
+      print resultingEvents
+      resultingEvents
+        `shouldSatisfy` (\_ -> True)
   describe "GetInfo"
     $ it "rpc-succeeds"
     $ \env ->
@@ -366,6 +429,19 @@ spec = around withEnv $ do
             value = MoneyAmount 1000,
             descriptionHash = Nothing
           }
+    closeChannelX :: Env -> Channel -> IO ()
+    closeChannelX env channel = do
+      x <- newEmptyMVar
+      let channelPointStr :: ByteString = encodeUtf8 $ LndClient.Data.ListChannels.channelPoint channel
+      let fundingTxid :: ByteString = fromMaybe "" $ safeHead $ split ':' channelPointStr
+      let (fundingTxidHex, _) = B16.decode fundingTxid
+      _ <-
+        runApp env $
+          closeChannel
+            (liftIO . putMVar x)
+            (envLnd env)
+            (CloseChannelRequest (ChannelPoint (BS.reverse fundingTxidHex) 0) True Nothing Nothing Nothing)
+      return ()
     openChannelRequest :: Env -> IO OpenChannelRequest
     openChannelRequest env = do
       x <- somePubKey env
