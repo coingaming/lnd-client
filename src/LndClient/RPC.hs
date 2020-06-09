@@ -23,6 +23,7 @@ module LndClient.RPC
     sendPayment,
     getInfo,
     subscribeInvoices,
+    subscribeChannelEvents,
     grpcSync,
     grpcSubscribe,
   )
@@ -44,6 +45,7 @@ import LndClient.Data.SendPayment as SendPayment
   ( SendPaymentRequest (..),
     SendPaymentResponse (..),
   )
+import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
 import LndClient.Data.SubscribeInvoices as SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
@@ -62,6 +64,7 @@ data RpcName
   | NewAddress
   | AddInvoice
   | SubscribeInvoices
+  | SubscribeChannelEvents
   | OpenChannelSync
   | ListChannels
   | CloseChannel
@@ -216,6 +219,38 @@ subscribeInvoices invoiceHandler =
           --
           case fromGrpc gi of
             Right i -> invoiceHandler i
+            Left e -> fail $ show e
+          streamHandler stream
+
+subscribeChannelEvents ::
+  (KatipContext m) =>
+  --
+  -- TODO : replace IO with m if possible
+  --
+  (ChannelEventUpdate -> IO ()) ->
+  LndEnv ->
+  m (Either LndError ChannelEventUpdate)
+subscribeChannelEvents eventsHandler env =
+  grpcSubscribe
+    SubscribeChannelEvents
+    GRPC.lightningSubscribeChannelEvents
+    3600
+    (\_ _ s -> streamHandler s)
+    env
+    GRPC.ChannelEventSubscription {}
+  where
+    streamHandler :: IO (Either GRPCIOError (Maybe GRPC.ChannelEventUpdate)) -> IO ()
+    streamHandler stream = do
+      msg <- stream
+      case msg of
+        Left e -> fail $ "SubscribeChannelEvents error " <> show e
+        Right Nothing -> fail "SubscribeChannelEvents got Nothing"
+        Right (Just gi) -> do
+          --
+          -- TODO : handle all fields and types overflow
+          --
+          case fromGrpc gi of
+            Right i -> eventsHandler i
             Left e -> fail $ show e
           streamHandler stream
 

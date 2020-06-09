@@ -38,6 +38,7 @@ import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
+import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Import
 import LndClient.QRCode
@@ -348,6 +349,48 @@ spec = around withEnv $ do
         `shouldSatisfy` ( \this ->
                             AddInvoice.rHash invoice == Invoice.rHash this
                         )
+  describe "SubscribeChannelEvents"
+    $ it "rpc-succeeds"
+    $ \env -> do
+      NewAddressResponse btcAddress <-
+        runApp (custEnv env) $
+          coerceLndResult
+            =<< newAddress
+              (envLnd $ custEnv env)
+              GRPC.AddressTypeWITNESS_PUBKEY_HASH
+      client <- btcClient
+      x <- newEmptyMVar
+      pubKeyX <- somePubKey $ custEnv env
+      let (pubKeyHex, _) = B16.decode (encodeUtf8 pubKeyX)
+      let openChannelReq =
+            OpenChannelRequest
+              { nodePubkey = pubKeyHex,
+                localFundingAmount = MoneyAmount 20000,
+                pushSat = Nothing,
+                targetConf = Nothing,
+                satPerByte = Nothing,
+                private = Nothing,
+                minHtlcMsat = Nothing,
+                remoteCsvDelay = Nothing,
+                minConfs = Nothing,
+                spendUnconfirmed = Nothing,
+                closeAddress = Nothing
+              }
+      link
+        =<< ( async $ runApp env $
+                subscribeChannelEvents
+                  (liftIO . putMVar x)
+                  (envLnd env)
+            )
+      _ <- delay 3000000
+      _ <-
+        runApp env $
+          coerceLndResult =<< openChannelSync (envLnd $ custEnv env) openChannelReq
+      _ <- generateToAddress client 100 (toStrict btcAddress) Nothing
+      resultingEvents <- takeMVar x
+      print resultingEvents
+      resultingEvents
+        `shouldSatisfy` (\this -> eventType this == Enumerated {enumerated = Right GRPC.ChannelEventUpdate_UpdateTypePENDING_OPEN_CHANNEL})
   describe "GetInfo"
     $ it "rpc-succeeds"
     $ \env ->
