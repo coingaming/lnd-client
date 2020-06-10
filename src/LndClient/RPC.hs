@@ -29,6 +29,7 @@ module LndClient.RPC
   )
 where
 
+import qualified Control.Exception as CE (catch, throw)
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
@@ -154,7 +155,7 @@ lazyInitWallet env =
         if isRight initRes
           then lazyUnlockWallet env
           else do
-            $(logTM) ErrorS "Wallet initialization failed"
+            $(logTM) ErrorS "Wallet initialization fiasco"
             return initRes
 
 newAddress ::
@@ -199,28 +200,12 @@ subscribeInvoices ::
   (Invoice -> IO ()) ->
   LndEnv ->
   SubscribeInvoicesRequest ->
-  m (Either LndError Invoice)
-subscribeInvoices invoiceHandler =
+  m (Either LndError ())
+subscribeInvoices =
   grpcSubscribe
     SubscribeInvoices
     GRPC.lightningSubscribeInvoices
     3600
-    (\_ _ s -> streamHandler s)
-  where
-    streamHandler :: IO (Either GRPCIOError (Maybe GRPC.Invoice)) -> IO ()
-    streamHandler stream = do
-      msg <- stream
-      case msg of
-        Left e -> fail $ "SubscribeInvoices error " <> show e
-        Right Nothing -> fail "SubscribeInvoices got Nothing"
-        Right (Just gi) -> do
-          --
-          -- TODO : handle all fields and types overflow
-          --
-          case fromGrpc gi of
-            Right i -> invoiceHandler i
-            Left e -> fail $ show e
-          streamHandler stream
 
 subscribeChannelEvents ::
   (KatipContext m) =>
@@ -229,30 +214,15 @@ subscribeChannelEvents ::
   --
   (ChannelEventUpdate -> IO ()) ->
   LndEnv ->
-  m (Either LndError ChannelEventUpdate)
-subscribeChannelEvents eventsHandler env =
+  m (Either LndError ())
+subscribeChannelEvents handler env =
   grpcSubscribe
     SubscribeChannelEvents
     GRPC.lightningSubscribeChannelEvents
     3600
-    (\_ _ s -> streamHandler s)
+    handler
     env
     GRPC.ChannelEventSubscription {}
-  where
-    streamHandler :: IO (Either GRPCIOError (Maybe GRPC.ChannelEventUpdate)) -> IO ()
-    streamHandler stream = do
-      msg <- stream
-      case msg of
-        Left e -> fail $ "SubscribeChannelEvents error " <> show e
-        Right Nothing -> fail "SubscribeChannelEvents got Nothing"
-        Right (Just gi) -> do
-          --
-          -- TODO : handle all fields and types overflow
-          --
-          case fromGrpc gi of
-            Right i -> eventsHandler i
-            Left e -> fail $ show e
-          streamHandler stream
 
 openChannelSync ::
   (KatipContext m) =>
@@ -283,28 +253,12 @@ closeChannel ::
   (CloseStatusUpdate -> IO ()) ->
   LndEnv ->
   CloseChannelRequest ->
-  m (Either LndError CloseStatusUpdate)
-closeChannel closeHandler =
+  m (Either LndError ())
+closeChannel =
   grpcSubscribe
     CloseChannel
     GRPC.lightningCloseChannel
     3600
-    (\_ _ s -> streamHandler s)
-  where
-    streamHandler :: IO (Either GRPCIOError (Maybe GRPC.CloseStatusUpdate)) -> IO ()
-    streamHandler stream = do
-      msg <- stream
-      case msg of
-        Left e -> fail $ "CloseChannel error " <> show e
-        Right Nothing -> fail "CloseChannel got Nothing"
-        Right (Just gi) -> do
-          --
-          -- TODO : handle all fields and types overflow
-          --
-          case fromGrpc gi of
-            Right i -> closeHandler i
-            Left e -> fail $ show e
-          streamHandler stream
 
 listPeers ::
   (KatipContext m) =>
@@ -367,21 +321,17 @@ grpcSubscribe ::
   ) =>
   RpcName ->
   ( GRPC.Lightning ClientRequest ClientResult ->
-    ClientRequest 'ServerStreaming gA response1 ->
-    IO (ClientResult streamType gB)
+    ClientRequest 'ServerStreaming gA gB ->
+    IO (ClientResult streamType streamResult)
   ) ->
   --
   -- TODO : newtype for timeout
   --
   Int ->
-  ( ClientCall ->
-    MetadataMap ->
-    StreamRecv response1 ->
-    IO ()
-  ) ->
+  (b -> IO ()) ->
   LndEnv ->
   a ->
-  m (Either LndError b)
+  m (Either LndError ())
 grpcSubscribe rpcName method timeout handler env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
     $(logTM) InfoS "RPC is running..."
@@ -390,30 +340,33 @@ grpcSubscribe rpcName method timeout handler env req =
       Right grpcReq ->
         withGRPCClient (envLndGrpcConfig env) $ \client -> do
           method' <- method <$> GRPC.lightningClient client
-          rawGrpc <-
-            method' $
-              ClientReaderRequest grpcReq timeout (grpcMeta env) handler
+          let greq =
+                ClientReaderRequest
+                  grpcReq
+                  timeout
+                  (grpcMeta env)
+                  (\_ _ s -> genStreamHandler s handler)
+          rawGrpc <- CE.catch (Right <$> method' greq) $ return . Left
           return $ case rawGrpc of
-            --
-            -- TODO : here probably ReaderResponse should be valid?
-            --
-            ClientNormalResponse grpcRes _ _ _ _ ->
-              fromGrpc grpcRes
-            ClientErrorResponse err ->
+            Right ClientNormalResponse {} ->
+              Left $ GrpcUnexpectedResult "ClientNormalResponse"
+            Right (ClientErrorResponse err) ->
               Left $ GrpcError err
-            ClientWriterResponse {} ->
+            Right ClientWriterResponse {} ->
               Left $ GrpcUnexpectedResult "ClientWriterResponse"
-            ClientReaderResponse {} ->
-              Left $ GrpcUnexpectedResult "ClientReaderResponse"
-            ClientBiDiResponse {} ->
+            Right ClientReaderResponse {} ->
+              Right ()
+            Right ClientBiDiResponse {} ->
               Left $ GrpcUnexpectedResult "ClientBiDiResponse"
+            Left e ->
+              Left e
     --
     -- TODO : better logs?
     --
     katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $ do
       case res of
         Left e -> do
-          let logMsg = logStr ("RPC failed with error " <> show e :: Text)
+          let logMsg = logStr ("RPC exited with message " <> show e :: Text)
           if envLndLogErrors env
             then $(logTM) ErrorS logMsg
             else $(logTM) InfoS logMsg
@@ -466,7 +419,7 @@ grpcSync rpcName service method timeout env req =
     katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $ do
       case res of
         Left e -> do
-          let logMsg = logStr ("RPC failed with error " <> show e :: Text)
+          let logMsg = logStr ("RPC exited with message " <> show e :: Text)
           if envLndLogErrors env
             then $(logTM) ErrorS logMsg
             else $(logTM) InfoS logMsg
@@ -476,3 +429,19 @@ grpcSync rpcName service method timeout env req =
 
 showElapsedSeconds :: Timespan -> Text
 showElapsedSeconds = fromStrict . encodeTimespan SubsecondPrecisionAuto
+
+genStreamHandler ::
+  (FromGrpc a b) =>
+  IO (Either GRPCIOError (Maybe b)) ->
+  (a -> IO ()) ->
+  IO ()
+genStreamHandler stream handler = do
+  msg <- stream
+  case msg of
+    Left e -> CE.throw $ GrpcError $ ClientIOError e
+    Right Nothing -> CE.throw GrpcEmptyResult
+    Right (Just gi) -> do
+      case fromGrpc gi of
+        Right i -> handler i
+        Left e -> CE.throw e
+      genStreamHandler stream handler
