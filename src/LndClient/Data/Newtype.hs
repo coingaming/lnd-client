@@ -34,7 +34,7 @@ newtype RHash = RHash ByteString
   deriving (PersistField, PersistFieldSql, Eq, Show)
 
 newtype MoneyAmount = MoneyAmount Word64
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, Num)
 
 newtype CipherSeedMnemonic = CipherSeedMnemonic [Text]
   deriving (PersistField, PersistFieldSql, Eq, FromJSON)
