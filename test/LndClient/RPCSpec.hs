@@ -272,7 +272,7 @@ spec = around withEnv $ do
         req <- openChannelRequest (custEnv env)
         _ <- runApp (custEnv env) $ openChannelSync (envLnd $ custEnv env) req
         ListChannelsResponse channelList <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
-        let firstChannel :: Channel = fromMaybe (Channel "" "") $ safeHead channelList
+        let firstChannel :: Channel = fromMaybe (Channel "" "" (MoneyAmount 0) (MoneyAmount 0)) $ safeHead channelList
         let channelPointStr :: ByteString = encodeUtf8 $ LndClient.Data.ListChannels.channelPoint firstChannel
         let fundingTxid :: ByteString = fromMaybe "" $ safeHead $ split ':' channelPointStr
         let (fundingTxidHex, _) = B16.decode fundingTxid
@@ -287,8 +287,8 @@ spec = around withEnv $ do
         _ <- delay 3000000
         ListChannelsResponse channelList2 <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
         _ <- takeMVar x
-        channelList2
-          `shouldSatisfy` (\list2 -> length channelList - length list2 == 1)
+        (length channelList - length channelList2)
+          `shouldBe` 1
   describe "SubscribeInvoices"
     $ it "rpc-succeeds"
     $ \env -> do

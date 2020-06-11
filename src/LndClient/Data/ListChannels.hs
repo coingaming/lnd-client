@@ -26,7 +26,7 @@ data ListChannelsResponse
   = ListChannelsResponse
       { channels :: [Channel]
       }
-  deriving (Generic, Show)
+  deriving (Generic)
 
 --
 --TODO use ChannelPoint type here, parse string and do sufficient decodings
@@ -34,9 +34,11 @@ data ListChannelsResponse
 data Channel
   = Channel
       { remotePubkey :: TL.Text,
-        channelPoint :: TL.Text
+        channelPoint :: TL.Text,
+        localBalance :: MoneyAmount,
+        remoteBalance :: MoneyAmount
       }
-  deriving (Generic, Show)
+  deriving (Generic)
 
 instance ToGrpc ListChannelsRequest GRPC.ListChannelsRequest where
   toGrpc x =
@@ -66,3 +68,5 @@ instance FromGrpc Channel GRPC.Channel where
     Channel
       <$> (fromGrpc $ GRPC.channelRemotePubkey x)
       <*> (fromGrpc $ GRPC.channelChannelPoint x)
+      <*> (fromGrpc $ GRPC.channelLocalBalance x)
+      <*> (fromGrpc $ GRPC.channelRemoteBalance x)
