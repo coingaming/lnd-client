@@ -12,7 +12,8 @@ data AddInvoiceRequest
   = AddInvoiceRequest
       { value :: MoneyAmount,
         descriptionHash :: Maybe ByteString,
-        memo :: Maybe Text
+        memo :: Maybe Text,
+        expiry :: Maybe Int64
       }
   deriving (Eq)
 
@@ -40,12 +41,14 @@ instance ToGrpc AddInvoiceRequest GRPC.Invoice where
       <$> toGrpc (memo x)
       <*> toGrpc (value x)
       <*> toGrpc (descriptionHash x)
+      <*> toGrpc (expiry x)
     where
-      msg gMemo gValue gDescH =
+      msg gMemo gValue gDescH gExp =
         def
           { GRPC.invoiceMemo = gMemo,
             GRPC.invoiceValue = gValue,
-            GRPC.invoiceDescriptionHash = gDescH
+            GRPC.invoiceDescriptionHash = gDescH,
+            GRPC.invoiceExpiry = gExp
           }
 
 instance FromGrpc AddInvoiceResponse GRPC.AddInvoiceResponse where
