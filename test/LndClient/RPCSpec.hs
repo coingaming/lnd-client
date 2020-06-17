@@ -407,7 +407,8 @@ spec = around withEnv $ do
         AddInvoiceRequest
           { memo = Just "HELLO",
             value = MoneyAmount 1000,
-            descriptionHash = Nothing
+            descriptionHash = Nothing,
+            expiry = Just $ Seconds 1000
           }
     openChannelRequest :: Env -> IO OpenChannelRequest
     openChannelRequest env = do
