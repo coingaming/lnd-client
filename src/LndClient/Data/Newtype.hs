@@ -9,6 +9,7 @@ module LndClient.Data.Newtype
     MoneyAmount (..),
     CipherSeedMnemonic (..),
     AezeedPassphrase (..),
+    Seconds (..),
   )
 where
 
@@ -42,6 +43,9 @@ newtype CipherSeedMnemonic = CipherSeedMnemonic [Text]
 newtype AezeedPassphrase = AezeedPassphrase Text
   deriving (PersistField, PersistFieldSql, Eq, FromJSON)
 
+newtype Seconds = Seconds Word64
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, Show)
+
 instance ToGrpc AddIndex Word64 where
   toGrpc = Right . coerce
 
@@ -74,6 +78,12 @@ instance FromGrpc PaymentRequest Text where
 
 instance ToGrpc PaymentRequest Text where
   toGrpc x = Right (coerce x :: Text)
+
+instance ToGrpc Seconds Int64 where
+  toGrpc x =
+    maybeToRight
+      (ToGrpcError "Seconds overflow")
+      $ safeFromIntegral (coerce x :: Word64)
 
 instance ToGrpc CipherSeedMnemonic (Vector Text) where
   toGrpc = Right . fromList . coerce

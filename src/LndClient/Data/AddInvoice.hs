@@ -13,7 +13,7 @@ data AddInvoiceRequest
       { value :: MoneyAmount,
         descriptionHash :: Maybe ByteString,
         memo :: Maybe Text,
-        expiry :: Maybe Int64
+        expiry :: Maybe Seconds
       }
   deriving (Eq)
 

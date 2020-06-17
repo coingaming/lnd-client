@@ -408,7 +408,7 @@ spec = around withEnv $ do
           { memo = Just "HELLO",
             value = MoneyAmount 1000,
             descriptionHash = Nothing,
-            expiry = Just 1000
+            expiry = Just $ Seconds 1000
           }
     openChannelRequest :: Env -> IO OpenChannelRequest
     openChannelRequest env = do
