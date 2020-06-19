@@ -395,12 +395,17 @@ spec = around withEnv $ do
     $ it "rpc-succeeds"
     $ \env ->
       shouldBeOk getInfo (custEnv env)
-  describe "LoadEnv"
-    $ it "request-jsonify"
-    $ \_ ->
-      case (fromJSON envJsonRequest :: Result RawConfig) of
-        Success _ -> True
-        _ -> False
+  describe "LoadEnv" $ do
+    it "request-jsonify" $
+      \_ ->
+        case (fromJSON envJsonRequest :: Result RawConfig) of
+          Success _ -> True
+          _ -> False
+    it "request-jsonify-sensitive" $
+      \_ ->
+        case (fromJSON envJsonSensitiveRequest :: Result SensitiveRawConfig) of
+          Success _ -> True
+          _ -> False
   where
     addInvoiceRequest =
       hashifyAddInvoiceRequest $
@@ -438,15 +443,13 @@ spec = around withEnv $ do
     shouldBeOk this env = do
       res <- runApp env $ this $ envLnd env
       res `shouldSatisfy` isRight
-    envJsonRequest =
+    envJsonSensitiveRequest =
       [aesonQQ|
             {
                 "name":"bitcasino",
                 "lnd_wallet_password":"developer",
                 "lnd_tls_cert":"-----BEGIN CERTIFICATE-----\nMIIB5TCCAYugAwIBAgIQdO9Ld+VoSDTS6iCH8Q1vOTAKBggqhkjOPQQDAjA4MR8w\nHQYDVQQKExZsbmQgYXV0b2dlbmVyYXRlZCBjZXJ0MRUwEwYDVQQDEww3MmRlNDc0\nNWY0ZmIwHhcNMTkxMTI2MTAxMzE5WhcNMjEwMTIwMTAxMzE5WjA4MR8wHQYDVQQK\nExZsbmQgYXV0b2dlbmVyYXRlZCBjZXJ0MRUwEwYDVQQDEww3MmRlNDc0NWY0ZmIw\nWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQT8jCB5MLjVgZ19RelGVgNiI2AtX9w\nd+k+EPdBn1ETVvtbtB0d21j2JYilKCwfJvTSFyEcrpSNhZPEc06RdoHRo3cwdTAO\nBgNVHQ8BAf8EBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zBSBgNVHREESzBJggw3MmRl\nNDc0NWY0ZmKCCWxvY2FsaG9zdIIEdW5peIIKdW5peHBhY2tldIcEfwAAAYcQAAAA\nAAAAAAAAAAAAAAAAAYcErBEAAjAKBggqhkjOPQQDAgNIADBFAiAcgXfpsWP36e+J\nf9lsNk/4t2cUEhiP/g3zbvxPQCS4DgIhAPNO2hW1X7vyIWWfrOKawB8OzSeP9r2D\n1y1UOaK4Ps1i\n-----END CERTIFICATE-----",
                 "lnd_hex_macaroon":"0201036C6E6402CF01030A10634D5C8D3227E9F63529F82690C1898E1201301A160A0761646472657373120472656164120577726974651A130A04696E666F120472656164120577726974651A170A08696E766F69636573120472656164120577726974651A160A076D657373616765120472656164120577726974651A170A086F6666636861696E120472656164120577726974651A160A076F6E636861696E120472656164120577726974651A140A057065657273120472656164120577726974651A120A067369676E6572120867656E657261746500000620EB31C7413A5A44D14705852F8C0CA399104658C40AC866918C1D4B981DF2E71E",
-                "lnd_host":"localhost",
-                "lnd_port":10009,
                 "lnd_cipher_seed_mnemonic":[
                   "absent",
                   "betray",
@@ -475,4 +478,11 @@ spec = around withEnv $ do
                 ],
                 "lnd_aezeed_passphrase":"developer"
                         }
+          |]
+    envJsonRequest =
+      [aesonQQ|
+            {
+                "lnd_host":"localhost",
+                "lnd_port":10009
+            }
           |]

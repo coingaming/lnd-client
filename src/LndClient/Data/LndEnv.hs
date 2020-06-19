@@ -4,6 +4,7 @@
 module LndClient.Data.LndEnv
   ( LndEnv (..),
     RawConfig,
+    SensitiveRawConfig,
     LndWalletPassword (..),
     LndTlsCert,
     LndHexMacaroon (..),
@@ -48,15 +49,20 @@ newtype LndHost = LndHost Text
 newtype LndPort = LndPort Int
   deriving (PersistField, PersistFieldSql, Eq)
 
-data RawConfig
-  = RawConfig
+data SensitiveRawConfig
+  = SensitiveRawConfig
       { rawConfigLndWalletPassword :: LndWalletPassword,
         rawConfigLndTlsCert :: LndTlsCert,
         rawConfigLndHexMacaroon :: LndHexMacaroon,
-        rawConfigLndHost :: LndHost,
-        rawConfigLndPort :: LndPort,
         rawConfigLndCipherSeedMnemonic :: CipherSeedMnemonic,
         rawConfigLndAezeedPassphrase :: Maybe AezeedPassphrase
+      }
+  deriving (Eq)
+
+data RawConfig
+  = RawConfig
+      { rawConfigLndHost :: LndHost,
+        rawConfigLndPort :: LndPort
       }
   deriving (Eq)
 
@@ -105,11 +111,15 @@ instance FromJSON LndPort where
 --
 instance FromJSON RawConfig where
   parseJSON (Object v) =
-    RawConfig <$> v .: "lnd_wallet_password"
+    RawConfig <$> v .: "lnd_host"
+      <*> v .: "lnd_port"
+  parseJSON _ = mzero
+
+instance FromJSON SensitiveRawConfig where
+  parseJSON (Object v) =
+    SensitiveRawConfig <$> v .: "lnd_wallet_password"
       <*> v .: "lnd_tls_cert"
       <*> v .: "lnd_hex_macaroon"
-      <*> v .: "lnd_host"
-      <*> v .: "lnd_port"
       <*> v .: "lnd_cipher_seed_mnemonic"
       <*> v .:? "lnd_aezeed_passphrase"
   parseJSON _ = mzero
@@ -138,18 +148,25 @@ rawConfig = parse (header "LndClient config") $ var (parseRawConfig <=< nonempty
     parseRawConfig :: String -> Either Error RawConfig
     parseRawConfig strConfig = first UnreadError $ eitherDecodeStrict $ C8.pack strConfig
 
+sensitiveRawConfig :: IO SensitiveRawConfig
+sensitiveRawConfig = parse (header "LndClient sensitive config") $ var (parseRawConfig <=< nonempty) "LND_CLIENT_SENSITIVE_ENV_DATA" (keep <> help "")
+  where
+    parseRawConfig :: String -> Either Error SensitiveRawConfig
+    parseRawConfig strConfig = first UnreadError $ eitherDecodeStrict $ C8.pack strConfig
+
 readLndEnv :: IO LndEnv
 readLndEnv = do
   rc <- rawConfig
+  src <- sensitiveRawConfig
   return $
     newLndEnv
-      (rawConfigLndWalletPassword rc)
-      (rawConfigLndTlsCert rc)
-      (rawConfigLndHexMacaroon rc)
+      (rawConfigLndWalletPassword src)
+      (rawConfigLndTlsCert src)
+      (rawConfigLndHexMacaroon src)
       (rawConfigLndHost rc)
       (rawConfigLndPort rc)
-      (rawConfigLndCipherSeedMnemonic rc)
-      (rawConfigLndAezeedPassphrase rc)
+      (rawConfigLndCipherSeedMnemonic src)
+      (rawConfigLndAezeedPassphrase src)
 
 newLndEnv ::
   LndWalletPassword ->
