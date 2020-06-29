@@ -1,7 +1,6 @@
 module LndClient.Data.Type
   ( LndError (..),
     LoggingStrategy (..),
-    --    LogOverlayValues (..),
     logDefault,
     logMaskErrors,
     logOmitInfo,
@@ -22,14 +21,6 @@ data LndError
   | LndFail Timespan Text
   | LndEnvError Text
   deriving (Show)
-
---data LoggingStrategy = LogDefault | LogOverlay LogOverlayValues
-
---data LogOverlayValues
---  = LogOverlayValues
---      { logInfoAs :: Severity,
---        logErrorAs :: Severity
---      }
 
 newtype LoggingStrategy = LoggingStrategy (Severity -> Severity)
 
