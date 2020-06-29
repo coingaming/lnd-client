@@ -1,10 +1,21 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 
 module LndClient.Util
   ( safeFromIntegral,
+    logAs,
   )
 where
 
+import Katip.Core
+import LndClient.Data.Type
 import LndClient.Import.External
 
 safeFromIntegral ::
@@ -17,3 +28,6 @@ safeFromIntegral x =
     intX = fromIntegral x :: Integer
     intMin = fromIntegral (minBound :: b) :: Integer
     intMax = fromIntegral (maxBound :: b) :: Integer
+
+logAs :: (MonadIO m, KatipContext m) => Severity -> LoggingStrategy -> LogStr -> m ()
+logAs initialSeverity (LoggingStrategy func) = $(logTM) (func initialSeverity)

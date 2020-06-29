@@ -1,4 +1,11 @@
-module LndClient.Data.Type (LndError (..)) where
+module LndClient.Data.Type
+  ( LndError (..),
+    LoggingStrategy (..),
+    logDefault,
+    logMaskErrors,
+    logOmitInfo,
+  )
+where
 
 import Chronos (Timespan)
 import Control.Exception (Exception)
@@ -14,5 +21,16 @@ data LndError
   | LndFail Timespan Text
   | LndEnvError Text
   deriving (Show)
+
+newtype LoggingStrategy = LoggingStrategy (Severity -> Severity)
+
+logDefault :: LoggingStrategy
+logDefault = LoggingStrategy id
+
+logMaskErrors :: LoggingStrategy
+logMaskErrors = LoggingStrategy $ \x -> if x >= InfoS then InfoS else x
+
+logOmitInfo :: LoggingStrategy
+logOmitInfo = LoggingStrategy $ \x -> if x <= InfoS then DebugS else x
 
 instance Exception LndError

@@ -132,11 +132,11 @@ lazyUnlockWallet ::
   m (Either LndError ())
 lazyUnlockWallet env =
   katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
-    $(logTM) InfoS "RPC is running..."
-    unlocked <- isRight <$> getInfo (env {envLndLogErrors = False})
+    logAs InfoS (envLndLogStrategy env) "RPC is running..."
+    unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logMaskErrors})
     if unlocked
       then do
-        $(logTM) InfoS "Wallet is already unlocked, doing nothing"
+        logAs InfoS (envLndLogStrategy env) "Wallet is already unlocked, doing nothing"
         return $ Right ()
       else unlockWallet env
 
@@ -146,8 +146,8 @@ lazyInitWallet ::
   m (Either LndError ())
 lazyInitWallet env =
   katipAddContext (sl "RpcName" LazyInitWallet) $ do
-    $(logTM) InfoS "RPC is running..."
-    unlockRes <- lazyUnlockWallet $ env {envLndLogErrors = False}
+    logAs InfoS (envLndLogStrategy env) "RPC is running..."
+    unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = logMaskErrors}
     if isRight unlockRes
       then return unlockRes
       else do
@@ -334,7 +334,7 @@ grpcSubscribe ::
   m (Either LndError ())
 grpcSubscribe rpcName method timeout handler env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
-    $(logTM) InfoS "RPC is running..."
+    logAs InfoS (envLndLogStrategy env) "RPC is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e
       Right grpcReq ->
@@ -367,11 +367,9 @@ grpcSubscribe rpcName method timeout handler env req =
       case res of
         Left e -> do
           let logMsg = logStr ("RPC exited with message " <> show e :: Text)
-          if envLndLogErrors env
-            then $(logTM) ErrorS logMsg
-            else $(logTM) InfoS logMsg
+          logAs ErrorS (envLndLogStrategy env) logMsg
         Right _ ->
-          $(logTM) InfoS "RPC succeeded"
+          logAs InfoS (envLndLogStrategy env) "RPC succeded"
       return res
 
 grpcSync ::
@@ -395,7 +393,7 @@ grpcSync ::
   m (Either LndError b)
 grpcSync rpcName service method timeout env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
-    $(logTM) InfoS "RPC is running..."
+    logAs InfoS (envLndLogStrategy env) "RPC is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e
       Right grpcReq ->
@@ -420,11 +418,9 @@ grpcSync rpcName service method timeout env req =
       case res of
         Left e -> do
           let logMsg = logStr ("RPC exited with message " <> show e :: Text)
-          if envLndLogErrors env
-            then $(logTM) ErrorS logMsg
-            else $(logTM) InfoS logMsg
+          logAs ErrorS (envLndLogStrategy env) logMsg
         Right _ ->
-          $(logTM) InfoS "RPC succeeded"
+          logAs InfoS (envLndLogStrategy env) "RPC succeded"
       return res
 
 showElapsedSeconds :: Timespan -> Text

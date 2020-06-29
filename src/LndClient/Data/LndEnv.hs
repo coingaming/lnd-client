@@ -65,7 +65,7 @@ data LndEnv
       { envLndWalletPassword :: LndWalletPassword,
         envLndHexMacaroon :: LndHexMacaroon,
         envLndGrpcConfig :: ClientConfig,
-        envLndLogErrors :: Bool,
+        envLndLogStrategy :: LoggingStrategy,
         envLndCipherSeedMnemonic :: CipherSeedMnemonic,
         envLndAezeedPassphrase :: Maybe AezeedPassphrase
       }
@@ -164,7 +164,7 @@ newLndEnv pwd cert mac host port seed aezeed =
   LndEnv
     { envLndWalletPassword = pwd,
       envLndHexMacaroon = mac,
-      envLndLogErrors = True,
+      envLndLogStrategy = logDefault,
       envLndCipherSeedMnemonic = seed,
       envLndAezeedPassphrase = aezeed,
       envLndGrpcConfig =
