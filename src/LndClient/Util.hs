@@ -36,6 +36,6 @@ logAs initialSeverity strategy msg =
       LogOverlay LogOverlayValues {logErrorAs = severity} -> $(logTM) severity msg
       LogDefault -> $(logTM) ErrorS msg
     InfoS -> case strategy of
-      LogOverlay LogOverlayValues {logErrorAs = severity} -> $(logTM) severity msg
+      LogOverlay LogOverlayValues {logInfoAs = severity} -> $(logTM) severity msg
       LogDefault -> $(logTM) InfoS msg
     _ -> $(logTM) initialSeverity msg
