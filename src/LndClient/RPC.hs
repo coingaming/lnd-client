@@ -133,7 +133,7 @@ lazyUnlockWallet ::
 lazyUnlockWallet env =
   katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
     $(logTM) InfoS "RPC is running..."
-    unlocked <- isRight <$> getInfo (env {envLndLogErrors = False})
+    unlocked <- isRight <$> getInfo (env {envLndLogErrors = LogDefault})
     if unlocked
       then do
         $(logTM) InfoS "Wallet is already unlocked, doing nothing"
@@ -147,7 +147,7 @@ lazyInitWallet ::
 lazyInitWallet env =
   katipAddContext (sl "RpcName" LazyInitWallet) $ do
     $(logTM) InfoS "RPC is running..."
-    unlockRes <- lazyUnlockWallet $ env {envLndLogErrors = False}
+    unlockRes <- lazyUnlockWallet $ env {envLndLogErrors = LogDefault}
     if isRight unlockRes
       then return unlockRes
       else do
@@ -367,11 +367,9 @@ grpcSubscribe rpcName method timeout handler env req =
       case res of
         Left e -> do
           let logMsg = logStr ("RPC exited with message " <> show e :: Text)
-          if envLndLogErrors env
-            then $(logTM) ErrorS logMsg
-            else $(logTM) InfoS logMsg
+          logAs ErrorS (envLndLogErrors env) logMsg
         Right _ ->
-          $(logTM) InfoS "RPC succeeded"
+          logAs InfoS (envLndLogErrors env) "RPC succeded"
       return res
 
 grpcSync ::
@@ -420,11 +418,9 @@ grpcSync rpcName service method timeout env req =
       case res of
         Left e -> do
           let logMsg = logStr ("RPC exited with message " <> show e :: Text)
-          if envLndLogErrors env
-            then $(logTM) ErrorS logMsg
-            else $(logTM) InfoS logMsg
+          logAs ErrorS (envLndLogErrors env) logMsg
         Right _ ->
-          $(logTM) InfoS "RPC succeeded"
+          logAs InfoS (envLndLogErrors env) "RPC succeded"
       return res
 
 showElapsedSeconds :: Timespan -> Text
