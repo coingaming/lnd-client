@@ -133,7 +133,7 @@ lazyUnlockWallet ::
 lazyUnlockWallet env =
   katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
     $(logTM) InfoS "RPC is running..."
-    unlocked <- isRight <$> getInfo (env {envLndLogStrategy = LogDefault})
+    unlocked <- isRight <$> getInfo (env {envLndLogStrategy = LogOverlay LogOverlayValues {logErrorAs = InfoS, logInfoAs = InfoS}})
     if unlocked
       then do
         $(logTM) InfoS "Wallet is already unlocked, doing nothing"
@@ -147,7 +147,7 @@ lazyInitWallet ::
 lazyInitWallet env =
   katipAddContext (sl "RpcName" LazyInitWallet) $ do
     $(logTM) InfoS "RPC is running..."
-    unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = LogDefault}
+    unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = LogOverlay LogOverlayValues {logErrorAs = InfoS, logInfoAs = InfoS}}
     if isRight unlockRes
       then return unlockRes
       else do
