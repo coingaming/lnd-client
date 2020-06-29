@@ -1,7 +1,10 @@
 module LndClient.Data.Type
   ( LndError (..),
     LoggingStrategy (..),
-    LogOverlayValues (..),
+    --    LogOverlayValues (..),
+    logDefault,
+    logMaskErrors,
+    logOmitInfo,
   )
 where
 
@@ -20,12 +23,23 @@ data LndError
   | LndEnvError Text
   deriving (Show)
 
-data LoggingStrategy = LogDefault | LogOverlay LogOverlayValues
+--data LoggingStrategy = LogDefault | LogOverlay LogOverlayValues
 
-data LogOverlayValues
-  = LogOverlayValues
-      { logInfoAs :: Severity,
-        logErrorAs :: Severity
-      }
+--data LogOverlayValues
+--  = LogOverlayValues
+--      { logInfoAs :: Severity,
+--        logErrorAs :: Severity
+--      }
+
+newtype LoggingStrategy = LoggingStrategy (Severity -> Severity)
+
+logDefault :: LoggingStrategy
+logDefault = LoggingStrategy id
+
+logMaskErrors :: LoggingStrategy
+logMaskErrors = LoggingStrategy $ \x -> if x >= InfoS then InfoS else x
+
+logOmitInfo :: LoggingStrategy
+logOmitInfo = LoggingStrategy $ \x -> if x <= InfoS then DebugS else x
 
 instance Exception LndError

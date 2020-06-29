@@ -164,7 +164,7 @@ newLndEnv pwd cert mac host port seed aezeed =
   LndEnv
     { envLndWalletPassword = pwd,
       envLndHexMacaroon = mac,
-      envLndLogStrategy = LogDefault,
+      envLndLogStrategy = logDefault,
       envLndCipherSeedMnemonic = seed,
       envLndAezeedPassphrase = aezeed,
       envLndGrpcConfig =

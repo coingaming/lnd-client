@@ -30,12 +30,4 @@ safeFromIntegral x =
     intMax = fromIntegral (maxBound :: b) :: Integer
 
 logAs :: (MonadIO m, KatipContext m) => Severity -> LoggingStrategy -> LogStr -> m ()
-logAs initialSeverity strategy msg =
-  case initialSeverity of
-    ErrorS -> case strategy of
-      LogOverlay LogOverlayValues {logErrorAs = severity} -> $(logTM) severity msg
-      LogDefault -> $(logTM) ErrorS msg
-    InfoS -> case strategy of
-      LogOverlay LogOverlayValues {logInfoAs = severity} -> $(logTM) severity msg
-      LogDefault -> $(logTM) InfoS msg
-    _ -> $(logTM) initialSeverity msg
+logAs initialSeverity (LoggingStrategy func) = $(logTM) (func initialSeverity)
