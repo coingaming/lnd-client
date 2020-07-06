@@ -66,5 +66,12 @@ stdenv.mkDerivation {
       echo "building hoogle database..."
       stack --stack-yaml=/app/stack.yaml exec hoogle generate
     fi
+
+    if [ "$(ls -A ~/.cabal)" ]; then
+      echo "cabal database already exists..."
+    else
+      echo "building cabal database..."
+      cabal v2-update
+    fi
   '';
 }
