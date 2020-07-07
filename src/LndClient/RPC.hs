@@ -81,9 +81,6 @@ grpcMeta :: LndEnv -> MetadataMap
 grpcMeta env =
   [("macaroon", encodeUtf8 (coerce (envLndHexMacaroon env) :: Text))]
 
-grpcDefaultTimeout :: Int
-grpcDefaultTimeout = 5
-
 initWallet ::
   (KatipContext m) =>
   LndEnv ->
@@ -94,7 +91,6 @@ initWallet env = do
       InitWallet
       GRPC.walletUnlockerClient
       GRPC.walletUnlockerInitWallet
-      grpcDefaultTimeout
       env
       InitWalletRequest
         { walletPassword = coerce $ envLndWalletPassword env,
@@ -119,7 +115,6 @@ unlockWallet env =
     UnlockWallet
     GRPC.walletUnlockerClient
     GRPC.walletUnlockerUnlockWallet
-    grpcDefaultTimeout
     env
     UnlockWalletRequest
       { walletPassword = coerce $ envLndWalletPassword env,
@@ -132,7 +127,7 @@ lazyUnlockWallet ::
   m (Either LndError ())
 lazyUnlockWallet env =
   katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
-    logAs InfoS (envLndLogStrategy env) "RPC is running..."
+    $(logTM) (coerce (envLndLogStrategy env) InfoS) "RPC is running..."
     unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logMaskErrors})
     if unlocked
       then do
@@ -168,18 +163,9 @@ newAddress env req =
     NewAddress
     GRPC.lightningClient
     GRPC.lightningNewAddress
-    grpcDefaultTimeout
     env
     (GRPC.NewAddressRequest $ Enumerated $ Right req)
 
---
--- TODO
---
--- handle exceptions
--- fix RHash type
--- fix PaymentRequest type
--- rm RPCResponse (we don't have HTTP-related low level details anymore)
---
 addInvoice ::
   (KatipContext m) =>
   LndEnv ->
@@ -190,7 +176,6 @@ addInvoice =
     AddInvoice
     GRPC.lightningClient
     GRPC.lightningAddInvoice
-    grpcDefaultTimeout
 
 subscribeInvoices ::
   (KatipContext m) =>
@@ -205,7 +190,6 @@ subscribeInvoices =
   grpcSubscribe
     SubscribeInvoices
     GRPC.lightningSubscribeInvoices
-    3600
 
 subscribeChannelEvents ::
   (KatipContext m) =>
@@ -219,7 +203,6 @@ subscribeChannelEvents handler env =
   grpcSubscribe
     SubscribeChannelEvents
     GRPC.lightningSubscribeChannelEvents
-    3600
     handler
     env
     GRPC.ChannelEventSubscription {}
@@ -234,7 +217,6 @@ openChannelSync =
     OpenChannelSync
     GRPC.lightningClient
     GRPC.lightningOpenChannelSync
-    grpcDefaultTimeout
 
 listChannels ::
   (KatipContext m) =>
@@ -246,7 +228,6 @@ listChannels =
     ListChannels
     GRPC.lightningClient
     GRPC.lightningListChannels
-    1
 
 closeChannel ::
   (KatipContext m) =>
@@ -258,7 +239,6 @@ closeChannel =
   grpcSubscribe
     CloseChannel
     GRPC.lightningCloseChannel
-    3600
 
 listPeers ::
   (KatipContext m) =>
@@ -269,7 +249,6 @@ listPeers env =
     ListPeers
     GRPC.lightningClient
     GRPC.lightningListPeers
-    grpcDefaultTimeout
     env
     (def :: GRPC.ListPeersRequest)
 
@@ -283,7 +262,6 @@ connectPeer =
     ConnectPeer
     GRPC.lightningClient
     GRPC.lightningConnectPeer
-    grpcDefaultTimeout
 
 getInfo ::
   (KatipContext m) =>
@@ -294,7 +272,6 @@ getInfo env =
     GetInfo
     GRPC.lightningClient
     GRPC.lightningGetInfo
-    grpcDefaultTimeout
     env
     GRPC.GetInfoRequest
 
@@ -308,11 +285,7 @@ sendPayment =
     SendPayment
     GRPC.lightningClient
     GRPC.lightningSendPaymentSync
-    grpcDefaultTimeout
 
---
--- TODO : add logging and elapsed time logs
---
 grpcSubscribe ::
   ( MonadIO m,
     KatipContext m,
@@ -324,15 +297,11 @@ grpcSubscribe ::
     ClientRequest 'ServerStreaming gA gB ->
     IO (ClientResult streamType streamResult)
   ) ->
-  --
-  -- TODO : newtype for timeout
-  --
-  Int ->
   (b -> IO ()) ->
   LndEnv ->
   a ->
   m (Either LndError ())
-grpcSubscribe rpcName method timeout handler env req =
+grpcSubscribe rpcName method handler env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
     logAs InfoS (envLndLogStrategy env) "RPC is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
@@ -343,7 +312,7 @@ grpcSubscribe rpcName method timeout handler env req =
           let greq =
                 ClientReaderRequest
                   grpcReq
-                  timeout
+                  (unGrpcTimeout $ envLndAsyncGrpcTimeout env)
                   (grpcMeta env)
                   (\_ _ s -> genStreamHandler s handler)
           rawGrpc <- CE.catch (Right <$> method' greq) $ return . Left
@@ -384,14 +353,10 @@ grpcSync ::
     ClientRequest 'Normal gA response2 ->
     IO (ClientResult streamType gB)
   ) ->
-  --
-  -- TODO : newtype for timeout
-  --
-  Int ->
   LndEnv ->
   a ->
   m (Either LndError b)
-grpcSync rpcName service method timeout env req =
+grpcSync rpcName service method env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
     logAs InfoS (envLndLogStrategy env) "RPC is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
@@ -399,7 +364,12 @@ grpcSync rpcName service method timeout env req =
       Right grpcReq ->
         withGRPCClient (envLndGrpcConfig env) $ \client -> do
           method' <- method <$> service client
-          rawGrpc <- method' $ ClientNormalRequest grpcReq timeout $ grpcMeta env
+          rawGrpc <-
+            method' $
+              ClientNormalRequest
+                grpcReq
+                (unGrpcTimeout $ envLndSyncGrpcTimeout env)
+                (grpcMeta env)
           return $ case rawGrpc of
             ClientNormalResponse grpcRes _ _ _ _ ->
               fromGrpc grpcRes

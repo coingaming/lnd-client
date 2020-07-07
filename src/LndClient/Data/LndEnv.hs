@@ -67,7 +67,9 @@ data LndEnv
         envLndGrpcConfig :: ClientConfig,
         envLndLogStrategy :: LoggingStrategy,
         envLndCipherSeedMnemonic :: CipherSeedMnemonic,
-        envLndAezeedPassphrase :: Maybe AezeedPassphrase
+        envLndAezeedPassphrase :: Maybe AezeedPassphrase,
+        envLndSyncGrpcTimeout :: GrpcTimeoutSeconds,
+        envLndAsyncGrpcTimeout :: GrpcTimeoutSeconds
       }
 
 instance ToGrpc LndWalletPassword ByteString where
@@ -92,7 +94,10 @@ instance FromJSON LndPort where
   parseJSON x =
     case x of
       A.Number s -> do
-        let ePort = maybeToRight (LndEnvError "Port should be Int") $ toBoundedInteger s
+        let ePort =
+              maybeToRight
+                (LndEnvError "Port should be Int")
+                $ toBoundedInteger s
         case ePort >>= createLndPort of
           Right lndPort -> return lndPort
           Left err -> failure err
@@ -167,6 +172,8 @@ newLndEnv pwd cert mac host port seed aezeed =
       envLndLogStrategy = logDefault,
       envLndCipherSeedMnemonic = seed,
       envLndAezeedPassphrase = aezeed,
+      envLndSyncGrpcTimeout = defaultSyncGrpcTimeout,
+      envLndAsyncGrpcTimeout = defaultAsyncGrpcTimeout,
       envLndGrpcConfig =
         ClientConfig
           { clientServerHost = Host $ encodeUtf8 (coerce host :: Text),

@@ -36,6 +36,7 @@ dependencies:
 # byte and text
 - bytestring
 - base16-bytestring
+- base64-bytestring
 - text
 - aeson
 # protobuf and gRPC
