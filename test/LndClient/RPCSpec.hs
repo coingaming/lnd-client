@@ -26,7 +26,6 @@ import Data.Maybe (fromMaybe)
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
-    hashifyAddInvoiceRequest,
   )
 import LndClient.Data.BtcEnv
 import LndClient.Data.CloseChannel (ChannelPoint (..), CloseChannelRequest (..))
@@ -403,13 +402,11 @@ spec = around withEnv $ do
         _ -> False
   where
     addInvoiceRequest =
-      hashifyAddInvoiceRequest $
-        AddInvoiceRequest
-          { memo = Just "HELLO",
-            value = MoneyAmount 1000,
-            descriptionHash = Nothing,
-            expiry = Just $ Seconds 1000
-          }
+      AddInvoiceRequest
+        { memo = Just "HELLO",
+          value = MoneyAmount 1000,
+          expiry = Just $ Seconds 1000
+        }
     openChannelRequest :: Env -> IO OpenChannelRequest
     openChannelRequest env = do
       x <- somePubKey env

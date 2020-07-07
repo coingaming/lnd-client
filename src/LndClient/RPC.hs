@@ -127,11 +127,13 @@ lazyUnlockWallet ::
   m (Either LndError ())
 lazyUnlockWallet env =
   katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
-    $(logTM) (coerce (envLndLogStrategy env) InfoS) "RPC is running..."
+    $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
     unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logMaskErrors})
     if unlocked
       then do
-        logAs InfoS (envLndLogStrategy env) "Wallet is already unlocked, doing nothing"
+        $(logTM)
+          (newSeverity env InfoS Nothing Nothing)
+          "Wallet is already unlocked, doing nothing"
         return $ Right ()
       else unlockWallet env
 
@@ -141,7 +143,7 @@ lazyInitWallet ::
   m (Either LndError ())
 lazyInitWallet env =
   katipAddContext (sl "RpcName" LazyInitWallet) $ do
-    logAs InfoS (envLndLogStrategy env) "RPC is running..."
+    $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
     unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = logMaskErrors}
     if isRight unlockRes
       then return unlockRes
@@ -303,7 +305,7 @@ grpcSubscribe ::
   m (Either LndError ())
 grpcSubscribe rpcName method handler env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
-    logAs InfoS (envLndLogStrategy env) "RPC is running..."
+    $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e
       Right grpcReq ->
@@ -336,9 +338,9 @@ grpcSubscribe rpcName method handler env req =
       case res of
         Left e -> do
           let logMsg = logStr ("RPC exited with message " <> show e :: Text)
-          logAs ErrorS (envLndLogStrategy env) logMsg
+          $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) logMsg
         Right _ ->
-          logAs InfoS (envLndLogStrategy env) "RPC succeded"
+          $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
       return res
 
 grpcSync ::
@@ -358,7 +360,7 @@ grpcSync ::
   m (Either LndError b)
 grpcSync rpcName service method env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
-    logAs InfoS (envLndLogStrategy env) "RPC is running..."
+    $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
     (ts, res) <- liftIO $ stopwatch $ case toGrpc req of
       Left e -> return $ Left e
       Right grpcReq ->
@@ -388,9 +390,9 @@ grpcSync rpcName service method env req =
       case res of
         Left e -> do
           let logMsg = logStr ("RPC exited with message " <> show e :: Text)
-          logAs ErrorS (envLndLogStrategy env) logMsg
+          $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) logMsg
         Right _ ->
-          logAs InfoS (envLndLogStrategy env) "RPC succeded"
+          $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
       return res
 
 showElapsedSeconds :: Timespan -> Text

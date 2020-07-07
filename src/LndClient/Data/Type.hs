@@ -22,15 +22,16 @@ data LndError
   | LndEnvError Text
   deriving (Show)
 
-newtype LoggingStrategy = LoggingStrategy (Severity -> Severity)
+newtype LoggingStrategy
+  = LoggingStrategy (Severity -> Maybe Timespan -> Maybe LndError -> Severity)
 
 logDefault :: LoggingStrategy
-logDefault = LoggingStrategy id
+logDefault = LoggingStrategy $ \x _ _ -> x
 
 logMaskErrors :: LoggingStrategy
-logMaskErrors = LoggingStrategy $ \x -> if x >= InfoS then InfoS else x
+logMaskErrors = LoggingStrategy $ \x _ _ -> if x >= InfoS then InfoS else x
 
 logOmitInfo :: LoggingStrategy
-logOmitInfo = LoggingStrategy $ \x -> if x <= InfoS then DebugS else x
+logOmitInfo = LoggingStrategy $ \x _ _ -> if x <= InfoS then DebugS else x
 
 instance Exception LndError

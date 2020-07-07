@@ -15,6 +15,7 @@ module LndClient.Data.LndEnv
     unLndTlsCert,
     createLndPort,
     katipAddLndContext,
+    newSeverity,
   )
 where
 
@@ -200,3 +201,6 @@ katipAddLndContext env =
       Left _ -> "NOT_UTF8"
       Right x -> x
     p = coerce $ clientServerPort c :: Int
+
+newSeverity :: LndEnv -> Severity -> Maybe Timespan -> Maybe LndError -> Severity
+newSeverity = coerce . envLndLogStrategy
