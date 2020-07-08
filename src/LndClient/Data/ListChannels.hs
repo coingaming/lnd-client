@@ -25,9 +25,6 @@ data ListChannelsRequest
       }
   deriving (Generic, Show)
 
---
---TODO use ChannelPoint type here, parse string and do sufficient decodings
---
 data Channel
   = Channel
       { remotePubkey :: Text,

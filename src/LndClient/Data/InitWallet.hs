@@ -11,9 +11,6 @@ data InitWalletRequest
       { walletPassword :: LndWalletPassword,
         cipherSeedMnemonic :: CipherSeedMnemonic,
         aezeedPassphrase :: Maybe AezeedPassphrase
-        --
-        --  TODO : channel_backups
-        --
       }
   deriving (Eq)
 

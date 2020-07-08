@@ -104,9 +104,6 @@ initWallet env = do
   _ <- liftIO $ delay 10000000
   return res
 
---
---  TODO : implement recovery_window and channel_backups
---
 unlockWallet ::
   (KatipContext m) =>
   LndEnv ->
@@ -119,7 +116,12 @@ unlockWallet env =
     env
     UnlockWalletRequest
       { walletPassword = coerce $ envLndWalletPassword env,
-        recoveryWindow = 0
+        --
+        -- TODO : this is related to BIP44
+        -- hardcoded value will be sufficient for most cases
+        -- but maybe let's have it in LndEnv as well?
+        --
+        recoveryWindow = 100
       }
 
 lazyUnlockWallet ::
