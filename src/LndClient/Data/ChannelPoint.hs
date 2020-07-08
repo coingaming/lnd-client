@@ -22,8 +22,9 @@ instance FromGrpc ChannelPoint GRPC.ChannelPoint where
 
 instance ToGrpc ChannelPoint GRPC.ChannelPoint where
   toGrpc x =
-    msg <$> (toGrpc $ fundingTxidBytes x)
-      <*> (toGrpc $ outputIndex x)
+    msg
+      <$> toGrpc (fundingTxidBytes x)
+      <*> toGrpc (outputIndex x)
     where
       msg gFundingTxidBytes gOutputIndex =
         def

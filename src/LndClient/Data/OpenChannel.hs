@@ -1,10 +1,8 @@
 module LndClient.Data.OpenChannel
   ( OpenChannelRequest (..),
-    ChannelPoint (..),
   )
 where
 
-import LndClient.Data.ChannelPoint
 import LndClient.Import
 import qualified LndGrpc as GRPC
 

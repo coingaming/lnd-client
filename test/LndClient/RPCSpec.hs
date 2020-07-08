@@ -19,9 +19,7 @@ import Control.Concurrent.Async (async, link)
 import Control.Concurrent.Thread.Delay (delay)
 import Data.Aeson as AE (Result (..))
 import Data.Aeson.QQ.Simple
-import Data.ByteString as BS (reverse)
 import Data.ByteString.Base16 as B16 (decode)
-import Data.ByteString.Char8 as C8 (split)
 import Data.Maybe (fromMaybe)
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
@@ -31,7 +29,7 @@ import LndClient.Data.BtcEnv
 import LndClient.Data.CloseChannel (ChannelPoint (..), CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
-import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..), ListChannelsResponse (..))
+import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
 import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
@@ -270,21 +268,26 @@ spec = around withEnv $ do
         _ <- delay 3000000
         req <- openChannelRequest (custEnv env)
         _ <- runApp (custEnv env) $ openChannelSync (envLnd $ custEnv env) req
-        ListChannelsResponse channelList <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
-        let firstChannel :: Channel = fromMaybe (Channel "" "" (MoneyAmount 0) (MoneyAmount 0)) $ safeHead channelList
-        let channelPointStr :: ByteString = encodeUtf8 $ LndClient.Data.ListChannels.channelPoint firstChannel
-        let fundingTxid :: ByteString = fromMaybe "" $ safeHead $ split ':' channelPointStr
-        let (fundingTxidHex, _) = B16.decode fundingTxid
+        channelList <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
+        let cp =
+              fromMaybe
+                (ChannelPoint "" 0)
+                $ LC.channelPoint <$> safeHead channelList
         x <- newEmptyMVar
         link
           =<< ( async $ runApp env $
                   closeChannel
                     (liftIO . putMVar x)
                     (envLnd env)
-                    (CloseChannelRequest (ChannelPoint (BS.reverse fundingTxidHex) 0) True Nothing Nothing Nothing)
+                    (CloseChannelRequest cp True Nothing Nothing Nothing)
               )
         _ <- delay 3000000
-        ListChannelsResponse channelList2 <- runApp env $ coerceLndResult =<< listChannels (envLnd env) (ListChannelsRequest False False False False Nothing)
+        channelList2 <-
+          runApp env $
+            coerceLndResult
+              =<< listChannels
+                (envLnd env)
+                (ListChannelsRequest False False False False Nothing)
         _ <- takeMVar x
         (length channelList - length channelList2)
           `shouldBe` 1

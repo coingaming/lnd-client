@@ -34,13 +34,14 @@ import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
+import LndClient.Data.ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
 import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
-import LndClient.Data.ListChannels (ListChannelsRequest (..), ListChannelsResponse (..))
+import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
-import LndClient.Data.OpenChannel (ChannelPoint (..), OpenChannelRequest (..))
+import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), Peer (..))
 import LndClient.Data.SendPayment as SendPayment
   ( SendPaymentRequest (..),
@@ -224,7 +225,7 @@ listChannels ::
   (KatipContext m) =>
   LndEnv ->
   ListChannelsRequest ->
-  m (Either LndError ListChannelsResponse)
+  m (Either LndError [Channel])
 listChannels =
   grpcSync
     ListChannels
