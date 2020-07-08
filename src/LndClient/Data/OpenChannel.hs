@@ -9,22 +9,16 @@ import qualified LndGrpc as GRPC
 data OpenChannelRequest
   = OpenChannelRequest
       { nodePubkey :: ByteString,
-        --
-        --TODO move amounts to MoneyAmount type
-        --
         localFundingAmount :: MoneyAmount,
         pushSat :: Maybe MoneyAmount,
         targetConf :: Maybe Int32,
-        satPerByte :: Maybe Int64,
+        satPerByte :: Maybe MoneyAmount,
         private :: Maybe Bool,
-        minHtlcMsat :: Maybe Int64,
+        minHtlcMsat :: Maybe MoneyAmount,
         remoteCsvDelay :: Maybe Word32,
         minConfs :: Maybe Int32,
         spendUnconfirmed :: Maybe Bool,
         closeAddress :: Maybe Text
-        --
-        --TODO implement fundingShim field
-        --
       }
   deriving (Eq)
 
