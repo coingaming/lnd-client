@@ -10,6 +10,11 @@ where
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
+--
+-- TODO : newtypes for PubKey LNLocation (address, host + port)
+-- lazyConnectPeer RPC method
+--
+
 data Peer
   = Peer
       { pubKey :: Text,
