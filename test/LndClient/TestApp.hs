@@ -21,6 +21,7 @@ where
 import LndClient.Data.BtcEnv
 import LndClient.Data.LndEnv
 import LndClient.Import
+import LndClient.RPC
 import LndClient.TestOrphan ()
 import Network.Bitcoin as BTC (Client, getClient)
 import Network.GRPC.HighLevel.Generated
@@ -119,7 +120,20 @@ runKatip x = do
   runKatipContextT le (mempty :: LogContexts) mempty x
 
 withEnv :: (Env -> IO ()) -> IO ()
-withEnv = bracket (runKatip readEnv) (closeScribes . envKatipLE)
+withEnv =
+  bracket
+    ( runKatip $ do
+        env <- readEnv
+        runApp env $ setupEnv env
+        return env
+    )
+    (closeScribes . envKatipLE)
+
+setupEnv :: (KatipContext m) => Env -> m ()
+setupEnv env = do
+  _ <- coerceLndResult =<< lazyInitWallet (envLndMerchant env)
+  coerceLndResult =<< lazyInitWallet (envLndCustomer env)
+  return ()
 
 newtype AppM m a
   = AppM

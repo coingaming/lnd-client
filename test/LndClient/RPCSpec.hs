@@ -50,22 +50,12 @@ spec :: Spec
 spec = around withEnv $ do
   describe "lazyInitWallet"
     $ it "succeeds"
-    $ \env -> do
-      res <-
-        runApp env $ do
-          mr <- lazyInitWallet (envLndMerchant env)
-          cr <- lazyInitWallet (envLndCustomer env)
-          return $ (,) <$> mr <*> cr
-      res `shouldSatisfy` isRight
+    $ shouldBeRight envLndMerchant
+    $ lazyInitWallet
   describe "lazyUnlockWallet"
     $ it "succeeds"
-    $ \env -> do
-      res <-
-        runApp env $ do
-          mr <- lazyUnlockWallet (envLndMerchant env)
-          cr <- lazyUnlockWallet (envLndCustomer env)
-          return $ (,) <$> mr <*> cr
-      res `shouldSatisfy` isRight
+    $ shouldBeRight envLndMerchant
+    $ lazyUnlockWallet
   describe "addInvoice" $ do
     it "succeeds"
       $ shouldBeRight envLndMerchant
@@ -75,7 +65,7 @@ spec = around withEnv $ do
         runApp env $
           coerceLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
       let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
-      isJust qr `shouldBe` True
+      qr `shouldSatisfy` isJust
   describe "newAddress" $ do
     it "succeeds"
       $ shouldBeRight envLndMerchant
