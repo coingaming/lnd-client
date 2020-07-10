@@ -42,7 +42,6 @@ import LndClient.TestApp
 import LndClient.TestOrphan ()
 import qualified LndGrpc as GRPC
 import Network.Bitcoin.Mining (generateToAddress)
-import Network.GRPC.HighLevel.Generated
 import Test.Hspec
 
 spec :: Spec
@@ -72,12 +71,12 @@ spec = around withEnv $ do
   describe "listPeers" $ do
     it "succeeds" $
       shouldBeRight envLndMerchant listPeers
-  describe "connectPeer" $ do
-    it "succeeds" $ \env -> do
-      let envLnd = envLndCustomer env
+  describe "connectPeer"
+    $ it "succeeds"
+    $ \env -> do
       res <- runApp env $ do
         GetInfoResponse nodePubKey <-
-          coerceLndResult =<< getInfo envLnd
+          coerceLndResult =<< getInfo (envLndMerchant env)
         let req =
               ConnectPeerRequest
                 { addr =
@@ -87,16 +86,8 @@ spec = around withEnv $ do
                       },
                   perm = False
                 }
-        connectPeer envLnd req
-      res
-        `shouldSatisfy` ( \case
-                            Right _ -> True
-                            --
-                            -- TODO : !!!
-                            --
-                            Left (GrpcError (ClientIOError _)) -> True
-                            _ -> False
-                        )
+        lazyConnectPeer (envLndCustomer env) req
+      res `shouldSatisfy` isRight
   describe "OpenChannel"
     $ it "rpc-succeeds"
     $ \env -> do

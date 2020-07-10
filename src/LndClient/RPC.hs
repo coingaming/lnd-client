@@ -20,6 +20,7 @@ module LndClient.RPC
     closeChannel,
     listPeers,
     connectPeer,
+    lazyConnectPeer,
     sendPayment,
     getInfo,
     subscribeInvoices,
@@ -42,7 +43,7 @@ import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
-import LndClient.Data.Peer (ConnectPeerRequest (..), Peer (..))
+import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
 import LndClient.Data.SendPayment as SendPayment
   ( SendPaymentRequest (..),
     SendPaymentResponse (..),
@@ -267,6 +268,23 @@ connectPeer =
     ConnectPeer
     GRPC.lightningClient
     GRPC.lightningConnectPeer
+
+lazyConnectPeer ::
+  (KatipContext m) =>
+  LndEnv ->
+  ConnectPeerRequest ->
+  m (Either LndError ())
+lazyConnectPeer env cpr = do
+  eps <- listPeers env
+  case eps of
+    Left e ->
+      return $ Left e
+    Right ps ->
+      if any ((== pk) . pubKey) ps
+        then return $ Right ()
+        else connectPeer env cpr
+  where
+    pk = pubkey $ addr cpr
 
 getInfo ::
   (KatipContext m) =>
