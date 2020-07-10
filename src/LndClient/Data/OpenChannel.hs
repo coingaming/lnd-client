@@ -8,7 +8,7 @@ import qualified LndGrpc as GRPC
 
 data OpenChannelRequest
   = OpenChannelRequest
-      { nodePubkey :: ByteString,
+      { nodePubkey :: NodePubKey,
         localFundingAmount :: MoneyAmount,
         pushSat :: Maybe MoneyAmount,
         targetConf :: Maybe Int32,

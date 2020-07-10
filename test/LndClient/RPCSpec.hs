@@ -19,7 +19,6 @@ import Control.Concurrent.Async (async, link)
 import Control.Concurrent.Thread.Delay (delay)
 import Data.Aeson as AE (Result (..))
 import Data.Aeson.QQ.Simple
-import Data.ByteString.Base16 as B16 (decode)
 import Data.Maybe (fromMaybe)
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
@@ -84,7 +83,7 @@ spec = around withEnv $ do
                 { addr =
                     LightningAddress
                       { pubkey = nodePubKey,
-                        host = "localhost:9734"
+                        host = NodeLocation "localhost:9734"
                       },
                   perm = False
                 }
@@ -115,7 +114,7 @@ spec = around withEnv $ do
               { addr =
                   LightningAddress
                     { pubkey = mercPubKey,
-                      host = "localhost:9735"
+                      host = NodeLocation "localhost:9735"
                     },
                 perm = False
               }
@@ -142,7 +141,7 @@ spec = around withEnv $ do
                 { addr =
                     LightningAddress
                       { pubkey = mercPubKey,
-                        host = "localhost:9735"
+                        host = NodeLocation "localhost:9735"
                       },
                   perm = False
                 }
@@ -248,11 +247,11 @@ spec = around withEnv $ do
               (envLndCustomer env)
               GRPC.AddressTypeWITNESS_PUBKEY_HASH
       x <- newEmptyMVar
-      pubKeyX <- somePubKey env envLndCustomer
-      let (pubKeyHex, _) = B16.decode (encodeUtf8 pubKeyX)
+      hpk <- somePubKey env envLndCustomer
+      pk <- liftMaybe "Can't decode hex pub key" $ unHexPubKey hpk
       let openChannelReq =
             OpenChannelRequest
-              { nodePubkey = pubKeyHex,
+              { nodePubkey = pk,
                 localFundingAmount = MoneyAmount 20000,
                 pushSat = Nothing,
                 targetConf = Nothing,
@@ -298,11 +297,11 @@ spec = around withEnv $ do
         }
     openChannelRequest :: Env -> IO OpenChannelRequest
     openChannelRequest env = do
-      x <- somePubKey env envLndCustomer
-      let (pubKeyHex, _) = B16.decode (encodeUtf8 x)
+      hpk <- somePubKey env envLndCustomer
+      pk <- liftMaybe "Can't decode hex pub key" $ unHexPubKey hpk
       let req =
             OpenChannelRequest
-              { nodePubkey = pubKeyHex,
+              { nodePubkey = pk,
                 localFundingAmount = MoneyAmount 20000,
                 pushSat = Just $ MoneyAmount 1000,
                 targetConf = Nothing,
@@ -365,3 +364,9 @@ spec = around withEnv $ do
                 "lnd_aezeed_passphrase":"developer"
                         }
           |]
+
+liftMaybe :: MonadFail m => String -> Maybe a -> m a
+liftMaybe msg mx =
+  case mx of
+    Just x -> return x
+    Nothing -> fail msg

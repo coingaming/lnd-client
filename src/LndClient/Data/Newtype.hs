@@ -10,16 +10,21 @@ module LndClient.Data.Newtype
     CipherSeedMnemonic (..),
     AezeedPassphrase (..),
     Seconds (..),
+    NodePubKey (..),
+    NodePubKeyHex (..),
+    NodeLocation (..),
     GrpcTimeoutSeconds,
     newGrpcTimeout,
     unGrpcTimeout,
     defaultSyncGrpcTimeout,
     defaultAsyncGrpcTimeout,
+    unHexPubKey,
   )
 where
 
 import Codec.QRCode as QR (ToText)
 import Data.Aeson (FromJSON (..))
+import Data.ByteString.Base16 as B16 (decode)
 import Data.ByteString.Char8 as C8
 import Data.Vector (fromList)
 import LndClient.Class
@@ -27,6 +32,15 @@ import LndClient.Data.Type
 import LndClient.Import.External
 import LndClient.Util
 import Prelude (Show (..))
+
+newtype NodePubKey = NodePubKey ByteString
+  deriving (Eq, Show)
+
+newtype NodePubKeyHex = NodePubKeyHex Text
+  deriving (Eq, Show)
+
+newtype NodeLocation = NodeLocation Text
+  deriving (Eq, Show)
 
 newtype AddIndex = AddIndex Word64
   deriving (PersistField, PersistFieldSql, Eq)
@@ -54,6 +68,28 @@ newtype Seconds = Seconds Word64
 
 newtype GrpcTimeoutSeconds = GrpcTimeoutSeconds Int
   deriving (Eq, Ord, Show)
+
+instance ToGrpc NodePubKey ByteString where
+  toGrpc = Right . coerce
+
+instance ToGrpc NodePubKeyHex Text where
+  toGrpc = Right . coerce
+
+instance ToGrpc NodeLocation Text where
+  toGrpc = Right . coerce
+
+--
+-- TODO : smart constructors for NodePubKey, NodePubKeyHex and NodeLocation ???
+--
+
+instance FromGrpc NodePubKey ByteString where
+  fromGrpc = Right . NodePubKey
+
+instance FromGrpc NodePubKeyHex Text where
+  fromGrpc = Right . NodePubKeyHex
+
+instance FromGrpc NodeLocation Text where
+  fromGrpc = Right . NodeLocation
 
 instance ToGrpc AddIndex Word64 where
   toGrpc = Right . coerce
@@ -117,3 +153,9 @@ defaultSyncGrpcTimeout = GrpcTimeoutSeconds 5
 
 defaultAsyncGrpcTimeout :: GrpcTimeoutSeconds
 defaultAsyncGrpcTimeout = GrpcTimeoutSeconds 3600
+
+unHexPubKey :: NodePubKeyHex -> Maybe NodePubKey
+unHexPubKey x =
+  case B16.decode $ encodeUtf8 (coerce x :: Text) of
+    (y, "") -> Just $ NodePubKey y
+    _ -> Nothing

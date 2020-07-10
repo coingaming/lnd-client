@@ -8,7 +8,7 @@ import qualified LndGrpc as GRPC
 
 newtype GetInfoResponse
   = GetInfoResponse
-      { identity_pubkey :: Text
+      { identity_pubkey :: NodePubKeyHex
       }
   deriving (Eq, Show)
 
