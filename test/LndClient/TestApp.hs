@@ -20,8 +20,11 @@ module LndClient.TestApp
   )
 where
 
+import Control.Concurrent.Async (async, link)
 import LndClient.Data.BtcEnv
+import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
+import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
 import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
@@ -166,9 +169,41 @@ setupEnv env = do
       =<< newAddress customerEnv GRPC.AddressTypeWITNESS_PUBKEY_HASH
   let customerBtcAddress = toStrict customerBtcAddressLazy
   --
+  -- Initialize closing channels procedure
+  --
+  cs <-
+    liftLndResult
+      =<< listChannels
+        customerEnv
+        (ListChannelsRequest False False False False Nothing)
+  let cps = LC.channelPoint <$> cs
+  cpxs <-
+    liftIO $
+      mapM
+        ( \cp -> do
+            x <- newEmptyMVar
+            return (cp, x)
+        )
+        cps
+  liftIO $
+    mapM_
+      ( \(cp, x) ->
+          link
+            =<< ( async $ runApp env $
+                    closeChannel
+                      (liftIO . putMVar x)
+                      (envLndMerchant env)
+                      (CloseChannelRequest cp False Nothing Nothing Nothing)
+                )
+      )
+      cpxs
+  --
   -- Give Customer some money to operate
+  -- and wait for every channel to be closed
   --
   _ <- liftIO $ generateToAddress btcClient 101 customerBtcAddress Nothing
+  _ <- liftIO $ delay 3000000
+  liftIO $ mapM_ (takeMVar . snd) cpxs
   _ <- liftIO $ delay 3000000
   --
   -- Open channel from Customer to Merchant
