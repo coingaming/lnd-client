@@ -142,8 +142,14 @@ withEnv =
 
 setupEnv :: (KatipContext m) => Env -> m ()
 setupEnv env = do
+  --
+  -- Init/Unlock wallets
+  --
   _ <- liftLndResult =<< lazyInitWallet merchantEnv
   _ <- liftLndResult =<< lazyInitWallet customerEnv
+  --
+  -- Connect Customer to Merchant
+  --
   GetInfoResponse merchantPubKeyHex <- liftLndResult =<< getInfo merchantEnv
   let connectPeerRequest =
         ConnectPeerRequest
@@ -159,10 +165,16 @@ setupEnv env = do
     liftLndResult
       =<< newAddress customerEnv GRPC.AddressTypeWITNESS_PUBKEY_HASH
   let customerBtcAddress = toStrict customerBtcAddressLazy
+  --
+  -- Give Customer some money to operate
+  --
   _ <- liftIO $ generateToAddress btcClient 101 customerBtcAddress Nothing
+  _ <- liftIO $ delay 3000000
+  --
+  -- Open channel from Customer to Merchant
+  --
   merchantPubKey <-
     liftMaybe "Can't decode hex pub key" $ unHexPubKey merchantPubKeyHex
-  _ <- liftIO $ delay 3000000
   let openChannelRequest =
         OpenChannelRequest
           { nodePubkey = merchantPubKey,
