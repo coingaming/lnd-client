@@ -61,7 +61,7 @@ spec = around withEnv $ do
     it "generates-qrcode" $ \env -> do
       res <-
         runApp env $
-          coerceLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
+          liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
       let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
       qr `shouldSatisfy` isJust
   describe "newAddress" $ do
@@ -71,41 +71,41 @@ spec = around withEnv $ do
   describe "listPeers" $ do
     it "succeeds" $
       shouldBeRight envLndMerchant listPeers
-  describe "connectPeer"
+  describe "lazyConnectPeer"
     $ it "succeeds"
     $ \env -> do
       res <- runApp env $ do
-        GetInfoResponse nodePubKey <-
-          coerceLndResult =<< getInfo (envLndMerchant env)
+        GetInfoResponse merchantPubKeyHex <-
+          liftLndResult =<< getInfo (envLndMerchant env)
         let req =
               ConnectPeerRequest
                 { addr =
                     LightningAddress
-                      { pubkey = nodePubKey,
-                        host = NodeLocation "localhost:9734"
+                      { pubkey = merchantPubKeyHex,
+                        host = merchantNodeLocation
                       },
                   perm = False
                 }
         lazyConnectPeer (envLndCustomer env) req
       res `shouldSatisfy` isRight
-  describe "OpenChannel"
+  describe "openChannelSync"
     $ it "rpc-succeeds"
     $ \env -> do
       NewAddressResponse btcAddress <-
         runApp env $
-          coerceLndResult
+          liftLndResult
             =<< newAddress
               (envLndCustomer env)
               GRPC.AddressTypeWITNESS_PUBKEY_HASH
       GetInfoResponse mercPubKey <-
         runApp env $
-          coerceLndResult =<< getInfo (envLndMerchant env)
+          liftLndResult =<< getInfo (envLndMerchant env)
       let connectPeerRequest =
             ConnectPeerRequest
               { addr =
                   LightningAddress
                     { pubkey = mercPubKey,
-                      host = NodeLocation "localhost:9735"
+                      host = merchantNodeLocation
                     },
                 perm = False
               }
@@ -120,19 +120,19 @@ spec = around withEnv $ do
       do
         NewAddressResponse btcAddress <-
           runApp env $
-            coerceLndResult
+            liftLndResult
               =<< newAddress
                 (envLndCustomer env)
                 GRPC.AddressTypeWITNESS_PUBKEY_HASH
         GetInfoResponse mercPubKey <-
           runApp env $
-            coerceLndResult =<< getInfo (envLndMerchant env)
+            liftLndResult =<< getInfo (envLndMerchant env)
         let connectPeerRequest =
               ConnectPeerRequest
                 { addr =
                     LightningAddress
                       { pubkey = mercPubKey,
-                        host = NodeLocation "localhost:9735"
+                        host = merchantNodeLocation
                       },
                   perm = False
                 }
@@ -143,7 +143,7 @@ spec = around withEnv $ do
         _ <- runApp env $ openChannelSync (envLndCustomer env) req
         channelList <-
           runApp env $
-            coerceLndResult
+            liftLndResult
               =<< listChannels
                 (envLndMerchant env)
                 (ListChannelsRequest False False False False Nothing)
@@ -162,7 +162,7 @@ spec = around withEnv $ do
         _ <- delay 3000000
         channelList2 <-
           runApp env $
-            coerceLndResult
+            liftLndResult
               =<< listChannels
                 (envLndMerchant env)
                 (ListChannelsRequest False False False False Nothing)
@@ -187,7 +187,7 @@ spec = around withEnv $ do
       _ <- delay 3000000
       originalInvoice <-
         runApp env $
-          coerceLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
+          liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
       resultingInvoice <- takeMVar x
       print resultingInvoice
       resultingInvoice
@@ -199,12 +199,12 @@ spec = around withEnv $ do
     $ \env -> do
       NewAddressResponse btcAddress <-
         runApp env $
-          coerceLndResult
+          liftLndResult
             =<< newAddress
               (envLndCustomer env)
               GRPC.AddressTypeWITNESS_PUBKEY_HASH
       _ <- generateToAddress (envBtcClient env) 100 (toStrict btcAddress) Nothing
-      invoice <- runApp env $ coerceLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
+      invoice <- runApp env $ liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
       x <- newEmptyMVar
       let sendPaymentRequest =
             SendPaymentRequest
@@ -221,7 +221,7 @@ spec = around withEnv $ do
       _ <- delay 3000000
       _ <-
         runApp env $
-          coerceLndResult =<< sendPayment (envLndCustomer env) sendPaymentRequest
+          liftLndResult =<< sendPayment (envLndCustomer env) sendPaymentRequest
       resultingInvoice <- takeMVar x
       print resultingInvoice
       resultingInvoice
@@ -233,7 +233,7 @@ spec = around withEnv $ do
     $ \env -> do
       NewAddressResponse btcAddress <-
         runApp env $
-          coerceLndResult
+          liftLndResult
             =<< newAddress
               (envLndCustomer env)
               GRPC.AddressTypeWITNESS_PUBKEY_HASH
@@ -263,7 +263,7 @@ spec = around withEnv $ do
       _ <- delay 3000000
       _ <-
         runApp env $
-          coerceLndResult =<< openChannelSync (envLndCustomer env) openChannelReq
+          liftLndResult =<< openChannelSync (envLndCustomer env) openChannelReq
       _ <- generateToAddress (envBtcClient env) 100 (toStrict btcAddress) Nothing
       resultingEvents <- takeMVar x
       print resultingEvents
@@ -306,7 +306,7 @@ spec = around withEnv $ do
               }
       return req
     somePubKey env envLnd = do
-      res <- runApp env $ coerceLndResult =<< listPeers (envLnd env)
+      res <- runApp env $ liftLndResult =<< listPeers (envLnd env)
       let mPeer = safeHead res
       case mPeer of
         Just pPeer -> return $ pubKey pPeer

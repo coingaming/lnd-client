@@ -13,25 +13,36 @@
 module LndClient.TestApp
   ( Env (..),
     runApp,
-    coerceLndResult,
+    liftLndResult,
+    customerNodeLocation,
+    merchantNodeLocation,
     withEnv,
   )
 where
 
 import LndClient.Data.BtcEnv
+import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.LndEnv
+import LndClient.Data.NewAddress (NewAddressResponse (..))
+import LndClient.Data.OpenChannel (OpenChannelRequest (..))
+import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..))
 import LndClient.Import
 import LndClient.RPC
 import LndClient.TestOrphan ()
+import qualified LndGrpc as GRPC
 import Network.Bitcoin as BTC (Client, getClient)
+import Network.Bitcoin.Mining (generateToAddress)
 import Network.GRPC.HighLevel.Generated
 
---
--- TODO : remove me
---
-coerceLndResult :: (MonadIO m) => Either LndError a -> m a
-coerceLndResult (Right x) = return x
-coerceLndResult (Left x) = liftIO $ fail $ "coerceLndResult failed " <> show x
+liftLndResult :: (MonadIO m) => Either LndError a -> m a
+liftLndResult (Right x) = return x
+liftLndResult (Left x) = liftIO $ fail $ "liftLndResult failed " <> show x
+
+customerNodeLocation :: NodeLocation
+customerNodeLocation = NodeLocation "localhost:9734"
+
+merchantNodeLocation :: NodeLocation
+merchantNodeLocation = NodeLocation "localhost:9735"
 
 data Env
   = Env
@@ -80,8 +91,8 @@ custEnv x =
       envLndAezeedPassphrase = Nothing
     }
 
-btcClient :: IO BTC.Client
-btcClient = do
+newBtcClient :: IO BTC.Client
+newBtcClient = do
   env <- btcEnv
   let user = btcRpcUser env
   let passw = btcRpcPassword env
@@ -94,7 +105,7 @@ readEnv = do
   ctx <- getKatipContext
   ns <- getKatipNamespace
   lndEnv <- liftIO readLndEnv
-  bc <- liftIO btcClient
+  bc <- liftIO newBtcClient
   return
     Env
       { envLndMerchant = lndEnv,
@@ -131,9 +142,49 @@ withEnv =
 
 setupEnv :: (KatipContext m) => Env -> m ()
 setupEnv env = do
-  _ <- coerceLndResult =<< lazyInitWallet (envLndMerchant env)
-  coerceLndResult =<< lazyInitWallet (envLndCustomer env)
+  _ <- liftLndResult =<< lazyInitWallet merchantEnv
+  _ <- liftLndResult =<< lazyInitWallet customerEnv
+  GetInfoResponse merchantPubKeyHex <- liftLndResult =<< getInfo merchantEnv
+  let connectPeerRequest =
+        ConnectPeerRequest
+          { addr =
+              LightningAddress
+                { pubkey = merchantPubKeyHex,
+                  host = merchantNodeLocation
+                },
+            perm = False
+          }
+  _ <- liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
+  NewAddressResponse customerBtcAddressLazy <-
+    liftLndResult
+      =<< newAddress customerEnv GRPC.AddressTypeWITNESS_PUBKEY_HASH
+  let customerBtcAddress = toStrict customerBtcAddressLazy
+  _ <- liftIO $ generateToAddress btcClient 101 customerBtcAddress Nothing
+  merchantPubKey <-
+    liftMaybe "Can't decode hex pub key" $ unHexPubKey merchantPubKeyHex
+  _ <- liftIO $ delay 3000000
+  let openChannelRequest =
+        OpenChannelRequest
+          { nodePubkey = merchantPubKey,
+            localFundingAmount = MoneyAmount 20000,
+            pushSat = Just $ MoneyAmount 1000,
+            targetConf = Nothing,
+            satPerByte = Nothing,
+            private = Nothing,
+            minHtlcMsat = Nothing,
+            remoteCsvDelay = Nothing,
+            minConfs = Nothing,
+            spendUnconfirmed = Nothing,
+            closeAddress = Nothing
+          }
+  _ <- liftLndResult =<< openChannelSync customerEnv openChannelRequest
+  _ <- liftIO $ generateToAddress btcClient 101 customerBtcAddress Nothing
+  _ <- liftIO $ delay 3000000
   return ()
+  where
+    btcClient = envBtcClient env
+    merchantEnv = envLndMerchant env
+    customerEnv = envLndCustomer env
 
 newtype AppM m a
   = AppM
@@ -161,3 +212,9 @@ instance (MonadIO m) => KatipContext (AppM m) where
 
 runApp :: Env -> AppM m a -> m a
 runApp env app = runReaderT (unAppM app) env
+
+liftMaybe :: MonadIO m => String -> Maybe a -> m a
+liftMaybe msg mx =
+  case mx of
+    Just x -> return x
+    Nothing -> liftIO $ fail msg
