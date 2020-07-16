@@ -20,7 +20,7 @@ data LndError
   | GrpcEmptyResult
   | LndFail Timespan Text
   | LndEnvError Text
-  deriving (Show)
+  deriving (Eq, Show)
 
 newtype LoggingStrategy
   = LoggingStrategy (Severity -> Maybe Timespan -> Maybe LndError -> Severity)

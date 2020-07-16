@@ -16,6 +16,7 @@ module LndClient.RPC
     addInvoice,
     initWallet,
     openChannelSync,
+    openChannel,
     listChannels,
     closeChannel,
     listPeers,
@@ -69,6 +70,7 @@ data RpcName
   | SubscribeInvoices
   | SubscribeChannelEvents
   | OpenChannelSync
+  | OpenChannel
   | ListChannels
   | CloseChannel
   | ListPeers
@@ -212,6 +214,17 @@ subscribeChannelEvents handler env =
     handler
     env
     GRPC.ChannelEventSubscription {}
+
+openChannel ::
+  (KatipContext m) =>
+  (GRPC.OpenStatusUpdate -> IO ()) ->
+  LndEnv ->
+  OpenChannelRequest ->
+  m (Either LndError ())
+openChannel =
+  grpcSubscribe
+    OpenChannel
+    GRPC.lightningOpenChannel
 
 openChannelSync ::
   (KatipContext m) =>

@@ -17,10 +17,12 @@ module LndClient.TestApp
     customerNodeLocation,
     merchantNodeLocation,
     withEnv,
+    newSpawnLink,
+    syncWallets,
   )
 where
 
-import Control.Concurrent.Async (async, link)
+import Control.Concurrent.Async (Async, async, link)
 import LndClient.Data.BtcEnv
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
@@ -146,14 +148,18 @@ withEnv =
 setupEnv :: (KatipContext m) => Env -> m ()
 setupEnv env = do
   --
-  -- Init/Unlock wallets
+  -- Init/Unlock and Sync wallets
   --
+  -- this delay is stupid, I know
+  -- but LND is throwning error about
+  -- maximum pending channels if delay is not there
+  _ <- liftIO $ delay 3000000
   _ <- liftLndResult =<< lazyInitWallet merchantEnv
   _ <- liftLndResult =<< lazyInitWallet customerEnv
   --
   -- Connect Customer to Merchant
   --
-  GetInfoResponse merchantPubKeyHex <- liftLndResult =<< getInfo merchantEnv
+  GetInfoResponse merchantPubKeyHex _ _ <- liftLndResult =<< getInfo merchantEnv
   let connectPeerRequest =
         ConnectPeerRequest
           { addr =
@@ -177,34 +183,29 @@ setupEnv env = do
         customerEnv
         (ListChannelsRequest False False False False Nothing)
   let cps = LC.channelPoint <$> cs
-  cpxs <-
-    liftIO $
-      mapM
-        ( \cp -> do
-            x <- newEmptyMVar
-            return (cp, x)
-        )
-        cps
   liftIO $
     mapM_
-      ( \(cp, x) ->
-          link
-            =<< ( async $ runApp env $
-                    closeChannel
-                      (liftIO . putMVar x)
-                      (envLndMerchant env)
-                      (CloseChannelRequest cp False Nothing Nothing Nothing)
-                )
+      ( \cp ->
+          newSpawnLink $ runApp env $
+            closeChannel
+              --
+              -- TODO : investigate why it throws empty gRPC
+              -- response error and as consequence
+              -- probably it's how subscription terminates
+              -- when channel is completely closed
+              -- but for some reason handler is not called in this case
+              --
+              (const $ return ())
+              (envLndMerchant env)
+              (CloseChannelRequest cp False Nothing Nothing Nothing)
       )
-      cpxs
+      cps
   --
   -- Give Customer some money to operate
   -- and wait for every channel to be closed
   --
   _ <- liftIO $ generateToAddress btcClient 101 customerBtcAddress Nothing
-  _ <- liftIO $ delay 3000000
-  liftIO $ mapM_ (takeMVar . snd) cpxs
-  _ <- liftIO $ delay 3000000
+  _ <- syncWallets env
   --
   -- Open channel from Customer to Merchant
   --
@@ -226,7 +227,7 @@ setupEnv env = do
           }
   _ <- liftLndResult =<< openChannelSync customerEnv openChannelRequest
   _ <- liftIO $ generateToAddress btcClient 101 customerBtcAddress Nothing
-  _ <- liftIO $ delay 3000000
+  _ <- syncWallets env
   return ()
   where
     btcClient = envBtcClient env
@@ -265,3 +266,31 @@ liftMaybe msg mx =
   case mx of
     Just x -> return x
     Nothing -> liftIO $ fail msg
+
+-- can't use proper "race" with gRPC
+-- because of this
+-- https://github.com/awakesecurity/gRPC-haskell/issues/104
+newSpawnLink :: (MonadUnliftIO m) => m a -> m (Async a)
+newSpawnLink x =
+  withRunInIO $ \run -> do
+    pid <- async $ run x
+    link pid
+    return pid
+
+syncWallets ::
+  (KatipContext m) =>
+  Env ->
+  m (Either LndError ())
+syncWallets env = do
+  $(logTM) InfoS "Wallet sync ..."
+  resMerchant <- getInfo (envLndMerchant env)
+  resCustomer <- getInfo (envLndCustomer env)
+  case (,) <$> resMerchant <*> resCustomer of
+    Left e -> return $ Left e
+    Right (x, y) ->
+      if (syncedToChain x)
+        && (syncedToGraph x)
+        && (syncedToChain y)
+        && (syncedToGraph y)
+        then return $ Right ()
+        else (liftIO $ delay 1000000) >> syncWallets env

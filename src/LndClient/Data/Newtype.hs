@@ -149,7 +149,7 @@ unGrpcTimeout :: GrpcTimeoutSeconds -> Int
 unGrpcTimeout = coerce
 
 defaultSyncGrpcTimeout :: GrpcTimeoutSeconds
-defaultSyncGrpcTimeout = GrpcTimeoutSeconds 5
+defaultSyncGrpcTimeout = GrpcTimeoutSeconds 60
 
 defaultAsyncGrpcTimeout :: GrpcTimeoutSeconds
 defaultAsyncGrpcTimeout = GrpcTimeoutSeconds 3600
