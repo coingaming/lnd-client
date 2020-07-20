@@ -16,6 +16,7 @@ self: super:
       lnd = pkgs20.lnd;
       haskellPackages = super.haskell.packages.ghc865.extend(
         self': super': {
+          parameterized = dontCheck super'.parameterized;
           universum = dontCheck super'.universum;
           swagger2 = callPackage ./swagger2.nix {
             stdenv = self.stdenv;

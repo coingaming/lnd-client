@@ -8,9 +8,9 @@ mkDerivation {
   pname = "grpc-haskell";
   version = "0.0.1.0";
   src = fetchgit {
-    url = "https://github.com/coingaming/gRPC-haskell.git";
-    sha256 = "0xzsjyxasp5wwjrnlq0d18ib82dh84q10c2fkzilf4lxk27dpw1c";
-    rev = "8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a";
+    url = "https://github.com/coingaming/gRPC-haskell";
+    sha256 = "0pj08ka8zj3y8f4pnilppdpcc66h750cl9j2y8imjc9b3ym3yjfg";
+    rev = "1e39371d308e6f0ff155dc988f7b6adf1519d7d8";
     fetchSubmodules = true;
   };
   isLibrary = true;

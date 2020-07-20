@@ -47,6 +47,13 @@ packages:
   original:
     hackage: network-bitcoin-1.9.1@sha256:f950326eef853c8ce5a15a2fc65ed0291669b60b3138538629469fbeaf447d96,2420
 - completed:
+    hackage: parameterized-0.5.0.0@sha256:880717fbb958de1bac015f0a375ab6636f162a72483d987a11e305da6fac6c97,1969
+    pantry-tree:
+      size: 1019
+      sha256: 843aed822e03279edf00a2595dfb22038b306f4f0acd6984bd108024c5102f90
+  original:
+    hackage: parameterized-0.5.0.0@sha256:880717fbb958de1bac015f0a375ab6636f162a72483d987a11e305da6fac6c97,1969
+- completed:
     hackage: swagger2-2.3.1.1@sha256:d37f1ab99b66a68d873c44bfaa30a763d52eed72df9e82805b99be9d9b8ad2bc,4433
     pantry-tree:
       size: 2192
@@ -54,63 +61,51 @@ packages:
   original:
     hackage: swagger2-2.3.1.1
 - completed:
-    size: 110250
+    size: 110235
     subdir: core
-    url: https://github.com/coingaming/gRPC-haskell/archive/8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a.tar.gz
-    cabal-file:
-      size: 3306
-      sha256: 4bacd90915321750db570042cd05ada01b9b83c79f6bf6b6ccdef1889b383efa
+    url: https://github.com/coingaming/gRPC-haskell/archive/1e39371d308e6f0ff155dc988f7b6adf1519d7d8.tar.gz
     name: grpc-haskell-core
     version: 0.0.0.0
-    sha256: d9c150a855b85b5ebc1c22c2fcc0ea171ee0fdee46dd626a115f8405cb5c4502
+    sha256: bd333f7ca34f901e1f655e4c59639323bc6d1950a16e0f1b1847a1b0aeed8425
     pantry-tree:
       size: 2543
-      sha256: f3068aefface90c7cc81139a6c5482f363b07087c254631225c573fee512035c
+      sha256: ff65a4ab9b80d055d5d4946489de967a3eb186eb3400ef02c1dd3953af2f15a6
   original:
     subdir: core
-    url: https://github.com/coingaming/gRPC-haskell/archive/8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a.tar.gz
+    url: https://github.com/coingaming/gRPC-haskell/archive/1e39371d308e6f0ff155dc988f7b6adf1519d7d8.tar.gz
 - completed:
-    size: 110250
-    url: https://github.com/coingaming/gRPC-haskell/archive/8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a.tar.gz
-    cabal-file:
-      size: 6044
-      sha256: 20b32a3b2f8a4a6db8cf0f9995e159c60d6a93e6e64ef8a4b7429a1fdb1036fa
+    size: 110235
+    url: https://github.com/coingaming/gRPC-haskell/archive/1e39371d308e6f0ff155dc988f7b6adf1519d7d8.tar.gz
     name: grpc-haskell
     version: 0.0.1.0
-    sha256: d9c150a855b85b5ebc1c22c2fcc0ea171ee0fdee46dd626a115f8405cb5c4502
+    sha256: bd333f7ca34f901e1f655e4c59639323bc6d1950a16e0f1b1847a1b0aeed8425
     pantry-tree:
       size: 7299
-      sha256: 54faf14001920d7fe0f4fd8dd3fb237db845f0ca8de8b2df5c00191902f2bbcf
+      sha256: 7824d4fa7a573d81e8ce9d3024c93c25a47e89bdc1b3094efe069f3e8fb73fc5
   original:
-    url: https://github.com/coingaming/gRPC-haskell/archive/8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a.tar.gz
+    url: https://github.com/coingaming/gRPC-haskell/archive/1e39371d308e6f0ff155dc988f7b6adf1519d7d8.tar.gz
 - completed:
-    size: 78528
-    url: https://github.com/awakesecurity/proto3-suite/archive/ca03aa9d846d88b0762e40f9588b4927de22f798.tar.gz
-    cabal-file:
-      size: 5729
-      sha256: 2a57338dc12c00bc6b764f314baf4ac041b93a81dcadfa284e643d52e2f54ec7
+    size: 91575
+    url: https://github.com/awakesecurity/proto3-suite/archive/45950a3860cbcb3f3177e9725dbdf460d6da9d45.tar.gz
     name: proto3-suite
-    version: 0.4.0.0
-    sha256: be7b53ee359f0e02e8a363cafe62d5d6ae110ad211a033ef53a230f0ba2589b9
+    version: 0.4.0.2
+    sha256: 5e17daa85b6882935a9a500af5021dcc461d76f53c81b7d62838ee829c260f77
     pantry-tree:
-      size: 4322
-      sha256: 1dcf464f7680838666becb0956fc3abd8647bbf7f3a1bb5ce62b9b7ea2577b47
+      size: 7180
+      sha256: 5cfd7cb7c20e9ff29a113b66e35042eb955a507ddb33ef909e9a7e67ab70307b
   original:
-    url: https://github.com/awakesecurity/proto3-suite/archive/ca03aa9d846d88b0762e40f9588b4927de22f798.tar.gz
+    url: https://github.com/awakesecurity/proto3-suite/archive/45950a3860cbcb3f3177e9725dbdf460d6da9d45.tar.gz
 - completed:
-    size: 20147
-    url: https://github.com/awakesecurity/proto3-wire/archive/23015cf6363d1962fde6bdff0de111f7ec59ab75.tar.gz
-    cabal-file:
-      size: 1928
-      sha256: 5e750211a8fdae75ffcdd0a70581ae635be5510b321924c5196ac44189fd1432
+    size: 47444
+    url: https://github.com/awakesecurity/proto3-wire/archive/5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53.tar.gz
     name: proto3-wire
-    version: 1.1.0
-    sha256: af5f173afe9831f1e9bd061c9e0878de8fd18987f0604885a69c4d81c5824c4e
+    version: 1.2.0
+    sha256: 54ecc8d2b56e407eaa5d9e953234a0f1f886b28b0ac287c155ed9326df65b118
     pantry-tree:
-      size: 978
-      sha256: d3a5d569e005d87e4eb343b150a1c4cbc455cc9833e7713efb937d66b6679b87
+      size: 1759
+      sha256: 2d3e47cf4d109a5184c8a5919f12e692fc43197b3cd011aabe8e11dacb6f9946
   original:
-    url: https://github.com/awakesecurity/proto3-wire/archive/23015cf6363d1962fde6bdff0de111f7ec59ab75.tar.gz
+    url: https://github.com/awakesecurity/proto3-wire/archive/5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53.tar.gz
 snapshots:
 - completed:
     size: 524996

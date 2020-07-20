@@ -48,17 +48,18 @@ extra-deps:
   - cryptostore-0.2.1.0@sha256:9896e2984f36a1c8790f057fd5ce3da4cbcaf8aa73eb2d9277916886978c5b19,3881
   - cryptonite-0.26@sha256:43c722f3770c31f4c5376e7aa42645b104834103312e217aa7fe79316416d6df,17352
   - network-bitcoin-1.9.1@sha256:f950326eef853c8ce5a15a2fc65ed0291669b60b3138538629469fbeaf447d96,2420
+  - parameterized-0.5.0.0@sha256:880717fbb958de1bac015f0a375ab6636f162a72483d987a11e305da6fac6c97,1969
   - swagger2-2.3.1.1
   - github: coingaming/gRPC-haskell
-    commit: 8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a
+    commit: 1e39371d308e6f0ff155dc988f7b6adf1519d7d8
     subdirs:
       - core
   - github: coingaming/gRPC-haskell
-    commit: 8eaee520cd1a2ae909d2ef7ce16ce3a17be4418a
+    commit: 1e39371d308e6f0ff155dc988f7b6adf1519d7d8
   - github: awakesecurity/proto3-suite
-    commit: ca03aa9d846d88b0762e40f9588b4927de22f798
+    commit: 45950a3860cbcb3f3177e9725dbdf460d6da9d45
   - github: awakesecurity/proto3-wire
-    commit: 23015cf6363d1962fde6bdff0de111f7ec59ab75
+    commit: 5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
