@@ -25,6 +25,7 @@ alias lncli-customer="lncli -n regtest --lnddir=$LND_CUSTOMER_DIR --rpcserver=lo
 # lnd-client
 #
 
+#export GRPC_VERBOSITY=debug
 export LND_CLIENT_ENV_DATA='
 {
     "name":"bitcasino",

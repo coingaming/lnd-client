@@ -183,9 +183,16 @@ setupEnv env = do
         customerEnv
         (ListChannelsRequest False False False False Nothing)
   let cps = LC.channelPoint <$> cs
+  cpxs <-
+    mapM
+      ( \cp -> do
+          x <- newEmptyMVar
+          return (cp, x)
+      )
+      cps
   liftIO $
     mapM_
-      ( \cp ->
+      ( \(cp, x) ->
           newSpawnLink $ runApp env $
             closeChannel
               --
@@ -195,17 +202,19 @@ setupEnv env = do
               -- when channel is completely closed
               -- but for some reason handler is not called in this case
               --
-              (const $ return ())
+              --(const $ return ())
+              (liftIO . putMVar x)
               (envLndMerchant env)
               (CloseChannelRequest cp False Nothing Nothing Nothing)
       )
-      cps
+      cpxs
   --
   -- Give Customer some money to operate
   -- and wait for every channel to be closed
   --
   _ <- liftIO $ generateToAddress btcClient 101 customerBtcAddress Nothing
   _ <- syncWallets env
+  _ <- liftIO $ mapM_ (\(_, x) -> takeMVar x) cpxs
   --
   -- Open channel from Customer to Merchant
   --
