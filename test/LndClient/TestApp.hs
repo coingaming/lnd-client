@@ -221,7 +221,7 @@ setupEnv env = do
   -- And wait for every channel to be closed
   --
   liftIO $ do
-    delay 1000000
+    delay 3000000
     mine6_ env
     mapM_ (\(_, x) -> takeMVar x) cpxs
   --
@@ -297,7 +297,7 @@ spawnLinkDelayed_ :: (MonadUnliftIO m) => m a -> m ()
 spawnLinkDelayed_ x = do
   void $ spawnLink x
   -- give process 1 second to spawn
-  liftIO $ delay 1000000
+  liftIO $ delay 3000000
   return ()
 
 syncWallets ::
