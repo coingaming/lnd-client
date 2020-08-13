@@ -138,15 +138,19 @@ createLndPort p = do
   let maybePort :: Maybe Int = U.safeFromIntegral p
   maybeToRight (LndEnvError "Wrong port") $ LndPort <$> maybePort
 
-rawConfig :: IO RawConfig
-rawConfig = parse (header "LndClient config") $ var (parseRawConfig <=< nonempty) "LND_CLIENT_ENV_DATA" (keep <> help "")
+readRawConfig :: IO RawConfig
+readRawConfig =
+  parse
+    (header "LndClient config")
+    $ var (parser <=< nonempty) "LND_CLIENT_ENV_DATA" (keep <> help "")
   where
-    parseRawConfig :: String -> Either Error RawConfig
-    parseRawConfig strConfig = first UnreadError $ eitherDecodeStrict $ C8.pack strConfig
+    parser :: String -> Either Error RawConfig
+    parser x =
+      first UnreadError $ eitherDecodeStrict $ C8.pack x
 
 readLndEnv :: IO LndEnv
 readLndEnv = do
-  rc <- rawConfig
+  rc <- readRawConfig
   return $
     newLndEnv
       (rawConfigLndWalletPassword rc)

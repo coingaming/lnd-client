@@ -66,7 +66,7 @@ spec = around withEnv $ do
           (liftIO . putMVar x)
           (envLndMerchant env)
           (CloseChannelRequest cp False Nothing Nothing Nothing)
-      mine101_ env
+      mine_ env
       void $ takeMVar x
       cs1 <-
         runApp env $
@@ -140,7 +140,7 @@ spec = around withEnv $ do
       runApp_ env $ do
         void $ liftLndResult =<< syncWallets env
         liftLndResult =<< openChannelSync (envLndCustomer env) openChannelReq
-      mine101_ env
+      mine_ env
       res <- takeMVar x
       res `shouldSatisfy` (\this -> elem (enumerated $ eventType this) [Right GRPC.ChannelEventUpdate_UpdateTypePENDING_OPEN_CHANNEL, Right GRPC.ChannelEventUpdate_UpdateTypeOPEN_CHANNEL])
   where

@@ -20,12 +20,11 @@ module LndClient.TestApp
     withEnv,
     spawnLinkDelayed_,
     syncWallets,
-    mine101_,
+    mine_,
   )
 where
 
 import Control.Concurrent.Async (Async, async, link)
-import LndClient.Data.BtcEnv
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
@@ -98,14 +97,6 @@ custEnv x =
       envLndAezeedPassphrase = Nothing
     }
 
-newBtcClient :: IO BTC.Client
-newBtcClient = do
-  env <- btcEnv
-  let user = btcRpcUser env
-  let passw = btcRpcPassword env
-  let url = btcRpcUrl env
-  getClient (unpack url) user passw
-
 readEnv :: KatipContextT IO Env
 readEnv = do
   le <- getLogEnv
@@ -147,15 +138,22 @@ withEnv =
     )
     (closeScribes . envKatipLE)
 
-mine101_ :: Env -> IO ()
-mine101_ env = do
+newBtcClient :: IO BTC.Client
+newBtcClient =
+  getClient
+    "http://localhost:18443"
+    "developer"
+    "developer"
+
+mine_ :: Env -> IO ()
+mine_ env = do
   NewAddressResponse btcAddress <-
     runApp env $
       liftLndResult
         =<< newAddress
           (envLndCustomer env)
           GRPC.AddressTypeWITNESS_PUBKEY_HASH
-  _ <- generateToAddress (envBtcClient env) 101 (toStrict btcAddress) Nothing
+  void $ generateToAddress (envBtcClient env) 6 (toStrict btcAddress) Nothing
   runApp_ env $ liftLndResult =<< syncWallets env
   return ()
 
@@ -164,8 +162,9 @@ setupEnv env = do
   --
   -- Init/Unlock and Sync wallets
   --
-  _ <- liftLndResult =<< lazyInitWallet merchantEnv
-  _ <- liftLndResult =<< lazyInitWallet customerEnv
+  void $ liftLndResult =<< lazyInitWallet merchantEnv
+  void $ liftLndResult =<< lazyInitWallet customerEnv
+  void $ liftLndResult =<< syncWallets env
   --
   -- Connect Customer to Merchant
   --
@@ -179,7 +178,7 @@ setupEnv env = do
                 },
             perm = False
           }
-  _ <- liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
+  void $ liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
   --
   -- Initialize closing channels procedure
   --
@@ -206,7 +205,6 @@ setupEnv env = do
               -- response error and as consequence
               -- probably it's how subscription terminates
               -- when channel is completely closed
-              -- but for some reason handler is not called in this case
               --
               --(const $ return ())
               (liftIO . putMVar x)
@@ -221,13 +219,13 @@ setupEnv env = do
   --
   liftIO $ do
     delay 1000000
-    mine101_ env
+    mine_ env
     mapM_ (\(_, x) -> takeMVar x) cpxs
   --
   -- Open channel from Customer to Merchant
   --
   merchantPubKey <-
-    liftMaybe "can't decode hex pub key" $ unHexPubKey merchantPubKeyHex
+    liftMaybe "Can't decode hex pub key" $ unHexPubKey merchantPubKeyHex
   let openChannelRequest =
         OpenChannelRequest
           { nodePubkey = merchantPubKey,
@@ -242,11 +240,9 @@ setupEnv env = do
             spendUnconfirmed = Nothing,
             closeAddress = Nothing
           }
-  _ <-
-    runApp env $
-      liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
-  -- mine some blocks to give confirmations to funding transaction
-  liftIO $ mine101_ env
+  void $ runApp env $
+    liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
+  liftIO $ mine_ env
   where
     merchantEnv = envLndMerchant env
     customerEnv = envLndCustomer env
@@ -296,7 +292,7 @@ spawnLink x =
 
 spawnLinkDelayed_ :: (MonadUnliftIO m) => m a -> m ()
 spawnLinkDelayed_ x = do
-  _ <- spawnLink x
+  void $ spawnLink x
   -- give process 1 second to spawn
   liftIO $ delay 1000000
   return ()
