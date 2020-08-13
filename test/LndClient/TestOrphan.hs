@@ -9,6 +9,7 @@ where
 import LndClient.Data.AddInvoice
 import LndClient.Data.ChannelPoint
 import LndClient.Data.Invoice
+import LndClient.Data.ListChannels
 import LndClient.Import
 
 deriving instance Show MoneyAmount
@@ -26,3 +27,5 @@ deriving instance Show AddInvoiceRequest
 deriving instance Show AddInvoiceResponse
 
 deriving instance Show ChannelPoint
+
+deriving instance Show Channel

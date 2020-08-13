@@ -25,7 +25,6 @@ import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
 import LndClient.Data.LndEnv
-import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (Peer (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
@@ -37,7 +36,6 @@ import LndClient.RPC
 import LndClient.TestApp
 import LndClient.TestOrphan ()
 import qualified LndGrpc as GRPC
-import Network.Bitcoin.Mining (generateToAddress)
 import Test.Hspec
 
 spec :: Spec
@@ -65,14 +63,14 @@ spec = around withEnv $ do
         cp <-
           case LC.channelPoint <$> safeHead channelList of
             Just x -> return x
-            Nothing -> fail "No channel point find"
+            Nothing -> fail "No channel point found"
         x <- newEmptyMVar
-        _ <-
-          newSpawnLink $ runApp env $
-            closeChannel
-              (liftIO . putMVar x)
-              (envLndMerchant env)
-              (CloseChannelRequest cp False Nothing Nothing Nothing)
+        spawnLinkDelayed_ $ runApp env $
+          closeChannel
+            (liftIO . putMVar x)
+            (envLndMerchant env)
+            (CloseChannelRequest cp False Nothing Nothing Nothing)
+        mine101_ env
         _ <- takeMVar x
         channelList2 <-
           runApp env $
@@ -88,12 +86,11 @@ spec = around withEnv $ do
       -- can't use proper "race" there
       -- because of this
       -- https://github.com/awakesecurity/gRPC-haskell/issues/104
-      _ <-
-        newSpawnLink $ runApp env $
-          subscribeInvoices
-            (liftIO . putMVar x)
-            (envLndMerchant env)
-            (SubscribeInvoicesRequest Nothing Nothing)
+      spawnLinkDelayed_ $ runApp env $
+        subscribeInvoices
+          (liftIO . putMVar x)
+          (envLndMerchant env)
+          (SubscribeInvoicesRequest Nothing Nothing)
       originalInvoice <-
         runApp env $
           liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
@@ -111,15 +108,14 @@ spec = around withEnv $ do
       x <- newEmptyMVar
       let sendPaymentRequest =
             SendPaymentRequest
-              { paymentRequest = (AddInvoice.paymentRequest invoice),
-                amt = (MoneyAmount 1000)
+              { paymentRequest = AddInvoice.paymentRequest invoice,
+                amt = MoneyAmount 1000
               }
-      _ <-
-        newSpawnLink $ runApp env $
-          subscribeInvoices
-            (liftIO . putMVar x)
-            (envLndMerchant env)
-            (SubscribeInvoicesRequest Nothing Nothing)
+      spawnLinkDelayed_ $ runApp env $
+        subscribeInvoices
+          (liftIO . putMVar x)
+          (envLndMerchant env)
+          (SubscribeInvoicesRequest Nothing Nothing)
       _ <-
         runApp env $
           liftLndResult =<< sendPayment (envLndCustomer env) sendPaymentRequest
@@ -131,12 +127,6 @@ spec = around withEnv $ do
   describe "subscribeChannelEvents"
     $ it "subscribeChannelEvents succeeds"
     $ \env -> do
-      NewAddressResponse btcAddress <-
-        runApp env $
-          liftLndResult
-            =<< newAddress
-              (envLndCustomer env)
-              GRPC.AddressTypeWITNESS_PUBKEY_HASH
       x <- newEmptyMVar
       hpk <- somePubKey env envLndCustomer
       pk <- liftMaybe "Can't decode hex pub key" $ unHexPubKey hpk
@@ -154,16 +144,15 @@ spec = around withEnv $ do
                 spendUnconfirmed = Nothing,
                 closeAddress = Nothing
               }
-      _ <-
-        newSpawnLink $ runApp env $
-          subscribeChannelEvents
-            (liftIO . putMVar x)
-            (envLndMerchant env)
+      spawnLinkDelayed_ $ runApp env $
+        subscribeChannelEvents
+          (liftIO . putMVar x)
+          (envLndMerchant env)
       _ <-
         runApp env $ do
           _ <- syncWallets env
           liftLndResult =<< openChannelSync (envLndCustomer env) openChannelReq
-      _ <- generateToAddress (envBtcClient env) 101 (toStrict btcAddress) Nothing
+      mine101_ env
       res <- takeMVar x
       res
         `shouldSatisfy` (\this -> eventType this == Enumerated {enumerated = Right GRPC.ChannelEventUpdate_UpdateTypePENDING_OPEN_CHANNEL})

@@ -17,8 +17,9 @@ module LndClient.TestApp
     customerNodeLocation,
     merchantNodeLocation,
     withEnv,
-    newSpawnLink,
+    spawnLinkDelayed_,
     syncWallets,
+    mine101_,
   )
 where
 
@@ -145,15 +146,23 @@ withEnv =
     )
     (closeScribes . envKatipLE)
 
+mine101_ :: Env -> IO ()
+mine101_ env = do
+  NewAddressResponse btcAddress <-
+    runApp env $
+      liftLndResult
+        =<< newAddress
+          (envLndCustomer env)
+          GRPC.AddressTypeWITNESS_PUBKEY_HASH
+  _ <- generateToAddress (envBtcClient env) 101 (toStrict btcAddress) Nothing
+  _ <- runApp env $ liftLndResult =<< syncWallets env
+  return ()
+
 setupEnv :: (KatipContext m) => Env -> m ()
 setupEnv env = do
   --
   -- Init/Unlock and Sync wallets
   --
-  -- this delay is stupid, I know
-  -- but LND is throwning error about
-  -- maximum pending channels if delay is not there
-  _ <- liftIO $ delay 3000000
   _ <- liftLndResult =<< lazyInitWallet merchantEnv
   _ <- liftLndResult =<< lazyInitWallet customerEnv
   --
@@ -170,10 +179,6 @@ setupEnv env = do
             perm = False
           }
   _ <- liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
-  NewAddressResponse customerBtcAddressLazy <-
-    liftLndResult
-      =<< newAddress customerEnv GRPC.AddressTypeWITNESS_PUBKEY_HASH
-  let customerBtcAddress = toStrict customerBtcAddressLazy
   --
   -- Initialize closing channels procedure
   --
@@ -193,7 +198,7 @@ setupEnv env = do
   liftIO $
     mapM_
       ( \(cp, x) ->
-          newSpawnLink $ runApp env $
+          spawnLink $ runApp env $
             closeChannel
               --
               -- TODO : investigate why it throws empty gRPC
@@ -209,17 +214,19 @@ setupEnv env = do
       )
       cpxs
   --
+  -- Give some time for closeChannel processes to be spawned
   -- Give Customer some money to operate
-  -- and wait for every channel to be closed
+  -- And wait for every channel to be closed
   --
-  _ <- liftIO $ generateToAddress btcClient 101 customerBtcAddress Nothing
-  _ <- syncWallets env
-  _ <- liftIO $ mapM_ (\(_, x) -> takeMVar x) cpxs
+  liftIO $ do
+    delay 1000000
+    mine101_ env
+    mapM_ (\(_, x) -> takeMVar x) cpxs
   --
   -- Open channel from Customer to Merchant
   --
   merchantPubKey <-
-    liftMaybe "Can't decode hex pub key" $ unHexPubKey merchantPubKeyHex
+    liftMaybe "can't decode hex pub key" $ unHexPubKey merchantPubKeyHex
   let openChannelRequest =
         OpenChannelRequest
           { nodePubkey = merchantPubKey,
@@ -234,12 +241,12 @@ setupEnv env = do
             spendUnconfirmed = Nothing,
             closeAddress = Nothing
           }
-  _ <- liftLndResult =<< openChannelSync customerEnv openChannelRequest
-  _ <- liftIO $ generateToAddress btcClient 101 customerBtcAddress Nothing
-  _ <- syncWallets env
-  return ()
+  _ <-
+    runApp env $
+      liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
+  -- mine some blocks to give confirmations to funding transaction
+  liftIO $ mine101_ env
   where
-    btcClient = envBtcClient env
     merchantEnv = envLndMerchant env
     customerEnv = envLndCustomer env
 
@@ -279,12 +286,19 @@ liftMaybe msg mx =
 -- can't use proper "race" with gRPC
 -- because of this
 -- https://github.com/awakesecurity/gRPC-haskell/issues/104
-newSpawnLink :: (MonadUnliftIO m) => m a -> m (Async a)
-newSpawnLink x =
+spawnLink :: (MonadUnliftIO m) => m a -> m (Async a)
+spawnLink x =
   withRunInIO $ \run -> do
     pid <- async $ run x
     link pid
     return pid
+
+spawnLinkDelayed_ :: (MonadUnliftIO m) => m a -> m ()
+spawnLinkDelayed_ x = do
+  _ <- spawnLink x
+  -- give process 1 second to spawn
+  liftIO $ delay 1000000
+  return ()
 
 syncWallets ::
   (KatipContext m) =>
@@ -297,7 +311,7 @@ syncWallets env = do
   case (,) <$> resMerchant <*> resCustomer of
     Left e -> return $ Left e
     Right (x, y) ->
-      if (syncedToChain x)
+      if syncedToChain x
         && (syncedToGraph x)
         && (syncedToChain y)
         && (syncedToGraph y)
