@@ -161,11 +161,9 @@ lazyInitWallet env =
       then return unlockRes
       else do
         initRes <- initWallet env
-        if isRight initRes
-          then lazyUnlockWallet env
-          else do
-            $(logTM) ErrorS "Wallet initialization fiasco"
-            return initRes
+        when (isLeft initRes) $
+          $(logTM) ErrorS "Wallet initialization fiasco"
+        return initRes
 
 newAddress ::
   (KatipContext m) =>

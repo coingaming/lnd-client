@@ -35,7 +35,7 @@ in
       source ./nix/export-test-envs.sh;
       sh ./nix/reset-test-data.sh;
       sh ./nix/spawn-test-deps.sh;
-      sleep 10
+      sleep 30
     '';
     postCheck = ''
       sh ./nix/shutdown-test-deps.sh
