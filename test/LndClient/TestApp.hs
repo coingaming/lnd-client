@@ -13,6 +13,7 @@
 module LndClient.TestApp
   ( Env (..),
     runApp,
+    runApp_,
     liftLndResult,
     customerNodeLocation,
     merchantNodeLocation,
@@ -155,7 +156,7 @@ mine101_ env = do
           (envLndCustomer env)
           GRPC.AddressTypeWITNESS_PUBKEY_HASH
   _ <- generateToAddress (envBtcClient env) 101 (toStrict btcAddress) Nothing
-  _ <- runApp env $ liftLndResult =<< syncWallets env
+  runApp_ env $ liftLndResult =<< syncWallets env
   return ()
 
 setupEnv :: (KatipContext m) => Env -> m ()
@@ -277,15 +278,15 @@ instance (MonadIO m) => KatipContext (AppM m) where
 runApp :: Env -> AppM m a -> m a
 runApp env app = runReaderT (unAppM app) env
 
+runApp_ :: (Functor m) => Env -> AppM m a -> m ()
+runApp_ env app = void $ runApp env app
+
 liftMaybe :: MonadIO m => String -> Maybe a -> m a
 liftMaybe msg mx =
   case mx of
     Just x -> return x
     Nothing -> liftIO $ fail msg
 
--- can't use proper "race" with gRPC
--- because of this
--- https://github.com/awakesecurity/gRPC-haskell/issues/104
 spawnLink :: (MonadUnliftIO m) => m a -> m (Async a)
 spawnLink x =
   withRunInIO $ \run -> do
