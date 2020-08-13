@@ -20,7 +20,7 @@ module LndClient.TestApp
     withEnv,
     spawnLinkDelayed_,
     syncWallets,
-    mine_,
+    mine6_,
   )
 where
 
@@ -145,17 +145,20 @@ newBtcClient =
     "developer"
     "developer"
 
-mine_ :: Env -> IO ()
-mine_ env = do
+mine_ :: Int -> Env -> IO ()
+mine_ x env = do
   NewAddressResponse btcAddress <-
     runApp env $
       liftLndResult
         =<< newAddress
           (envLndCustomer env)
           GRPC.AddressTypeWITNESS_PUBKEY_HASH
-  void $ generateToAddress (envBtcClient env) 101 (toStrict btcAddress) Nothing
+  void $ generateToAddress (envBtcClient env) x (toStrict btcAddress) Nothing
   runApp_ env $ liftLndResult =<< syncWallets env
   return ()
+
+mine6_ :: Env -> IO ()
+mine6_ = mine_ 6
 
 setupEnv :: (KatipContext m) => Env -> m ()
 setupEnv env = do
@@ -164,7 +167,7 @@ setupEnv env = do
   --
   void $ liftLndResult =<< lazyInitWallet merchantEnv
   void $ liftLndResult =<< lazyInitWallet customerEnv
-  liftIO $ mine_ env
+  liftIO $ mine_ 101 env
   --
   -- Connect Customer to Merchant
   --
@@ -219,7 +222,7 @@ setupEnv env = do
   --
   liftIO $ do
     delay 1000000
-    mine_ env
+    mine6_ env
     mapM_ (\(_, x) -> takeMVar x) cpxs
   --
   -- Open channel from Customer to Merchant
@@ -242,7 +245,7 @@ setupEnv env = do
           }
   void $ runApp env $
     liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
-  liftIO $ mine_ env
+  liftIO $ mine6_ env
   where
     merchantEnv = envLndMerchant env
     customerEnv = envLndCustomer env
