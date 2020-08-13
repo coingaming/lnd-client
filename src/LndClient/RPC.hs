@@ -104,28 +104,34 @@ initWallet env = do
   --
   -- NOTE : some LND bullshit - it crashes if other RPC performed after that too soon
   --
-  _ <- liftIO $ delay 10000000
+  when (isRight res) $ void $ liftIO $ delay 5000000
   return res
 
 unlockWallet ::
   (KatipContext m) =>
   LndEnv ->
   m (Either LndError ())
-unlockWallet env =
-  grpcSync
-    UnlockWallet
-    GRPC.walletUnlockerClient
-    GRPC.walletUnlockerUnlockWallet
-    env
-    UnlockWalletRequest
-      { walletPassword = coerce $ envLndWalletPassword env,
-        --
-        -- TODO : this is related to BIP44
-        -- hardcoded value will be sufficient for most cases
-        -- but maybe let's have it in LndEnv as well?
-        --
-        recoveryWindow = 100
-      }
+unlockWallet env = do
+  res <-
+    grpcSync
+      UnlockWallet
+      GRPC.walletUnlockerClient
+      GRPC.walletUnlockerUnlockWallet
+      env
+      UnlockWalletRequest
+        { walletPassword = coerce $ envLndWalletPassword env,
+          --
+          -- TODO : this is related to BIP44
+          -- hardcoded value will be sufficient for most cases
+          -- but maybe let's have it in LndEnv as well?
+          --
+          recoveryWindow = 100
+        }
+  --
+  -- NOTE : some LND bullshit - it crashes if other RPC performed after that too soon
+  --
+  when (isRight res) $ void $ liftIO $ delay 5000000
+  return res
 
 lazyUnlockWallet ::
   (KatipContext m) =>

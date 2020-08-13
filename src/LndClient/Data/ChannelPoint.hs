@@ -17,7 +17,9 @@ data ChannelPoint
 instance FromGrpc ChannelPoint GRPC.ChannelPoint where
   fromGrpc x =
     ChannelPoint
-      <$> maybeToEither (FromGrpcError "Empty channelPoingFundingTxid") (getBytes =<< GRPC.channelPointFundingTxid x)
+      <$> maybeToEither
+        (FromGrpcError "Empty channelPoingFundingTxid")
+        (getBytes =<< GRPC.channelPointFundingTxid x)
       <*> fromGrpc (GRPC.channelPointOutputIndex x)
 
 instance ToGrpc ChannelPoint GRPC.ChannelPoint where

@@ -1,7 +1,6 @@
 module LndClient.Data.CloseChannel
   ( CloseChannelRequest (..),
     CloseStatusUpdate (..),
-    ChannelPoint (..),
     PendingUpdate (..),
     ChannelCloseUpdate (..),
   )

@@ -153,7 +153,7 @@ mine_ env = do
         =<< newAddress
           (envLndCustomer env)
           GRPC.AddressTypeWITNESS_PUBKEY_HASH
-  void $ generateToAddress (envBtcClient env) 6 (toStrict btcAddress) Nothing
+  void $ generateToAddress (envBtcClient env) 101 (toStrict btcAddress) Nothing
   runApp_ env $ liftLndResult =<< syncWallets env
   return ()
 
@@ -164,7 +164,7 @@ setupEnv env = do
   --
   void $ liftLndResult =<< lazyInitWallet merchantEnv
   void $ liftLndResult =<< lazyInitWallet customerEnv
-  void $ liftLndResult =<< syncWallets env
+  liftIO $ mine_ env
   --
   -- Connect Customer to Merchant
   --
@@ -309,8 +309,11 @@ syncWallets env = do
     Left e -> return $ Left e
     Right (x, y) ->
       if syncedToChain x
-        && (syncedToGraph x)
+        --
+        -- TODO : add condition for empty channel/peer list (expected False there)
+        --
+        -- && (syncedToGraph x)
+        -- && (syncedToGraph y)
         && (syncedToChain y)
-        && (syncedToGraph y)
         then return $ Right ()
-        else (liftIO $ delay 1000000) >> syncWallets env
+        else liftIO (delay 1000000) >> syncWallets env
