@@ -21,6 +21,7 @@ module LndClient.TestApp
     spawnLinkDelayed_,
     syncWallets,
     mine6_,
+    initEnv_,
   )
 where
 
@@ -138,6 +139,19 @@ withEnv =
     )
     (closeScribes . envKatipLE)
 
+initEnv_ :: IO ()
+initEnv_ =
+  bracket
+    (runKatip readEnv)
+    (closeScribes . envKatipLE)
+    ( \env ->
+        runApp env $ do
+          void $ liftLndResult =<< lazyInitWallet (envLndMerchant env)
+          void $ liftLndResult =<< lazyInitWallet (envLndCustomer env)
+          delay 3000000
+          liftIO $ mine_ 101 env
+    )
+
 newBtcClient :: IO BTC.Client
 newBtcClient =
   getClient
@@ -162,12 +176,6 @@ mine6_ = mine_ 6
 
 setupEnv :: (KatipContext m) => Env -> m ()
 setupEnv env = do
-  --
-  -- Init/Unlock and Sync wallets
-  --
-  void $ liftLndResult =<< lazyInitWallet merchantEnv
-  void $ liftLndResult =<< lazyInitWallet customerEnv
-  liftIO $ mine_ 101 env
   --
   -- Connect Customer to Merchant
   --

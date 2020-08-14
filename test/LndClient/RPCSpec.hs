@@ -36,7 +36,7 @@ import qualified LndGrpc as GRPC
 import Test.Hspec
 
 spec :: Spec
-spec = around withEnv $ do
+spec = beforeAll initEnv_ $ around withEnv $ do
   describe "addInvoice" $ do
     it "addInvoice succeeds" $ \env -> do
       res <- runApp env $ addInvoice (envLndMerchant env) addInvoiceRequest
@@ -142,7 +142,7 @@ spec = around withEnv $ do
         liftLndResult =<< openChannelSync (envLndCustomer env) openChannelReq
       mine6_ env
       res <- takeMVar x
-      res `shouldSatisfy` (\this -> elem (enumerated $ eventType this) [Right GRPC.ChannelEventUpdate_UpdateTypePENDING_OPEN_CHANNEL, Right GRPC.ChannelEventUpdate_UpdateTypeOPEN_CHANNEL])
+      res `shouldSatisfy` (\this -> elem (enumerated $ eventType this) [Right GRPC.ChannelEventUpdate_UpdateTypePENDING_OPEN_CHANNEL, Right GRPC.ChannelEventUpdate_UpdateTypeOPEN_CHANNEL, Right GRPC.ChannelEventUpdate_UpdateTypeACTIVE_CHANNEL])
   where
     addInvoiceRequest =
       AddInvoiceRequest
