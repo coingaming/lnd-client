@@ -17,11 +17,12 @@ module LndClient.TestApp
     liftLndResult,
     customerNodeLocation,
     merchantNodeLocation,
-    withEnv,
     spawnLinkDelayed_,
     syncWallets,
     mine6_,
-    initEnv_,
+    newEnv,
+    deleteEnv,
+    setupEnv,
   )
 where
 
@@ -129,49 +130,39 @@ runKatip x = do
       =<< initLogEnv "LndClient" "test"
   runKatipContextT le (mempty :: LogContexts) mempty x
 
-withEnv :: (Env -> IO ()) -> IO ()
-withEnv =
-  bracket
-    ( runKatip $ do
-        env <- readEnv
-        runApp env $ setupEnv env
-        return env
-    )
-    (closeScribes . envKatipLE)
+newEnv :: IO Env
+newEnv = do
+  env <- runKatip readEnv
+  runApp env $ do
+    let merchantEnv = envLndMerchant env
+    let customerEnv = envLndCustomer env
+    --
+    -- Init wallets
+    --
+    void $ liftLndResult =<< lazyInitWallet merchantEnv
+    void $ liftLndResult =<< lazyInitWallet customerEnv
+    liftIO $ do
+      delay 3000000
+      mine_ 101 env
+    --
+    -- Connect Customer to Merchant
+    --
+    GetInfoResponse merchantPubKeyHex _ _ <-
+      liftLndResult =<< getInfo merchantEnv
+    let connectPeerRequest =
+          ConnectPeerRequest
+            { addr =
+                LightningAddress
+                  { pubkey = merchantPubKeyHex,
+                    host = merchantNodeLocation
+                  },
+              perm = False
+            }
+    void $ liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
+  return env
 
-initEnv_ :: IO ()
-initEnv_ =
-  bracket
-    (runKatip readEnv)
-    (closeScribes . envKatipLE)
-    ( \env ->
-        runApp env $ do
-          let merchantEnv = envLndMerchant env
-          let customerEnv = envLndCustomer env
-          --
-          -- Init wallets
-          --
-          void $ liftLndResult =<< lazyInitWallet merchantEnv
-          void $ liftLndResult =<< lazyInitWallet customerEnv
-          liftIO $ do
-            delay 3000000
-            mine_ 101 env
-          --
-          -- Connect Customer to Merchant
-          --
-          GetInfoResponse merchantPubKeyHex _ _ <-
-            liftLndResult =<< getInfo merchantEnv
-          let connectPeerRequest =
-                ConnectPeerRequest
-                  { addr =
-                      LightningAddress
-                        { pubkey = merchantPubKeyHex,
-                          host = merchantNodeLocation
-                        },
-                    perm = False
-                  }
-          void $ liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
-    )
+deleteEnv :: Env -> IO ()
+deleteEnv = void . closeScribes . envKatipLE
 
 newBtcClient :: IO BTC.Client
 newBtcClient =
@@ -195,8 +186,8 @@ mine_ x env = do
 mine6_ :: Env -> IO ()
 mine6_ = mine_ 6
 
-setupEnv :: (KatipContext m) => Env -> m ()
-setupEnv env = do
+setupEnv :: Env -> IO ()
+setupEnv env = runApp env $ do
   --
   -- Initialize closing channels procedure
   --

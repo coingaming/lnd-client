@@ -36,20 +36,20 @@ import qualified LndGrpc as GRPC
 import Test.Hspec
 
 spec :: Spec
-spec = beforeAll initEnv_ $ around withEnv $ do
-  describe "addInvoice" $ do
-    it "addInvoice succeeds" $ \env -> do
-      res <- runApp env $ addInvoice (envLndMerchant env) addInvoiceRequest
-      res `shouldSatisfy` isRight
-    it "addInvoice qrcode" $ \env -> do
-      res <-
-        runApp env $
-          liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
-      let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
-      qr `shouldSatisfy` isJust
-  describe "listChannelAndClose"
-    $ it "listChannelAndClose succeeds"
-    $ \env -> do
+spec =
+  beforeAll newEnv $ afterAll deleteEnv $ do
+    describe "addInvoice" $ do
+      it "succeeds" $ \env -> do
+        res <- runApp env $ addInvoice (envLndMerchant env) addInvoiceRequest
+        res `shouldSatisfy` isRight
+      it "qrcode" $ \env -> do
+        res <-
+          runApp env $
+            liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
+        let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
+        qr `shouldSatisfy` isJust
+    describe "listChannelAndClose" $ it "succeeds" $ \env -> do
+      setupEnv env
       cs0 <-
         runApp env $
           liftLndResult
@@ -75,9 +75,8 @@ spec = beforeAll initEnv_ $ around withEnv $ do
               (envLndMerchant env)
               (ListChannelsRequest False False False False Nothing)
       (length cs0 - length cs1) `shouldBe` 1
-  describe "subscribeInvoices"
-    $ it "subscribeInvoices succeeds"
-    $ \env -> do
+    describe "subscribeInvoices" $ it "succeeds" $ \env -> do
+      setupEnv env
       x <- newEmptyMVar
       spawnLinkDelayed_ $ runApp env $
         subscribeInvoices
@@ -92,9 +91,8 @@ spec = beforeAll initEnv_ $ around withEnv $ do
         `shouldSatisfy` ( \this ->
                             AddInvoice.rHash originalInvoice == Invoice.rHash this
                         )
-  describe "subscribeInvoicesAndSettleIt"
-    $ it "subscribeInvoicesAndSettleIt succeeds"
-    $ \env -> do
+    describe "subscribeInvoicesAndSettleIt" $ it "succeeds" $ \env -> do
+      setupEnv env
       invoice <-
         runApp env $
           liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
@@ -113,9 +111,8 @@ spec = beforeAll initEnv_ $ around withEnv $ do
         liftLndResult =<< sendPayment (envLndCustomer env) sendPaymentRequest
       res <- takeMVar x
       res `shouldSatisfy` (\this -> AddInvoice.rHash invoice == Invoice.rHash this)
-  describe "subscribeChannelEvents"
-    $ it "subscribeChannelEvents succeeds"
-    $ \env -> do
+    describe "subscribeChannelEvents" $ it "succeeds" $ \env -> do
+      setupEnv env
       x <- newEmptyMVar
       hpk <- peerPubKey env envLndCustomer
       pk <- liftMaybe "Can't decode hex pub key" $ unHexPubKey hpk
