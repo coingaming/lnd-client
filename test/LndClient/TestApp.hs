@@ -146,10 +146,31 @@ initEnv_ =
     (closeScribes . envKatipLE)
     ( \env ->
         runApp env $ do
-          void $ liftLndResult =<< lazyInitWallet (envLndMerchant env)
-          void $ liftLndResult =<< lazyInitWallet (envLndCustomer env)
-          delay 3000000
-          liftIO $ mine_ 101 env
+          let merchantEnv = envLndMerchant env
+          let customerEnv = envLndCustomer env
+          --
+          -- Init wallets
+          --
+          void $ liftLndResult =<< lazyInitWallet merchantEnv
+          void $ liftLndResult =<< lazyInitWallet customerEnv
+          liftIO $ do
+            delay 3000000
+            mine_ 101 env
+          --
+          -- Connect Customer to Merchant
+          --
+          GetInfoResponse merchantPubKeyHex _ _ <-
+            liftLndResult =<< getInfo merchantEnv
+          let connectPeerRequest =
+                ConnectPeerRequest
+                  { addr =
+                      LightningAddress
+                        { pubkey = merchantPubKeyHex,
+                          host = merchantNodeLocation
+                        },
+                    perm = False
+                  }
+          void $ liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
     )
 
 newBtcClient :: IO BTC.Client
@@ -176,20 +197,6 @@ mine6_ = mine_ 6
 
 setupEnv :: (KatipContext m) => Env -> m ()
 setupEnv env = do
-  --
-  -- Connect Customer to Merchant
-  --
-  GetInfoResponse merchantPubKeyHex _ _ <- liftLndResult =<< getInfo merchantEnv
-  let connectPeerRequest =
-        ConnectPeerRequest
-          { addr =
-              LightningAddress
-                { pubkey = merchantPubKeyHex,
-                  host = merchantNodeLocation
-                },
-            perm = False
-          }
-  void $ liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
   --
   -- Initialize closing channels procedure
   --
@@ -235,6 +242,8 @@ setupEnv env = do
   --
   -- Open channel from Customer to Merchant
   --
+  GetInfoResponse merchantPubKeyHex _ _ <-
+    liftLndResult =<< getInfo merchantEnv
   merchantPubKey <-
     liftMaybe "Can't decode hex pub key" $ unHexPubKey merchantPubKeyHex
   let openChannelRequest =
