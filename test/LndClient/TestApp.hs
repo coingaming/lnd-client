@@ -27,6 +27,7 @@ module LndClient.TestApp
 where
 
 import Control.Concurrent.Async (Async, async, link)
+import LndClient.Data.ChannelPoint as ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
@@ -34,6 +35,7 @@ import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..))
+import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
 import LndClient.Import
 import LndClient.RPC
 import LndClient.TestOrphan ()
@@ -59,7 +61,9 @@ data Env
         envBtcClient :: BTC.Client,
         envKatipNS :: Namespace,
         envKatipCTX :: LogContexts,
-        envKatipLE :: LogEnv
+        envKatipLE :: LogEnv,
+        envMerchantCQ :: TChan ChannelEventUpdate,
+        envCustomerCQ :: TChan ChannelEventUpdate
       }
 
 custEnv :: LndEnv -> LndEnv
@@ -106,6 +110,8 @@ readEnv = do
   ns <- getKatipNamespace
   lndEnv <- liftIO readLndEnv
   bc <- liftIO newBtcClient
+  mcq <- liftIO newBroadcastTChanIO
+  ccq <- liftIO newBroadcastTChanIO
   return
     Env
       { envLndMerchant = lndEnv,
@@ -113,7 +119,9 @@ readEnv = do
         envBtcClient = bc,
         envKatipLE = le,
         envKatipCTX = ctx,
-        envKatipNS = ns
+        envKatipNS = ns,
+        envMerchantCQ = mcq,
+        envCustomerCQ = ccq
       }
 
 runKatip :: KatipContextT IO a -> IO a
@@ -133,17 +141,21 @@ runKatip x = do
 newEnv :: IO Env
 newEnv = do
   env <- runKatip readEnv
+  let merchantEnv = envLndMerchant env
+  let customerEnv = envLndCustomer env
+  let merchantCQ = envMerchantCQ env
+  let customerCQ = envCustomerCQ env
   runApp env $ do
-    let merchantEnv = envLndMerchant env
-    let customerEnv = envLndCustomer env
     --
     -- Init wallets
     --
     void $ liftLndResult =<< lazyInitWallet merchantEnv
     void $ liftLndResult =<< lazyInitWallet customerEnv
-    liftIO $ do
-      delay 3000000
-      mine_ 101 env
+    --
+    -- TODO : move waitForGrpc to init/unlock wallet
+    --
+    liftLndResult =<< waitForGrpc env
+    liftIO $ mine_ 101 env
     --
     -- Connect Customer to Merchant
     --
@@ -159,6 +171,18 @@ newEnv = do
               perm = False
             }
     void $ liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
+  --
+  -- Subscribe to channel events
+  --
+  void . spawnLink $ runApp env $
+    subscribeChannelEvents
+      (liftIO . atomically . writeTChan merchantCQ)
+      merchantEnv
+  void . spawnLink $ runApp env $
+    subscribeChannelEvents
+      (liftIO . atomically . writeTChan customerCQ)
+      customerEnv
+  delay 3000000
   return env
 
 deleteEnv :: Env -> IO ()
@@ -251,9 +275,11 @@ setupEnv env = runApp env $ do
             spendUnconfirmed = Nothing,
             closeAddress = Nothing
           }
-  void $ runApp env $
-    liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
-  liftIO $ mine6_ env
+  void $ runApp env $ do
+    cp <- liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
+    cq <- atomically $ dupTChan $ envCustomerCQ env
+    liftIO $ mine6_ env
+    waitForActiveChannel_ cp cq
   where
     merchantEnv = envLndMerchant env
     customerEnv = envLndCustomer env
@@ -308,6 +334,39 @@ spawnLinkDelayed_ x = do
   liftIO $ delay 3000000
   return ()
 
+waitForActiveChannel_ ::
+  KatipContext m =>
+  ChannelPoint ->
+  TChan ChannelEventUpdate ->
+  m ()
+waitForActiveChannel_ cp cq = do
+  $(logTM) InfoS
+    $ logStr
+    $ "Waiting for active channel " <> (show cp :: Text) <> " ..."
+  x <- atomically $ readTChan cq
+  $(logTM) InfoS $ logStr $ "Got channel update " <> (show x :: Text)
+  case channelEvent x of
+    GRPC.ChannelEventUpdateChannelActiveChannel gcp ->
+      if Right cp == fromGrpc gcp
+        then return ()
+        else waitForActiveChannel_ cp cq
+    _ -> waitForActiveChannel_ cp cq
+
+waitForGrpc ::
+  (KatipContext m) =>
+  Env ->
+  m (Either LndError ())
+waitForGrpc env = do
+  $(logTM) InfoS "Waiting for GRPC ..."
+  resMerchant <- getInfo (envLndMerchant env)
+  resCustomer <- getInfo (envLndCustomer env)
+  --
+  -- TODO : remove infinite recursion
+  --
+  if isRight $ (,) <$> resMerchant <*> resCustomer
+    then return $ Right ()
+    else liftIO (delay 1000000) >> waitForGrpc env
+
 syncWallets ::
   (KatipContext m) =>
   Env ->
@@ -317,7 +376,11 @@ syncWallets env = do
   resMerchant <- getInfo (envLndMerchant env)
   resCustomer <- getInfo (envLndCustomer env)
   case (,) <$> resMerchant <*> resCustomer of
-    Left e -> return $ Left e
+    Left _ ->
+      --
+      -- TODO : remove infinite recursion
+      --
+      liftIO (delay 1000000) >> syncWallets env
     Right (x, y) ->
       if syncedToChain x
         --

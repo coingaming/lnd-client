@@ -3,7 +3,7 @@
 , cryptohash-sha256, deepseq, envparse, extra, grpc-haskell
 , grpc-haskell-core, hpack, hspec, JuicyPixels, katip
 , network-bitcoin, pem, persistent, proto3-suite, proto3-wire
-, qrcode-core, qrcode-juicypixels, scientific, stdenv, text
+, qrcode-core, qrcode-juicypixels, scientific, stdenv, stm, text
 , unbounded-delays, universum, unliftio, vector, x509
 }:
 mkDerivation {
@@ -15,7 +15,7 @@ mkDerivation {
     chronos containers cryptohash-sha256 deepseq envparse extra
     grpc-haskell grpc-haskell-core hspec JuicyPixels katip
     network-bitcoin pem persistent proto3-suite proto3-wire qrcode-core
-    qrcode-juicypixels scientific text unbounded-delays universum
+    qrcode-juicypixels scientific stm text unbounded-delays universum
     unliftio vector x509
   ];
   libraryToolDepends = [ hpack ];
@@ -24,7 +24,7 @@ mkDerivation {
     chronos containers cryptohash-sha256 deepseq envparse extra
     grpc-haskell grpc-haskell-core hspec JuicyPixels katip
     network-bitcoin pem persistent proto3-suite proto3-wire qrcode-core
-    qrcode-juicypixels scientific text unbounded-delays universum
+    qrcode-juicypixels scientific stm text unbounded-delays universum
     unliftio vector x509
   ];
   prePatch = "hpack";

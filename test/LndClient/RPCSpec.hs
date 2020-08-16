@@ -137,6 +137,7 @@ spec =
       runApp_ env $ do
         void $ liftLndResult =<< syncWallets env
         liftLndResult =<< openChannelSync (envLndCustomer env) openChannelReq
+      delay 3000000
       mine6_ env
       res <- takeMVar x
       res `shouldSatisfy` (\this -> elem (enumerated $ eventType this) [Right GRPC.ChannelEventUpdate_UpdateTypePENDING_OPEN_CHANNEL, Right GRPC.ChannelEventUpdate_UpdateTypeOPEN_CHANNEL, Right GRPC.ChannelEventUpdate_UpdateTypeACTIVE_CHANNEL])

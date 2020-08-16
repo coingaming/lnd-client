@@ -54,6 +54,7 @@ dependencies:
 # system and threading
 - envparse
 - async
+- stm
 # crypto
 - cryptohash-sha256
 # bitcoin
