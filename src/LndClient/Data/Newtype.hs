@@ -157,6 +157,9 @@ instance ToGrpc AezeedPassphrase ByteString where
 instance ToGrpc RHash ByteString where
   toGrpc = Right . coerce
 
+instance ToGrpc RHash GRPC.CancelInvoiceMsg where
+  toGrpc x = GRPC.CancelInvoiceMsg <$> toGrpc x
+
 instance ToGrpc RPreimage ByteString where
   toGrpc = Right . coerce
 

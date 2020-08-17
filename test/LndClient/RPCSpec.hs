@@ -26,6 +26,7 @@ import LndClient.QRCode
 import LndClient.RPC
 import LndClient.TestApp
 import LndClient.TestOrphan ()
+import qualified LndGrpc as GRPC
 import Test.Hspec
 
 spec :: Spec
@@ -51,6 +52,31 @@ spec =
                 expiry = Just $ Seconds 1000
               }
       res <- runApp env $ addHodlInvoice (envLndMerchant env) req
+      res `shouldSatisfy` isRight
+    describe "cancelInvoice" $ it "succeeds" $ \env -> do
+      setupEnv env
+      r <- newRPreimage
+      let rh = newRHash r
+      let req0 =
+            AddHodlInvoiceRequest
+              { memo = Just "HELLO",
+                hash = rh,
+                value = MoneyAmount 1000,
+                expiry = Just $ Seconds 1000
+              }
+      let merchantEnv = envLndMerchant env
+      q <- atomically . dupTChan $ envMerchantIQ env
+      res <- runApp env $ do
+        pr <- liftLndResult =<< addHodlInvoice merchantEnv req0
+        liftLndResult =<< waitForInvoice rh GRPC.Invoice_InvoiceStateOPEN q
+        let req1 = SendPaymentRequest {paymentRequest = pr, amt = MoneyAmount 1000}
+        void . spawnLink $ liftLndResult =<< sendPayment (envLndCustomer env) req1
+        -- TODO : investigate why this notification is not received
+        --liftLndResult =<< waitForInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
+        res <- cancelInvoice merchantEnv rh
+        -- TODO : investigate why this notification is not received
+        --liftLndResult =<< waitForInvoice rh GRPC.Invoice_InvoiceStateCANCELED q
+        return res
       res `shouldSatisfy` isRight
     describe "listChannelAndClose" $ it "succeeds" $ \env -> do
       setupEnv env

@@ -23,18 +23,21 @@ module LndClient.TestApp
     newEnv,
     deleteEnv,
     setupEnv,
+    waitForInvoice,
   )
 where
 
 import LndClient.Data.ChannelPoint as ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
+import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
 import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..))
 import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
+import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Import
 import LndClient.RPC
 import LndClient.TestOrphan ()
@@ -62,7 +65,8 @@ data Env
         envKatipCTX :: LogContexts,
         envKatipLE :: LogEnv,
         envMerchantCQ :: TChan ChannelEventUpdate,
-        envCustomerCQ :: TChan ChannelEventUpdate
+        envCustomerCQ :: TChan ChannelEventUpdate,
+        envMerchantIQ :: TChan Invoice
       }
 
 custEnv :: LndEnv -> LndEnv
@@ -111,6 +115,7 @@ readEnv = do
   bc <- liftIO newBtcClient
   mcq <- atomically newBroadcastTChan
   ccq <- atomically newBroadcastTChan
+  miq <- atomically newBroadcastTChan
   return
     Env
       { envLndMerchant = lndEnv,
@@ -120,7 +125,8 @@ readEnv = do
         envKatipCTX = ctx,
         envKatipNS = ns,
         envMerchantCQ = mcq,
-        envCustomerCQ = ccq
+        envCustomerCQ = ccq,
+        envMerchantIQ = miq
       }
 
 runKatip :: KatipContextT IO a -> IO a
@@ -167,12 +173,18 @@ newEnv = do
             }
     void $ liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
     --
-    -- Subscribe to channel events
+    -- Subscribe to events
     --
     void . spawnLink $
       liftLndResult =<< subscribeChannelEventsQ (pure merchantCQ) merchantEnv
     void . spawnLink $
       liftLndResult =<< subscribeChannelEventsQ (pure customerCQ) customerEnv
+    void . spawnLink $
+      liftLndResult
+        =<< subscribeInvoicesQ
+          (pure $ envMerchantIQ env)
+          merchantEnv
+          (SubscribeInvoicesRequest Nothing Nothing)
   delay 3000000
   return env
 
@@ -334,6 +346,20 @@ waitForActiveChannel cp cq = do
       waitForActiveChannel cp cq
     Nothing ->
       return . Left $ TChanTimeout "waitForActiveChannel"
+
+waitForInvoice ::
+  KatipContext m =>
+  RHash ->
+  GRPC.Invoice_InvoiceState ->
+  TChan Invoice ->
+  m (Either LndError ())
+waitForInvoice rh s q = do
+  mx <- readTChanTimeout (MicroSecondsDelay 30000000) q
+  print mx
+  case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
+    Just True -> return $ Right ()
+    Just False -> waitForInvoice rh s q
+    Nothing -> return . Left $ TChanTimeout "waitForInvoice"
 
 syncWallets ::
   (KatipContext m) =>

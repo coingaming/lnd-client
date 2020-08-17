@@ -16,6 +16,7 @@ module LndClient.RPC
     newAddress,
     addInvoice,
     addHodlInvoice,
+    cancelInvoice,
     initWallet,
     openChannelSync,
     openChannel,
@@ -66,6 +67,7 @@ data RpcName
   | NewAddress
   | AddInvoice
   | AddHodlInvoice
+  | CancelInvoice
   | SubscribeInvoices
   | SubscribeChannelEvents
   | OpenChannelSync
@@ -213,6 +215,17 @@ addHodlInvoice =
     AddHodlInvoice
     GRPC.invoicesClient
     GRPC.invoicesAddHoldInvoice
+
+cancelInvoice ::
+  (KatipContext m) =>
+  LndEnv ->
+  RHash ->
+  m (Either LndError ())
+cancelInvoice =
+  grpcSync
+    CancelInvoice
+    GRPC.invoicesClient
+    GRPC.invoicesCancelInvoice
 
 subscribeInvoices ::
   (KatipContext m) =>
