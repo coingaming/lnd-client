@@ -18,7 +18,6 @@ import Control.Concurrent.STM.TChan as Import
 import Control.Concurrent.STM.TVar as Import (registerDelay)
 import Control.Concurrent.Thread.Delay as Import (delay)
 import Control.Monad.Extra as Import (fromMaybeM)
-import Crypto.Hash.SHA256 as Import (hash)
 import Data.Aeson as Import (FromJSON (..), ToJSON, fromJSON)
 import Data.ByteString as Import (ByteString)
 import Data.Coerce as Import (coerce)

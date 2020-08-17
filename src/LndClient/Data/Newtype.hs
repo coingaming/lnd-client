@@ -27,6 +27,7 @@ import Data.Aeson (FromJSON (..))
 import Data.ByteString.Base16 as B16 (decode)
 import Data.ByteString.Char8 as C8
 import Data.Vector (fromList)
+import qualified InvoiceGrpc as GRPC
 import LndClient.Class
 import LndClient.Data.Type
 import LndClient.Import.External
@@ -124,6 +125,9 @@ instance FromGrpc SettleIndex Word64 where
 instance FromGrpc PaymentRequest Text where
   fromGrpc = Right . PaymentRequest
 
+instance FromGrpc PaymentRequest GRPC.AddHoldInvoiceResp where
+  fromGrpc = fromGrpc . GRPC.addHoldInvoiceRespPaymentRequest
+
 instance ToGrpc PaymentRequest Text where
   toGrpc x = Right (coerce x :: Text)
 
@@ -138,6 +142,9 @@ instance ToGrpc CipherSeedMnemonic (Vector Text) where
 
 instance ToGrpc AezeedPassphrase ByteString where
   toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
+
+instance ToGrpc RHash ByteString where
+  toGrpc = Right . coerce
 
 newGrpcTimeout :: Int -> Maybe GrpcTimeoutSeconds
 newGrpcTimeout x =

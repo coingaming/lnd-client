@@ -209,9 +209,6 @@ addInvoice =
 
 subscribeInvoices ::
   (KatipContext m) =>
-  --
-  -- TODO : replace IO with m if possible
-  --
   (Invoice -> IO ()) ->
   LndEnv ->
   SubscribeInvoicesRequest ->
@@ -233,9 +230,6 @@ subscribeInvoicesQ mq env req = do
 
 subscribeChannelEvents ::
   (KatipContext m) =>
-  --
-  -- TODO : replace IO with m if possible
-  --
   (ChannelEventUpdate -> IO ()) ->
   LndEnv ->
   m (Either LndError ())
