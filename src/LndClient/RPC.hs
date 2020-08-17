@@ -9,7 +9,8 @@
 {-# LANGUAGE TupleSections #-}
 
 module LndClient.RPC
-  ( unlockWallet,
+  ( waitForGrpc,
+    unlockWallet,
     lazyUnlockWallet,
     lazyInitWallet,
     newAddress,
@@ -87,6 +88,25 @@ grpcMeta :: LndEnv -> MetadataMap
 grpcMeta env =
   [("macaroon", encodeUtf8 (coerce (envLndHexMacaroon env) :: Text))]
 
+waitForGrpc ::
+  (KatipContext m) =>
+  LndEnv ->
+  m (Either LndError ())
+waitForGrpc env0 = this 30 $ env0 {envLndLogStrategy = logMaskErrors}
+  where
+    this (x :: Int) env =
+      if x > 0
+        then do
+          $(logTM) InfoS "Waiting for GRPC ..."
+          res <- getInfo env
+          if isRight res
+            then return $ Right ()
+            else liftIO (delay 1000000) >> this (x - 1) env
+        else do
+          let msg = "waitForGrpc attempt limit exceeded"
+          $(logTM) ErrorS $ logStr msg
+          return . Left $ LndError msg
+
 initWallet ::
   (KatipContext m) =>
   LndEnv ->
@@ -103,11 +123,9 @@ initWallet env = do
           cipherSeedMnemonic = coerce $ envLndCipherSeedMnemonic env,
           aezeedPassphrase = coerce $ envLndAezeedPassphrase env
         }
-  --
-  -- NOTE : some LND bullshit - it crashes if other RPC performed after that too soon
-  --
-  when (isRight res) $ void $ liftIO $ delay 5000000
-  return res
+  if isRight res
+    then waitForGrpc env
+    else return res
 
 unlockWallet ::
   (KatipContext m) =>
@@ -129,11 +147,9 @@ unlockWallet env = do
           --
           recoveryWindow = 100
         }
-  --
-  -- NOTE : some LND bullshit - it crashes if other RPC performed after that too soon
-  --
-  when (isRight res) $ void $ liftIO $ delay 5000000
-  return res
+  if isRight res
+    then waitForGrpc env
+    else return res
 
 lazyUnlockWallet ::
   (KatipContext m) =>

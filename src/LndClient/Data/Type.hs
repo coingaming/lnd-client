@@ -18,7 +18,7 @@ data LndError
   | GrpcError ClientError
   | GrpcUnexpectedResult Text
   | GrpcEmptyResult
-  | LndFail Timespan Text
+  | LndError Text
   | LndEnvError Text
   | TChanTimeout Text
   deriving (Eq, Show)

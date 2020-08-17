@@ -150,10 +150,6 @@ newEnv = do
     --
     void $ liftLndResult =<< lazyInitWallet merchantEnv
     void $ liftLndResult =<< lazyInitWallet customerEnv
-    --
-    -- TODO : move waitForGrpc to init/unlock wallet
-    --
-    liftLndResult =<< waitForGrpc env
     liftIO $ mine_ 101 env
     --
     -- Connect Customer to Merchant
@@ -338,21 +334,6 @@ waitForActiveChannel cp cq = do
       waitForActiveChannel cp cq
     Nothing ->
       return . Left $ TChanTimeout "waitForActiveChannel"
-
-waitForGrpc ::
-  (KatipContext m) =>
-  Env ->
-  m (Either LndError ())
-waitForGrpc env = do
-  $(logTM) InfoS "Waiting for GRPC ..."
-  resMerchant <- getInfo (envLndMerchant env)
-  resCustomer <- getInfo (envLndCustomer env)
-  --
-  -- TODO : remove infinite recursion
-  --
-  if isRight $ (,) <$> resMerchant <*> resCustomer
-    then return $ Right ()
-    else liftIO (delay 1000000) >> waitForGrpc env
 
 syncWallets ::
   (KatipContext m) =>
