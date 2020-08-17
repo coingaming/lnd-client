@@ -18,7 +18,7 @@ data SendPaymentResponse
   = SendPaymentResponse
       { paymentError :: Text,
         paymentPreimage :: ByteString,
-        paymentHash :: ByteString
+        paymentHash :: RHash
       }
   deriving (Eq)
 

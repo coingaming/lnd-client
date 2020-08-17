@@ -1,13 +1,9 @@
-{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralisedNewtypeDeriving #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module LndClient.RPCSpec
@@ -15,6 +11,7 @@ module LndClient.RPCSpec
   )
 where
 
+import LndClient.Data.AddHodlInvoice as Invoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
@@ -44,6 +41,17 @@ spec =
             liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
         let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
         qr `shouldSatisfy` isJust
+    describe "addHodlInvoice" $ it "succeeds" $ \env -> do
+      r <- newRPreimage
+      let req =
+            AddHodlInvoiceRequest
+              { memo = Just "HELLO",
+                hash = newRHash r,
+                value = MoneyAmount 1000,
+                expiry = Just $ Seconds 1000
+              }
+      res <- runApp env $ addHodlInvoice (envLndMerchant env) req
+      res `shouldSatisfy` isRight
     describe "listChannelAndClose" $ it "succeeds" $ \env -> do
       setupEnv env
       cs0 <-

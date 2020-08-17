@@ -1,7 +1,7 @@
 { mkDerivation, aeson, async, base, base16-bytestring
 , base64-bytestring, bytestring, chronos, containers
-, cryptohash-sha256, deepseq, envparse, extra, grpc-haskell
-, grpc-haskell-core, hpack, hspec, JuicyPixels, katip
+, cryptohash-sha256, cryptonite, deepseq, envparse, extra
+, grpc-haskell, grpc-haskell-core, hpack, hspec, JuicyPixels, katip
 , network-bitcoin, pem, persistent, proto3-suite, proto3-wire
 , qrcode-core, qrcode-juicypixels, scientific, stdenv, stm, text
 , unbounded-delays, universum, unliftio, vector, x509
@@ -12,8 +12,8 @@ mkDerivation {
   src = ./..;
   libraryHaskellDepends = [
     aeson async base base16-bytestring base64-bytestring bytestring
-    chronos containers cryptohash-sha256 deepseq envparse extra
-    grpc-haskell grpc-haskell-core hspec JuicyPixels katip
+    chronos containers cryptohash-sha256 cryptonite deepseq envparse
+    extra grpc-haskell grpc-haskell-core hspec JuicyPixels katip
     network-bitcoin pem persistent proto3-suite proto3-wire qrcode-core
     qrcode-juicypixels scientific stm text unbounded-delays universum
     unliftio vector x509
@@ -21,8 +21,8 @@ mkDerivation {
   libraryToolDepends = [ hpack ];
   testHaskellDepends = [
     aeson async base base16-bytestring base64-bytestring bytestring
-    chronos containers cryptohash-sha256 deepseq envparse extra
-    grpc-haskell grpc-haskell-core hspec JuicyPixels katip
+    chronos containers cryptohash-sha256 cryptonite deepseq envparse
+    extra grpc-haskell grpc-haskell-core hspec JuicyPixels katip
     network-bitcoin pem persistent proto3-suite proto3-wire qrcode-core
     qrcode-juicypixels scientific stm text unbounded-delays universum
     unliftio vector x509

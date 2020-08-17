@@ -15,6 +15,7 @@ module LndClient.RPC
     lazyInitWallet,
     newAddress,
     addInvoice,
+    addHodlInvoice,
     initWallet,
     openChannelSync,
     openChannel,
@@ -35,10 +36,9 @@ module LndClient.RPC
 where
 
 import qualified Control.Exception as CE (catch, throw)
-import LndClient.Data.AddInvoice as AddInvoice
-  ( AddInvoiceRequest (..),
-    AddInvoiceResponse (..),
-  )
+import qualified InvoiceGrpc as GRPC
+import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
+import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
 import LndClient.Data.GetInfo
@@ -48,14 +48,9 @@ import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
-import LndClient.Data.SendPayment as SendPayment
-  ( SendPaymentRequest (..),
-    SendPaymentResponse (..),
-  )
+import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
-import LndClient.Data.SubscribeInvoices as SubscribeInvoices
-  ( SubscribeInvoicesRequest (..),
-  )
+import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Import
 import qualified LndGrpc as GRPC
@@ -70,6 +65,7 @@ data RpcName
   | LazyInitWallet
   | NewAddress
   | AddInvoice
+  | AddHodlInvoice
   | SubscribeInvoices
   | SubscribeChannelEvents
   | OpenChannelSync
@@ -206,6 +202,17 @@ addInvoice =
     AddInvoice
     GRPC.lightningClient
     GRPC.lightningAddInvoice
+
+addHodlInvoice ::
+  (KatipContext m) =>
+  LndEnv ->
+  AddHodlInvoiceRequest ->
+  m (Either LndError PaymentRequest)
+addHodlInvoice =
+  grpcSync
+    AddHodlInvoice
+    GRPC.invoicesClient
+    GRPC.invoicesAddHoldInvoice
 
 subscribeInvoices ::
   (KatipContext m) =>

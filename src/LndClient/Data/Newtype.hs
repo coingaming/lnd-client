@@ -6,6 +6,7 @@ module LndClient.Data.Newtype
     SettleIndex (..),
     PaymentRequest (..),
     RHash (..),
+    RPreimage (..),
     MoneyAmount (..),
     CipherSeedMnemonic (..),
     AezeedPassphrase (..),
@@ -14,6 +15,8 @@ module LndClient.Data.Newtype
     NodePubKeyHex (..),
     NodeLocation (..),
     GrpcTimeoutSeconds,
+    newRHash,
+    newRPreimage,
     newGrpcTimeout,
     unGrpcTimeout,
     defaultSyncGrpcTimeout,
@@ -23,6 +26,8 @@ module LndClient.Data.Newtype
 where
 
 import Codec.QRCode as QR (ToText)
+import qualified Crypto.Hash.SHA256 as SHA256 (hash)
+import Crypto.Random (getRandomBytes)
 import Data.Aeson (FromJSON (..))
 import Data.ByteString.Base16 as B16 (decode)
 import Data.ByteString.Char8 as C8
@@ -53,6 +58,9 @@ newtype PaymentRequest = PaymentRequest Text
   deriving (PersistField, PersistFieldSql, Eq, QR.ToText)
 
 newtype RHash = RHash ByteString
+  deriving (PersistField, PersistFieldSql, Eq)
+
+newtype RPreimage = RPreimage ByteString
   deriving (PersistField, PersistFieldSql, Eq)
 
 newtype MoneyAmount = MoneyAmount Word64
@@ -116,6 +124,9 @@ instance Show RHash where
 instance FromGrpc RHash ByteString where
   fromGrpc = Right . RHash
 
+instance FromGrpc RPreimage ByteString where
+  fromGrpc = Right . RPreimage
+
 instance FromGrpc AddIndex Word64 where
   fromGrpc = Right . AddIndex
 
@@ -145,6 +156,15 @@ instance ToGrpc AezeedPassphrase ByteString where
 
 instance ToGrpc RHash ByteString where
   toGrpc = Right . coerce
+
+instance ToGrpc RPreimage ByteString where
+  toGrpc = Right . coerce
+
+newRHash :: RPreimage -> RHash
+newRHash = RHash . SHA256.hash . coerce
+
+newRPreimage :: MonadIO m => m RPreimage
+newRPreimage = liftIO (getRandomBytes 32) >>= return . RPreimage
 
 newGrpcTimeout :: Int -> Maybe GrpcTimeoutSeconds
 newGrpcTimeout x =
