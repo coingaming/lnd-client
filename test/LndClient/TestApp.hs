@@ -23,11 +23,9 @@ module LndClient.TestApp
     newEnv,
     deleteEnv,
     setupEnv,
-    waitForActiveChannel_,
   )
 where
 
-import Control.Concurrent.Async (Async, async, link)
 import LndClient.Data.ChannelPoint as ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
@@ -111,8 +109,8 @@ readEnv = do
   ns <- getKatipNamespace
   lndEnv <- liftIO readLndEnv
   bc <- liftIO newBtcClient
-  mcq <- liftIO newBroadcastTChanIO
-  ccq <- liftIO newBroadcastTChanIO
+  mcq <- atomically newBroadcastTChan
+  ccq <- atomically newBroadcastTChan
   return
     Env
       { envLndMerchant = lndEnv,
@@ -172,17 +170,13 @@ newEnv = do
               perm = False
             }
     void $ liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
-  --
-  -- Subscribe to channel events
-  --
-  void . spawnLink $ runApp env $
-    subscribeChannelEvents
-      (liftIO . atomically . writeTChan merchantCQ)
-      merchantEnv
-  void . spawnLink $ runApp env $
-    subscribeChannelEvents
-      (liftIO . atomically . writeTChan customerCQ)
-      customerEnv
+    --
+    -- Subscribe to channel events
+    --
+    void . spawnLink $
+      liftLndResult =<< subscribeChannelEventsQ (pure merchantCQ) merchantEnv
+    void . spawnLink $
+      liftLndResult =<< subscribeChannelEventsQ (pure customerCQ) customerEnv
   delay 3000000
   return env
 
@@ -321,17 +315,10 @@ liftMaybe msg mx =
     Just x -> return x
     Nothing -> liftIO $ fail msg
 
-spawnLink :: (MonadUnliftIO m) => m a -> m (Async a)
-spawnLink x =
-  withRunInIO $ \run -> do
-    pid <- async $ run x
-    link pid
-    return pid
-
 spawnLinkDelayed_ :: (MonadUnliftIO m) => m a -> m ()
 spawnLinkDelayed_ x = do
   void $ spawnLink x
-  -- give process 1 second to spawn
+  -- give process some time to spawn
   liftIO $ delay 3000000
   return ()
 

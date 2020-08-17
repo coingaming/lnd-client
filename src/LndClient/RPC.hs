@@ -25,7 +25,9 @@ module LndClient.RPC
     sendPayment,
     getInfo,
     subscribeInvoices,
+    subscribeInvoicesQ,
     subscribeChannelEvents,
+    subscribeChannelEventsQ,
     grpcSync,
     grpcSubscribe,
   )
@@ -203,6 +205,16 @@ subscribeInvoices =
     SubscribeInvoices
     GRPC.lightningSubscribeInvoices
 
+subscribeInvoicesQ ::
+  (KatipContext m) =>
+  Maybe (TChan Invoice) ->
+  LndEnv ->
+  SubscribeInvoicesRequest ->
+  m (Either LndError ())
+subscribeInvoicesQ mq env req = do
+  q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
+  subscribeInvoices (atomically . writeTChan q) env req
+
 subscribeChannelEvents ::
   (KatipContext m) =>
   --
@@ -218,6 +230,15 @@ subscribeChannelEvents handler env =
     handler
     env
     GRPC.ChannelEventSubscription {}
+
+subscribeChannelEventsQ ::
+  (KatipContext m) =>
+  Maybe (TChan ChannelEventUpdate) ->
+  LndEnv ->
+  m (Either LndError ())
+subscribeChannelEventsQ mq env = do
+  q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
+  subscribeChannelEvents (atomically . writeTChan q) env
 
 openChannel ::
   (KatipContext m) =>

@@ -3,6 +3,7 @@
 module LndClient.Util
   ( safeFromIntegral,
     showB64BS,
+    spawnLink,
   )
 where
 
@@ -26,3 +27,10 @@ showB64BS x =
   case decodeUtf8' $ "B64 " <> B64.encode x of
     Left _ -> "RAW " <> show x
     Right s -> TS.unpack s
+
+spawnLink :: (MonadUnliftIO m) => m a -> m (Async a)
+spawnLink x =
+  withRunInIO $ \run -> do
+    pid <- async $ run x
+    link pid
+    return pid

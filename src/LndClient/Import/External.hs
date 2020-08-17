@@ -6,14 +6,16 @@ import Chronos as Import
     encodeTimespan,
     stopwatch,
   )
+import Control.Concurrent.Async as Import (Async, async, link)
 import Control.Concurrent.STM.TChan as Import
   ( TChan,
     dupTChan,
-    newBroadcastTChanIO,
+    newBroadcastTChan,
     readTChan,
     writeTChan,
   )
 import Control.Concurrent.Thread.Delay as Import (delay)
+import Control.Monad.Extra as Import (fromMaybeM)
 import Crypto.Hash.SHA256 as Import (hash)
 import Data.Aeson as Import (FromJSON (..), ToJSON, fromJSON)
 import Data.ByteString as Import (ByteString)
