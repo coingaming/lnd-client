@@ -20,6 +20,7 @@ data LndError
   | GrpcEmptyResult
   | LndFail Timespan Text
   | LndEnvError Text
+  | TChanTimeout Text
   deriving (Eq, Show)
 
 newtype LoggingStrategy

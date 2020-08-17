@@ -4,12 +4,16 @@ module LndClient.Util
   ( safeFromIntegral,
     showB64BS,
     spawnLink,
+    readTChanTimeout,
+    MicroSecondsDelay (..),
   )
 where
 
 import qualified Data.ByteString.Base64 as B64 (encode)
 import qualified Data.Text as TS
 import LndClient.Import.External
+
+newtype MicroSecondsDelay = MicroSecondsDelay Int
 
 safeFromIntegral ::
   forall a b. (Integral a, Integral b, Bounded b) => a -> Maybe b
@@ -34,3 +38,13 @@ spawnLink x =
     pid <- async $ run x
     link pid
     return pid
+
+readTChanTimeout :: MonadIO m => MicroSecondsDelay -> TChan a -> m (Maybe a)
+readTChanTimeout t q = do
+  t0 <- liftIO . registerDelay $ coerce t
+  atomically $
+    Just <$> readTChan q
+      <|> Nothing <$ fini t0
+  where
+    fini :: TVar Bool -> STM ()
+    fini = check <=< readTVar

@@ -270,11 +270,11 @@ setupEnv env = runApp env $ do
             spendUnconfirmed = Nothing,
             closeAddress = Nothing
           }
-  void $ runApp env $ do
+  runApp env $ do
     cp <- liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
     cq <- atomically $ dupTChan $ envCustomerCQ env
     liftIO $ mine6_ env
-    waitForActiveChannel_ cp cq
+    liftLndResult =<< waitForActiveChannel cp cq
   where
     merchantEnv = envLndMerchant env
     customerEnv = envLndCustomer env
@@ -322,26 +322,22 @@ spawnLinkDelayed_ x = do
   liftIO $ delay 3000000
   return ()
 
-waitForActiveChannel_ ::
+waitForActiveChannel ::
   KatipContext m =>
   ChannelPoint ->
   TChan ChannelEventUpdate ->
-  m ()
-waitForActiveChannel_ cp cq = do
-  $(logTM) InfoS
-    $ logStr
-    $ "Waiting for active channel " <> (show cp :: Text) <> " ..."
-  x <- atomically $ readTChan cq
-  $(logTM) InfoS $ logStr $ "Got channel update " <> (show x :: Text)
-  --
-  -- TODO : remove infinite recursion
-  --
-  case channelEvent x of
-    GRPC.ChannelEventUpdateChannelActiveChannel gcp ->
+  m (Either LndError ())
+waitForActiveChannel cp cq = do
+  x <- readTChanTimeout (MicroSecondsDelay 30000000) cq
+  case channelEvent <$> x of
+    Just (GRPC.ChannelEventUpdateChannelActiveChannel gcp) ->
       if Right cp == fromGrpc gcp
-        then return ()
-        else waitForActiveChannel_ cp cq
-    _ -> waitForActiveChannel_ cp cq
+        then return $ Right ()
+        else waitForActiveChannel cp cq
+    Just _ ->
+      waitForActiveChannel cp cq
+    Nothing ->
+      return . Left $ TChanTimeout "waitForActiveChannel"
 
 waitForGrpc ::
   (KatipContext m) =>

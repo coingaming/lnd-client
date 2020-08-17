@@ -7,6 +7,7 @@ import Chronos as Import
     stopwatch,
   )
 import Control.Concurrent.Async as Import (Async, async, link)
+import Control.Concurrent.STM as Import (check)
 import Control.Concurrent.STM.TChan as Import
   ( TChan,
     dupTChan,
@@ -14,6 +15,7 @@ import Control.Concurrent.STM.TChan as Import
     readTChan,
     writeTChan,
   )
+import Control.Concurrent.STM.TVar as Import (registerDelay)
 import Control.Concurrent.Thread.Delay as Import (delay)
 import Control.Monad.Extra as Import (fromMaybeM)
 import Crypto.Hash.SHA256 as Import (hash)
