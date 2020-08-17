@@ -23,6 +23,7 @@ module LndClient.TestApp
     newEnv,
     deleteEnv,
     setupEnv,
+    waitForActiveChannel_,
   )
 where
 
@@ -345,6 +346,9 @@ waitForActiveChannel_ cp cq = do
     $ "Waiting for active channel " <> (show cp :: Text) <> " ..."
   x <- atomically $ readTChan cq
   $(logTM) InfoS $ logStr $ "Got channel update " <> (show x :: Text)
+  --
+  -- TODO : remove infinite recursion
+  --
   case channelEvent x of
     GRPC.ChannelEventUpdateChannelActiveChannel gcp ->
       if Right cp == fromGrpc gcp

@@ -22,17 +22,13 @@ import LndClient.Data.AddInvoice as AddInvoice
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
-import LndClient.Data.OpenChannel (OpenChannelRequest (..))
-import LndClient.Data.Peer (Peer (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
-import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Import
 import LndClient.QRCode
 import LndClient.RPC
 import LndClient.TestApp
 import LndClient.TestOrphan ()
-import qualified LndGrpc as GRPC
 import Test.Hspec
 
 spec :: Spec
@@ -111,36 +107,6 @@ spec =
         liftLndResult =<< sendPayment (envLndCustomer env) sendPaymentRequest
       res <- takeMVar x
       res `shouldSatisfy` (\this -> AddInvoice.rHash invoice == Invoice.rHash this)
-    describe "subscribeChannelEvents" $ it "succeeds" $ \env -> do
-      setupEnv env
-      x <- newEmptyMVar
-      hpk <- peerPubKey env envLndCustomer
-      pk <- liftMaybe "Can't decode hex pub key" $ unHexPubKey hpk
-      let openChannelReq =
-            OpenChannelRequest
-              { nodePubkey = pk,
-                localFundingAmount = MoneyAmount 20000,
-                pushSat = Nothing,
-                targetConf = Nothing,
-                satPerByte = Nothing,
-                private = Nothing,
-                minHtlcMsat = Nothing,
-                remoteCsvDelay = Nothing,
-                minConfs = Nothing,
-                spendUnconfirmed = Nothing,
-                closeAddress = Nothing
-              }
-      spawnLinkDelayed_ $ runApp env $
-        subscribeChannelEvents
-          (liftIO . putMVar x)
-          (envLndMerchant env)
-      runApp_ env $ do
-        void $ liftLndResult =<< syncWallets env
-        liftLndResult =<< openChannelSync (envLndCustomer env) openChannelReq
-      delay 3000000
-      mine6_ env
-      res <- takeMVar x
-      res `shouldSatisfy` (\this -> elem (enumerated $ eventType this) [Right GRPC.ChannelEventUpdate_UpdateTypePENDING_OPEN_CHANNEL, Right GRPC.ChannelEventUpdate_UpdateTypeOPEN_CHANNEL, Right GRPC.ChannelEventUpdate_UpdateTypeACTIVE_CHANNEL])
   where
     addInvoiceRequest =
       AddInvoiceRequest
@@ -148,15 +114,3 @@ spec =
           value = MoneyAmount 1000,
           expiry = Just $ Seconds 1000
         }
-    peerPubKey env envLnd = do
-      res <- runApp env $ liftLndResult =<< listPeers (envLnd env)
-      let mPeer = safeHead res
-      case mPeer of
-        Just pPeer -> return $ pubKey pPeer
-        Nothing -> fail "No any peers connected"
-
-liftMaybe :: MonadFail m => String -> Maybe a -> m a
-liftMaybe msg mx =
-  case mx of
-    Just x -> return x
-    Nothing -> fail msg
