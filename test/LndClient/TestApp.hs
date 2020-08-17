@@ -339,23 +339,22 @@ syncWallets ::
   (KatipContext m) =>
   Env ->
   m (Either LndError ())
-syncWallets env = do
-  $(logTM) InfoS "Wallet sync ..."
-  resMerchant <- getInfo (envLndMerchant env)
-  resCustomer <- getInfo (envLndCustomer env)
-  case (,) <$> resMerchant <*> resCustomer of
-    Left _ ->
-      --
-      -- TODO : remove infinite recursion
-      --
-      liftIO (delay 1000000) >> syncWallets env
-    Right (x, y) ->
-      if syncedToChain x
-        --
-        -- TODO : add condition for empty channel/peer list (expected False there)
-        --
-        -- && (syncedToGraph x)
-        -- && (syncedToGraph y)
-        && (syncedToChain y)
-        then return $ Right ()
-        else liftIO (delay 1000000) >> syncWallets env
+syncWallets = this 30
+  where
+    this (x :: Int) env = do
+      if x > 0
+        then do
+          $(logTM) InfoS "Wallet sync ..."
+          resMerchant <- getInfo (envLndMerchant env)
+          resCustomer <- getInfo (envLndCustomer env)
+          case (,) <$> resMerchant <*> resCustomer of
+            Left _ ->
+              liftIO (delay 1000000) >> this (x - 1) env
+            Right (mr, cr) ->
+              if syncedToChain mr && syncedToChain cr
+                then return $ Right ()
+                else liftIO (delay 1000000) >> this (x - 1) env
+        else do
+          let msg = "syncWallets attempt limit exceeded"
+          $(logTM) ErrorS $ logStr msg
+          return . Left $ LndError msg
