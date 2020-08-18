@@ -20,17 +20,18 @@ module LndClient.TestApp
     spawnLinkDelayed_,
     syncWallets,
     mine6_,
+    mine101_,
     newEnv,
     deleteEnv,
     setupEnv,
-    waitForInvoice,
+    receiveInvoice,
   )
 where
 
---import LndClient.Data.AddInvoice as AddInvoice
---  ( AddInvoiceRequest (..),
---    AddInvoiceResponse (..),
---  )
+import LndClient.Data.AddInvoice as AddInvoice
+  ( AddInvoiceRequest (..),
+    AddInvoiceResponse (..),
+  )
 import LndClient.Data.ChannelPoint as ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
@@ -40,7 +41,7 @@ import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..))
---import LndClient.Data.SendPayment (SendPaymentRequest (..))
+import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Import
@@ -161,7 +162,7 @@ newEnv = do
     --
     void $ liftLndResult =<< lazyInitWallet merchantEnv
     void $ liftLndResult =<< lazyInitWallet customerEnv
-    liftIO $ mine_ 101 env
+    liftIO $ mine101_ env
     --
     -- Connect Customer to Merchant
     --
@@ -189,12 +190,11 @@ newEnv = do
         =<< subscribeInvoicesQ
           (pure $ envMerchantIQ env)
           merchantEnv
-          (SubscribeInvoicesRequest Nothing Nothing)
-  --
-  -- TODO : this is related to possible LND bug
-  -- should be removed later
-  --
-  --(SubscribeInvoicesRequest (Just $ AddIndex 1) (Just $ SettleIndex 1))
+          --
+          -- TODO : this is related to LND bug
+          -- https://github.com/lightningnetwork/lnd/issues/2469
+          --
+          (SubscribeInvoicesRequest (Just $ AddIndex 1) (Just $ SettleIndex 1))
   delay 3000000
   return env
 
@@ -223,11 +223,15 @@ mine_ x env = do
 mine6_ :: Env -> IO ()
 mine6_ = mine_ 6
 
+mine101_ :: Env -> IO ()
+mine101_ = mine_ 101
+
 setupEnv :: Env -> IO ()
 setupEnv env = runApp env $ do
   --
   -- Initialize closing channels procedure
   --
+  $(logTM) InfoS "setupEnv - closing channels ..."
   cs <-
     liftLndResult
       =<< listChannels
@@ -255,7 +259,7 @@ setupEnv env = runApp env $ do
               --(const $ return ())
               (liftIO . putMVar x)
               (envLndMerchant env)
-              (CloseChannelRequest cp False Nothing Nothing Nothing)
+              (CloseChannelRequest cp True Nothing Nothing Nothing)
       )
       cpxs
   --
@@ -270,6 +274,7 @@ setupEnv env = runApp env $ do
   --
   -- Open channel from Customer to Merchant
   --
+  $(logTM) InfoS "setupEnv - opening channel ..."
   GetInfoResponse merchantPubKeyHex _ _ <-
     liftLndResult =<< getInfo merchantEnv
   merchantPubKey <-
@@ -292,8 +297,7 @@ setupEnv env = runApp env $ do
     cp <- liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
     cq <- atomically $ dupTChan $ envCustomerCQ env
     liftIO $ mine6_ env
-    liftLndResult =<< waitForActiveChannel cp cq
-  where
+    liftLndResult =<< receiveActiveChannel cp cq
     --
     -- TODO : this invoice is added and settled to
     -- raise invoice index to 1 to be able to receive
@@ -301,19 +305,21 @@ setupEnv env = runApp env $ do
     -- remove when LND bug will be fixed
     -- https://github.com/lightningnetwork/lnd/issues/2469
     --
-    --let addInvoiceRequest =
-    --      AddInvoiceRequest
-    --        { memo = Just "HELLO",
-    --          value = MoneyAmount 1000,
-    --          expiry = Just $ Seconds 1000
-    --        }
-    --invoice <- liftLndResult =<< addInvoice merchantEnv addInvoiceRequest
-    --let sendPaymentRequest =
-    --      SendPaymentRequest
-    --        { paymentRequest = AddInvoice.paymentRequest invoice,
-    --          amt = MoneyAmount 1000
-    --        }
-    --void $ liftLndResult =<< sendPayment customerEnv sendPaymentRequest
+    let addInvoiceRequest =
+          AddInvoiceRequest
+            { memo = Just "HELLO",
+              value = MoneyAmount 1000,
+              expiry = Just $ Seconds 1000
+            }
+    invoice <- liftLndResult =<< addInvoice merchantEnv addInvoiceRequest
+    let sendPaymentRequest =
+          SendPaymentRequest
+            { paymentRequest = AddInvoice.paymentRequest invoice,
+              amt = MoneyAmount 1000
+            }
+    void $ liftLndResult =<< sendPayment customerEnv sendPaymentRequest
+  $(logTM) InfoS "setupEnv - finished"
+  where
     merchantEnv = envLndMerchant env
     customerEnv = envLndCustomer env
 
@@ -360,36 +366,36 @@ spawnLinkDelayed_ x = do
   liftIO $ delay 3000000
   return ()
 
-waitForActiveChannel ::
+receiveActiveChannel ::
   KatipContext m =>
   ChannelPoint ->
   TChan ChannelEventUpdate ->
   m (Either LndError ())
-waitForActiveChannel cp cq = do
+receiveActiveChannel cp cq = do
   x <- readTChanTimeout (MicroSecondsDelay 30000000) cq
   case channelEvent <$> x of
     Just (GRPC.ChannelEventUpdateChannelActiveChannel gcp) ->
       if Right cp == fromGrpc gcp
         then return $ Right ()
-        else waitForActiveChannel cp cq
+        else receiveActiveChannel cp cq
     Just _ ->
-      waitForActiveChannel cp cq
+      receiveActiveChannel cp cq
     Nothing ->
-      return . Left $ TChanTimeout "waitForActiveChannel"
+      return . Left $ TChanTimeout "receiveActiveChannel"
 
-waitForInvoice ::
+receiveInvoice ::
   KatipContext m =>
   RHash ->
   GRPC.Invoice_InvoiceState ->
   TChan Invoice ->
   m (Either LndError ())
-waitForInvoice rh s q = do
+receiveInvoice rh s q = do
   mx <- readTChanTimeout (MicroSecondsDelay 30000000) q
-  print mx
+  $(logTM) InfoS $ logStr $ "Received Invoice: " <> (show mx :: Text)
   case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
     Just True -> return $ Right ()
-    Just False -> waitForInvoice rh s q
-    Nothing -> return . Left $ TChanTimeout "waitForInvoice"
+    Just False -> receiveInvoice rh s q
+    Nothing -> return . Left $ TChanTimeout "receiveInvoice"
 
 syncWallets ::
   (KatipContext m) =>
@@ -397,7 +403,7 @@ syncWallets ::
   m (Either LndError ())
 syncWallets = this 30
   where
-    this (x :: Int) env = do
+    this (x :: Int) env =
       if x > 0
         then do
           $(logTM) InfoS "Wallet sync ..."
