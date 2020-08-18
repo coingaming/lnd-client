@@ -71,11 +71,41 @@ spec =
         liftLndResult =<< waitForInvoice rh GRPC.Invoice_InvoiceStateOPEN q
         let req1 = SendPaymentRequest {paymentRequest = pr, amt = MoneyAmount 1000}
         void . spawnLink $ liftLndResult =<< sendPayment (envLndCustomer env) req1
-        -- TODO : investigate why this notification is not received
+        --
+        -- TODO : uncomment when bug is fixed
+        -- https://github.com/lightningnetwork/lnd/issues/4544
+        --
         --liftLndResult =<< waitForInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
         res <- cancelInvoice merchantEnv rh
-        -- TODO : investigate why this notification is not received
         --liftLndResult =<< waitForInvoice rh GRPC.Invoice_InvoiceStateCANCELED q
+        return res
+      res `shouldSatisfy` isRight
+    describe "settleInvoice" $ it "succeeds" $ \env -> do
+      setupEnv env
+      r <- newRPreimage
+      let rh = newRHash r
+      let req0 =
+            AddHodlInvoiceRequest
+              { memo = Just "HELLO",
+                hash = rh,
+                value = MoneyAmount 1000,
+                expiry = Just $ Seconds 1000
+              }
+      let merchantEnv = envLndMerchant env
+      q <- atomically . dupTChan $ envMerchantIQ env
+      res <- runApp env $ do
+        pr <- liftLndResult =<< addHodlInvoice merchantEnv req0
+        liftLndResult =<< waitForInvoice rh GRPC.Invoice_InvoiceStateOPEN q
+        let req1 = SendPaymentRequest {paymentRequest = pr, amt = MoneyAmount 1000}
+        void . spawnLink $ liftLndResult =<< sendPayment (envLndCustomer env) req1
+        --
+        -- TODO : uncomment when bug is fixed
+        -- https://github.com/lightningnetwork/lnd/issues/4544
+        --
+        liftIO $ delay 3000000
+        --liftLndResult =<< waitForInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
+        res <- settleInvoice merchantEnv r
+        liftLndResult =<< waitForInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
         return res
       res `shouldSatisfy` isRight
     describe "listChannelAndClose" $ it "succeeds" $ \env -> do

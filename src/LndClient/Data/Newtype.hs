@@ -160,6 +160,9 @@ instance ToGrpc RHash ByteString where
 instance ToGrpc RHash GRPC.CancelInvoiceMsg where
   toGrpc x = GRPC.CancelInvoiceMsg <$> toGrpc x
 
+instance ToGrpc RPreimage GRPC.SettleInvoiceMsg where
+  toGrpc x = GRPC.SettleInvoiceMsg <$> toGrpc x
+
 instance ToGrpc RPreimage ByteString where
   toGrpc = Right . coerce
 
