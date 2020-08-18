@@ -27,6 +27,10 @@ module LndClient.TestApp
   )
 where
 
+--import LndClient.Data.AddInvoice as AddInvoice
+--  ( AddInvoiceRequest (..),
+--    AddInvoiceResponse (..),
+--  )
 import LndClient.Data.ChannelPoint as ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
@@ -36,6 +40,7 @@ import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..))
+--import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Import
@@ -185,6 +190,11 @@ newEnv = do
           (pure $ envMerchantIQ env)
           merchantEnv
           (SubscribeInvoicesRequest Nothing Nothing)
+  --
+  -- TODO : this is related to possible LND bug
+  -- should be removed later
+  --
+  --(SubscribeInvoicesRequest (Just $ AddIndex 1) (Just $ SettleIndex 1))
   delay 3000000
   return env
 
@@ -284,6 +294,26 @@ setupEnv env = runApp env $ do
     liftIO $ mine6_ env
     liftLndResult =<< waitForActiveChannel cp cq
   where
+    --
+    -- TODO : this invoice is added and settled to
+    -- raise invoice index to 1 to be able to receive
+    -- notifications about all next invoices
+    -- remove when LND bug will be fixed
+    -- https://github.com/lightningnetwork/lnd/issues/2469
+    --
+    --let addInvoiceRequest =
+    --      AddInvoiceRequest
+    --        { memo = Just "HELLO",
+    --          value = MoneyAmount 1000,
+    --          expiry = Just $ Seconds 1000
+    --        }
+    --invoice <- liftLndResult =<< addInvoice merchantEnv addInvoiceRequest
+    --let sendPaymentRequest =
+    --      SendPaymentRequest
+    --        { paymentRequest = AddInvoice.paymentRequest invoice,
+    --          amt = MoneyAmount 1000
+    --        }
+    --void $ liftLndResult =<< sendPayment customerEnv sendPaymentRequest
     merchantEnv = envLndMerchant env
     customerEnv = envLndCustomer env
 
