@@ -13,7 +13,11 @@ self: super:
     doJailbreak = self.haskell.lib.doJailbreak;
   in
     {
-      lnd = pkgs20.lnd;
+      lnd = (import ./lnd.nix {
+        buildGoModule = pkgs20.buildGoModule;
+        fetchFromGitHub = pkgs20.fetchFromGitHub;
+        lib = pkgs20.lib;
+      });
       haskellPackages = super.haskell.packages.ghc865.extend(
         self': super': {
           parameterized = dontCheck super'.parameterized;
