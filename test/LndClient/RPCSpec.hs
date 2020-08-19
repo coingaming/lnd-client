@@ -45,7 +45,6 @@ spec =
       -- TODO : investigate why this is not working sometimes
       --
       --it "addNormalInvoice" $ \env -> do
-      --  setupEnv env
       --  res <-
       --    runApp env $ do
       --      i <- liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
@@ -56,10 +55,11 @@ spec =
         setupEnv env
         res <-
           runApp env $ do
-            i <- liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
+            let air = AddInvoiceRequest (MoneyAmount 1000) Nothing Nothing
+            i <- liftLndResult =<< addInvoice (envLndMerchant env) air
             let rh = AddInvoice.rHash i
             let pr = AddInvoice.paymentRequest i
-            let spr = SendPaymentRequest {paymentRequest = pr, amt = MoneyAmount 1000}
+            let spr = SendPaymentRequest pr $ MoneyAmount 1000
             q <- atomically . dupTChan $ envMerchantIQ env
             --
             -- TODO : investigate why this is not working sometimes
@@ -89,7 +89,7 @@ spec =
       res <- runApp env $ do
         pr <- liftLndResult =<< addHodlInvoice merchantEnv hipr
         liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
-        let spr = SendPaymentRequest {paymentRequest = pr, amt = MoneyAmount 1000}
+        let spr = SendPaymentRequest pr $ MoneyAmount 1000
         void . spawnLink $ liftLndResult =<< sendPayment (envLndCustomer env) spr
         --
         -- TODO : uncomment when bug is fixed
@@ -111,7 +111,7 @@ spec =
       res <- runApp env $ do
         pr <- liftLndResult =<< addHodlInvoice merchantEnv hipr
         liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
-        let spr = SendPaymentRequest {paymentRequest = pr, amt = MoneyAmount 1000}
+        let spr = SendPaymentRequest pr $ MoneyAmount 1000
         void . spawnLink $ liftLndResult =<< sendPayment (envLndCustomer env) spr
         --
         -- TODO : uncomment when bug is fixed
