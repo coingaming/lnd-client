@@ -92,13 +92,13 @@ spec =
         let spr = SendPaymentRequest pr $ MoneyAmount 1000
         void . spawnLink $ liftLndResult =<< sendPayment (envLndCustomer env) spr
         --
-        -- TODO : uncomment when bug is fixed
+        -- NOTE : this is working only in coingaming LND fork
+        -- which is fixing this bug
         -- https://github.com/lightningnetwork/lnd/issues/4544
         --
-        liftIO $ delay 3000000
-        --liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
+        liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
         res <- cancelInvoice merchantEnv rh
-        --liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateCANCELED q
+        liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateCANCELED q
         return res
       res `shouldSatisfy` isRight
     describe "settleInvoice" $ it "succeeds" $ \env -> do
@@ -114,11 +114,11 @@ spec =
         let spr = SendPaymentRequest pr $ MoneyAmount 1000
         void . spawnLink $ liftLndResult =<< sendPayment (envLndCustomer env) spr
         --
-        -- TODO : uncomment when bug is fixed
+        -- NOTE : this is working only in coingaming LND fork
+        -- which is fixing this bug
         -- https://github.com/lightningnetwork/lnd/issues/4544
         --
-        liftIO $ delay 3000000
-        --liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
+        liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
         res <- settleInvoice merchantEnv r
         liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
         return res

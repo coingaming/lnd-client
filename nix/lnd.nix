@@ -4,16 +4,16 @@
 
 buildGoModule rec {
   pname = "lnd";
-  version = "0.10.3-beta";
+  version = "9763cfbd038668dbca5b1d97f8e2000d7e6e06b5";
 
   src = fetchFromGitHub {
-    owner = "lightningnetwork";
+    owner = "coingaming";
     repo = "lnd";
-    rev = "v${version}";
-    sha256 = "129vi8z2sk4hagk7axa675nba6sbj9km88zlq8a1g8di7v2k9z6a";
+    rev = "${version}";
+    sha256 = "0klhri2p72m01p2zq4mn59fdl2m05knnix4w876wcr5pajblss66";
   };
 
-  vendorSha256 = "0a4bk2qry0isnrvl0adwikqn6imxwzlaq5j3nglb5rmwwq2cdz0r";
+  vendorSha256 = "090b9sxvdwh787w0rhrcbky9pbx64qgqx1pvk9ysk3886nxdhf7k";
 
   doCheck = false;
 
@@ -24,7 +24,7 @@ buildGoModule rec {
       RawTags = lib.concatStringsSep "," tags;
       GoVersion = "$(go version | egrep -o 'go[0-9]+[.][^ ]*')";
     };
-    buildVarsFlags = lib.concatStringsSep " " (lib.mapAttrsToList (k: v: "-X github.com/lightningnetwork/lnd/build.${k}=${v}") buildVars);
+    buildVarsFlags = lib.concatStringsSep " " (lib.mapAttrsToList (k: v: "-X github.com/coingaming/lnd/build.${k}=${v}") buildVars);
   in
   lib.optionalString (tags != []) ''
     buildFlagsArray+=("-tags=${lib.concatStringsSep " " tags}")
@@ -33,7 +33,7 @@ buildGoModule rec {
 
   meta = with lib; {
     description = "Lightning Network Daemon";
-    homepage = "https://github.com/lightningnetwork/lnd";
+    homepage = "https://github.com/coingaming/lnd";
     license = lib.licenses.mit;
     maintainers = with maintainers; [ cypherpunk2140 ];
   };
