@@ -2,13 +2,10 @@ let nixpkgs = import ./nixpkgs.nix;
 in
 {
   pkgs ? null,
-  hexOrganization ? null, # organization account name on hex.pm
-  hexApiKey ? null,       # plain text account API key on hex.pm
-  robotSshKey ? null      # base64-encoded private id_rsa (for private git)
+  vimBackground ? "light",
+  vimColorScheme ? "PaperColor"
 }:
-let overlays = [
-      (import ./overlay.nix {inherit hexOrganization hexApiKey robotSshKey;})
-    ];
+let overlays = [(import ./overlay.nix)];
     pkgs' = if pkgs == null
             then import nixpkgs {inherit overlays;}
             else pkgs;
@@ -17,8 +14,8 @@ with pkgs';
 
 let haskell-ide = import (
       fetchTarball "https://github.com/tim2CF/ultimate-haskell-ide/tarball/01f50964156a60957428ce103e238b093861328e"
-    ) {};
-    proto3-suite-src = fetchTarball "https://github.com/awakesecurity/proto3-suite/tarball/ca03aa9d846d88b0762e40f9588b4927de22f798";
+    ) {inherit vimBackground vimColorScheme;};
+    proto3-suite-src = fetchTarball "https://github.com/coingaming/proto3-suite/tarball/45950a3860cbcb3f3177e9725dbdf460d6da9d45";
     proto3-suite = import (proto3-suite-src + "/release.nix") {};
 in
 
@@ -46,9 +43,6 @@ stdenv.mkDerivation {
   GIT_SSL_CAINFO="${cacert}/etc/ssl/certs/ca-bundle.crt";
   NIX_SSL_CERT_FILE="${cacert}/etc/ssl/certs/ca-bundle.crt";
   NIX_PATH="/nix/var/nix/profiles/per-user/root/channels";
-  HEX_ORGANIZATION=hexOrganization;
-  HEX_API_KEY=hexApiKey;
-  ROBOT_SSH_KEY=robotSshKey;
   shellHook = ''
     source ./nix/export-test-envs.sh
     sh ./nix/reset-test-data.sh

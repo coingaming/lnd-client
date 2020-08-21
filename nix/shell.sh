@@ -1,6 +1,8 @@
 #!/bin/sh
 
 export IP=$(ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
+export VIM_BACKGROUND="${VIM_BACKGROUND:-light}"
+export VIM_COLOR_SCHEME="${VIM_COLOR_SCHEME:-PaperColor}"
 echo "host is $IP"
 echo "starting nixos container..."
 # enable for GUI apps
@@ -16,9 +18,8 @@ docker run -it --rm \
   ./nix/bootstrap.sh &&
   nix-shell ./nix/shell.nix --pure \
    -I ssh-config-file=/tmp/.ssh/config \
-   --argstr hexOrganization $HEX_ORGANIZATION \
-   --argstr hexApiKey $HEX_API_KEY \
-   --argstr robotSshKey $ROBOT_SSH_KEY \
+   --argstr vimBackground $VIM_BACKGROUND \
+   --argstr vimColorScheme $VIM_COLOR_SCHEME \
    --option sandbox false \
    -v --show-trace
   "

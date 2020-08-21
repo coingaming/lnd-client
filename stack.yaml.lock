@@ -86,7 +86,7 @@ packages:
     url: https://github.com/coingaming/gRPC-haskell/archive/1e39371d308e6f0ff155dc988f7b6adf1519d7d8.tar.gz
 - completed:
     size: 91575
-    url: https://github.com/awakesecurity/proto3-suite/archive/45950a3860cbcb3f3177e9725dbdf460d6da9d45.tar.gz
+    url: https://github.com/coingaming/proto3-suite/archive/45950a3860cbcb3f3177e9725dbdf460d6da9d45.tar.gz
     name: proto3-suite
     version: 0.4.0.2
     sha256: 5e17daa85b6882935a9a500af5021dcc461d76f53c81b7d62838ee829c260f77
@@ -94,10 +94,10 @@ packages:
       size: 7180
       sha256: 5cfd7cb7c20e9ff29a113b66e35042eb955a507ddb33ef909e9a7e67ab70307b
   original:
-    url: https://github.com/awakesecurity/proto3-suite/archive/45950a3860cbcb3f3177e9725dbdf460d6da9d45.tar.gz
+    url: https://github.com/coingaming/proto3-suite/archive/45950a3860cbcb3f3177e9725dbdf460d6da9d45.tar.gz
 - completed:
     size: 47444
-    url: https://github.com/awakesecurity/proto3-wire/archive/5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53.tar.gz
+    url: https://github.com/coingaming/proto3-wire/archive/5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53.tar.gz
     name: proto3-wire
     version: 1.2.0
     sha256: 54ecc8d2b56e407eaa5d9e953234a0f1f886b28b0ac287c155ed9326df65b118
@@ -105,7 +105,7 @@ packages:
       size: 1759
       sha256: 2d3e47cf4d109a5184c8a5919f12e692fc43197b3cd011aabe8e11dacb6f9946
   original:
-    url: https://github.com/awakesecurity/proto3-wire/archive/5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53.tar.gz
+    url: https://github.com/coingaming/proto3-wire/archive/5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53.tar.gz
 snapshots:
 - completed:
     size: 524996

@@ -1,11 +1,6 @@
 let nixpkgs20 = import ./nixpkgs20.nix;
     pkgs20 = import nixpkgs20 {};
 in
-{
-  hexOrganization,
-  hexApiKey,
-  robotSshKey
-}:
 self: super:
   let
     callPackage = self.lib.callPackageWith self.haskellPackages;

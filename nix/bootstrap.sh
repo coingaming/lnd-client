@@ -40,16 +40,5 @@ lazy_install ssh-keyscan openssh
 lazy_install cachix cachix "nix-env -iAP cachix -f https://cachix.org/api/v1/install"
 cachix use all-hies
 
-mkdir -p /tmp/.ssh/
-mkdir -p $HOME/.ssh/
-echo "$ROBOT_SSH_KEY" | base64 -d > /tmp/.ssh/id_rsa.robot
-chmod 600 /tmp/.ssh/id_rsa.robot
-eval `ssh-agent -s`
-ssh-add /tmp/.ssh/id_rsa.robot
-echo -e "Host *\n IdentityFile /tmp/.ssh/id_rsa.robot\n IdentitiesOnly yes\n UserKnownHostsFile /tmp/.ssh/known_hosts\n StrictHostKeyChecking no" > /tmp/.ssh/config
-ssh-keyscan github.com >> /tmp/.ssh/known_hosts
-cp /tmp/.ssh/* $HOME/.ssh/
-echo -e "Host *\n IdentityFile $HOME/.ssh/id_rsa.robot\n IdentitiesOnly yes\n UserKnownHostsFile $HOME/.ssh/known_hosts\n StrictHostKeyChecking no" > $HOME/.ssh/config
-chown -R nixbld1 /tmp/.ssh/
 git submodule update --init --recursive --depth 1
 ./nix/upgrade-pkg.sh

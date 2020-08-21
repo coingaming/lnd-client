@@ -1,12 +1,5 @@
-{
-  pkgs ? null,
-  hexOrganization ? null, # organization account name on hex.pm
-  hexApiKey ? null,       # plain text account API key on hex.pm
-  robotSshKey ? null      # base64-encoded private id_rsa (for private git)
-}:
-let overlays = [
-      (import ./overlay.nix {inherit hexOrganization hexApiKey robotSshKey;})
-    ];
+{pkgs ? null}:
+let overlays = [(import ./overlay.nix)];
     localPkgs = import ./nixpkgs.nix;
     nixpkgs = if pkgs == null then import localPkgs {inherit overlays;} else pkgs;
 in

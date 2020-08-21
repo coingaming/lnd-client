@@ -56,9 +56,9 @@ extra-deps:
       - core
   - github: coingaming/gRPC-haskell
     commit: 1e39371d308e6f0ff155dc988f7b6adf1519d7d8
-  - github: awakesecurity/proto3-suite
+  - github: coingaming/proto3-suite
     commit: 45950a3860cbcb3f3177e9725dbdf460d6da9d45
-  - github: awakesecurity/proto3-wire
+  - github: coingaming/proto3-wire
     commit: 5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53
 
 # Override default flag values for local packages and extra-deps
