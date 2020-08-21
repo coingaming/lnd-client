@@ -44,13 +44,13 @@ spec =
       --
       -- TODO : investigate why this is not working sometimes
       --
-      --it "addNormalInvoice" $ \env -> do
-      --  res <-
-      --    runApp env $ do
-      --      i <- liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
-      --      q <- atomically . dupTChan $ envMerchantIQ env
-      --      receiveInvoice (AddInvoice.rHash i) GRPC.Invoice_InvoiceStateOPEN q
-      --  res `shouldSatisfy` isRight
+      it "addNormalInvoice" $ \env -> do
+        res <-
+          runApp env $ do
+            i <- liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
+            q <- atomically . dupTChan $ envMerchantIQ env
+            receiveInvoice (AddInvoice.rHash i) GRPC.Invoice_InvoiceStateOPEN q
+        res `shouldSatisfy` isRight
       it "settleNormalInvoice" $ \env -> do
         setupEnv env
         res <-
@@ -64,7 +64,7 @@ spec =
             --
             -- TODO : investigate why this is not working sometimes
             --
-            --liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
+            liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
             void $ liftLndResult =<< sendPayment (envLndCustomer env) spr
             receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
         res `shouldSatisfy` isRight
