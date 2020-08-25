@@ -39,7 +39,6 @@ import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
-import LndClient.Data.GetInfo
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..))
@@ -52,8 +51,11 @@ import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Import
 import LndClient.RPC.Generic
+import LndClient.RPC.TH
 import qualified LndGrpc as GRPC
 import qualified WalletUnlockerGrpc as GRPC
+
+$(mkRpc RpcKatip)
 
 waitForGrpc ::
   (KatipContext m) =>
@@ -73,26 +75,6 @@ waitForGrpc env0 = this 30 $ env0 {envLndLogStrategy = logMaskErrors}
           let msg = "waitForGrpc attempt limit exceeded"
           $(logTM) ErrorS $ logStr msg
           return . Left $ LndError msg
-
-initWallet ::
-  (KatipContext m) =>
-  LndEnv ->
-  m (Either LndError ())
-initWallet env = do
-  res <-
-    grpcSyncKatip
-      InitWallet
-      GRPC.walletUnlockerClient
-      GRPC.walletUnlockerInitWallet
-      env
-      InitWalletRequest
-        { walletPassword = coerce $ envLndWalletPassword env,
-          cipherSeedMnemonic = coerce $ envLndCipherSeedMnemonic env,
-          aezeedPassphrase = coerce $ envLndAezeedPassphrase env
-        }
-  if isRight res
-    then waitForGrpc env
-    else return res
 
 unlockWallet ::
   (KatipContext m) =>
@@ -333,18 +315,6 @@ lazyConnectPeer env cpr = do
         else connectPeer env cpr
   where
     pk = pubkey $ addr cpr
-
-getInfo ::
-  (KatipContext m) =>
-  LndEnv ->
-  m (Either LndError GetInfoResponse)
-getInfo env =
-  grpcSyncKatip
-    GetInfo
-    GRPC.lightningClient
-    GRPC.lightningGetInfo
-    env
-    GRPC.GetInfoRequest
 
 sendPayment ::
   (KatipContext m) =>

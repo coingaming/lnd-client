@@ -5,9 +5,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module LndClient.RPC.Generic
-  ( grpcSync,
+  ( grpcSyncSilent,
     grpcSyncKatip,
-    grpcSubscribe,
+    grpcSubscribeSilent,
     grpcSubscribeKatip,
     RpcName (..),
   )
@@ -50,7 +50,7 @@ grpcMeta env =
 showElapsedSeconds :: Timespan -> Text
 showElapsedSeconds = fromStrict . encodeTimespan SubsecondPrecisionAuto
 
-grpcSync ::
+grpcSyncSilent ::
   ( MonadIO m,
     ToGrpc a gA,
     FromGrpc b gB
@@ -63,7 +63,7 @@ grpcSync ::
   LndEnv ->
   a ->
   m (Either LndError b)
-grpcSync service method env req =
+grpcSyncSilent service method env req =
   liftIO $ case toGrpc req of
     Left e -> return $ Left e
     Right grpcReq ->
@@ -105,7 +105,7 @@ grpcSyncKatip ::
 grpcSyncKatip rpcName service method env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
     $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
-    (ts, res) <- liftIO $ stopwatch $ grpcSync service method env req
+    (ts, res) <- liftIO $ stopwatch $ grpcSyncSilent service method env req
     --
     -- TODO : better logs?
     --
@@ -118,7 +118,7 @@ grpcSyncKatip rpcName service method env req =
           $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
       return res
 
-grpcSubscribe ::
+grpcSubscribeSilent ::
   ( MonadIO m,
     ToGrpc a gA,
     FromGrpc b gB
@@ -131,7 +131,7 @@ grpcSubscribe ::
   LndEnv ->
   a ->
   m (Either LndError ())
-grpcSubscribe method handler env req =
+grpcSubscribeSilent method handler env req =
   liftIO $ case toGrpc req of
     Left e -> return $ Left e
     Right grpcReq ->
@@ -176,7 +176,7 @@ grpcSubscribeKatip ::
 grpcSubscribeKatip rpcName method handler env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
     $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
-    (ts, res) <- liftIO $ stopwatch $ grpcSubscribe method handler env req
+    (ts, res) <- liftIO $ stopwatch $ grpcSubscribeSilent method handler env req
     --
     -- TODO : better logs?
     --
