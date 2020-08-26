@@ -1,11 +1,4 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TupleSections #-}
 
 module LndClient.RPC
   ( waitForGrpc,
@@ -34,8 +27,6 @@ module LndClient.RPC
   )
 where
 
-import LndClient.Data.InitWallet (InitWalletRequest (..))
-import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Import
 import LndClient.RPC.Generic
 import LndClient.RPC.TH
@@ -46,12 +37,15 @@ waitForGrpc ::
   (KatipContext m) =>
   LndEnv ->
   m (Either LndError ())
-waitForGrpc env0 = this 30 $ env0 {envLndLogStrategy = logMaskErrors}
+waitForGrpc env0 =
+  katipAddContext (sl "RpcName" WaitForGrpc)
+    $ this 30
+    $ env0 {envLndLogStrategy = logMaskErrors}
   where
     this (x :: Int) env =
       if x > 0
         then do
-          $(logTM) InfoS "Waiting for GRPC ..."
+          $(logTM) InfoS "Waiting for GRPC..."
           res <- getInfo env
           if isRight res
             then return $ Right ()
@@ -86,9 +80,9 @@ lazyInitWallet env =
     $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
     unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = logMaskErrors}
     if isRight unlockRes
-      then return unlockRes
-      else do
-        initRes <- initWallet env
-        when (isLeft initRes) $
-          $(logTM) ErrorS "Wallet initialization fiasco"
-        return initRes
+      then do
+        $(logTM)
+          (newSeverity env InfoS Nothing Nothing)
+          "Wallet is already initialized, doing nothing"
+        return unlockRes
+      else initWallet env

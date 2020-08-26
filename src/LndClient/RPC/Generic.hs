@@ -39,6 +39,7 @@ data RpcName
   | ConnectPeer
   | GetInfo
   | SendPayment
+  | WaitForGrpc
   deriving (Generic)
 
 instance ToJSON RpcName
@@ -55,6 +56,7 @@ grpcSyncSilent ::
     ToGrpc a gA,
     FromGrpc b gB
   ) =>
+  RpcName ->
   (Client -> IO client) ->
   ( client ->
     ClientRequest 'Normal gA response2 ->
@@ -63,7 +65,7 @@ grpcSyncSilent ::
   LndEnv ->
   a ->
   m (Either LndError b)
-grpcSyncSilent service method env req =
+grpcSyncSilent _ service method env req =
   liftIO $ case toGrpc req of
     Left e -> return $ Left e
     Right grpcReq ->
@@ -105,7 +107,9 @@ grpcSyncKatip ::
 grpcSyncKatip rpcName service method env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
     $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
-    (ts, res) <- liftIO $ stopwatch $ grpcSyncSilent service method env req
+    (ts, res) <-
+      liftIO $ stopwatch $
+        grpcSyncSilent rpcName service method env req
     --
     -- TODO : better logs?
     --
@@ -123,6 +127,7 @@ grpcSubscribeSilent ::
     ToGrpc a gA,
     FromGrpc b gB
   ) =>
+  RpcName ->
   ( GRPC.Lightning ClientRequest ClientResult ->
     ClientRequest 'ServerStreaming gA gB ->
     IO (ClientResult streamType streamResult)
@@ -131,7 +136,7 @@ grpcSubscribeSilent ::
   LndEnv ->
   a ->
   m (Either LndError ())
-grpcSubscribeSilent method handler env req =
+grpcSubscribeSilent _ method handler env req =
   liftIO $ case toGrpc req of
     Left e -> return $ Left e
     Right grpcReq ->
@@ -176,7 +181,9 @@ grpcSubscribeKatip ::
 grpcSubscribeKatip rpcName method handler env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
     $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
-    (ts, res) <- liftIO $ stopwatch $ grpcSubscribeSilent method handler env req
+    (ts, res) <-
+      liftIO $ stopwatch $
+        grpcSubscribeSilent rpcName method handler env req
     --
     -- TODO : better logs?
     --
