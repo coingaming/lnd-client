@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module LndClient.RPC
+module LndClient.RPC.Katip
   ( waitForGrpc,
     unlockWallet,
     lazyUnlockWallet,

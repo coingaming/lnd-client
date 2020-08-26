@@ -21,7 +21,7 @@ import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..)
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Import
 import LndClient.QRCode
-import LndClient.RPC
+import LndClient.RPC.Katip
 import LndClient.TestApp
 import LndClient.TestOrphan ()
 import qualified LndGrpc as GRPC
