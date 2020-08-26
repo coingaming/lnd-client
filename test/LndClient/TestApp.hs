@@ -45,7 +45,7 @@ import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Import
-import LndClient.RPC
+import LndClient.RPC.Silent
 import LndClient.TestOrphan ()
 import qualified LndGrpc as GRPC
 import Network.Bitcoin as BTC (Client, getClient)
