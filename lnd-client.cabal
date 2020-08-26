@@ -1,0 +1,153 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 70a05eec03ad78562f4dfb6fbb9e8fdcf62f1d94a8cebaa0104d48c4035bcd55
+
+name:           lnd-client
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/lnd-client#readme>
+homepage:       https://github.com/githubuser/lnd-client#readme
+bug-reports:    https://github.com/githubuser/lnd-client/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2020 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/lnd-client
+
+library
+  exposed-modules:
+      InvoiceGrpc
+      LndClient
+      LndClient.Class
+      LndClient.Data.AddHodlInvoice
+      LndClient.Data.AddInvoice
+      LndClient.Data.ChannelPoint
+      LndClient.Data.CloseChannel
+      LndClient.Data.GetInfo
+      LndClient.Data.InitWallet
+      LndClient.Data.Invoice
+      LndClient.Data.ListChannels
+      LndClient.Data.LndEnv
+      LndClient.Data.NewAddress
+      LndClient.Data.Newtype
+      LndClient.Data.OpenChannel
+      LndClient.Data.Peer
+      LndClient.Data.SendPayment
+      LndClient.Data.SubscribeChannelEvents
+      LndClient.Data.SubscribeInvoices
+      LndClient.Data.Type
+      LndClient.Data.UnlockWallet
+      LndClient.Import
+      LndClient.Import.External
+      LndClient.QRCode
+      LndClient.RPC.Generic
+      LndClient.RPC.Katip
+      LndClient.RPC.Silent
+      LndClient.RPC.TH
+      LndClient.Util
+      LndGrpc
+      LndGrpc.Orphan
+      WalletUnlockerGrpc
+  other-modules:
+      Paths_lnd_client
+  hs-source-dirs:
+      src
+  default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables
+  ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
+  build-depends:
+      JuicyPixels
+    , aeson
+    , async
+    , base >=4.7 && <5
+    , base16-bytestring
+    , base64-bytestring
+    , bytestring
+    , chronos
+    , containers
+    , cryptohash-sha256
+    , cryptonite
+    , deepseq
+    , envparse
+    , extra
+    , grpc-haskell
+    , grpc-haskell-core
+    , hspec
+    , katip
+    , network-bitcoin
+    , pem
+    , persistent
+    , proto3-suite
+    , proto3-wire
+    , qrcode-core
+    , qrcode-juicypixels
+    , scientific
+    , stm
+    , template-haskell
+    , text
+    , unbounded-delays
+    , universum
+    , unliftio
+    , vector
+    , x509
+  default-language: Haskell2010
+
+test-suite lnd-client-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      LndClient.RPCSpec
+      LndClient.TestApp
+      LndClient.TestOrphan
+      Paths_lnd_client
+  hs-source-dirs:
+      test
+  default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables
+  ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      JuicyPixels
+    , aeson
+    , async
+    , base >=4.7 && <5
+    , base16-bytestring
+    , base64-bytestring
+    , bytestring
+    , chronos
+    , containers
+    , cryptohash-sha256
+    , cryptonite
+    , deepseq
+    , envparse
+    , extra
+    , grpc-haskell
+    , grpc-haskell-core
+    , hspec
+    , katip
+    , lnd-client
+    , network-bitcoin
+    , pem
+    , persistent
+    , proto3-suite
+    , proto3-wire
+    , qrcode-core
+    , qrcode-juicypixels
+    , scientific
+    , stm
+    , template-haskell
+    , text
+    , unbounded-delays
+    , universum
+    , unliftio
+    , vector
+    , x509
+  default-language: Haskell2010

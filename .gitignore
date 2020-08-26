@@ -1,5 +1,4 @@
 .stack-work/
-lnd-client.cabal
 *~
 postgres/
 postgres_data/
