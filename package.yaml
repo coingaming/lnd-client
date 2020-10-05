@@ -58,12 +58,14 @@ dependencies:
 # crypto
 - cryptonite
 - cryptohash-sha256
+- x509
+- asn1-encoding         >= 0.9.6 && < 0.10
+- asn1-types            >= 0.3 && < 0.4
+- pem                   >= 0.2.4 && < 0.3
 # bitcoin
 - network-bitcoin
 # general
 - unliftio
-- x509
-- pem
 - extra
 - scientific
 - template-haskell

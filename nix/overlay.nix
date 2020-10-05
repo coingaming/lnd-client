@@ -37,6 +37,10 @@ self: super:
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
           };
+          asn1-encoding = callPackage ./asn1-encoding.nix {
+            stdenv = self.stdenv;
+            fetchgit = self.fetchgit;
+          };
         }
       );
     }
