@@ -76,7 +76,7 @@ newtype Seconds = Seconds Word64
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, Show)
 
 newtype GrpcTimeoutSeconds = GrpcTimeoutSeconds Int
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, FromJSON)
 
 instance ToGrpc NodePubKey ByteString where
   toGrpc = Right . coerce
