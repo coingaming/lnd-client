@@ -14,6 +14,7 @@ import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..
 import LndClient.Data.ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
 import LndClient.Data.GetInfo
+import LndClient.Data.HtlcEvent (HtlcEvent (..))
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..))
@@ -27,6 +28,7 @@ import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Import
 import LndClient.RPC.Generic
 import qualified LndGrpc as GRPC
+import qualified RouterGrpc as GRPC
 import qualified WalletUnlockerGrpc as GRPC
 
 data RpcKind = RpcSilent | RpcKatip
@@ -156,6 +158,7 @@ mkRpc k = do
     subscribeInvoices =
       $(grpcSubscribe)
         SubscribeInvoices
+        GRPC.lightningClient
         GRPC.lightningSubscribeInvoices
 
     subscribeInvoicesQ ::
@@ -176,6 +179,7 @@ mkRpc k = do
     subscribeChannelEvents handler env =
       $(grpcSubscribe)
         SubscribeChannelEvents
+        GRPC.lightningClient
         GRPC.lightningSubscribeChannelEvents
         handler
         env
@@ -199,6 +203,7 @@ mkRpc k = do
     openChannel =
       $(grpcSubscribe)
         OpenChannel
+        GRPC.lightningClient
         GRPC.lightningOpenChannel
 
     openChannelSync ::
@@ -232,6 +237,7 @@ mkRpc k = do
     closeChannel =
       $(grpcSubscribe)
         CloseChannel
+        GRPC.lightningClient
         GRPC.lightningCloseChannel
 
     listPeers ::
@@ -284,6 +290,20 @@ mkRpc k = do
         SendPayment
         GRPC.lightningClient
         GRPC.lightningSendPaymentSync
+
+    subscribeHtlcEvents ::
+      ($(tcc) m) =>
+      (HtlcEvent -> IO ()) ->
+      LndEnv ->
+      m (Either LndError ())
+    subscribeHtlcEvents handler env =
+      $(grpcSubscribe)
+        SubscribeHtlcEvents
+        GRPC.routerClient
+        GRPC.routerSubscribeHtlcEvents
+        handler
+        env
+        GRPC.SubscribeHtlcEventsRequest {}
     |]
   where
     tcc = case k of

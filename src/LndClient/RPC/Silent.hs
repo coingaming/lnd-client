@@ -24,6 +24,7 @@ module LndClient.RPC.Silent
     subscribeInvoicesQ,
     subscribeChannelEvents,
     subscribeChannelEventsQ,
+    subscribeHtlcEvents,
   )
 where
 

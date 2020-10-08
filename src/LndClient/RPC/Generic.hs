@@ -15,7 +15,6 @@ where
 
 import qualified Control.Exception as CE (catch, throw)
 import LndClient.Import
-import qualified LndGrpc as GRPC
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel
 
@@ -31,6 +30,7 @@ data RpcName
   | SettleInvoice
   | SubscribeInvoices
   | SubscribeChannelEvents
+  | SubscribeHtlcEvents
   | OpenChannelSync
   | OpenChannel
   | ListChannels
@@ -131,7 +131,8 @@ grpcSubscribeSilent ::
     FromGrpc b gB
   ) =>
   RpcName ->
-  ( GRPC.Lightning ClientRequest ClientResult ->
+  (Client -> IO client) ->
+  ( client ->
     ClientRequest 'ServerStreaming gA gB ->
     IO (ClientResult streamType streamResult)
   ) ->
@@ -139,12 +140,12 @@ grpcSubscribeSilent ::
   LndEnv ->
   a ->
   m (Either LndError ())
-grpcSubscribeSilent _ method handler env req =
+grpcSubscribeSilent _ service method handler env req =
   liftIO $ case toGrpc req of
     Left e -> return $ Left e
     Right grpcReq ->
       withGRPCClient (envLndGrpcConfig env) $ \client -> do
-        method' <- method <$> GRPC.lightningClient client
+        method' <- method <$> service client
         let greq =
               ClientReaderRequest
                 grpcReq
@@ -176,7 +177,8 @@ grpcSubscribeKatip ::
     FromGrpc b gB
   ) =>
   RpcName ->
-  ( GRPC.Lightning ClientRequest ClientResult ->
+  (Client -> IO client) ->
+  ( client ->
     ClientRequest 'ServerStreaming gA gB ->
     IO (ClientResult streamType streamResult)
   ) ->
@@ -184,12 +186,12 @@ grpcSubscribeKatip ::
   LndEnv ->
   a ->
   m (Either LndError ())
-grpcSubscribeKatip rpcName method handler env req =
+grpcSubscribeKatip rpcName service method handler env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
     $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
     (ts, res) <-
       liftIO $ stopwatch $
-        grpcSubscribeSilent rpcName method handler env req
+        grpcSubscribeSilent rpcName service method handler env req
     --
     -- TODO : better logs?
     --

@@ -24,6 +24,7 @@ module LndClient.RPC.Katip
     subscribeInvoicesQ,
     subscribeChannelEvents,
     subscribeChannelEventsQ,
+    subscribeHtlcEvents,
   )
 where
 
