@@ -27,6 +27,7 @@ import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Import
 import LndClient.RPC.Generic
 import qualified LndGrpc as GRPC
+import qualified RouterGrpc as GRPC
 import qualified WalletUnlockerGrpc as GRPC
 
 data RpcKind = RpcSilent | RpcKatip
@@ -284,6 +285,16 @@ mkRpc k = do
         SendPayment
         GRPC.lightningClient
         GRPC.lightningSendPaymentSync
+
+    subscribeHtlcEvents ::
+      ($(tcc) m) =>
+      (HtlcEvent -> IO ()) ->
+      LndEnv ->
+      m (Either LndError ())
+    subscribeHtlcEvents =
+      $(grpcSubscribe)
+        SubscribeHtlcEvent
+        GRPC.routerSubscribeHtlcEvents
     |]
   where
     tcc = case k of
