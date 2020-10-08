@@ -13,7 +13,7 @@ data HtlcEvent
         incomingHtlcId :: Word64,
         outgoingHtlcId :: Word64,
         timestampNs :: Word64,
-        eventType :: HtlcEvent_EventType
+        eventType :: Enumerated GRPC.HtlcEvent_EventType
       }
   deriving (Eq)
 

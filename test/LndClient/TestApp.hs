@@ -420,17 +420,3 @@ syncWallets = this 30
           let msg = "syncWallets attempt limit exceeded"
           $(logTM) ErrorS $ logStr msg
           return . Left $ LndError msg
-
-receiveInvoice ::
-  KatipContext m =>
-  RHash ->
-  GRPC.Invoice_InvoiceState ->
-  TChan Invoice ->
-  m (Either LndError ())
-receiveInvoice rh s q = do
-  mx <- readTChanTimeout (MicroSecondsDelay 30000000) q
-  $(logTM) InfoS $ logStr $ "Received Invoice: " <> (show mx :: Text)
-  case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
-    Just True -> return $ Right ()
-    Just False -> receiveInvoice rh s q
-    Nothing -> return . Left $ TChanTimeout "receiveInvoice"

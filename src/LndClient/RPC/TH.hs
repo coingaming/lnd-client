@@ -14,6 +14,7 @@ import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..
 import LndClient.Data.ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
 import LndClient.Data.GetInfo
+import LndClient.Data.HtlcEvent (HtlcEvent (..))
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..))
@@ -157,6 +158,7 @@ mkRpc k = do
     subscribeInvoices =
       $(grpcSubscribe)
         SubscribeInvoices
+        GRPC.lightningClient
         GRPC.lightningSubscribeInvoices
 
     subscribeInvoicesQ ::
@@ -177,6 +179,7 @@ mkRpc k = do
     subscribeChannelEvents handler env =
       $(grpcSubscribe)
         SubscribeChannelEvents
+        GRPC.lightningClient
         GRPC.lightningSubscribeChannelEvents
         handler
         env
@@ -200,6 +203,7 @@ mkRpc k = do
     openChannel =
       $(grpcSubscribe)
         OpenChannel
+        GRPC.lightningClient
         GRPC.lightningOpenChannel
 
     openChannelSync ::
@@ -233,6 +237,7 @@ mkRpc k = do
     closeChannel =
       $(grpcSubscribe)
         CloseChannel
+        GRPC.lightningClient
         GRPC.lightningCloseChannel
 
     listPeers ::
@@ -291,10 +296,14 @@ mkRpc k = do
       (HtlcEvent -> IO ()) ->
       LndEnv ->
       m (Either LndError ())
-    subscribeHtlcEvents =
+    subscribeHtlcEvents handler env =
       $(grpcSubscribe)
-        SubscribeHtlcEvent
+        SubscribeHtlcEvents
+        GRPC.routerClient
         GRPC.routerSubscribeHtlcEvents
+        handler
+        env
+        GRPC.SubscribeHtlcEventsRequest {}
     |]
   where
     tcc = case k of
