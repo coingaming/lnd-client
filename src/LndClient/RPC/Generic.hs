@@ -75,7 +75,10 @@ grpcSyncSilent _ service method env req =
           method' $
             ClientNormalRequest
               grpcReq
-              (unGrpcTimeout $ envLndSyncGrpcTimeout env)
+              ( unGrpcTimeout
+                  . fromMaybe defaultSyncGrpcTimeout
+                  $ envLndSyncGrpcTimeout env
+              )
               (grpcMeta env)
         return $ case rawGrpc of
           ClientNormalResponse grpcRes _ _ _ _ ->
@@ -145,7 +148,10 @@ grpcSubscribeSilent _ method handler env req =
         let greq =
               ClientReaderRequest
                 grpcReq
-                (unGrpcTimeout $ envLndAsyncGrpcTimeout env)
+                ( unGrpcTimeout
+                    . fromMaybe defaultAsyncGrpcTimeout
+                    $ envLndAsyncGrpcTimeout env
+                )
                 (grpcMeta env)
                 (\_ _ s -> genStreamHandler s handler)
         rawGrpc <- CE.catch (Right <$> method' greq) $ return . Left

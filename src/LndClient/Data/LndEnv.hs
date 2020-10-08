@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -19,7 +20,17 @@ module LndClient.Data.LndEnv
   )
 where
 
-import Data.Aeson as A ((.:), (.:?), Value (..), eitherDecodeStrict)
+import Data.Aeson as A
+  ( (.:?),
+    Result (..),
+    Value (..),
+    camelTo2,
+    defaultOptions,
+    eitherDecodeStrict,
+    fieldLabelModifier,
+    genericParseJSON,
+    withObject,
+  )
 import Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
 import Data.Scientific
@@ -59,7 +70,7 @@ data RawConfig
         rawConfigLndCipherSeedMnemonic :: CipherSeedMnemonic,
         rawConfigLndAezeedPassphrase :: Maybe AezeedPassphrase
       }
-  deriving (Eq)
+  deriving (Eq, Generic)
 
 data LndEnv
   = LndEnv
@@ -69,16 +80,12 @@ data LndEnv
         envLndLogStrategy :: LoggingStrategy,
         envLndCipherSeedMnemonic :: CipherSeedMnemonic,
         envLndAezeedPassphrase :: Maybe AezeedPassphrase,
-        envLndSyncGrpcTimeout :: GrpcTimeoutSeconds,
-        envLndAsyncGrpcTimeout :: GrpcTimeoutSeconds
+        envLndSyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
+        envLndAsyncGrpcTimeout :: Maybe GrpcTimeoutSeconds
       }
 
 instance ToGrpc LndWalletPassword ByteString where
   toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
-
---
--- TODO test FromJSON failed
---
 
 instance FromJSON LndTlsCert where
   parseJSON x =
@@ -106,19 +113,35 @@ instance FromJSON LndPort where
     where
       failure err = fail $ "Json port loading error: " <> " " <> show err
 
---
---TODO test fromJSON for not an Object input
---
 instance FromJSON RawConfig where
-  parseJSON (Object v) =
-    RawConfig <$> v .: "lnd_wallet_password"
-      <*> v .: "lnd_tls_cert"
-      <*> v .: "lnd_hex_macaroon"
-      <*> v .: "lnd_host"
-      <*> v .: "lnd_port"
-      <*> v .: "lnd_cipher_seed_mnemonic"
-      <*> v .:? "lnd_aezeed_passphrase"
-  parseJSON _ = mzero
+  parseJSON =
+    genericParseJSON
+      defaultOptions
+        { fieldLabelModifier = camelTo2 '_' . Ex.drop 9
+        }
+
+instance FromJSON LndEnv where
+  parseJSON arg =
+    case fromJSON arg :: Result RawConfig of
+      Error e -> fail e
+      Success rc -> do
+        let res =
+              newLndEnv
+                (rawConfigLndWalletPassword rc)
+                (rawConfigLndTlsCert rc)
+                (rawConfigLndHexMacaroon rc)
+                (rawConfigLndHost rc)
+                (rawConfigLndPort rc)
+                (rawConfigLndCipherSeedMnemonic rc)
+                (rawConfigLndAezeedPassphrase rc)
+        withObject
+          "LndEnv"
+          ( \obj ->
+              (\x y -> res {envLndSyncGrpcTimeout = x, envLndAsyncGrpcTimeout = y})
+                <$> obj .:? "lnd_sync_grpc_timeout_seconds"
+                <*> obj .:? "lnd_async_grpc_timeout_seconds"
+          )
+          arg
 
 createLndTlsCert :: ByteString -> Either LndError LndTlsCert
 createLndTlsCert bs = do
@@ -138,28 +161,15 @@ createLndPort p = do
   let maybePort :: Maybe Int = U.safeFromIntegral p
   maybeToRight (LndEnvError "Wrong port") $ LndPort <$> maybePort
 
-readRawConfig :: IO RawConfig
-readRawConfig =
+readLndEnv :: IO LndEnv
+readLndEnv =
   parse
-    (header "LndClient config")
+    (header "LndEnv")
     $ var (parser <=< nonempty) "LND_CLIENT_ENV_DATA" (keep <> help "")
   where
-    parser :: String -> Either Error RawConfig
+    parser :: String -> Either Error LndEnv
     parser x =
       first UnreadError $ eitherDecodeStrict $ C8.pack x
-
-readLndEnv :: IO LndEnv
-readLndEnv = do
-  rc <- readRawConfig
-  return $
-    newLndEnv
-      (rawConfigLndWalletPassword rc)
-      (rawConfigLndTlsCert rc)
-      (rawConfigLndHexMacaroon rc)
-      (rawConfigLndHost rc)
-      (rawConfigLndPort rc)
-      (rawConfigLndCipherSeedMnemonic rc)
-      (rawConfigLndAezeedPassphrase rc)
 
 newLndEnv ::
   LndWalletPassword ->
@@ -177,8 +187,8 @@ newLndEnv pwd cert mac host port seed aezeed =
       envLndLogStrategy = logDefault,
       envLndCipherSeedMnemonic = seed,
       envLndAezeedPassphrase = aezeed,
-      envLndSyncGrpcTimeout = defaultSyncGrpcTimeout,
-      envLndAsyncGrpcTimeout = defaultAsyncGrpcTimeout,
+      envLndSyncGrpcTimeout = Nothing,
+      envLndAsyncGrpcTimeout = Nothing,
       envLndGrpcConfig =
         ClientConfig
           { clientServerHost = Host $ encodeUtf8 (coerce host :: Text),
