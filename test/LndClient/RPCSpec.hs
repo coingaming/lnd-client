@@ -30,6 +30,11 @@ import Test.Hspec
 spec :: Spec
 spec =
   beforeAll newEnv $ afterAll deleteEnv $ do
+    describe "LndEnv" $ do
+      it "fromJSON" $ \_ -> do
+        x <- readLndEnv
+        envLndSyncGrpcTimeout x `shouldBe` newGrpcTimeout 59
+        envLndAsyncGrpcTimeout x `shouldBe` Nothing
     describe "addInvoice" $ do
       it "succeeds" $ \env -> do
         res <- runApp env $ addInvoice (envLndMerchant env) addInvoiceRequest

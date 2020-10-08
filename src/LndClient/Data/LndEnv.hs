@@ -87,10 +87,6 @@ data LndEnv
 instance ToGrpc LndWalletPassword ByteString where
   toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
 
---
--- TODO test FromJSON failed
---
-
 instance FromJSON LndTlsCert where
   parseJSON x =
     case x of
@@ -165,28 +161,15 @@ createLndPort p = do
   let maybePort :: Maybe Int = U.safeFromIntegral p
   maybeToRight (LndEnvError "Wrong port") $ LndPort <$> maybePort
 
-readRawConfig :: IO RawConfig
-readRawConfig =
+readLndEnv :: IO LndEnv
+readLndEnv =
   parse
-    (header "LndClient config")
+    (header "LndEnv")
     $ var (parser <=< nonempty) "LND_CLIENT_ENV_DATA" (keep <> help "")
   where
-    parser :: String -> Either Error RawConfig
+    parser :: String -> Either Error LndEnv
     parser x =
       first UnreadError $ eitherDecodeStrict $ C8.pack x
-
-readLndEnv :: IO LndEnv
-readLndEnv = do
-  rc <- readRawConfig
-  return $
-    newLndEnv
-      (rawConfigLndWalletPassword rc)
-      (rawConfigLndTlsCert rc)
-      (rawConfigLndHexMacaroon rc)
-      (rawConfigLndHost rc)
-      (rawConfigLndPort rc)
-      (rawConfigLndCipherSeedMnemonic rc)
-      (rawConfigLndAezeedPassphrase rc)
 
 newLndEnv ::
   LndWalletPassword ->

@@ -58,6 +58,7 @@ export LND_CLIENT_ENV_DATA='
                   "wealth",
                   "thunder"
                   ],
-    "lnd_aezeed_passphrase":"developer"
+    "lnd_aezeed_passphrase":"developer",
+    "lnd_sync_grpc_timeout_seconds":59
 }
 '
