@@ -25,6 +25,7 @@ module LndClient.RPC.Silent
     subscribeChannelEvents,
     subscribeChannelEventsQ,
     subscribeHtlcEvents,
+    decodePayReq,
   )
 where
 

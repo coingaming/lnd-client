@@ -40,6 +40,7 @@ data RpcName
   | GetInfo
   | SendPayment
   | WaitForGrpc
+  | DecodePayReq
   deriving (Generic)
 
 instance ToJSON RpcName
