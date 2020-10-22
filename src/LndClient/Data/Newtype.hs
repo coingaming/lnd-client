@@ -182,6 +182,9 @@ instance ToGrpc RPreimage ByteString where
 instance ToGrpc PaymentRequest GRPC.PayReqString where
   toGrpc = Right . GRPC.PayReqString . coerce
 
+instance ToGrpc RHash GRPC.PaymentHash where
+  toGrpc = Right . GRPC.PaymentHash mempty . coerce
+
 newRHash :: RPreimage -> RHash
 newRHash = RHash . SHA256.hash . coerce
 

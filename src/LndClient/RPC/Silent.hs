@@ -26,6 +26,7 @@ module LndClient.RPC.Silent
     subscribeChannelEventsQ,
     subscribeHtlcEvents,
     decodePayReq,
+    lookupInvoice,
   )
 where
 

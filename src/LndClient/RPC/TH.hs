@@ -316,6 +316,17 @@ mkRpc k = do
         DecodePayReq
         GRPC.lightningClient
         GRPC.lightningDecodePayReq
+
+    lookupInvoice ::
+      ($(tcc) m) =>
+      LndEnv ->
+      RHash ->
+      m (Either LndError Invoice)
+    lookupInvoice =
+      $(grpcSync)
+        LookupInvoice
+        GRPC.lightningClient
+        GRPC.lightningLookupInvoice
     |]
   where
     tcc = case k of

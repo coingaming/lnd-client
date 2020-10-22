@@ -26,6 +26,7 @@ module LndClient.RPC.Katip
     subscribeChannelEventsQ,
     subscribeHtlcEvents,
     decodePayReq,
+    lookupInvoice,
   )
 where
 
