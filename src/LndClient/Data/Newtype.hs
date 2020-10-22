@@ -37,6 +37,7 @@ import LndClient.Class
 import LndClient.Data.Type
 import LndClient.Import.External
 import LndClient.Util
+import qualified LndGrpc as GRPC
 import Prelude (Show (..))
 
 newtype NodePubKey = NodePubKey ByteString
@@ -139,6 +140,18 @@ instance FromGrpc PaymentRequest Text where
 instance FromGrpc PaymentRequest GRPC.AddHoldInvoiceResp where
   fromGrpc = fromGrpc . GRPC.addHoldInvoiceRespPaymentRequest
 
+instance FromGrpc Seconds Int64 where
+  fromGrpc =
+    (Seconds <$>)
+      . maybeToRight (FromGrpcError "Seconds overflow")
+      . safeFromIntegral
+
+instance FromGrpc RHash Text where
+  fromGrpc x =
+    case B16.decode $ encodeUtf8 x of
+      (y, "") -> Right $ RHash y
+      _ -> Left $ FromGrpcError "NON_HEX_RHASH"
+
 instance ToGrpc PaymentRequest Text where
   toGrpc x = Right (coerce x :: Text)
 
@@ -166,11 +179,17 @@ instance ToGrpc RPreimage GRPC.SettleInvoiceMsg where
 instance ToGrpc RPreimage ByteString where
   toGrpc = Right . coerce
 
+instance ToGrpc PaymentRequest GRPC.PayReqString where
+  toGrpc = Right . GRPC.PayReqString . coerce
+
+instance ToGrpc RHash GRPC.PaymentHash where
+  toGrpc = Right . GRPC.PaymentHash mempty . coerce
+
 newRHash :: RPreimage -> RHash
 newRHash = RHash . SHA256.hash . coerce
 
 newRPreimage :: MonadIO m => m RPreimage
-newRPreimage = liftIO (getRandomBytes 32) >>= return . RPreimage
+newRPreimage = RPreimage <$> liftIO (getRandomBytes 32)
 
 newGrpcTimeout :: Int -> Maybe GrpcTimeoutSeconds
 newGrpcTimeout x =

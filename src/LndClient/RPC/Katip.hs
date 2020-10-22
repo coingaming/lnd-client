@@ -25,9 +25,15 @@ module LndClient.RPC.Katip
     subscribeChannelEvents,
     subscribeChannelEventsQ,
     subscribeHtlcEvents,
+    decodePayReq,
+    lookupInvoice,
+    ensureHodlInvoice,
   )
 where
 
+import LndClient.Data.AddHodlInvoice as AddHodlInvoice (AddHodlInvoiceRequest (..))
+import LndClient.Data.AddInvoice as AddInvoice (AddInvoiceResponse (..))
+import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Import
 import LndClient.RPC.Generic
 import LndClient.RPC.TH
@@ -87,3 +93,24 @@ lazyInitWallet env =
           "Wallet is already initialized, doing nothing"
         return unlockRes
       else initWallet env
+
+ensureHodlInvoice ::
+  (KatipContext m) =>
+  LndEnv ->
+  AddHodlInvoiceRequest ->
+  m (Either LndError AddInvoiceResponse)
+ensureHodlInvoice env req =
+  katipAddContext (sl "RpcName" EnsureHodlInvoice) $ do
+    $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
+    let rh = AddHodlInvoice.hash req
+    _ <- addHodlInvoice (env {envLndLogStrategy = logMaskErrors}) req
+    res <- lookupInvoice env rh
+    return $ case res of
+      Left x -> Left x
+      Right x ->
+        Right $
+          AddInvoice.AddInvoiceResponse
+            { AddInvoice.rHash = rh,
+              AddInvoice.paymentRequest = Invoice.paymentRequest x,
+              AddInvoice.addIndex = Invoice.addIndex x
+            }

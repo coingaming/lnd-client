@@ -11,13 +11,15 @@ module LndClient.RPCSpec
   )
 where
 
-import LndClient.Data.AddHodlInvoice as Invoice (AddHodlInvoiceRequest (..))
+import LndClient.Data.AddHodlInvoice as HodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
+import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
+import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Import
 import LndClient.QRCode
@@ -35,6 +37,28 @@ spec =
         x <- readLndEnv
         envLndSyncGrpcTimeout x `shouldBe` newGrpcTimeout 59
         envLndAsyncGrpcTimeout x `shouldBe` Nothing
+    describe "decodePayReq" $ do
+      it "succeeds" $ \env -> do
+        let lnd = envLndMerchant env
+        (x0, x1) <- runApp env $ do
+          x0 <- liftLndResult =<< addInvoice lnd addInvoiceRequest
+          x1 <- liftLndResult =<< decodePayReq lnd (AddInvoice.paymentRequest x0)
+          return (x0, x1)
+        PayReq.paymentHash x1 `shouldBe` AddInvoice.rHash x0
+        PayReq.numSatoshis x1 `shouldBe` AddInvoice.value addInvoiceRequest
+        Just (PayReq.expiry x1) `shouldBe` AddInvoice.expiry addInvoiceRequest
+    describe "lookupInvoice" $ do
+      it "succeeds" $ \env -> do
+        let lnd = envLndMerchant env
+        (x0, x1) <- runApp env $ do
+          x0 <- liftLndResult =<< addInvoice lnd addInvoiceRequest
+          x1 <- liftLndResult =<< lookupInvoice lnd (AddInvoice.rHash x0)
+          return (x0, x1)
+        Invoice.rHash x1 `shouldBe` AddInvoice.rHash x0
+        Invoice.paymentRequest x1 `shouldBe` AddInvoice.paymentRequest x0
+        Invoice.addIndex x1 `shouldBe` AddInvoice.addIndex x0
+        Just (Invoice.memo x1) `shouldBe` AddInvoice.memo addInvoiceRequest
+        Invoice.value x1 `shouldBe` AddInvoice.value addInvoiceRequest
     describe "addInvoice" $ do
       it "succeeds" $ \env -> do
         res <- runApp env $ addInvoice (envLndMerchant env) addInvoiceRequest
@@ -74,6 +98,7 @@ spec =
             receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
         res `shouldSatisfy` isRight
     describe "addHodlInvoice" $ it "succeeds" $ \env -> do
+      let lnd = envLndMerchant env
       r <- newRPreimage
       let req =
             AddHodlInvoiceRequest
@@ -82,7 +107,22 @@ spec =
                 value = MoneyAmount 1000,
                 expiry = Just $ Seconds 1000
               }
-      res <- runApp env $ addHodlInvoice (envLndMerchant env) req
+      (x0, x1) <- runApp env $ do
+        x0 <- addHodlInvoice lnd req
+        x1 <- ensureHodlInvoice lnd req
+        return (x0, x1)
+      x0 `shouldSatisfy` isRight
+      x0 `shouldBe` AddInvoice.paymentRequest <$> x1
+    describe "ensureHodlInvoice" $ it "succeeds" $ \env -> do
+      r <- newRPreimage
+      let req =
+            AddHodlInvoiceRequest
+              { memo = Just "HELLO",
+                hash = newRHash r,
+                value = MoneyAmount 1000,
+                expiry = Just $ Seconds 1000
+              }
+      res <- runApp env $ ensureHodlInvoice (envLndMerchant env) req
       res `shouldSatisfy` isRight
     describe "cancelInvoice" $ it "succeeds" $ \env -> do
       setupEnv env

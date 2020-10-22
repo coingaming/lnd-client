@@ -20,6 +20,7 @@ import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
+import LndClient.Data.PayReq (PayReq (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
@@ -304,6 +305,28 @@ mkRpc k = do
         handler
         env
         GRPC.SubscribeHtlcEventsRequest {}
+
+    decodePayReq ::
+      ($(tcc) m) =>
+      LndEnv ->
+      PaymentRequest ->
+      m (Either LndError PayReq)
+    decodePayReq =
+      $(grpcSync)
+        DecodePayReq
+        GRPC.lightningClient
+        GRPC.lightningDecodePayReq
+
+    lookupInvoice ::
+      ($(tcc) m) =>
+      LndEnv ->
+      RHash ->
+      m (Either LndError Invoice)
+    lookupInvoice =
+      $(grpcSync)
+        LookupInvoice
+        GRPC.lightningClient
+        GRPC.lightningLookupInvoice
     |]
   where
     tcc = case k of
