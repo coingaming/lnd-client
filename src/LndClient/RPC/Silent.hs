@@ -27,9 +27,13 @@ module LndClient.RPC.Silent
     subscribeHtlcEvents,
     decodePayReq,
     lookupInvoice,
+    ensureHodlInvoice,
   )
 where
 
+import LndClient.Data.AddHodlInvoice as AddHodlInvoice (AddHodlInvoiceRequest (..))
+import LndClient.Data.AddInvoice as AddInvoice (AddInvoiceResponse (..))
+import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Import
 import LndClient.RPC.TH
 
@@ -71,3 +75,22 @@ lazyInitWallet env = do
   if isRight unlockRes
     then return unlockRes
     else initWallet env
+
+ensureHodlInvoice ::
+  (MonadIO m) =>
+  LndEnv ->
+  AddHodlInvoiceRequest ->
+  m (Either LndError AddInvoiceResponse)
+ensureHodlInvoice env req = do
+  let rh = AddHodlInvoice.hash req
+  _ <- addHodlInvoice env req
+  res <- lookupInvoice env rh
+  return $ case res of
+    Left x -> Left x
+    Right x ->
+      Right $
+        AddInvoice.AddInvoiceResponse
+          { AddInvoice.rHash = rh,
+            AddInvoice.paymentRequest = Invoice.paymentRequest x,
+            AddInvoice.addIndex = Invoice.addIndex x
+          }

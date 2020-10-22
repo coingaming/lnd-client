@@ -42,6 +42,7 @@ data RpcName
   | WaitForGrpc
   | DecodePayReq
   | LookupInvoice
+  | EnsureHodlInvoice
   deriving (Generic)
 
 instance ToJSON RpcName

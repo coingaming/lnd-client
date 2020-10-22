@@ -98,6 +98,7 @@ spec =
             receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
         res `shouldSatisfy` isRight
     describe "addHodlInvoice" $ it "succeeds" $ \env -> do
+      let lnd = envLndMerchant env
       r <- newRPreimage
       let req =
             AddHodlInvoiceRequest
@@ -106,7 +107,22 @@ spec =
                 value = MoneyAmount 1000,
                 expiry = Just $ Seconds 1000
               }
-      res <- runApp env $ addHodlInvoice (envLndMerchant env) req
+      (x0, x1) <- runApp env $ do
+        x0 <- addHodlInvoice lnd req
+        x1 <- ensureHodlInvoice lnd req
+        return (x0, x1)
+      x0 `shouldSatisfy` isRight
+      x0 `shouldBe` AddInvoice.paymentRequest <$> x1
+    describe "ensureHodlInvoice" $ it "succeeds" $ \env -> do
+      r <- newRPreimage
+      let req =
+            AddHodlInvoiceRequest
+              { memo = Just "HELLO",
+                hash = newRHash r,
+                value = MoneyAmount 1000,
+                expiry = Just $ Seconds 1000
+              }
+      res <- runApp env $ ensureHodlInvoice (envLndMerchant env) req
       res `shouldSatisfy` isRight
     describe "cancelInvoice" $ it "succeeds" $ \env -> do
       setupEnv env
