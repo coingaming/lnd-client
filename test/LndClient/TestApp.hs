@@ -295,7 +295,7 @@ setupEnv env = runApp env $ do
           }
   runApp env $ do
     cp <- liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
-    cq <- atomically $ dupTChan $ envCustomerCQ env
+    cq <- atomically . dupTChan $ envCustomerCQ env
     liftIO $ mine6_ env
     liftLndResult =<< receiveActiveChannel cp cq
     --

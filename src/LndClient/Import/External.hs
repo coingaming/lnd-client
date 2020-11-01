@@ -6,7 +6,13 @@ import Chronos as Import
     encodeTimespan,
     stopwatch,
   )
-import Control.Concurrent.Async as Import (Async, async, link)
+import Control.Concurrent.Async as Import
+  ( Async,
+    async,
+    cancel,
+    link,
+    waitAnySTM,
+  )
 import Control.Concurrent.STM as Import (check)
 import Control.Concurrent.STM.TChan as Import
   ( TChan,
