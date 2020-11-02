@@ -50,10 +50,10 @@ newtype NodeLocation = NodeLocation Text
   deriving (Eq, Show)
 
 newtype AddIndex = AddIndex Word64
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, Ord)
 
 newtype SettleIndex = SettleIndex Word64
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, Ord)
 
 newtype PaymentRequest = PaymentRequest Text
   deriving (PersistField, PersistFieldSql, Eq, QR.ToText)

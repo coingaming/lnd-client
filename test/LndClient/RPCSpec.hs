@@ -21,11 +21,13 @@ import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
+import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Import
 import LndClient.QRCode
 import LndClient.RPC.Katip
 import LndClient.TestApp
 import LndClient.TestOrphan ()
+import qualified LndClient.Watcher as Watcher
 import qualified LndGrpc as GRPC
 import Test.Hspec
 
@@ -113,6 +115,30 @@ spec =
         return (x0, x1)
       x0 `shouldSatisfy` isRight
       x0 `shouldBe` AddInvoice.paymentRequest <$> x1
+    --describe "watcher" $ do
+    --  it "watch" $ \env -> do
+    --    _ <- newEmptyMVar
+    --    let merEnv = envLndMerchant env
+    --    let req =
+    --          AddInvoiceRequest
+    --            (MoneyAmount 1000)
+    --            Nothing
+    --            Nothing
+    --    let sub =
+    --          SubscribeInvoicesRequest
+    --            (Just $ AddIndex 1)
+    --            (Just $ SettleIndex 1)
+    --    runApp env $ do
+    --      (_, chan) <-
+    --        Watcher.spawnLink
+    --          merEnv
+    --          subscribeInvoicesQ
+    --          print
+    --      Watcher.watch chan sub
+    --      void . liftLndResult =<< addInvoice merEnv req
+    --    --void $ takeMVar x
+    --    delay 3000000
+    --    True `shouldBe` True
     describe "ensureHodlInvoice" $ it "succeeds" $ \env -> do
       r <- newRPreimage
       let req =

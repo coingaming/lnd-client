@@ -34,18 +34,18 @@ data Watcher a b m
 
 spawnLink ::
   (Ord a, MonadUnliftIO m) =>
-  TChan (Cmd a) ->
   LndEnv ->
   (Maybe (TChan b) -> LndEnv -> a -> m (Either LndError ())) ->
   (b -> m ()) ->
-  m (Async ())
-spawnLink cw env sub handler =
+  m (Async (), TChan (Cmd a))
+spawnLink env sub handler =
   withRunInIO $ \run -> do
-    (lw, lr, cr) <- atomically $ do
+    (cw, lw, cr, lr) <- atomically $ do
+      cw <- newBroadcastTChan
       lw <- newBroadcastTChan
-      lr <- dupTChan lw
       cr <- dupTChan cw
-      return (lw, lr, cr)
+      lr <- dupTChan lw
+      return (cw, lw, cr, lr)
     t <-
       async . run . loop $
         Watcher
@@ -56,7 +56,7 @@ spawnLink cw env sub handler =
             watcherTasks = mempty
           }
     link t
-    return t
+    return (t, cw)
 
 watch :: (MonadUnliftIO m) => TChan (Cmd a) -> a -> m ()
 watch cw = atomically . writeTChan cw . Watch

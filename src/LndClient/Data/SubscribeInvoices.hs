@@ -11,6 +11,7 @@ data SubscribeInvoicesRequest
       { addIndex :: Maybe AddIndex,
         settleIndex :: Maybe SettleIndex
       }
+  deriving (Eq, Ord)
 
 instance ToGrpc SubscribeInvoicesRequest GRPC.InvoiceSubscription where
   toGrpc x =
