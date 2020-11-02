@@ -188,12 +188,12 @@ mkRpc k = do
 
     subscribeChannelEventsChan ::
       ($(tcc) m) =>
-      Maybe (TChan ChannelEventUpdate) ->
+      Maybe (TChan ((), ChannelEventUpdate)) ->
       LndEnv ->
       m (Either LndError ())
     subscribeChannelEventsChan mq env = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
-      subscribeChannelEvents (atomically . writeTChan q) env
+      subscribeChannelEvents (\x -> atomically $ writeTChan q ((), x)) env
 
     openChannel ::
       ($(tcc) m) =>

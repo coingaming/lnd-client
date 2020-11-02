@@ -18,8 +18,10 @@ import LndClient.Data.AddInvoice as AddInvoice
     AddInvoiceResponse (..),
   )
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
+import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
+import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
@@ -140,6 +142,40 @@ spec =
           Watcher.watch chan sub
           void . liftLndResult =<< addInvoice merEnv req
           void . liftLndResult =<< addInvoice merEnv req
+          readTChanTimeout (MicroSecondsDelay 500000) cr
+        x `shouldSatisfy` isJust
+      it "watchUnit" $ \env -> do
+        (cw, cr) <- atomically $ do
+          cw <- newBroadcastTChan
+          (cw,) <$> dupTChan cw
+        let merEnv = envLndMerchant env
+        x <- runApp env $ do
+          (_, chan) <-
+            Watcher.spawnLinkUnit
+              merEnv
+              subscribeChannelEventsChan
+              $ \_ x -> atomically $ writeTChan cw x
+          Watcher.watchUnit chan
+          GetInfoResponse merchantPubKeyHex _ _ <-
+            liftLndResult =<< getInfo merEnv
+          merchantPubKey <-
+            liftMaybe "Can't decode hex pub key" $ unHexPubKey merchantPubKeyHex
+          let openChannelRequest =
+                OpenChannelRequest
+                  { nodePubkey = merchantPubKey,
+                    localFundingAmount = MoneyAmount 20000,
+                    pushSat = Just $ MoneyAmount 1000,
+                    targetConf = Nothing,
+                    satPerByte = Nothing,
+                    private = Nothing,
+                    minHtlcMsat = Nothing,
+                    remoteCsvDelay = Nothing,
+                    minConfs = Nothing,
+                    spendUnconfirmed = Nothing,
+                    closeAddress = Nothing
+                  }
+          void . liftLndResult
+            =<< openChannelSync (envLndCustomer env) openChannelRequest
           readTChanTimeout (MicroSecondsDelay 500000) cr
         x `shouldSatisfy` isJust
       it "unWatch" $ \env -> do

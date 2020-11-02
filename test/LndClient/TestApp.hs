@@ -24,6 +24,7 @@ module LndClient.TestApp
     newEnv,
     deleteEnv,
     setupEnv,
+    liftMaybe,
     receiveInvoice,
   )
 where
@@ -70,8 +71,8 @@ data Env
         envKatipNS :: Namespace,
         envKatipCTX :: LogContexts,
         envKatipLE :: LogEnv,
-        envMerchantCQ :: TChan ChannelEventUpdate,
-        envCustomerCQ :: TChan ChannelEventUpdate,
+        envMerchantCQ :: TChan ((), ChannelEventUpdate),
+        envCustomerCQ :: TChan ((), ChannelEventUpdate),
         envMerchantIQ :: TChan (SubscribeInvoicesRequest, Invoice)
       }
 
@@ -369,11 +370,11 @@ spawnLinkDelayed_ x = do
 receiveActiveChannel ::
   KatipContext m =>
   ChannelPoint ->
-  TChan ChannelEventUpdate ->
+  TChan ((), ChannelEventUpdate) ->
   m (Either LndError ())
 receiveActiveChannel cp cq = do
   x <- readTChanTimeout (MicroSecondsDelay 30000000) cq
-  case channelEvent <$> x of
+  case channelEvent . snd <$> x of
     Just (GRPC.ChannelEventUpdateChannelActiveChannel gcp) ->
       if Right cp == fromGrpc gcp
         then return $ Right ()
