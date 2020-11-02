@@ -40,11 +40,11 @@ spawnLink x =
     return pid
 
 readTChanTimeout :: MonadIO m => MicroSecondsDelay -> TChan a -> m (Maybe a)
-readTChanTimeout t q = do
+readTChanTimeout t x = do
   t0 <- liftIO . registerDelay $ coerce t
   atomically $
-    Just <$> readTChan q
+    Just <$> readTChan x
       <|> Nothing <$ fini t0
-  where
-    fini :: TVar Bool -> STM ()
-    fini = check <=< readTVar
+
+fini :: TVar Bool -> STM ()
+fini = check <=< readTVar

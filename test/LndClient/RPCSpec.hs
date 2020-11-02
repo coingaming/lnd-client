@@ -4,6 +4,7 @@
 {-# LANGUAGE GeneralisedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module LndClient.RPCSpec
@@ -115,30 +116,32 @@ spec =
         return (x0, x1)
       x0 `shouldSatisfy` isRight
       x0 `shouldBe` AddInvoice.paymentRequest <$> x1
-    --describe "watcher" $ do
-    --  it "watch" $ \env -> do
-    --    _ <- newEmptyMVar
-    --    let merEnv = envLndMerchant env
-    --    let req =
-    --          AddInvoiceRequest
-    --            (MoneyAmount 1000)
-    --            Nothing
-    --            Nothing
-    --    let sub =
-    --          SubscribeInvoicesRequest
-    --            (Just $ AddIndex 1)
-    --            (Just $ SettleIndex 1)
-    --    runApp env $ do
-    --      (_, chan) <-
-    --        Watcher.spawnLink
-    --          merEnv
-    --          subscribeInvoicesQ
-    --          print
-    --      Watcher.watch chan sub
-    --      void . liftLndResult =<< addInvoice merEnv req
-    --    --void $ takeMVar x
-    --    delay 3000000
-    --    True `shouldBe` True
+    describe "watcher" $ do
+      it "watch" $ \env -> do
+        (cw, cr) <- atomically $ do
+          cw <- newBroadcastTChan
+          (cw,) <$> dupTChan cw
+        let merEnv = envLndMerchant env
+        let req =
+              AddInvoiceRequest
+                (MoneyAmount 1000)
+                Nothing
+                Nothing
+        let sub =
+              SubscribeInvoicesRequest
+                (Just $ AddIndex 1)
+                (Just $ SettleIndex 1)
+        x <- runApp env $ do
+          (_, chan) <-
+            Watcher.spawnLink
+              merEnv
+              subscribeInvoicesQ
+              $ atomically . writeTChan cw
+          Watcher.watch chan sub
+          void . liftLndResult =<< addInvoice merEnv req
+          void . liftLndResult =<< addInvoice merEnv req
+          readTChanTimeout (MicroSecondsDelay 1000000) cr
+        x `shouldSatisfy` isJust
     describe "ensureHodlInvoice" $ it "succeeds" $ \env -> do
       r <- newRPreimage
       let req =
