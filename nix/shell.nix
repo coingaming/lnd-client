@@ -13,7 +13,7 @@ in
 with pkgs';
 
 let haskell-ide = import (
-      fetchTarball "https://github.com/tim2CF/ultimate-haskell-ide/tarball/bf07889f9b7c97295c8b6528eccb3194e2aa9f52"
+      fetchTarball "https://github.com/tim2CF/ultimate-haskell-ide/tarball/08df4330b966dec8b97e3de6045c44551ee3d6af"
     ) {inherit vimBackground vimColorScheme;};
     proto3-suite-src = fetchTarball "https://github.com/coingaming/proto3-suite/tarball/45950a3860cbcb3f3177e9725dbdf460d6da9d45";
     proto3-suite = import (proto3-suite-src + "/release.nix") {};
