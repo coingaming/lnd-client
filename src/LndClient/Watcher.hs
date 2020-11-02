@@ -1,11 +1,20 @@
 {-# LANGUAGE TupleSections #-}
 
+-- | Generic async worker to automate LND gRPC subscriptions.
+-- It watches any amount of subscriptions of the same type,
+-- and re-subscribes if subscription was not terminated properly.
+-- The only way to terminate subscription is to apply `unWatch` or
+-- `unWatchUnit` function.
 module LndClient.Watcher
   ( spawnLink,
+    --    spawnLinkUnit,
     watch,
+    --   watchUnit,
     unWatch,
   )
 where
+
+--  unWatchUnit,
 
 import Data.Map as Map
 import LndClient.Import hiding (spawnLink)
@@ -26,17 +35,17 @@ data Event a b
 data Watcher a b m
   = Watcher
       { watcherChanCmd :: TChan (Cmd a),
-        watcherChanLnd :: TChan b,
+        watcherChanLnd :: TChan (a, b),
         watcherSub :: a -> m (Either LndError ()),
-        watcherHandler :: b -> m (),
+        watcherHandler :: a -> b -> m (),
         watcherTasks :: Map a (Async (a, Either LndError ()))
       }
 
 spawnLink ::
   (Ord a, MonadUnliftIO m) =>
   LndEnv ->
-  (Maybe (TChan b) -> LndEnv -> a -> m (Either LndError ())) ->
-  (b -> m ()) ->
+  (Maybe (TChan (a, b)) -> LndEnv -> a -> m (Either LndError ())) ->
+  (TChan (Cmd a) -> a -> b -> m ()) ->
   m (Async (), TChan (Cmd a))
 spawnLink env sub handler =
   withRunInIO $ \run -> do
@@ -52,17 +61,32 @@ spawnLink env sub handler =
           { watcherChanCmd = cr,
             watcherChanLnd = lr,
             watcherSub = sub (Just lw) env,
-            watcherHandler = handler,
+            watcherHandler = handler cw,
             watcherTasks = mempty
           }
     link t
     return (t, cw)
 
+--spawnLinkUnit ::
+--  (MonadUnliftIO m) =>
+--  LndEnv ->
+--  (Maybe (TChan b) -> LndEnv -> m (Either LndError ())) ->
+--  (TChan (Cmd a) -> a -> b -> m ()) ->
+--  m (Async (), TChan (Cmd ()))
+--spawnLinkUnit env sub handler =
+--  spawnLink env (\x0 x1 _ -> sub x0 x1) handler
+
 watch :: (MonadUnliftIO m) => TChan (Cmd a) -> a -> m ()
 watch cw = atomically . writeTChan cw . Watch
 
+--watchUnit :: (MonadUnliftIO m) => TChan (Cmd ()) -> m ()
+--watchUnit cw = watch cw ()
+
 unWatch :: (MonadUnliftIO m) => TChan (Cmd a) -> a -> m ()
 unWatch cw = atomically . writeTChan cw . UnWatch
+
+--unWatchUnit :: (MonadUnliftIO m) => TChan (Cmd ()) -> m ()
+--unWatchUnit cw = unWatch cw ()
 
 loop :: (Ord a, MonadUnliftIO m) => Watcher a b m -> m ()
 loop w = do
@@ -97,8 +121,8 @@ applyCmd w = \case
   where
     ts = watcherTasks w
 
-applyLnd :: (Ord a, MonadUnliftIO m) => Watcher a b m -> b -> m ()
-applyLnd w x = watcherHandler w x >> loop w
+applyLnd :: (Ord a, MonadUnliftIO m) => Watcher a b m -> (a, b) -> m ()
+applyLnd w (x0, x1) = watcherHandler w x0 x1 >> loop w
 
 applyTask ::
   (Ord a, MonadUnliftIO m) =>

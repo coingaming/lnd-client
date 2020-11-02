@@ -135,13 +135,48 @@ spec =
           (_, chan) <-
             Watcher.spawnLink
               merEnv
-              subscribeInvoicesQ
-              $ atomically . writeTChan cw
+              subscribeInvoicesChan
+              $ \_ _ x -> atomically $ writeTChan cw x
           Watcher.watch chan sub
           void . liftLndResult =<< addInvoice merEnv req
           void . liftLndResult =<< addInvoice merEnv req
-          readTChanTimeout (MicroSecondsDelay 1000000) cr
+          readTChanTimeout (MicroSecondsDelay 500000) cr
         x `shouldSatisfy` isJust
+      it "unWatch" $ \env -> do
+        (cw, cr) <- atomically $ do
+          cw <- newBroadcastTChan
+          (cw,) <$> dupTChan cw
+        let merEnv = envLndMerchant env
+        let req =
+              AddInvoiceRequest
+                (MoneyAmount 1000)
+                Nothing
+                Nothing
+        let sub =
+              SubscribeInvoicesRequest
+                (Just $ AddIndex 1)
+                (Just $ SettleIndex 1)
+        let emptyChan = do
+              x <- readTChanTimeout (MicroSecondsDelay 500000) cr
+              if isJust x then emptyChan else return ()
+        x <- runApp env $ do
+          (_, chan) <-
+            Watcher.spawnLink
+              merEnv
+              subscribeInvoicesChan
+              $ \chan k x -> do
+                -- can unWatch from the callback
+                Watcher.unWatch chan k
+                atomically $ writeTChan cw x
+          Watcher.watch chan sub
+          void . liftLndResult =<< addInvoice merEnv req
+          void . liftLndResult =<< addInvoice merEnv req
+          -- can unWatch from the outside as well
+          --Watcher.unWatch chan sub
+          emptyChan
+          void . liftLndResult =<< addInvoice merEnv req
+          readTChanTimeout (MicroSecondsDelay 500000) cr
+        x `shouldSatisfy` isNothing
     describe "ensureHodlInvoice" $ it "succeeds" $ \env -> do
       r <- newRPreimage
       let req =
