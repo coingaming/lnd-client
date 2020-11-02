@@ -24,6 +24,7 @@ module LndClient.TestApp
     newEnv,
     deleteEnv,
     setupEnv,
+    liftMaybe,
     receiveInvoice,
   )
 where
@@ -70,9 +71,9 @@ data Env
         envKatipNS :: Namespace,
         envKatipCTX :: LogContexts,
         envKatipLE :: LogEnv,
-        envMerchantCQ :: TChan ChannelEventUpdate,
-        envCustomerCQ :: TChan ChannelEventUpdate,
-        envMerchantIQ :: TChan Invoice
+        envMerchantCQ :: TChan ((), ChannelEventUpdate),
+        envCustomerCQ :: TChan ((), ChannelEventUpdate),
+        envMerchantIQ :: TChan (SubscribeInvoicesRequest, Invoice)
       }
 
 custEnv :: LndEnv -> LndEnv
@@ -182,12 +183,12 @@ newEnv = do
     -- Subscribe to events
     --
     void . spawnLink $
-      liftLndResult =<< subscribeChannelEventsQ (pure merchantCQ) merchantEnv
+      liftLndResult =<< subscribeChannelEventsChan (pure merchantCQ) merchantEnv
     void . spawnLink $
-      liftLndResult =<< subscribeChannelEventsQ (pure customerCQ) customerEnv
+      liftLndResult =<< subscribeChannelEventsChan (pure customerCQ) customerEnv
     void . spawnLink $
       liftLndResult
-        =<< subscribeInvoicesQ
+        =<< subscribeInvoicesChan
           (pure $ envMerchantIQ env)
           merchantEnv
           --
@@ -295,7 +296,7 @@ setupEnv env = runApp env $ do
           }
   runApp env $ do
     cp <- liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
-    cq <- atomically $ dupTChan $ envCustomerCQ env
+    cq <- atomically . dupTChan $ envCustomerCQ env
     liftIO $ mine6_ env
     liftLndResult =<< receiveActiveChannel cp cq
     --
@@ -369,11 +370,11 @@ spawnLinkDelayed_ x = do
 receiveActiveChannel ::
   KatipContext m =>
   ChannelPoint ->
-  TChan ChannelEventUpdate ->
+  TChan ((), ChannelEventUpdate) ->
   m (Either LndError ())
 receiveActiveChannel cp cq = do
   x <- readTChanTimeout (MicroSecondsDelay 30000000) cq
-  case channelEvent <$> x of
+  case channelEvent . snd <$> x of
     Just (GRPC.ChannelEventUpdateChannelActiveChannel gcp) ->
       if Right cp == fromGrpc gcp
         then return $ Right ()
@@ -387,12 +388,12 @@ receiveInvoice ::
   KatipContext m =>
   RHash ->
   GRPC.Invoice_InvoiceState ->
-  TChan Invoice ->
+  TChan (SubscribeInvoicesRequest, Invoice) ->
   m (Either LndError ())
 receiveInvoice rh s q = do
   mx <- readTChanTimeout (MicroSecondsDelay 30000000) q
-  $(logTM) InfoS $ logStr $ "Received Invoice: " <> (show mx :: Text)
-  case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
+  $(logTM) InfoS $ logStr $ "Received Invoice: " <> (show $ snd <$> mx :: Text)
+  case (\x -> Invoice.rHash x == rh && Invoice.state x == s) . snd <$> mx of
     Just True -> return $ Right ()
     Just False -> receiveInvoice rh s q
     Nothing -> return . Left $ TChanTimeout "receiveInvoice"

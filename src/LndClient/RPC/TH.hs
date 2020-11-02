@@ -162,15 +162,15 @@ mkRpc k = do
         GRPC.lightningClient
         GRPC.lightningSubscribeInvoices
 
-    subscribeInvoicesQ ::
+    subscribeInvoicesChan ::
       ($(tcc) m) =>
-      Maybe (TChan Invoice) ->
+      Maybe (TChan (SubscribeInvoicesRequest, Invoice)) ->
       LndEnv ->
       SubscribeInvoicesRequest ->
       m (Either LndError ())
-    subscribeInvoicesQ mq env req = do
+    subscribeInvoicesChan mq env req = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
-      subscribeInvoices (atomically . writeTChan q) env req
+      subscribeInvoices (\x -> atomically $ writeTChan q (req, x)) env req
 
     subscribeChannelEvents ::
       ($(tcc) m) =>
@@ -186,14 +186,14 @@ mkRpc k = do
         env
         GRPC.ChannelEventSubscription {}
 
-    subscribeChannelEventsQ ::
+    subscribeChannelEventsChan ::
       ($(tcc) m) =>
-      Maybe (TChan ChannelEventUpdate) ->
+      Maybe (TChan ((), ChannelEventUpdate)) ->
       LndEnv ->
       m (Either LndError ())
-    subscribeChannelEventsQ mq env = do
+    subscribeChannelEventsChan mq env = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
-      subscribeChannelEvents (atomically . writeTChan q) env
+      subscribeChannelEvents (\x -> atomically $ writeTChan q ((), x)) env
 
     openChannel ::
       ($(tcc) m) =>

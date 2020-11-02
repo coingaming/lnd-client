@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 706ec5dd93ea75feb7eda4bd60ab2adcb527d15e41e7d6209891fbe462a1440c
+-- hash: 8881582bca4d48f9f07a1df30cf6a12ea80734d4c0a44b17b9cda26fd91fab17
 
 name:           lnd-client
 version:        0.1.0.0
@@ -58,6 +58,7 @@ library
       LndClient.RPC.Silent
       LndClient.RPC.TH
       LndClient.Util
+      LndClient.Watcher
       LndGrpc
       LndGrpc.Orphan
       RouterGrpc
