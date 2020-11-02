@@ -7,14 +7,13 @@
 -- `unWatchUnit` function.
 module LndClient.Watcher
   ( spawnLink,
-    --    spawnLinkUnit,
+    spawnLinkUnit,
     watch,
-    --   watchUnit,
+    watchUnit,
     unWatch,
+    unWatchUnit,
   )
 where
-
---  unWatchUnit,
 
 import Data.Map as Map
 import LndClient.Import hiding (spawnLink)
@@ -41,6 +40,8 @@ data Watcher a b m
         watcherTasks :: Map a (Async (a, Either LndError ()))
       }
 
+-- Spawn watcher where subscription accepts argument
+-- for example `subscribeInvoicesChan`
 spawnLink ::
   (Ord a, MonadUnliftIO m) =>
   LndEnv ->
@@ -67,26 +68,31 @@ spawnLink env sub handler =
     link t
     return (t, cw)
 
---spawnLinkUnit ::
---  (MonadUnliftIO m) =>
---  LndEnv ->
---  (Maybe (TChan b) -> LndEnv -> m (Either LndError ())) ->
---  (TChan (Cmd a) -> a -> b -> m ()) ->
---  m (Async (), TChan (Cmd ()))
---spawnLinkUnit env sub handler =
---  spawnLink env (\x0 x1 _ -> sub x0 x1) handler
+-- Spawn watcher where subscription don't accept argument
+-- for example `subscribeChannelEventsChan`
+spawnLinkUnit ::
+  (MonadUnliftIO m) =>
+  LndEnv ->
+  (Maybe (TChan ((), b)) -> LndEnv -> m (Either LndError ())) ->
+  (TChan (Cmd ()) -> b -> m ()) ->
+  m (Async (), TChan (Cmd ()))
+spawnLinkUnit env0 sub handler =
+  spawnLink
+    env0
+    (\mChan env1 _ -> sub mChan env1)
+    (\chan _ x -> handler chan x)
 
 watch :: (MonadUnliftIO m) => TChan (Cmd a) -> a -> m ()
 watch cw = atomically . writeTChan cw . Watch
 
---watchUnit :: (MonadUnliftIO m) => TChan (Cmd ()) -> m ()
---watchUnit cw = watch cw ()
+watchUnit :: (MonadUnliftIO m) => TChan (Cmd ()) -> m ()
+watchUnit cw = watch cw ()
 
 unWatch :: (MonadUnliftIO m) => TChan (Cmd a) -> a -> m ()
 unWatch cw = atomically . writeTChan cw . UnWatch
 
---unWatchUnit :: (MonadUnliftIO m) => TChan (Cmd ()) -> m ()
---unWatchUnit cw = unWatch cw ()
+unWatchUnit :: (MonadUnliftIO m) => TChan (Cmd ()) -> m ()
+unWatchUnit cw = unWatch cw ()
 
 loop :: (Ord a, MonadUnliftIO m) => Watcher a b m -> m ()
 loop w = do
