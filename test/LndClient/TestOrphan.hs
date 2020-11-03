@@ -10,6 +10,7 @@ import LndClient.Data.AddInvoice
 import LndClient.Data.ChannelPoint
 import LndClient.Data.Invoice
 import LndClient.Data.ListChannels
+import LndClient.Data.Payment
 import LndClient.Data.SendPayment
 import LndClient.Import
 
@@ -32,3 +33,7 @@ deriving instance Show ChannelPoint
 deriving instance Show Channel
 
 deriving instance Show SendPaymentResponse
+
+deriving instance Show Payment
+
+deriving instance Show RPreimage

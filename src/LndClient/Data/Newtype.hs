@@ -60,10 +60,10 @@ newtype PaymentRequest = PaymentRequest Text
   deriving (PersistField, PersistFieldSql, Eq, QR.ToText)
 
 newtype RHash = RHash ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, Ord)
 
 newtype RPreimage = RPreimage ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, Ord)
 
 newtype MoneyAmount = MoneyAmount Word64
   deriving (PersistField, PersistFieldSql, Eq, Num, Ord, FromJSON)

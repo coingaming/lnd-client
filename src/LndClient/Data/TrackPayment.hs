@@ -11,7 +11,7 @@ data TrackPaymentRequest
       { paymentHash :: RHash,
         noInflightUpdates :: Bool
       }
-  deriving (Eq)
+  deriving (Eq, Ord)
 
 instance ToGrpc TrackPaymentRequest GRPC.TrackPaymentRequest where
   toGrpc x =
