@@ -42,7 +42,7 @@ import qualified LndGrpc as GRPC
 import Prelude (Show (..))
 
 newtype NodePubKey = NodePubKey ByteString
-  deriving (Eq, Show)
+  deriving (PersistField, PersistFieldSql, Eq, Show)
 
 newtype NodePubKeyHex = NodePubKeyHex Text
   deriving (Eq, Show)
