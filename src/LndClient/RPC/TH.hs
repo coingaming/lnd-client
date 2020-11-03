@@ -21,10 +21,12 @@ import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq (PayReq (..))
+import LndClient.Data.Payment (Payment (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
+import LndClient.Data.TrackPayment (TrackPaymentRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Import
 import LndClient.RPC.Generic
@@ -327,6 +329,28 @@ mkRpc k = do
         LookupInvoice
         GRPC.lightningClient
         GRPC.lightningLookupInvoice
+
+    trackPaymentV2 ::
+      ($(tcc) m) =>
+      (Payment -> IO ()) ->
+      LndEnv ->
+      TrackPaymentRequest ->
+      m (Either LndError ())
+    trackPaymentV2 =
+      $(grpcSubscribe)
+        TrackPaymentV2
+        GRPC.routerClient
+        GRPC.routerTrackPaymentV2
+
+    trackPaymentV2Chan ::
+      ($(tcc) m) =>
+      Maybe (TChan (TrackPaymentRequest, Payment)) ->
+      LndEnv ->
+      TrackPaymentRequest ->
+      m (Either LndError ())
+    trackPaymentV2Chan mc env req = do
+      q <- fromMaybeM (atomically newBroadcastTChan) $ pure mc
+      trackPaymentV2 (\x -> atomically $ writeTChan q (req, x)) env req
     |]
   where
     tcc = case k of

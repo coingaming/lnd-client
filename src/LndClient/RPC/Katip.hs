@@ -28,6 +28,8 @@ module LndClient.RPC.Katip
     decodePayReq,
     lookupInvoice,
     ensureHodlInvoice,
+    trackPaymentV2,
+    trackPaymentV2Chan,
   )
 where
 

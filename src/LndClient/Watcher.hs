@@ -6,7 +6,8 @@
 -- The only way to terminate subscription is to apply `unWatch` or
 -- `unWatchUnit` function.
 module LndClient.Watcher
-  ( spawnLink,
+  ( Watcher,
+    spawnLink,
     spawnLinkUnit,
     watch,
     watchUnit,
@@ -22,6 +23,9 @@ import LndClient.Import hiding (spawnLink)
 -- TODO : maybe pass OnSub | OnExit callbacks?
 --
 
+newtype Watcher a b
+  = Watcher (TChan (Cmd a))
+
 data Cmd a
   = Watch a
   | UnWatch a
@@ -31,8 +35,8 @@ data Event a b
   | EventLnd b
   | EventTask (a, Either LndError ())
 
-data Watcher a b m
-  = Watcher
+data WatcherState a b m
+  = WatcherState
       { watcherChanCmd :: TChan (Cmd a),
         watcherChanLnd :: TChan (a, b),
         watcherSub :: a -> m (Either LndError ()),
@@ -46,8 +50,8 @@ spawnLink ::
   (Ord a, MonadUnliftIO m) =>
   LndEnv ->
   (Maybe (TChan (a, b)) -> LndEnv -> a -> m (Either LndError ())) ->
-  (TChan (Cmd a) -> a -> b -> m ()) ->
-  m (Async (), TChan (Cmd a))
+  (Watcher a b -> a -> b -> m ()) ->
+  m (Async (), Watcher a b)
 spawnLink env sub handler =
   withRunInIO $ \run -> do
     (cw, lw, cr, lr) <- atomically $ do
@@ -56,17 +60,18 @@ spawnLink env sub handler =
       cr <- dupTChan cw
       lr <- dupTChan lw
       return (cw, lw, cr, lr)
+    let w = Watcher cw
     t <-
       async . run . loop $
-        Watcher
+        WatcherState
           { watcherChanCmd = cr,
             watcherChanLnd = lr,
             watcherSub = sub (Just lw) env,
-            watcherHandler = handler cw,
+            watcherHandler = handler w,
             watcherTasks = mempty
           }
     link t
-    return (t, cw)
+    return (t, w)
 
 -- Spawn watcher where subscription don't accept argument
 -- for example `subscribeChannelEventsChan`
@@ -74,27 +79,27 @@ spawnLinkUnit ::
   (MonadUnliftIO m) =>
   LndEnv ->
   (Maybe (TChan ((), b)) -> LndEnv -> m (Either LndError ())) ->
-  (TChan (Cmd ()) -> b -> m ()) ->
-  m (Async (), TChan (Cmd ()))
+  (Watcher () b -> b -> m ()) ->
+  m (Async (), Watcher () b)
 spawnLinkUnit env0 sub handler =
   spawnLink
     env0
     (\mChan env1 _ -> sub mChan env1)
     (\chan _ x -> handler chan x)
 
-watch :: (MonadUnliftIO m) => TChan (Cmd a) -> a -> m ()
-watch cw = atomically . writeTChan cw . Watch
+watch :: (MonadUnliftIO m) => Watcher a b -> a -> m ()
+watch (Watcher cw) = atomically . writeTChan cw . Watch
 
-watchUnit :: (MonadUnliftIO m) => TChan (Cmd ()) -> m ()
+watchUnit :: (MonadUnliftIO m) => Watcher () b -> m ()
 watchUnit cw = watch cw ()
 
-unWatch :: (MonadUnliftIO m) => TChan (Cmd a) -> a -> m ()
-unWatch cw = atomically . writeTChan cw . UnWatch
+unWatch :: (MonadUnliftIO m) => Watcher a b -> a -> m ()
+unWatch (Watcher cw) = atomically . writeTChan cw . UnWatch
 
-unWatchUnit :: (MonadUnliftIO m) => TChan (Cmd ()) -> m ()
+unWatchUnit :: (MonadUnliftIO m) => Watcher () b -> m ()
 unWatchUnit cw = unWatch cw ()
 
-loop :: (Ord a, MonadUnliftIO m) => Watcher a b m -> m ()
+loop :: (Ord a, MonadUnliftIO m) => WatcherState a b m -> m ()
 loop w = do
   event <-
     atomically $
@@ -106,7 +111,7 @@ loop w = do
     EventLnd x -> applyLnd w x
     EventTask x -> applyTask w x
 
-applyCmd :: (Ord a, MonadUnliftIO m) => Watcher a b m -> Cmd a -> m ()
+applyCmd :: (Ord a, MonadUnliftIO m) => WatcherState a b m -> Cmd a -> m ()
 applyCmd w = \case
   Watch x ->
     if isJust $ Map.lookup x ts
@@ -127,12 +132,12 @@ applyCmd w = \case
   where
     ts = watcherTasks w
 
-applyLnd :: (Ord a, MonadUnliftIO m) => Watcher a b m -> (a, b) -> m ()
+applyLnd :: (Ord a, MonadUnliftIO m) => WatcherState a b m -> (a, b) -> m ()
 applyLnd w (x0, x1) = watcherHandler w x0 x1 >> loop w
 
 applyTask ::
   (Ord a, MonadUnliftIO m) =>
-  Watcher a b m ->
+  WatcherState a b m ->
   (a, Either LndError ()) ->
   m ()
 applyTask w0 (x, res) =

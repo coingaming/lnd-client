@@ -25,6 +25,7 @@ import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
+import LndClient.Data.TrackPayment (TrackPaymentRequest (..))
 import LndClient.Import
 import LndClient.QRCode
 import LndClient.RPC.Katip
@@ -134,12 +135,12 @@ spec =
                 (Just $ AddIndex 1)
                 (Just $ SettleIndex 1)
         x <- runApp env $ do
-          (_, chan) <-
+          (_, w) <-
             Watcher.spawnLink
               merEnv
               subscribeInvoicesChan
               $ \_ _ x -> atomically $ writeTChan cw x
-          Watcher.watch chan sub
+          Watcher.watch w sub
           void . liftLndResult =<< addInvoice merEnv req
           void . liftLndResult =<< addInvoice merEnv req
           readTChanTimeout (MicroSecondsDelay 500000) cr
@@ -150,12 +151,12 @@ spec =
           (cw,) <$> dupTChan cw
         let merEnv = envLndMerchant env
         x <- runApp env $ do
-          (_, chan) <-
+          (_, w) <-
             Watcher.spawnLinkUnit
               merEnv
               subscribeChannelEventsChan
               $ \_ x -> atomically $ writeTChan cw x
-          Watcher.watchUnit chan
+          Watcher.watchUnit w
           GetInfoResponse merchantPubKeyHex _ _ <-
             liftLndResult =<< getInfo merEnv
           merchantPubKey <-
@@ -196,19 +197,19 @@ spec =
               x <- readTChanTimeout (MicroSecondsDelay 500000) cr
               if isJust x then emptyChan else return ()
         x <- runApp env $ do
-          (_, chan) <-
+          (_, w) <-
             Watcher.spawnLink
               merEnv
               subscribeInvoicesChan
-              $ \chan k x -> do
+              $ \w k x -> do
                 -- can unWatch from the callback
-                Watcher.unWatch chan k
+                Watcher.unWatch w k
                 atomically $ writeTChan cw x
-          Watcher.watch chan sub
+          Watcher.watch w sub
           void . liftLndResult =<< addInvoice merEnv req
           void . liftLndResult =<< addInvoice merEnv req
           -- can unWatch from the outside as well
-          --Watcher.unWatch chan sub
+          --Watcher.unWatch w sub
           emptyChan
           void . liftLndResult =<< addInvoice merEnv req
           readTChanTimeout (MicroSecondsDelay 500000) cr
@@ -295,6 +296,34 @@ spec =
               (envLndMerchant env)
               (ListChannelsRequest False False False False Nothing)
       (length cs0 - length cs1) `shouldBe` 1
+    describe "trackPaymentV2" $ it "succeeds" $ \env -> do
+      setupEnv env
+      (cw, cr) <- atomically $ do
+        cw <- newBroadcastTChan
+        (cw,) <$> dupTChan cw
+      x <- runApp env $ do
+        --
+        -- prepare invoice and subscription
+        --
+        let air = AddInvoiceRequest (MoneyAmount 1000) Nothing Nothing
+        i <- liftLndResult =<< addInvoice (envLndMerchant env) air
+        let rh = AddInvoice.rHash i
+        let pr = AddInvoice.paymentRequest i
+        let spr = SendPaymentRequest pr $ MoneyAmount 1000
+        let cusEnv = envLndCustomer env
+        let sub = TrackPaymentRequest rh False
+        --
+        -- spawn payment watcher and settle invoice
+        --
+        (_, w) <-
+          Watcher.spawnLink
+            cusEnv
+            trackPaymentV2Chan
+            $ \_ _ x -> atomically $ writeTChan cw x
+        Watcher.watch w sub
+        void $ liftLndResult =<< sendPayment cusEnv spr
+        readTChanTimeout (MicroSecondsDelay 500000) cr
+      x `shouldSatisfy` isJust
   where
     addInvoiceRequest =
       AddInvoiceRequest

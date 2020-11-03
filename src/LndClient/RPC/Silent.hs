@@ -28,6 +28,8 @@ module LndClient.RPC.Silent
     decodePayReq,
     lookupInvoice,
     ensureHodlInvoice,
+    trackPaymentV2,
+    trackPaymentV2Chan,
   )
 where
 

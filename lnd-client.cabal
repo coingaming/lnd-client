@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8881582bca4d48f9f07a1df30cf6a12ea80734d4c0a44b17b9cda26fd91fab17
+-- hash: 8ef261c037b1769d0256a1ea892b3c376c789707de13e306f3578fa639df8ec5
 
 name:           lnd-client
 version:        0.1.0.0
@@ -43,11 +43,13 @@ library
       LndClient.Data.NewAddress
       LndClient.Data.Newtype
       LndClient.Data.OpenChannel
+      LndClient.Data.Payment
       LndClient.Data.PayReq
       LndClient.Data.Peer
       LndClient.Data.SendPayment
       LndClient.Data.SubscribeChannelEvents
       LndClient.Data.SubscribeInvoices
+      LndClient.Data.TrackPayment
       LndClient.Data.Type
       LndClient.Data.UnlockWallet
       LndClient.Import

@@ -31,6 +31,7 @@ import Crypto.Random (getRandomBytes)
 import Data.Aeson (FromJSON (..))
 import Data.ByteString.Base16 as B16 (decode)
 import Data.ByteString.Char8 as C8
+import Data.Text.Lazy as TL
 import Data.Vector (fromList)
 import qualified InvoiceGrpc as GRPC
 import LndClient.Class
@@ -59,10 +60,10 @@ newtype PaymentRequest = PaymentRequest Text
   deriving (PersistField, PersistFieldSql, Eq, QR.ToText)
 
 newtype RHash = RHash ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, Ord)
 
 newtype RPreimage = RPreimage ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+  deriving (PersistField, PersistFieldSql, Eq, Ord)
 
 newtype MoneyAmount = MoneyAmount Word64
   deriving (PersistField, PersistFieldSql, Eq, Num, Ord, FromJSON)
@@ -147,10 +148,16 @@ instance FromGrpc Seconds Int64 where
       . safeFromIntegral
 
 instance FromGrpc RHash Text where
-  fromGrpc x =
-    case B16.decode $ encodeUtf8 x of
-      (y, "") -> Right $ RHash y
+  fromGrpc x0 =
+    case B16.decode $ encodeUtf8 x0 of
+      (x1, "") -> Right $ RHash x1
       _ -> Left $ FromGrpcError "NON_HEX_RHASH"
+
+instance FromGrpc RPreimage Text where
+  fromGrpc x0 =
+    case B16.decode $ encodeUtf8 x0 of
+      (x1, "") -> Right $ RPreimage x1
+      _ -> Left $ FromGrpcError "NON_HEX_RPREIMAGE"
 
 instance ToGrpc PaymentRequest Text where
   toGrpc x = Right (coerce x :: Text)
