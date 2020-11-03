@@ -43,6 +43,7 @@ data RpcName
   | DecodePayReq
   | LookupInvoice
   | EnsureHodlInvoice
+  | TrackPaymentV2
   deriving (Generic)
 
 instance ToJSON RpcName

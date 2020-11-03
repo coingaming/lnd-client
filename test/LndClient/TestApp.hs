@@ -297,7 +297,9 @@ setupEnv env = runApp env $ do
   runApp env $ do
     cp <- liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
     cq <- atomically . dupTChan $ envCustomerCQ env
-    liftIO $ mine6_ env
+    liftIO $ do
+      delay 3000000
+      mine6_ env
     liftLndResult =<< receiveActiveChannel cp cq
     --
     -- TODO : this invoice is added and settled to

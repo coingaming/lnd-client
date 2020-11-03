@@ -338,7 +338,7 @@ mkRpc k = do
       m (Either LndError ())
     trackPaymentV2 =
       $(grpcSubscribe)
-        SubscribeInvoices
+        TrackPaymentV2
         GRPC.routerClient
         GRPC.routerTrackPaymentV2
 
