@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 module LndClient.Data.Channel
@@ -17,7 +16,7 @@ data Channel
         localBalance :: MoneyAmount,
         remoteBalance :: MoneyAmount
       }
-  deriving (Generic, Eq)
+  deriving (Eq)
 
 instance FromGrpc Channel GRPC.Channel where
   fromGrpc x =
