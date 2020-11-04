@@ -11,7 +11,7 @@ import qualified LndGrpc as GRPC
 
 data Channel
   = Channel
-      { remotePubkey :: Text,
+      { remotePubkey :: NodePubKey,
         channelPoint :: ChannelPoint,
         localBalance :: MoneyAmount,
         remoteBalance :: MoneyAmount
