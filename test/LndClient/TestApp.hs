@@ -33,17 +33,18 @@ import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
+import LndClient.Data.Channel as Channel (Channel (..))
 import LndClient.Data.ChannelPoint as ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
-import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
+import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
 import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
-import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
+import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..), ChannelEventUpdateChannel (..))
 import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
 import LndClient.Import
 import LndClient.RPC.Silent
@@ -238,7 +239,7 @@ setupEnv env = runApp env $ do
       =<< listChannels
         customerEnv
         (ListChannelsRequest False False False False Nothing)
-  let cps = LC.channelPoint <$> cs
+  let cps = Channel.channelPoint <$> cs
   cpxs <-
     mapM
       ( \cp -> do
@@ -377,8 +378,8 @@ receiveActiveChannel ::
 receiveActiveChannel cp cq = do
   x <- readTChanTimeout (MicroSecondsDelay 30000000) cq
   case channelEvent . snd <$> x of
-    Just (GRPC.ChannelEventUpdateChannelActiveChannel gcp) ->
-      if Right cp == fromGrpc gcp
+    Just (ChannelEventUpdateChannelActiveChannel gcp) ->
+      if cp == gcp
         then return $ Right ()
         else receiveActiveChannel cp cq
     Just _ ->

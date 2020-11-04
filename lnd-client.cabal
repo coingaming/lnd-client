@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8ef261c037b1769d0256a1ea892b3c376c789707de13e306f3578fa639df8ec5
+-- hash: fcd093235e6f98a85cb56d34c5671d991db23e9391f87fb46438f178dec0d53a
 
 name:           lnd-client
 version:        0.1.0.0
@@ -32,6 +32,7 @@ library
       LndClient.Class
       LndClient.Data.AddHodlInvoice
       LndClient.Data.AddInvoice
+      LndClient.Data.Channel
       LndClient.Data.ChannelPoint
       LndClient.Data.CloseChannel
       LndClient.Data.GetInfo
@@ -63,6 +64,7 @@ library
       LndClient.Watcher
       LndGrpc
       LndGrpc.Orphan
+      LndGrpc.Orphan2
       RouterGrpc
       WalletUnlockerGrpc
   other-modules:

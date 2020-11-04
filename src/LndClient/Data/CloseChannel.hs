@@ -3,6 +3,7 @@ module LndClient.Data.CloseChannel
     CloseStatusUpdate (..),
     PendingUpdate (..),
     ChannelCloseUpdate (..),
+    ChannelCloseSummary (..),
   )
 where
 
@@ -39,6 +40,21 @@ data ChannelCloseUpdate
         success :: Bool
       }
   deriving (Eq)
+
+data ChannelCloseSummary
+  = ChannelCloseSummary
+      { remotePubkey :: Text,
+        chPoint :: ChannelPoint,
+        settledBalance :: MoneyAmount
+      }
+  deriving (Eq)
+
+instance FromGrpc ChannelCloseSummary GRPC.ChannelCloseSummary where
+  fromGrpc x =
+    ChannelCloseSummary
+      <$> fromGrpc (GRPC.channelCloseSummaryRemotePubkey x)
+      <*> channelPointParser (GRPC.channelCloseSummaryChannelPoint x)
+      <*> fromGrpc (GRPC.channelCloseSummarySettledBalance x)
 
 instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
   toGrpc x =

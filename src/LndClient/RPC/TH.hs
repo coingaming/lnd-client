@@ -11,13 +11,14 @@ import qualified InvoiceGrpc as GRPC
 import Language.Haskell.TH.Syntax
 import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
+import LndClient.Data.Channel (Channel (..))
 import LndClient.Data.ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
 import LndClient.Data.GetInfo
 import LndClient.Data.HtlcEvent (HtlcEvent (..))
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
-import LndClient.Data.ListChannels (Channel (..), ListChannelsRequest (..))
+import LndClient.Data.ListChannels (ListChannelsRequest (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq (PayReq (..))

@@ -17,10 +17,11 @@ import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
+import LndClient.Data.Channel as Channel (Channel (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
-import LndClient.Data.ListChannels as LC (Channel (..), ListChannelsRequest (..))
+import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
@@ -178,7 +179,7 @@ spec =
           void . liftLndResult
             =<< openChannelSync (envLndCustomer env) openChannelRequest
           readTChanTimeout (MicroSecondsDelay 500000) cr
-        x `shouldSatisfy` isJust
+        isJust x `shouldBe` True
       it "unWatch" $ \env -> do
         (cw, cr) <- atomically $ do
           cw <- newBroadcastTChan
@@ -278,7 +279,7 @@ spec =
               (envLndMerchant env)
               (ListChannelsRequest False False False False Nothing)
       cp <-
-        case LC.channelPoint <$> safeHead cs0 of
+        case Channel.channelPoint <$> safeHead cs0 of
           Just x -> return x
           Nothing -> fail "No channel point found"
       x <- newEmptyMVar

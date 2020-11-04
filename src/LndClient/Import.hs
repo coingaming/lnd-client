@@ -6,3 +6,4 @@ import LndClient.Data.Newtype as Import
 import LndClient.Data.Type as Import
 import LndClient.Import.External as Import
 import LndClient.Util as Import
+import LndGrpc.Orphan2 ()

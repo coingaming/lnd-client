@@ -7,9 +7,9 @@ module LndClient.TestOrphan
 where
 
 import LndClient.Data.AddInvoice
+import LndClient.Data.Channel
 import LndClient.Data.ChannelPoint
 import LndClient.Data.Invoice
-import LndClient.Data.ListChannels
 import LndClient.Data.Payment
 import LndClient.Data.SendPayment
 import LndClient.Import
