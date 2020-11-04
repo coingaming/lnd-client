@@ -45,7 +45,7 @@ newtype NodePubKey = NodePubKey ByteString
   deriving (PersistField, PersistFieldSql, Eq, Show)
 
 newtype NodePubKeyHex = NodePubKeyHex Text
-  deriving (Eq, Show, PersistField, PersistFieldSql, HasDefault)
+  deriving (Eq, Show)
 
 newtype NodeLocation = NodeLocation Text
   deriving (Eq, Show)
@@ -98,6 +98,12 @@ instance FromGrpc NodePubKey ByteString where
 
 instance FromGrpc NodePubKeyHex Text where
   fromGrpc = Right . NodePubKeyHex
+
+instance FromGrpc NodePubKey Text where
+  fromGrpc x =
+    case B16.decode $ encodeUtf8 x of
+      (y, "") -> Right $ NodePubKey y
+      _ -> Left $ ToGrpcError "NodePubKey hex decoding error"
 
 instance FromGrpc NodeLocation Text where
   fromGrpc = Right . NodeLocation
