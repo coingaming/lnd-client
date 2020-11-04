@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 module LndClient.Data.SubscribeChannelEvents
@@ -11,6 +10,7 @@ import Data.Either.Extra (maybeToEither)
 import LndClient.Class
 import LndClient.Data.Channel
 import LndClient.Data.ChannelPoint
+import LndClient.Data.CloseChannel
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
@@ -23,12 +23,11 @@ data ChannelEventUpdate
 
 data ChannelEventUpdateChannel
   = ChannelEventUpdateChannelOpenChannel Channel
-  | --  | ChannelEventUpdateChannelCloseChannel ChannelCloseSummary
-    ChannelEventUpdateChannelActiveChannel ChannelPoint
+  | ChannelEventUpdateChannelCloseChannel ChannelCloseSummary
+  | ChannelEventUpdateChannelActiveChannel ChannelPoint
   | ChannelEventUpdateChannelInactiveChannel ChannelPoint
-  deriving (Generic, Eq)
-
---  | ChannelEventUpdateChannelPendingOpenChannel PendingUpdate
+  | ChannelEventUpdateChannelPendingOpenChannel PendingUpdate
+  deriving (Eq)
 
 instance FromGrpc ChannelEventUpdate GRPC.ChannelEventUpdate where
   fromGrpc x =
