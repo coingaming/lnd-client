@@ -45,7 +45,7 @@ newtype NodePubKey = NodePubKey ByteString
   deriving (PersistField, PersistFieldSql, Eq, Show)
 
 newtype NodePubKeyHex = NodePubKeyHex Text
-  deriving (Eq, Show)
+  deriving (Eq, Show, PersistField, PersistFieldSql, HasDefault)
 
 newtype NodeLocation = NodeLocation Text
   deriving (Eq, Show)

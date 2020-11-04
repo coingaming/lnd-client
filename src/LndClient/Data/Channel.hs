@@ -11,7 +11,7 @@ import qualified LndGrpc as GRPC
 
 data Channel
   = Channel
-      { remotePubkey :: Text,
+      { remotePubkey :: NodePubKeyHex,
         channelPoint :: ChannelPoint,
         localBalance :: MoneyAmount,
         remoteBalance :: MoneyAmount
@@ -21,7 +21,7 @@ data Channel
 instance FromGrpc Channel GRPC.Channel where
   fromGrpc x =
     Channel
-      <$> fromGrpc (GRPC.channelRemotePubkey x)
+      <$> fromGrpc (NodePubKeyHex $ GRPC.channelRemotePubkey x)
       <*> channelPointParser (GRPC.channelChannelPoint x)
       <*> fromGrpc (GRPC.channelLocalBalance x)
       <*> fromGrpc (GRPC.channelRemoteBalance x)
