@@ -1,3 +1,4 @@
+{-# LANGUAGE StrictData #-}
 {-# LANGUAGE TupleSections #-}
 
 -- | Generic async worker to automate LND gRPC subscriptions.
@@ -101,15 +102,24 @@ unWatchUnit cw = unWatch cw ()
 
 loop :: (Ord a, MonadUnliftIO m) => WatcherState a b m -> m ()
 loop w = do
-  event <-
-    atomically $
-      EventCmd <$> readTChan (watcherChanCmd w)
-        <|> EventLnd <$> readTChan (watcherChanLnd w)
-        <|> EventTask . snd <$> waitAnySTM (Map.elems $ watcherTasks w)
+  -- Here is the trick. Async watcher task can be already
+  -- terminated, and runtime detects that there are no any references
+  -- to watcherChanLnd anymore. This may cause `BlockedIndefinitelyOnSTM`
+  -- async exception, because all alternative <|> expressions are
+  -- evaluated independently. In this case we need to retry
+  -- alternative computation but without reading from watcherChanLnd.
+  me <- maybeDeadlock . atomically $ cmd <|> lnd <|> task
+  event <- case me of
+    Nothing -> atomically $ cmd <|> task
+    Just x -> return x
   case event of
     EventCmd x -> applyCmd w x
     EventLnd x -> applyLnd w x
     EventTask x -> applyTask w x
+  where
+    cmd = EventCmd <$> readTChan (watcherChanCmd w)
+    lnd = EventLnd <$> readTChan (watcherChanLnd w)
+    task = EventTask . snd <$> waitAnySTM (Map.elems $ watcherTasks w)
 
 applyCmd :: (Ord a, MonadUnliftIO m) => WatcherState a b m -> Cmd a -> m ()
 applyCmd w = \case

@@ -17,7 +17,6 @@ module LndClient.TestApp
     liftLndResult,
     customerNodeLocation,
     merchantNodeLocation,
-    spawnLinkDelayed_,
     syncWallets,
     mine6_,
     mine101_,
@@ -240,30 +239,26 @@ setupEnv env = runApp env $ do
         customerEnv
         (ListChannelsRequest False False False False Nothing)
   let cps = Channel.channelPoint <$> cs
-  cpxs <-
-    mapM
-      ( \cp -> do
-          x <- newEmptyMVar
-          return (cp, x)
-      )
-      cps
-  liftIO $
-    mapM_
-      ( \(cp, x) ->
-          spawnLink $ runApp env $
-            closeChannel
-              --
-              -- TODO : investigate why it throws empty gRPC
-              -- response error and as consequence
-              -- probably it's how subscription terminates
-              -- when channel is completely closed
-              --
-              --(const $ return ())
-              (liftIO . putMVar x)
-              (envLndMerchant env)
-              (CloseChannelRequest cp True Nothing Nothing Nothing)
-      )
-      cpxs
+  ts <-
+    liftIO $
+      mapM
+        ( \cp ->
+            spawnLink $ runApp env $
+              closeChannel
+                --
+                -- TODO : investigate why it throws empty gRPC
+                -- response error and as consequence
+                -- probably it's how subscription terminates
+                -- when channel is completely closed
+                --
+                -- but bad thing is that callback sometimes
+                -- is never called
+                --
+                (const $ return ())
+                (envLndMerchant env)
+                (CloseChannelRequest cp True Nothing Nothing Nothing)
+        )
+        cps
   --
   -- Give some time for closeChannel processes to be spawned
   -- Give Customer some money to operate
@@ -272,7 +267,7 @@ setupEnv env = runApp env $ do
   liftIO $ do
     delay 3000000
     mine6_ env
-    mapM_ (\(_, x) -> takeMVar x) cpxs
+    mapM_ wait ts
   --
   -- Open channel from Customer to Merchant
   --
@@ -363,15 +358,10 @@ liftMaybe msg mx =
     Just x -> return x
     Nothing -> liftIO $ fail msg
 
-spawnLinkDelayed_ :: (MonadUnliftIO m) => m a -> m ()
-spawnLinkDelayed_ x = do
-  void $ spawnLink x
-  -- give process some time to spawn
-  liftIO $ delay 3000000
-  return ()
-
 receiveActiveChannel ::
-  KatipContext m =>
+  ( MonadUnliftIO m,
+    KatipContext m
+  ) =>
   ChannelPoint ->
   TChan ((), ChannelEventUpdate) ->
   m (Either LndError ())
@@ -388,7 +378,9 @@ receiveActiveChannel cp cq = do
       return . Left $ TChanTimeout "receiveActiveChannel"
 
 receiveInvoice ::
-  KatipContext m =>
+  ( MonadUnliftIO m,
+    KatipContext m
+  ) =>
   RHash ->
   GRPC.Invoice_InvoiceState ->
   TChan (SubscribeInvoicesRequest, Invoice) ->

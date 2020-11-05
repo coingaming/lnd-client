@@ -282,14 +282,15 @@ spec =
         case Channel.channelPoint <$> safeHead cs0 of
           Just x -> return x
           Nothing -> fail "No channel point found"
-      x <- newEmptyMVar
-      spawnLinkDelayed_ $ runApp env $
-        closeChannel
-          (liftIO . putMVar x)
-          (envLndMerchant env)
-          (CloseChannelRequest cp True Nothing Nothing Nothing)
+      t <-
+        spawnLink $ runApp env $
+          closeChannel
+            (const $ return ())
+            (envLndMerchant env)
+            (CloseChannelRequest cp True Nothing Nothing Nothing)
+      liftIO $ delay 3000000
       mine6_ env
-      void $ takeMVar x
+      void . wait $ t
       cs1 <-
         runApp env $
           liftLndResult
@@ -320,7 +321,7 @@ spec =
           Watcher.spawnLink
             cusEnv
             trackPaymentV2Chan
-            $ \_ _ x -> atomically $ writeTChan cw x
+            $ \w s x -> Watcher.unWatch w s >> atomically (writeTChan cw x)
         Watcher.watch w sub
         void $ liftLndResult =<< sendPayment cusEnv spr
         readTChanTimeout (MicroSecondsDelay 500000) cr
