@@ -218,6 +218,7 @@ mine_ x env = do
           (envLndCustomer env)
           GRPC.AddressTypeWITNESS_PUBKEY_HASH
   void $ generateToAddress (envBtcClient env) x (toStrict btcAddress) Nothing
+  delay 3000000
   runApp_ env $ liftLndResult =<< syncWallets env
   return ()
 
