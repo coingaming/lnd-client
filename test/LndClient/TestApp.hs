@@ -272,7 +272,7 @@ setupEnv env = runApp env $ do
   liftIO $ do
     delay 3000000
     mine6_ env
-    mapM_ (\(_, x) -> takeMVar x) cpxs
+    mapM_ (\(_, x) -> maybeDeadlock $ takeMVar x) cpxs
   --
   -- Open channel from Customer to Merchant
   --
@@ -371,7 +371,9 @@ spawnLinkDelayed_ x = do
   return ()
 
 receiveActiveChannel ::
-  KatipContext m =>
+  ( MonadUnliftIO m,
+    KatipContext m
+  ) =>
   ChannelPoint ->
   TChan ((), ChannelEventUpdate) ->
   m (Either LndError ())
@@ -388,7 +390,9 @@ receiveActiveChannel cp cq = do
       return . Left $ TChanTimeout "receiveActiveChannel"
 
 receiveInvoice ::
-  KatipContext m =>
+  ( MonadUnliftIO m,
+    KatipContext m
+  ) =>
   RHash ->
   GRPC.Invoice_InvoiceState ->
   TChan (SubscribeInvoicesRequest, Invoice) ->

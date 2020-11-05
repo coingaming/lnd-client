@@ -289,7 +289,7 @@ spec =
           (envLndMerchant env)
           (CloseChannelRequest cp True Nothing Nothing Nothing)
       mine6_ env
-      void $ takeMVar x
+      void . maybeDeadlock $ takeMVar x
       cs1 <-
         runApp env $
           liftLndResult
@@ -320,7 +320,7 @@ spec =
           Watcher.spawnLink
             cusEnv
             trackPaymentV2Chan
-            $ \_ _ x -> atomically $ writeTChan cw x
+            $ \w s x -> Watcher.unWatch w s >> atomically (writeTChan cw x)
         Watcher.watch w sub
         void $ liftLndResult =<< sendPayment cusEnv spr
         readTChanTimeout (MicroSecondsDelay 500000) cr

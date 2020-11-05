@@ -5,10 +5,12 @@ module LndClient.Util
     showB64BS,
     spawnLink,
     readTChanTimeout,
+    maybeDeadlock,
     MicroSecondsDelay (..),
   )
 where
 
+import Control.Exception
 import qualified Data.ByteString.Base64 as B64 (encode)
 import qualified Data.Text as TS
 import LndClient.Import.External
@@ -39,12 +41,20 @@ spawnLink x =
     link pid
     return pid
 
-readTChanTimeout :: MonadIO m => MicroSecondsDelay -> TChan a -> m (Maybe a)
+readTChanTimeout :: MonadUnliftIO m => MicroSecondsDelay -> TChan a -> m (Maybe a)
 readTChanTimeout t x = do
   t0 <- liftIO . registerDelay $ coerce t
-  atomically $
+  (join <$>) . maybeDeadlock . atomically $
     Just <$> readTChan x
       <|> Nothing <$ fini t0
+
+maybeDeadlock :: MonadUnliftIO m => m a -> m (Maybe a)
+maybeDeadlock x =
+  withRunInIO $ \run ->
+    (Just <$> run x)
+      `catches` [ Handler $ \(_ :: BlockedIndefinitelyOnMVar) -> return Nothing,
+                  Handler $ \(_ :: BlockedIndefinitelyOnSTM) -> return Nothing
+                ]
 
 fini :: TVar Bool -> STM ()
 fini = check <=< readTVar
