@@ -23,7 +23,7 @@ data ChannelEventUpdate
 
 data ChannelEventUpdateChannel
   = ChannelEventUpdateChannelOpenChannel Channel
-  | ChannelEventUpdateChannelCloseChannel ChannelCloseSummary
+  | ChannelEventUpdateChannelClosedChannel ChannelCloseSummary
   | ChannelEventUpdateChannelActiveChannel ChannelPoint
   | ChannelEventUpdateChannelInactiveChannel ChannelPoint
   | ChannelEventUpdateChannelPendingOpenChannel PendingUpdate
@@ -40,4 +40,5 @@ instance FromGrpc ChannelEventUpdateChannel GRPC.ChannelEventUpdateChannel where
     GRPC.ChannelEventUpdateChannelOpenChannel c -> ChannelEventUpdateChannelOpenChannel <$> fromGrpc c
     GRPC.ChannelEventUpdateChannelActiveChannel cp -> ChannelEventUpdateChannelActiveChannel <$> fromGrpc cp
     GRPC.ChannelEventUpdateChannelInactiveChannel cp -> ChannelEventUpdateChannelInactiveChannel <$> fromGrpc cp
-    _ -> Left $ FromGrpcError $ "Invalid ChannelEventUpdateChannel type"
+    GRPC.ChannelEventUpdateChannelPendingOpenChannel pa -> ChannelEventUpdateChannelPendingOpenChannel <$> fromGrpc pa
+    GRPC.ChannelEventUpdateChannelClosedChannel cc -> ChannelEventUpdateChannelClosedChannel <$> fromGrpc cc
