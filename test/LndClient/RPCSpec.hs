@@ -282,14 +282,15 @@ spec =
         case Channel.channelPoint <$> safeHead cs0 of
           Just x -> return x
           Nothing -> fail "No channel point found"
-      x <- newEmptyMVar
-      spawnLinkDelayed_ $ runApp env $
-        closeChannel
-          (liftIO . putMVar x)
-          (envLndMerchant env)
-          (CloseChannelRequest cp True Nothing Nothing Nothing)
+      t <-
+        spawnLink $ runApp env $
+          closeChannel
+            (const $ return ())
+            (envLndMerchant env)
+            (CloseChannelRequest cp True Nothing Nothing Nothing)
+      liftIO $ delay 3000000
       mine6_ env
-      void . maybeDeadlock $ takeMVar x
+      void . wait $ t
       cs1 <-
         runApp env $
           liftLndResult

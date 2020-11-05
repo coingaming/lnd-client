@@ -52,9 +52,7 @@ maybeDeadlock :: MonadUnliftIO m => m a -> m (Maybe a)
 maybeDeadlock x =
   withRunInIO $ \run ->
     (Just <$> run x)
-      `catches` [ Handler $ \(_ :: BlockedIndefinitelyOnMVar) -> return Nothing,
-                  Handler $ \(_ :: BlockedIndefinitelyOnSTM) -> return Nothing
-                ]
+      `catches` [Handler $ \BlockedIndefinitelyOnSTM -> return Nothing]
 
 fini :: TVar Bool -> STM ()
 fini = check <=< readTVar

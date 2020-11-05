@@ -11,6 +11,7 @@ import Control.Concurrent.Async as Import
     async,
     cancel,
     link,
+    wait,
     waitAnySTM,
   )
 import Control.Concurrent.STM as Import (check)
