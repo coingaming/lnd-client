@@ -43,7 +43,7 @@ data ChannelCloseUpdate
 
 data ChannelCloseSummary
   = ChannelCloseSummary
-      { remotePubkey :: Text,
+      { remotePubkey :: NodePubKey,
         chPoint :: ChannelPoint,
         settledBalance :: MoneyAmount
       }
