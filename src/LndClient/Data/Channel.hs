@@ -13,8 +13,10 @@ data Channel
   = Channel
       { remotePubkey :: NodePubKey,
         channelPoint :: ChannelPoint,
+        capacity :: MoneyAmount,
         localBalance :: MoneyAmount,
-        remoteBalance :: MoneyAmount
+        remoteBalance :: MoneyAmount,
+        commitFee :: MoneyAmount
       }
   deriving (Eq)
 
@@ -23,8 +25,10 @@ instance FromGrpc Channel GRPC.Channel where
     Channel
       <$> fromGrpc (GRPC.channelRemotePubkey x)
       <*> channelPointParser (GRPC.channelChannelPoint x)
+      <*> fromGrpc (GRPC.channelCapacity x)
       <*> fromGrpc (GRPC.channelLocalBalance x)
       <*> fromGrpc (GRPC.channelRemoteBalance x)
+      <*> fromGrpc (GRPC.channelCommitFee x)
 
 instance FromGrpc [Channel] GRPC.ListChannelsResponse where
   fromGrpc = fromGrpc . GRPC.listChannelsResponseChannels
