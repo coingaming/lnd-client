@@ -12,7 +12,6 @@ module LndClient.Data.Newtype
     AezeedPassphrase (..),
     Seconds (..),
     NodePubKey (..),
-    NodePubKeyHex (..),
     NodeLocation (..),
     GrpcTimeoutSeconds,
     newRHash,
@@ -21,7 +20,6 @@ module LndClient.Data.Newtype
     unGrpcTimeout,
     defaultSyncGrpcTimeout,
     defaultAsyncGrpcTimeout,
-    unHexPubKey,
   )
 where
 
@@ -29,7 +27,7 @@ import Codec.QRCode as QR (ToText)
 import qualified Crypto.Hash.SHA256 as SHA256 (hash)
 import Crypto.Random (getRandomBytes)
 import Data.Aeson (FromJSON (..))
-import Data.ByteString.Base16 as B16 (decode)
+import Data.ByteString.Base16 as B16 (decode, encode)
 import Data.ByteString.Char8 as C8
 import Data.Text.Lazy as TL
 import Data.Vector (fromList)
@@ -43,9 +41,6 @@ import Prelude (Show (..))
 
 newtype NodePubKey = NodePubKey ByteString
   deriving (PersistField, PersistFieldSql, Eq, Show)
-
-newtype NodePubKeyHex = NodePubKeyHex Text
-  deriving (Eq, Show)
 
 newtype NodeLocation = NodeLocation Text
   deriving (Eq, Show)
@@ -83,21 +78,22 @@ newtype GrpcTimeoutSeconds = GrpcTimeoutSeconds Int
 instance ToGrpc NodePubKey ByteString where
   toGrpc = Right . coerce
 
-instance ToGrpc NodePubKeyHex Text where
-  toGrpc = Right . coerce
+instance ToGrpc NodePubKey Text where
+  toGrpc =
+    bimap (const $ ToGrpcError "UTF8_DECODE_ERROR") TL.fromStrict
+      . decodeUtf8'
+      . B16.encode
+      . coerce
 
 instance ToGrpc NodeLocation Text where
   toGrpc = Right . coerce
 
 --
--- TODO : smart constructors for NodePubKey, NodePubKeyHex and NodeLocation ???
+-- TODO : smart constructors for NodePubKey and NodeLocation ???
 --
 
 instance FromGrpc NodePubKey ByteString where
   fromGrpc = Right . NodePubKey
-
-instance FromGrpc NodePubKeyHex Text where
-  fromGrpc = Right . NodePubKeyHex
 
 instance FromGrpc NodePubKey Text where
   fromGrpc x =
@@ -218,9 +214,3 @@ defaultSyncGrpcTimeout = GrpcTimeoutSeconds 60
 
 defaultAsyncGrpcTimeout :: GrpcTimeoutSeconds
 defaultAsyncGrpcTimeout = GrpcTimeoutSeconds 3600
-
-unHexPubKey :: NodePubKeyHex -> Maybe NodePubKey
-unHexPubKey x =
-  case B16.decode $ encodeUtf8 (coerce x :: Text) of
-    (y, "") -> Just $ NodePubKey y
-    _ -> Nothing

@@ -167,13 +167,13 @@ newEnv = do
     --
     -- Connect Customer to Merchant
     --
-    GetInfoResponse merchantPubKeyHex _ _ <-
+    GetInfoResponse merchantPubKey _ _ <-
       liftLndResult =<< getInfo merchantEnv
     let connectPeerRequest =
           ConnectPeerRequest
             { addr =
                 LightningAddress
-                  { pubkey = merchantPubKeyHex,
+                  { pubkey = merchantPubKey,
                     host = merchantNodeLocation
                   },
               perm = False
@@ -273,10 +273,8 @@ setupEnv env = runApp env $ do
   -- Open channel from Customer to Merchant
   --
   $(logTM) InfoS "setupEnv - opening channel ..."
-  GetInfoResponse merchantPubKeyHex _ _ <-
+  GetInfoResponse merchantPubKey _ _ <-
     liftLndResult =<< getInfo merchantEnv
-  merchantPubKey <-
-    liftMaybe "Can't decode hex pub key" $ unHexPubKey merchantPubKeyHex
   let openChannelRequest =
         OpenChannelRequest
           { nodePubkey = merchantPubKey,
