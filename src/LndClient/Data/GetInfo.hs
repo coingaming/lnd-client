@@ -8,7 +8,7 @@ import qualified LndGrpc as GRPC
 
 data GetInfoResponse
   = GetInfoResponse
-      { identityPubkey :: NodePubKeyHex,
+      { identityPubkey :: NodePubKey,
         syncedToChain :: Bool,
         syncedToGraph :: Bool
       }

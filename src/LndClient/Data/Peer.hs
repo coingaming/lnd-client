@@ -12,7 +12,7 @@ import qualified LndGrpc as GRPC
 
 data Peer
   = Peer
-      { pubKey :: NodePubKeyHex,
+      { pubKey :: NodePubKey,
         address :: NodeLocation
       }
   deriving (Eq, Show)
@@ -25,7 +25,7 @@ instance FromGrpc Peer GRPC.Peer where
 
 data LightningAddress
   = LightningAddress
-      { pubkey :: NodePubKeyHex,
+      { pubkey :: NodePubKey,
         host :: NodeLocation
       }
   deriving (Eq)

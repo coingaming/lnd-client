@@ -158,10 +158,8 @@ spec =
               subscribeChannelEventsChan
               $ \_ x -> atomically $ writeTChan cw x
           Watcher.watchUnit w
-          GetInfoResponse merchantPubKeyHex _ _ <-
+          GetInfoResponse merchantPubKey _ _ <-
             liftLndResult =<< getInfo merEnv
-          merchantPubKey <-
-            liftMaybe "Can't decode hex pub key" $ unHexPubKey merchantPubKeyHex
           let openChannelRequest =
                 OpenChannelRequest
                   { nodePubkey = merchantPubKey,
