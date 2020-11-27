@@ -24,6 +24,7 @@ in
     enableLibraryProfiling = false;
     isLibrary = true;
     doHaddock = false;
+    prePatch = "hpack --force";
     preCheck = ''
       source ./nix/export-test-envs.sh;
       sh ./nix/reset-test-data.sh;
