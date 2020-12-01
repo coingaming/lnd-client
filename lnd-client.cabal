@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2e3ecbc79e3ab9141a115797e88af5baa09c202b4b0bb55a39a786b92fc1243b
+-- hash: 1b7dff6fce5314f59caf3fb1e2312dc9847fa85c2fa36d50517d80e829e1e15c
 
 name:           lnd-client
 version:        0.1.0.0
@@ -105,7 +105,6 @@ library
     , stm
     , template-haskell
     , text
-    , time
     , unbounded-delays
     , universum
     , unliftio
@@ -158,7 +157,6 @@ test-suite lnd-client-test
     , stm
     , template-haskell
     , text
-    , time
     , unbounded-delays
     , universum
     , unliftio
