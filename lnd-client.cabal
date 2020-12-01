@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: 1b7dff6fce5314f59caf3fb1e2312dc9847fa85c2fa36d50517d80e829e1e15c
 
 name:           lnd-client
 version:        0.1.0.0
