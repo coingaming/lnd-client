@@ -13,6 +13,7 @@ import LndClient.Data.Invoice
 import LndClient.Data.Payment
 import LndClient.Data.SendPayment
 import LndClient.Import
+import LndClient.Watcher
 
 deriving instance Show MoneyAmount
 
@@ -37,3 +38,5 @@ deriving instance Show SendPaymentResponse
 deriving instance Show Payment
 
 deriving instance Show RPreimage
+
+deriving instance Show a => Show (LndResult a)

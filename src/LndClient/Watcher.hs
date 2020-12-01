@@ -8,6 +8,7 @@
 -- `unWatchUnit` function.
 module LndClient.Watcher
   ( Watcher,
+    LndResult (..),
     spawnLink,
     spawnLinkUnit,
     watch,
@@ -41,9 +42,11 @@ data WatcherState a b m
       { watcherChanCmd :: TChan (Cmd a),
         watcherChanLnd :: TChan (a, b),
         watcherSub :: a -> m (Either LndError ()),
-        watcherHandler :: a -> b -> m (),
+        watcherHandler :: a -> LndResult b -> m (),
         watcherTasks :: Map a (Async (a, Either LndError ()))
       }
+
+data LndResult a = Ok a | Error LndError
 
 -- Spawn watcher where subscription accepts argument
 -- for example `subscribeInvoicesChan`
@@ -51,7 +54,7 @@ spawnLink ::
   (Ord a, MonadUnliftIO m) =>
   LndEnv ->
   (Maybe (TChan (a, b)) -> LndEnv -> a -> m (Either LndError ())) ->
-  (Watcher a b -> a -> b -> m ()) ->
+  (Watcher a b -> a -> LndResult b -> m ()) ->
   m (Async (), Watcher a b)
 spawnLink env sub handler =
   withRunInIO $ \run -> do
@@ -80,7 +83,7 @@ spawnLinkUnit ::
   (MonadUnliftIO m) =>
   LndEnv ->
   (Maybe (TChan ((), b)) -> LndEnv -> m (Either LndError ())) ->
-  (Watcher () b -> b -> m ()) ->
+  (Watcher () b -> LndResult b -> m ()) ->
   m (Async (), Watcher () b)
 spawnLinkUnit env0 sub handler =
   spawnLink
@@ -114,7 +117,7 @@ loop w = do
     Just x -> return x
   case event of
     EventCmd x -> applyCmd w x
-    EventLnd x -> applyLnd w x
+    EventLnd x -> applyLnd w (second Ok x)
     EventTask x -> applyTask w x
   where
     cmd = EventCmd <$> readTChan (watcherChanCmd w)
@@ -142,7 +145,7 @@ applyCmd w = \case
   where
     ts = watcherTasks w
 
-applyLnd :: (Ord a, MonadUnliftIO m) => WatcherState a b m -> (a, b) -> m ()
+applyLnd :: (Ord a, MonadUnliftIO m) => WatcherState a b m -> (a, LndResult b) -> m ()
 applyLnd w (x0, x1) = watcherHandler w x0 x1 >> loop w
 
 applyTask ::
@@ -153,12 +156,11 @@ applyTask ::
 applyTask w0 (x, res) =
   case Map.lookup x ts of
     Nothing -> loop w0
-    Just t ->
-      if isLeft res
-        then applyCmd w1 $ Watch x
-        else do
-          liftIO $ cancel t
-          loop w1
+    Just t -> do
+      case res of
+        Left (e :: LndError) -> watcherHandler w0 x $ Error e
+        Right () -> liftIO $ cancel t
+      loop w1
   where
     ts = watcherTasks w0
     w1 = w0 {watcherTasks = Map.delete x ts}
