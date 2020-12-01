@@ -29,7 +29,6 @@ dependencies:
 # time
 - chronos
 - unbounded-delays
-- time
 # storage
 - persistent
 # logging
