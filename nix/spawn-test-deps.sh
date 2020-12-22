@@ -8,15 +8,14 @@ set -m
 
 echo "starting bitcoind..."
 bitcoind -datadir=$BTCD_DIR
+alias bitcoin-cli="bitcoin-cli -rpcwait -datadir=$BTCD_DIR -rpcport=18443"
+bitcoin-cli generatetoaddress 101 "$(bitcoin-cli getnewaddress)"
+bitcoin-cli getblockchaininfo
 echo "bitcoind has been started!"
 
 #
 # LND
 #
-
-# NOTE : some LND bullshit - it crashes if started after bitcoind too soon
-echo "sleeping for 3s to prevent bitcoind/lnd race condition..."
-sleep 3;
 
 THIS_DIR="$(pwd)"
 
