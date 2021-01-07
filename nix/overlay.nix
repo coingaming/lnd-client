@@ -41,6 +41,32 @@ self: super:
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
           };
+          esqueleto = dontCheck (callPackage ./overlay/esqueleto.nix {
+            stdenv = self.stdenv;
+          });
+          persistent = callPackage ./overlay/persistent.nix {
+            stdenv = self.stdenv;
+          };
+          persistent-postgresql = dontCheck (callPackage ./overlay/persistent-postgresql.nix {
+            stdenv = self.stdenv;
+          });
+          persistent-mysql = dontCheck (callPackage ./overlay/persistent-mysql.nix {
+            stdenv = self.stdenv;
+          });
+          persistent-sqlite = dontCheck (callPackage ./overlay/persistent-sqlite.nix {
+            stdenv = self.stdenv;
+            sqlite = self.sqlite;
+          });
+          persistent-test = callPackage ./overlay/persistent-test.nix {
+            stdenv = self.stdenv;
+          };
+          persistent-template = callPackage ./overlay/persistent-template.nix {
+            stdenv = self.stdenv;
+          };
+          persistent-migration = dontCheck (callPackage ./overlay/persistent-migration.nix {
+              stdenv = self.stdenv;
+              fetchgit = self.fetchgit;
+          });
         }
       );
     }

@@ -5,6 +5,34 @@
 
 packages:
 - completed:
+    hackage: esqueleto-3.4.0.1@sha256:85077c6b11e06e0ac4a5cb07fb6b71448dcd2dc1e9831ea8115cb9090c342500,5869
+    pantry-tree:
+      size: 1542
+      sha256: 2cd6bd749fa1c1f9aa9730010a9bd516f4f4edaf9e9c1b3d39b1ad4e163b7ca7
+  original:
+    hackage: esqueleto-3.4.0.1
+- completed:
+    hackage: persistent-2.11.0.2@sha256:fe6bcfd7ee67252f5f96fbee786bad846fcc2e7fe3afd4bff5ddc63ec33c4bf1,4735
+    pantry-tree:
+      size: 2099
+      sha256: 43d6b26fbd967351e11e4bd8bfa21cdc0b1a6292d3c5f3d6e047af8600497c9a
+  original:
+    hackage: persistent-2.11.0.2
+- completed:
+    hackage: persistent-postgresql-2.11.0.1@sha256:da66b35872b163f126f390542ea910a44c70a505b4d051f31cdbd3222ea288da,3006
+    pantry-tree:
+      size: 803
+      sha256: 4b373e738ae568325818cac393ae3e51143644b52e27a2177ec7631de88b1bdd
+  original:
+    hackage: persistent-postgresql-2.11.0.1
+- completed:
+    hackage: persistent-template-2.9.1.0@sha256:384dd25da7adfbeeb749252c227c6691ad31177c0b814891a5f987a50788f522,2898
+    pantry-tree:
+      size: 776
+      sha256: 644eb4bc1f47c53d0eaf9e5df75a650dc38df260e3600254886cab8dffeb854c
+  original:
+    hackage: persistent-template-2.9.1.0
+- completed:
     hackage: envparse-0.4.1@sha256:989902e6368532548f61de1fa245ad2b39176cddd8743b20071af519a709ce30,2842
     pantry-tree:
       size: 1180
