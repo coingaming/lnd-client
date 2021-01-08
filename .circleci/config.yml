@@ -20,11 +20,17 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v0-nix
+            - v0-nix-<< pipeline.git.revision >>
+            - v0-nix-<< pipeline.git.base_revision >>
+            - v0-nix-
   save_nix_cache:
     steps:
       - save_cache:
-          key: v0-nix
+          key: v0-nix-<< pipeline.git.revision >>
+          paths:
+            - /nix
+      - save_cache:
+          key: v0-nix-
           paths:
             - /nix
 
