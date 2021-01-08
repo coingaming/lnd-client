@@ -77,31 +77,36 @@ spec =
         let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
         qr `shouldSatisfy` isJust
     describe "subscribeInvoices" $ do
-      --
-      -- TODO : investigate why this is not working sometimes
-      --
-      --it "addNormalInvoice" $ \env -> do
-      --  res <-
-      --    runApp env $ do
-      --      i <- liftLndResult =<< addInvoice (envLndMerchant env) addInvoiceRequest
-      --      q <- atomically . dupTChan $ envMerchantIQ env
-      --      receiveInvoice (AddInvoice.rHash i) GRPC.Invoice_InvoiceStateOPEN q
-      --  res `shouldSatisfy` isRight
+      it "addNormalInvoice" $ \env -> do
+        res <-
+          runApp env $ do
+            queue <- atomically . dupTChan $ envMerchantIQ env
+            i <-
+              liftLndResult
+                =<< addInvoice (envLndMerchant env) addInvoiceRequest
+            receiveInvoice
+              (AddInvoice.rHash i)
+              GRPC.Invoice_InvoiceStateOPEN
+              queue
+        res `shouldSatisfy` isRight
       it "settleNormalInvoice" $ \env -> do
         setupEnv env
         res <-
           runApp env $ do
-            let air = AddInvoiceRequest (MoneyAmount 1000) Nothing Nothing
+            let air =
+                  AddInvoiceRequest
+                    (MoneyAmount 1000)
+                    Nothing
+                    Nothing
+            q <- atomically . dupTChan $ envMerchantIQ env
             i <- liftLndResult =<< addInvoice (envLndMerchant env) air
             let rh = AddInvoice.rHash i
             let pr = AddInvoice.paymentRequest i
             let spr = SendPaymentRequest pr $ MoneyAmount 1000
-            q <- atomically . dupTChan $ envMerchantIQ env
-            --
-            -- TODO : investigate why this is not working sometimes
-            --
-            --liftLndResult =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
-            void $ liftLndResult =<< sendPayment (envLndCustomer env) spr
+            liftLndResult
+              =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
+            void $
+              liftLndResult =<< sendPayment (envLndCustomer env) spr
             receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
         res `shouldSatisfy` isRight
     describe "addHodlInvoice" $ it "succeeds" $ \env -> do
@@ -131,10 +136,7 @@ spec =
                 (MoneyAmount 1000)
                 Nothing
                 Nothing
-        let sub =
-              SubscribeInvoicesRequest
-                (Just $ AddIndex 1)
-                (Just $ SettleIndex 1)
+        let sub = SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
         x <- runApp env $ do
           (_, w) <-
             Watcher.spawnLink
@@ -188,10 +190,7 @@ spec =
                 (MoneyAmount 1000)
                 Nothing
                 Nothing
-        let sub =
-              SubscribeInvoicesRequest
-                (Just $ AddIndex 1)
-                (Just $ SettleIndex 1)
+        let sub = SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
         let emptyChan = do
               x <- readTChanTimeout (MicroSecondsDelay 500000) cr
               if isJust x then emptyChan else return ()

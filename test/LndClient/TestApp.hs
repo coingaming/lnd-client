@@ -195,7 +195,7 @@ newEnv = do
           -- TODO : this is related to LND bug
           -- https://github.com/lightningnetwork/lnd/issues/2469
           --
-          (SubscribeInvoicesRequest (Just $ AddIndex 1) (Just $ SettleIndex 1))
+          (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
   delay 3000000
   return env
 
