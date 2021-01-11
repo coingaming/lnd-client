@@ -8,7 +8,7 @@ self: super:
     doJailbreak = self.haskell.lib.doJailbreak;
   in
     {
-      lnd = (import ./lnd.nix {
+      lnd = (import ./overlay/lnd.nix {
         buildGoModule = pkgs20.buildGoModule;
         fetchFromGitHub = pkgs20.fetchFromGitHub;
         lib = pkgs20.lib;

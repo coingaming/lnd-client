@@ -4,16 +4,16 @@
 
 buildGoModule rec {
   pname = "lnd";
-  version = "9763cfbd038668dbca5b1d97f8e2000d7e6e06b5";
+  version = "f76ca30c231c1c97319401cdf1955461a8f710d3";
 
   src = fetchFromGitHub {
     owner = "coingaming";
     repo = "lnd";
     rev = "${version}";
-    sha256 = "0klhri2p72m01p2zq4mn59fdl2m05knnix4w876wcr5pajblss66";
+    sha256 = "0gnghv4yjxz1n42icib1s26sq0bxzwa81530y5vimqysn4ahasxr";
   };
 
-  vendorSha256 = "090b9sxvdwh787w0rhrcbky9pbx64qgqx1pvk9ysk3886nxdhf7k";
+  vendorSha256 = "00q8dydskzg4rhxnnpzpbmmvc3q4wzm8z3dps2bv0nx3fk0fmrl3";
 
   doCheck = false;
 
