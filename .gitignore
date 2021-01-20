@@ -11,3 +11,4 @@ postgres.log
 result
 nohup.out
 .DS_Store
+.lnd/tls*

@@ -44,6 +44,7 @@ stdenv.mkDerivation {
   NIX_SSL_CERT_FILE="${cacert}/etc/ssl/certs/ca-bundle.crt";
   NIX_PATH="/nix/var/nix/profiles/per-user/root/channels";
   shellHook = ''
+    sh ./nix/generate-tls-cert.sh
     source ./nix/export-test-envs.sh
     sh ./nix/reset-test-data.sh
     sh ./nix/spawn-test-deps.sh
