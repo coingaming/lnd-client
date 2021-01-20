@@ -32,6 +32,7 @@ stdenv.mkDerivation {
     proto3-suite.proto3-suite-linux
     git
     nix-prefetch-scripts
+    openssl
     openssh
     cabal2nix
     protobuf
