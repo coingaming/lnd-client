@@ -16,7 +16,8 @@ data Channel
         capacity :: MoneyAmount,
         localBalance :: MoneyAmount,
         remoteBalance :: MoneyAmount,
-        commitFee :: MoneyAmount
+        commitFee :: MoneyAmount,
+        active :: Bool
       }
   deriving (Eq)
 
@@ -29,6 +30,7 @@ instance FromGrpc Channel GRPC.Channel where
       <*> fromGrpc (GRPC.channelLocalBalance x)
       <*> fromGrpc (GRPC.channelRemoteBalance x)
       <*> fromGrpc (GRPC.channelCommitFee x)
+      <*> fromGrpc (GRPC.channelActive x)
 
 instance FromGrpc [Channel] GRPC.ListChannelsResponse where
   fromGrpc = fromGrpc . GRPC.listChannelsResponseChannels
