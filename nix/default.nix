@@ -8,7 +8,7 @@ with nixpkgs;
 let callPackage = lib.callPackageWith haskellPackages;
     pkg = callPackage ./pkg.nix {inherit stdenv;};
     systemDeps = [ protobuf makeWrapper cacert ];
-    testDeps = [ bitcoin lnd ];
+    testDeps = [ openssl bitcoin lnd ];
 in
   haskell.lib.overrideCabal pkg (drv: {
     setupHaskellDepends =
@@ -26,10 +26,10 @@ in
     doHaddock = false;
     prePatch = "hpack --force";
     preCheck = ''
+      sh ./nix/generate-tls-cert.sh
       source ./nix/export-test-envs.sh;
       sh ./nix/reset-test-data.sh;
       sh ./nix/spawn-test-deps.sh;
-      sleep 30
     '';
     postCheck = ''
       sh ./nix/shutdown-test-deps.sh
