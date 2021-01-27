@@ -77,10 +77,12 @@ instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
 instance FromGrpc CloseStatusUpdate GRPC.CloseStatusUpdate where
   fromGrpc x =
     case x of
-      GRPC.CloseStatusUpdate (Just (GRPC.CloseStatusUpdateUpdateChanClose a)) ->
-        Close <$> (fromGrpc a)
-      GRPC.CloseStatusUpdate (Just (GRPC.CloseStatusUpdateUpdateClosePending a)) ->
-        Pending <$> (fromGrpc a)
+      GRPC.CloseStatusUpdate
+        (Just (GRPC.CloseStatusUpdateUpdateChanClose a)) ->
+          Close <$> (fromGrpc a)
+      GRPC.CloseStatusUpdate
+        (Just (GRPC.CloseStatusUpdateUpdateClosePending a)) ->
+          Pending <$> (fromGrpc a)
       GRPC.CloseStatusUpdate Nothing ->
         Right NothingUpdate
 

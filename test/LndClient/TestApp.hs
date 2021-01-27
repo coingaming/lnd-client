@@ -59,7 +59,6 @@ import LndClient.Data.SubscribeInvoices
   )
 import LndClient.Import
 import LndClient.RPC.Silent
-import LndClient.TestOrphan ()
 import qualified LndGrpc as GRPC
 import Network.Bitcoin as BTC (Client, getClient)
 import Network.Bitcoin.BlockChain (getBlockCount)
@@ -67,8 +66,10 @@ import Network.Bitcoin.Mining (generateToAddress)
 import Network.GRPC.HighLevel.Generated
 
 liftLndResult :: (MonadIO m) => Either LndError a -> m a
-liftLndResult (Right x) = return x
-liftLndResult (Left x) = liftIO $ fail $ "liftLndResult failed " <> show x
+liftLndResult (Right x) =
+  pure x
+liftLndResult (Left x) =
+  liftIO $ fail $ "liftLndResult failed " <> show x
 
 customerNodeLocation :: NodeLocation
 customerNodeLocation = NodeLocation "localhost:9734"
@@ -254,7 +255,7 @@ setupOneChannel env = do
     liftLndResult
       =<< listChannels
         customerEnv
-        (ListChannelsRequest False False False False Nothing)
+        (ListChannelsRequest True False False False Nothing)
   let cps = Channel.channelPoint <$> cs
   liftIO $
     mapM_
@@ -410,12 +411,9 @@ receiveClosedChannels = this 0
       x0 <- readTChanTimeout (MicroSecondsDelay 1000000) cq
       let x = channelEvent . snd <$> x0
       $(logTM) InfoS $ logStr $
-        "receiveClosedChannels - got "
-          <> (show x :: Text)
-          <> " and expecting channel points "
-          <> show cps0
+        "receiveClosedChannels - got " <> (show x :: Text)
       case x of
-        Just (ChannelEventUpdateChannelClosedChannel res) -> do
+        Just (ChannelEventUpdateChannelClosedChannel res) ->
           case filter (/= chPoint res) cps0 of
             [] -> pure $ Right ()
             cps -> mine1 env >> this (attempt + 1) env cps cq

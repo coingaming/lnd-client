@@ -33,7 +33,6 @@ import LndClient.Import
 import LndClient.QRCode
 import LndClient.RPC.Katip
 import LndClient.TestApp
-import LndClient.TestOrphan ()
 import qualified LndClient.Watcher as Watcher
 import qualified LndGrpc as GRPC
 import Test.Hspec

@@ -114,7 +114,9 @@ grpcSyncKatip ::
   m (Either LndError b)
 grpcSyncKatip rpcName service method env req =
   katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
-    $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
+    $(logTM)
+      (newSeverity env InfoS Nothing Nothing)
+      "RPC is running..."
     (ts, res) <-
       liftIO $ stopwatch $
         grpcSyncSilent rpcName service method env req
@@ -124,10 +126,13 @@ grpcSyncKatip rpcName service method env req =
     katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $ do
       case res of
         Left e -> do
-          let logMsg = logStr ("RPC exited with message " <> show e :: Text)
-          $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) logMsg
+          $(logTM)
+            (newSeverity env ErrorS (Just ts) (Just e))
+            $ logStr ("RPC exited with message " <> show e :: Text)
         Right _ ->
-          $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
+          $(logTM)
+            (newSeverity env InfoS (Just ts) Nothing)
+            "RPC succeded"
       return res
 
 grpcSubscribeSilent ::

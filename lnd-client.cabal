@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2c5b88739798a81adc06b91a13f8bbfa5a42270b5dacb8e32d991ae381341b99
+-- hash: 88457ab11f60694d9c6924f8612008fa2efdc8a1766606005f0763a75b3508d1
 
 name:           lnd-client
 version:        0.1.0.0
@@ -124,7 +124,6 @@ test-suite lnd-client-test
   other-modules:
       LndClient.RPCSpec
       LndClient.TestApp
-      LndClient.TestOrphan
       Paths_lnd_client
   hs-source-dirs:
       test

@@ -13,7 +13,7 @@ data Payment
         valueSat :: MoneyAmount,
         state :: GRPC.Payment_PaymentStatus
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance FromGrpc Payment GRPC.Payment where
   fromGrpc x =

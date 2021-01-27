@@ -5,7 +5,10 @@ module LndClient.Data.Channel
   )
 where
 
-import LndClient.Data.ChannelPoint (ChannelPoint (..), channelPointParser)
+import LndClient.Data.ChannelPoint
+  ( ChannelPoint (..),
+    channelPointParser,
+  )
 import LndClient.Import
 import qualified LndGrpc as GRPC
 

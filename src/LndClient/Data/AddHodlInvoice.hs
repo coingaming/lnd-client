@@ -13,7 +13,7 @@ data AddHodlInvoiceRequest
         value :: MoneyAmount,
         expiry :: Maybe Seconds
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance ToGrpc AddHodlInvoiceRequest GRPC.AddHoldInvoiceRequest where
   toGrpc x =

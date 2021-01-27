@@ -46,19 +46,19 @@ newtype NodeLocation = NodeLocation Text
   deriving (Eq, Show)
 
 newtype AddIndex = AddIndex Word64
-  deriving (PersistField, PersistFieldSql, Eq, Ord)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
 
 newtype SettleIndex = SettleIndex Word64
-  deriving (PersistField, PersistFieldSql, Eq, Ord)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
 
 newtype PaymentRequest = PaymentRequest Text
-  deriving (PersistField, PersistFieldSql, Eq, QR.ToText)
+  deriving (PersistField, PersistFieldSql, Eq, QR.ToText, Show)
 
 newtype RHash = RHash ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Ord)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
 
 newtype RPreimage = RPreimage ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Ord)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
 
 newtype MoneyAmount = MoneyAmount Word64
   deriving
@@ -72,16 +72,16 @@ newtype MoneyAmount = MoneyAmount Word64
     )
 
 newtype CipherSeedMnemonic = CipherSeedMnemonic [Text]
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, Show)
 
 newtype AezeedPassphrase = AezeedPassphrase Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, Show)
 
 newtype Seconds = Seconds Word64
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, Show)
 
 newtype GrpcTimeoutSeconds = GrpcTimeoutSeconds Int
-  deriving (Eq, Ord, Show, FromJSON)
+  deriving (Eq, Ord, FromJSON, Show)
 
 instance ToGrpc NodePubKey ByteString where
   toGrpc = Right . coerce
@@ -129,9 +129,6 @@ instance FromGrpc MoneyAmount Int64 where
     maybeToRight
       (ToGrpcError "MoneyAmount overflow")
       $ MoneyAmount <$> safeFromIntegral x
-
-instance Show RHash where
-  show = ("RHash " <>) . showB64BS . coerce
 
 instance FromGrpc RHash ByteString where
   fromGrpc = Right . RHash
