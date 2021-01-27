@@ -13,7 +13,7 @@ data AddInvoiceRequest
         memo :: Maybe Text,
         expiry :: Maybe Seconds
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 data AddInvoiceResponse
   = AddInvoiceResponse
@@ -21,7 +21,7 @@ data AddInvoiceResponse
         paymentRequest :: PaymentRequest,
         addIndex :: AddIndex
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance ToGrpc AddInvoiceRequest GRPC.Invoice where
   toGrpc x =

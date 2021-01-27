@@ -50,5 +50,10 @@ instance FromGrpc a b => FromGrpc (Maybe a) b where
       then Right Nothing
       else Just <$> fromGrpc x
 
+instance FromGrpc a b => FromGrpc a (Maybe b) where
+  fromGrpc = \case
+    Nothing -> Left $ FromGrpcError "required message is missing"
+    Just x -> fromGrpc x
+
 instance FromGrpc a b => FromGrpc [a] (Vector b) where
   fromGrpc = mapM fromGrpc . toList

@@ -5,7 +5,10 @@ module LndClient.Data.Channel
   )
 where
 
-import LndClient.Data.ChannelPoint (ChannelPoint (..), channelPointParser)
+import LndClient.Data.ChannelPoint
+  ( ChannelPoint (..),
+    channelPointParser,
+  )
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
@@ -19,7 +22,7 @@ data Channel
         commitFee :: MoneyAmount,
         active :: Bool
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance FromGrpc Channel GRPC.Channel where
   fromGrpc x =

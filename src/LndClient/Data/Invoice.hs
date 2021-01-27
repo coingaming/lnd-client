@@ -19,7 +19,7 @@ data Invoice
         addIndex :: AddIndex,
         state :: GRPC.Invoice_InvoiceState
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance FromGrpc Invoice GRPC.Invoice where
   fromGrpc x =

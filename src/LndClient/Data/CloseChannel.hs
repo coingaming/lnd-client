@@ -19,27 +19,27 @@ data CloseChannelRequest
         satPerByte :: Maybe Int64,
         deliveryAddress :: Maybe Text
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 data CloseStatusUpdate
   = Pending PendingUpdate
   | Close ChannelCloseUpdate
   | NothingUpdate
-  deriving (Eq)
+  deriving (Eq, Show)
 
 data PendingUpdate
   = PendingUpdate
       { txid :: ByteString,
         outputIndex :: Word32
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 data ChannelCloseUpdate
   = ChannelCloseUpdate
       { closingTxid :: ByteString,
         success :: Bool
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 data ChannelCloseSummary
   = ChannelCloseSummary
@@ -47,7 +47,7 @@ data ChannelCloseSummary
         chPoint :: ChannelPoint,
         settledBalance :: MoneyAmount
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance FromGrpc ChannelCloseSummary GRPC.ChannelCloseSummary where
   fromGrpc x =
@@ -77,10 +77,12 @@ instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
 instance FromGrpc CloseStatusUpdate GRPC.CloseStatusUpdate where
   fromGrpc x =
     case x of
-      GRPC.CloseStatusUpdate (Just (GRPC.CloseStatusUpdateUpdateChanClose a)) ->
-        Close <$> (fromGrpc a)
-      GRPC.CloseStatusUpdate (Just (GRPC.CloseStatusUpdateUpdateClosePending a)) ->
-        Pending <$> (fromGrpc a)
+      GRPC.CloseStatusUpdate
+        (Just (GRPC.CloseStatusUpdateUpdateChanClose a)) ->
+          Close <$> (fromGrpc a)
+      GRPC.CloseStatusUpdate
+        (Just (GRPC.CloseStatusUpdateUpdateClosePending a)) ->
+          Pending <$> (fromGrpc a)
       GRPC.CloseStatusUpdate Nothing ->
         Right NothingUpdate
 

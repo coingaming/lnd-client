@@ -18,13 +18,14 @@ module LndClient.TestApp
     customerNodeLocation,
     merchantNodeLocation,
     syncWallets,
-    mine6_,
-    mine101_,
+    mine6,
     newEnv,
+    withEnv,
     deleteEnv,
-    setupEnv,
+    setupOneChannel,
     liftMaybe,
     receiveInvoice,
+    receiveClosedChannels,
   )
 where
 
@@ -34,28 +35,41 @@ import LndClient.Data.AddInvoice as AddInvoice
   )
 import LndClient.Data.Channel as Channel (Channel (..))
 import LndClient.Data.ChannelPoint as ChannelPoint (ChannelPoint (..))
-import LndClient.Data.CloseChannel (CloseChannelRequest (..))
+import LndClient.Data.CloseChannel
+  ( ChannelCloseSummary (..),
+    CloseChannelRequest (..),
+  )
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
 import LndClient.Data.LndEnv
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
-import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..))
+import LndClient.Data.Peer
+  ( ConnectPeerRequest (..),
+    LightningAddress (..),
+  )
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
-import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..), ChannelEventUpdateChannel (..))
-import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
+import LndClient.Data.SubscribeChannelEvents
+  ( ChannelEventUpdate (..),
+    ChannelEventUpdateChannel (..),
+  )
+import LndClient.Data.SubscribeInvoices
+  ( SubscribeInvoicesRequest (..),
+  )
 import LndClient.Import
 import LndClient.RPC.Silent
-import LndClient.TestOrphan ()
 import qualified LndGrpc as GRPC
 import Network.Bitcoin as BTC (Client, getClient)
+import Network.Bitcoin.BlockChain (getBlockCount)
 import Network.Bitcoin.Mining (generateToAddress)
 import Network.GRPC.HighLevel.Generated
 
 liftLndResult :: (MonadIO m) => Either LndError a -> m a
-liftLndResult (Right x) = return x
-liftLndResult (Left x) = liftIO $ fail $ "liftLndResult failed " <> show x
+liftLndResult (Right x) =
+  pure x
+liftLndResult (Left x) =
+  liftIO $ fail $ "liftLndResult failed " <> show x
 
 customerNodeLocation :: NodeLocation
 customerNodeLocation = NodeLocation "localhost:9734"
@@ -113,11 +127,18 @@ custEnv x =
       envLndAezeedPassphrase = Nothing
     }
 
-readEnv :: KatipContextT IO Env
+readEnv :: IO Env
 readEnv = do
-  le <- getLogEnv
-  ctx <- getKatipContext
-  ns <- getKatipNamespace
+  handleScribe <-
+    mkHandleScribeWithFormatter
+      bracketFormat
+      ColorIfTerminal
+      stdout
+      (permitItem DebugS)
+      V2
+  le <-
+    registerScribe "stdout" handleScribe defaultScribeSettings
+      =<< initLogEnv "LndClient" "test"
   lndEnv <- liftIO readLndEnv
   bc <- liftIO newBtcClient
   mcq <- atomically newBroadcastTChan
@@ -129,30 +150,16 @@ readEnv = do
         envLndCustomer = custEnv lndEnv,
         envBtcClient = bc,
         envKatipLE = le,
-        envKatipCTX = ctx,
-        envKatipNS = ns,
+        envKatipCTX = mempty,
+        envKatipNS = mempty,
         envMerchantCQ = mcq,
         envCustomerCQ = ccq,
         envMerchantIQ = miq
       }
 
-runKatip :: KatipContextT IO a -> IO a
-runKatip x = do
-  handleScribe <-
-    mkHandleScribeWithFormatter
-      bracketFormat
-      ColorIfTerminal
-      stdout
-      (permitItem DebugS)
-      V2
-  le <-
-    registerScribe "stdout" handleScribe defaultScribeSettings
-      =<< initLogEnv "LndClient" "test"
-  runKatipContextT le (mempty :: LogContexts) mempty x
-
 newEnv :: IO Env
 newEnv = do
-  env <- runKatip readEnv
+  env <- readEnv
   let merchantEnv = envLndMerchant env
   let customerEnv = envLndCustomer env
   let merchantCQ = envMerchantCQ env
@@ -163,7 +170,7 @@ newEnv = do
     --
     void $ liftLndResult =<< lazyInitWallet merchantEnv
     void $ liftLndResult =<< lazyInitWallet customerEnv
-    liftIO $ mine101_ env
+    lazyMineInitialCoins env
     --
     -- Connect Customer to Merchant
     --
@@ -178,14 +185,18 @@ newEnv = do
                   },
               perm = False
             }
-    void $ liftLndResult =<< lazyConnectPeer customerEnv connectPeerRequest
+    void $
+      liftLndResult
+        =<< lazyConnectPeer customerEnv connectPeerRequest
     --
     -- Subscribe to events
     --
     void . spawnLink $
-      liftLndResult =<< subscribeChannelEventsChan (pure merchantCQ) merchantEnv
+      liftLndResult
+        =<< subscribeChannelEventsChan (pure merchantCQ) merchantEnv
     void . spawnLink $
-      liftLndResult =<< subscribeChannelEventsChan (pure customerCQ) customerEnv
+      liftLndResult
+        =<< subscribeChannelEventsChan (pure customerCQ) customerEnv
     void . spawnLink $
       liftLndResult
         =<< subscribeInvoicesChan
@@ -196,11 +207,16 @@ newEnv = do
           -- https://github.com/lightningnetwork/lnd/issues/2469
           --
           (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
-  delay 3000000
-  return env
+    pure env
 
 deleteEnv :: Env -> IO ()
 deleteEnv = void . closeScribes . envKatipLE
+
+withEnv :: (Env -> AppM IO ()) -> IO ()
+withEnv f = do
+  env <- newEnv
+  runApp env $ f env
+  deleteEnv env
 
 newBtcClient :: IO BTC.Client
 newBtcClient =
@@ -209,70 +225,65 @@ newBtcClient =
     "developer"
     "developer"
 
-mine_ :: Int -> Env -> IO ()
-mine_ x env = do
-  NewAddressResponse btcAddress <-
-    runApp env $
-      liftLndResult
-        =<< newAddress
-          (envLndCustomer env)
-          GRPC.AddressTypeWITNESS_PUBKEY_HASH
-  void $ generateToAddress (envBtcClient env) x (toStrict btcAddress) Nothing
-  delay 3000000
-  runApp_ env $ liftLndResult =<< syncWallets env
-  return ()
+mine :: KatipContext m => Int -> Text -> Env -> m ()
+mine x btcAddr env = do
+  $(logTM) InfoS $ logStr $
+    "Mining " <> show x <> (" blocks ..." :: Text)
+  void . liftIO $
+    generateToAddress (envBtcClient env) x (toStrict btcAddr) Nothing
+  liftLndResult =<< syncWallets env
 
-mine6_ :: Env -> IO ()
-mine6_ = mine_ 6
+mine6 :: KatipContext m => Env -> m ()
+mine6 env = do
+  btcAddr <- customerAddress env
+  mine 6 btcAddr env
 
-mine101_ :: Env -> IO ()
-mine101_ = mine_ 101
+mine1 :: KatipContext m => Env -> m ()
+mine1 env = do
+  btcAddr <- customerAddress env
+  mine 1 btcAddr env
 
-setupEnv :: Env -> IO ()
-setupEnv env = runApp env $ do
+setupOneChannel :: (KatipContext m, MonadUnliftIO m) => Env -> m ()
+setupOneChannel env = do
+  mq <- atomically . dupTChan $ envMerchantCQ env
+  cq <- atomically . dupTChan $ envCustomerCQ env
   --
   -- Initialize closing channels procedure
   --
-  $(logTM) InfoS "setupEnv - closing channels ..."
+  $(logTM) InfoS "SetupOneChannel - closing channels ..."
   cs <-
     liftLndResult
       =<< listChannels
         customerEnv
-        (ListChannelsRequest False False False False Nothing)
+        (ListChannelsRequest True False False False Nothing)
   let cps = Channel.channelPoint <$> cs
-  ts <-
-    liftIO $
-      mapM
-        ( \cp ->
-            spawnLink $ runApp env $
-              closeChannel
-                --
-                -- TODO : investigate why it throws empty gRPC
-                -- response error and as consequence
-                -- probably it's how subscription terminates
-                -- when channel is completely closed
-                --
-                -- but bad thing is that callback sometimes
-                -- is never called
-                --
-                (const $ return ())
-                (envLndMerchant env)
-                (CloseChannelRequest cp True Nothing Nothing Nothing)
-        )
-        cps
-  --
-  -- Give some time for closeChannel processes to be spawned
-  -- Give Customer some money to operate
-  -- And wait for every channel to be closed
-  --
-  liftIO $ do
-    delay 3000000
-    mine6_ env
-    mapM_ wait ts
+  liftIO $
+    mapM_
+      ( \cp ->
+          spawnLink $ runApp env $
+            closeChannel
+              --
+              -- TODO : investigate why it throws empty gRPC
+              -- response error and as consequence
+              -- probably it's how subscription terminates
+              -- when channel is completely closed
+              --
+              -- but bad thing is that callback sometimes
+              -- is never called, that's why it's not used there
+              -- we are getting TChan events instead from
+              -- previous opened subscription
+              --
+              (const $ return ())
+              (envLndMerchant env)
+              (CloseChannelRequest cp False Nothing Nothing Nothing)
+      )
+      cps
+  liftLndResult =<< receiveClosedChannels env cps mq
+  liftLndResult =<< receiveClosedChannels env cps cq
   --
   -- Open channel from Customer to Merchant
   --
-  $(logTM) InfoS "setupEnv - opening channel ..."
+  $(logTM) InfoS "SetupOneChannel - opening channel ..."
   GetInfoResponse merchantPubKey _ _ <-
     liftLndResult =<< getInfo merchantEnv
   let openChannelRequest =
@@ -289,34 +300,34 @@ setupEnv env = runApp env $ do
             spendUnconfirmed = Nothing,
             closeAddress = Nothing
           }
-  runApp env $ do
-    cp <- liftLndResult =<< openChannelSync (envLndCustomer env) openChannelRequest
-    cq <- atomically . dupTChan $ envCustomerCQ env
-    liftIO $ do
-      delay 3000000
-      mine6_ env
-    liftLndResult =<< receiveActiveChannel cp cq
-    --
-    -- TODO : this invoice is added and settled to
-    -- raise invoice index to 1 to be able to receive
-    -- notifications about all next invoices
-    -- remove when LND bug will be fixed
-    -- https://github.com/lightningnetwork/lnd/issues/2469
-    --
-    let addInvoiceRequest =
-          AddInvoiceRequest
-            { memo = Just "HELLO",
-              value = MoneyAmount 1000,
-              expiry = Just $ Seconds 1000
-            }
-    invoice <- liftLndResult =<< addInvoice merchantEnv addInvoiceRequest
-    let sendPaymentRequest =
-          SendPaymentRequest
-            { paymentRequest = AddInvoice.paymentRequest invoice,
-              amt = MoneyAmount 1000
-            }
-    void $ liftLndResult =<< sendPayment customerEnv sendPaymentRequest
-  $(logTM) InfoS "setupEnv - finished"
+  cp <-
+    liftLndResult
+      =<< openChannelSync (envLndCustomer env) openChannelRequest
+  liftLndResult =<< receiveActiveChannel env cp mq
+  liftLndResult =<< receiveActiveChannel env cp cq
+  --
+  -- TODO : this invoice is added and settled to
+  -- raise invoice index to 1 to be able to receive
+  -- notifications about all next invoices
+  -- remove when LND bug will be fixed
+  -- https://github.com/lightningnetwork/lnd/issues/2469
+  --
+  let addInvoiceRequest =
+        AddInvoiceRequest
+          { memo = Just "HELLO",
+            value = MoneyAmount 1000,
+            expiry = Just $ Seconds 1000
+          }
+  invoice <-
+    liftLndResult =<< addInvoice merchantEnv addInvoiceRequest
+  let sendPaymentRequest =
+        SendPaymentRequest
+          { paymentRequest = AddInvoice.paymentRequest invoice,
+            amt = MoneyAmount 1000
+          }
+  void $
+    liftLndResult =<< sendPayment customerEnv sendPaymentRequest
+  $(logTM) InfoS "SetupOneChannel - finished"
   where
     merchantEnv = envLndMerchant env
     customerEnv = envLndCustomer env
@@ -361,20 +372,53 @@ receiveActiveChannel ::
   ( MonadUnliftIO m,
     KatipContext m
   ) =>
+  Env ->
   ChannelPoint ->
   TChan ((), ChannelEventUpdate) ->
   m (Either LndError ())
-receiveActiveChannel cp cq = do
-  x <- readTChanTimeout (MicroSecondsDelay 30000000) cq
-  case channelEvent . snd <$> x of
-    Just (ChannelEventUpdateChannelActiveChannel gcp) ->
-      if cp == gcp
-        then return $ Right ()
-        else receiveActiveChannel cp cq
-    Just _ ->
-      receiveActiveChannel cp cq
-    Nothing ->
-      return . Left $ TChanTimeout "receiveActiveChannel"
+receiveActiveChannel = this 0
+  where
+    this (attempt :: Integer) env cp cq =
+      if attempt > 30
+        then pure $ Left $ LndError "receiveActiveChannel - exceeded"
+        else do
+          x <- readTChanTimeout (MicroSecondsDelay 1000000) cq
+          case channelEvent . snd <$> x of
+            Just (ChannelEventUpdateChannelActiveChannel gcp) ->
+              if cp == gcp
+                then pure $ Right ()
+                else mine1 env >> this (attempt + 1) env cp cq
+            _ ->
+              mine1 env >> this (attempt + 1) env cp cq
+
+receiveClosedChannels ::
+  ( MonadUnliftIO m,
+    KatipContext m
+  ) =>
+  Env ->
+  [ChannelPoint] ->
+  TChan ((), ChannelEventUpdate) ->
+  m (Either LndError ())
+receiveClosedChannels = this 0
+  where
+    this _ _ [] _ =
+      pure $ Right ()
+    this 30 _ _ _ =
+      pure
+        $ Left
+        $ LndError "receiveClosedChannels - exceeded"
+    this (attempt :: Integer) env cps0 cq = do
+      x0 <- readTChanTimeout (MicroSecondsDelay 1000000) cq
+      let x = channelEvent . snd <$> x0
+      $(logTM) InfoS $ logStr $
+        "receiveClosedChannels - got " <> (show x :: Text)
+      case x of
+        Just (ChannelEventUpdateChannelClosedChannel res) ->
+          case filter (/= chPoint res) cps0 of
+            [] -> pure $ Right ()
+            cps -> mine1 env >> this (attempt + 1) env cps cq
+        _ ->
+          mine1 env >> this (attempt + 1) env cps0 cq
 
 receiveInvoice ::
   ( MonadUnliftIO m,
@@ -385,12 +429,43 @@ receiveInvoice ::
   TChan (SubscribeInvoicesRequest, Invoice) ->
   m (Either LndError ())
 receiveInvoice rh s q = do
-  mx <- readTChanTimeout (MicroSecondsDelay 30000000) q
-  $(logTM) InfoS $ logStr $ "Received Invoice: " <> (show $ snd <$> mx :: Text)
-  case (\x -> Invoice.rHash x == rh && Invoice.state x == s) . snd <$> mx of
+  mx0 <- readTChanTimeout (MicroSecondsDelay 30000000) q
+  let mx = snd <$> mx0
+  $(logTM) InfoS $ logStr $
+    "receiveInvoice - " <> (show $ mx :: Text)
+  case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
     Just True -> return $ Right ()
     Just False -> receiveInvoice rh s q
     Nothing -> return . Left $ TChanTimeout "receiveInvoice"
+
+customerAddress :: KatipContext m => Env -> m Text
+customerAddress env = do
+  NewAddressResponse btcAddress <-
+    liftLndResult
+      =<< newAddress
+        (envLndCustomer env)
+        GRPC.AddressTypeWITNESS_PUBKEY_HASH
+  pure btcAddress
+
+merchantAddress :: KatipContext m => Env -> m Text
+merchantAddress env = do
+  NewAddressResponse btcAddress <-
+    liftLndResult
+      =<< newAddress
+        (envLndMerchant env)
+        GRPC.AddressTypeWITNESS_PUBKEY_HASH
+  pure btcAddress
+
+lazyMineInitialCoins :: KatipContext m => Env -> m ()
+lazyMineInitialCoins env = do
+  h <- liftIO . getBlockCount $ envBtcClient env
+  when (h < 102) $ do
+    mercAddr <- merchantAddress env
+    custAddr <- customerAddress env
+    mine 1 mercAddr env
+    mine 1 custAddr env
+    -- reward coins are spendable only after 100 blocks
+    mine 100 custAddr env
 
 syncWallets ::
   (KatipContext m) =>

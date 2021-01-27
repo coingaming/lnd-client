@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1b7dff6fce5314f59caf3fb1e2312dc9847fa85c2fa36d50517d80e829e1e15c
+-- hash: 88457ab11f60694d9c6924f8612008fa2efdc8a1766606005f0763a75b3508d1
 
 name:           lnd-client
 version:        0.1.0.0
@@ -35,6 +35,8 @@ library
       LndClient.Data.Channel
       LndClient.Data.ChannelPoint
       LndClient.Data.CloseChannel
+      LndClient.Data.ClosedChannel
+      LndClient.Data.ForceClosedChannel
       LndClient.Data.GetInfo
       LndClient.Data.HtlcEvent
       LndClient.Data.InitWallet
@@ -47,12 +49,16 @@ library
       LndClient.Data.Payment
       LndClient.Data.PayReq
       LndClient.Data.Peer
+      LndClient.Data.PendingChannel
+      LndClient.Data.PendingChannels
+      LndClient.Data.PendingOpenChannel
       LndClient.Data.SendPayment
       LndClient.Data.SubscribeChannelEvents
       LndClient.Data.SubscribeInvoices
       LndClient.Data.TrackPayment
       LndClient.Data.Type
       LndClient.Data.UnlockWallet
+      LndClient.Data.WaitingCloseChannel
       LndClient.Import
       LndClient.Import.External
       LndClient.QRCode
@@ -118,7 +124,6 @@ test-suite lnd-client-test
   other-modules:
       LndClient.RPCSpec
       LndClient.TestApp
-      LndClient.TestOrphan
       Paths_lnd_client
   hs-source-dirs:
       test

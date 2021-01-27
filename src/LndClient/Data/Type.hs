@@ -24,15 +24,19 @@ data LndError
   deriving (Eq, Show)
 
 newtype LoggingStrategy
-  = LoggingStrategy (Severity -> Maybe Timespan -> Maybe LndError -> Severity)
+  = LoggingStrategy
+      (Severity -> Maybe Timespan -> Maybe LndError -> Severity)
 
 logDefault :: LoggingStrategy
-logDefault = LoggingStrategy $ \x _ _ -> x
+logDefault =
+  LoggingStrategy $ \x _ _ -> x
 
 logMaskErrors :: LoggingStrategy
-logMaskErrors = LoggingStrategy $ \x _ _ -> if x >= InfoS then InfoS else x
+logMaskErrors =
+  LoggingStrategy $ \x _ _ -> if x >= InfoS then InfoS else x
 
 logOmitInfo :: LoggingStrategy
-logOmitInfo = LoggingStrategy $ \x _ _ -> if x <= InfoS then DebugS else x
+logOmitInfo =
+  LoggingStrategy $ \x _ _ -> if x <= InfoS then DebugS else x
 
 instance Exception LndError

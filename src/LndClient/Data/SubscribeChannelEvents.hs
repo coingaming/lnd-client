@@ -19,7 +19,7 @@ data ChannelEventUpdate
       { channelEvent :: ChannelEventUpdateChannel,
         eventType :: Enumerated GRPC.ChannelEventUpdate_UpdateType
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 data ChannelEventUpdateChannel
   = ChannelEventUpdateChannelOpenChannel Channel
@@ -27,7 +27,7 @@ data ChannelEventUpdateChannel
   | ChannelEventUpdateChannelActiveChannel ChannelPoint
   | ChannelEventUpdateChannelInactiveChannel ChannelPoint
   | ChannelEventUpdateChannelPendingOpenChannel PendingUpdate
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance FromGrpc ChannelEventUpdate GRPC.ChannelEventUpdate where
   fromGrpc x =

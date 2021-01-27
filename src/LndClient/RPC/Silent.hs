@@ -30,6 +30,7 @@ module LndClient.RPC.Silent
     ensureHodlInvoice,
     trackPaymentV2,
     trackPaymentV2Chan,
+    pendingChannels,
   )
 where
 

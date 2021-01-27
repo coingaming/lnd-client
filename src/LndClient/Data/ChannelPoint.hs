@@ -17,7 +17,7 @@ data ChannelPoint
       { fundingTxidBytes :: ByteString,
         outputIndex :: Word32
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance FromGrpc ChannelPoint GRPC.ChannelPoint where
   fromGrpc x =
@@ -51,8 +51,11 @@ channelPointParser x =
       case B16.decode txid of
         (txidHex, "") -> do
           idxTS <-
-            first (const $ FromGrpcError "Invalid ChannelPoint outputIndex") $
-              decodeUtf8' idxBS
+            first
+              ( const $
+                  FromGrpcError "Invalid ChannelPoint outputIndex"
+              )
+              $ decodeUtf8' idxBS
           ChannelPoint
             <$> pure (BS.reverse txidHex)
             <*> maybeToRight

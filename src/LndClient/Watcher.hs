@@ -46,7 +46,10 @@ data WatcherState a b m
         watcherTasks :: Map a (Async (a, Either LndError ()))
       }
 
-data LndResult a = Ok a | Error LndError
+data LndResult a
+  = Ok a
+  | Error LndError
+  deriving (Eq, Show)
 
 -- Spawn watcher where subscription accepts argument
 -- for example `subscribeInvoicesChan`
