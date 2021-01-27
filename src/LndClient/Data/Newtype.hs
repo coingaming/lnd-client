@@ -61,7 +61,15 @@ newtype RPreimage = RPreimage ByteString
   deriving (PersistField, PersistFieldSql, Eq, Ord)
 
 newtype MoneyAmount = MoneyAmount Word64
-  deriving (PersistField, PersistFieldSql, Eq, Num, Ord, FromJSON)
+  deriving
+    ( PersistField,
+      PersistFieldSql,
+      Eq,
+      Num,
+      Ord,
+      FromJSON,
+      Show
+    )
 
 newtype CipherSeedMnemonic = CipherSeedMnemonic [Text]
   deriving (PersistField, PersistFieldSql, Eq, FromJSON)

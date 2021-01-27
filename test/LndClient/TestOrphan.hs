@@ -7,15 +7,11 @@ module LndClient.TestOrphan
 where
 
 import LndClient.Data.AddInvoice
-import LndClient.Data.Channel
-import LndClient.Data.ChannelPoint
 import LndClient.Data.Invoice
 import LndClient.Data.Payment
 import LndClient.Data.SendPayment
 import LndClient.Import
 import LndClient.Watcher
-
-deriving instance Show MoneyAmount
 
 deriving instance Show SettleIndex
 
@@ -28,10 +24,6 @@ deriving instance Show Invoice
 deriving instance Show AddInvoiceRequest
 
 deriving instance Show AddInvoiceResponse
-
-deriving instance Show ChannelPoint
-
-deriving instance Show Channel
 
 deriving instance Show SendPaymentResponse
 

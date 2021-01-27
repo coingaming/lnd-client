@@ -19,7 +19,7 @@ data Channel
         commitFee :: MoneyAmount,
         active :: Bool
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance FromGrpc Channel GRPC.Channel where
   fromGrpc x =

@@ -30,6 +30,7 @@ module LndClient.RPC.Katip
     ensureHodlInvoice,
     trackPaymentV2,
     trackPaymentV2Chan,
+    pendingChannels,
   )
 where
 
@@ -70,7 +71,9 @@ lazyUnlockWallet ::
   m (Either LndError ())
 lazyUnlockWallet env =
   katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
-    $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
+    $(logTM)
+      (newSeverity env InfoS Nothing Nothing)
+      "RPC is running..."
     unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logMaskErrors})
     if unlocked
       then do
@@ -86,8 +89,12 @@ lazyInitWallet ::
   m (Either LndError ())
 lazyInitWallet env =
   katipAddContext (sl "RpcName" LazyInitWallet) $ do
-    $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
-    unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = logMaskErrors}
+    $(logTM)
+      (newSeverity env InfoS Nothing Nothing)
+      "RPC is running..."
+    unlockRes <-
+      lazyUnlockWallet $
+        env {envLndLogStrategy = logMaskErrors}
     if isRight unlockRes
       then do
         $(logTM)
@@ -103,7 +110,9 @@ ensureHodlInvoice ::
   m (Either LndError AddInvoiceResponse)
 ensureHodlInvoice env req =
   katipAddContext (sl "RpcName" EnsureHodlInvoice) $ do
-    $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
+    $(logTM)
+      (newSeverity env InfoS Nothing Nothing)
+      "RPC is running..."
     let rh = AddHodlInvoice.hash req
     _ <- addHodlInvoice (env {envLndLogStrategy = logMaskErrors}) req
     res <- lookupInvoice env rh

@@ -23,10 +23,17 @@ import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq (PayReq (..))
 import LndClient.Data.Payment (Payment (..))
-import LndClient.Data.Peer (ConnectPeerRequest (..), LightningAddress (..), Peer (..))
+import LndClient.Data.Peer
+  ( ConnectPeerRequest (..),
+    LightningAddress (..),
+    Peer (..),
+  )
+import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
-import LndClient.Data.SubscribeInvoices (SubscribeInvoicesRequest (..))
+import LndClient.Data.SubscribeInvoices
+  ( SubscribeInvoicesRequest (..),
+  )
 import LndClient.Data.TrackPayment (TrackPaymentRequest (..))
 import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
 import LndClient.Import
@@ -64,9 +71,12 @@ mkRpc k = do
           GRPC.walletUnlockerInitWallet
           env
           InitWalletRequest
-            { walletPassword = coerce $ envLndWalletPassword env,
-              cipherSeedMnemonic = coerce $ envLndCipherSeedMnemonic env,
-              aezeedPassphrase = coerce $ envLndAezeedPassphrase env
+            { walletPassword =
+                coerce $ envLndWalletPassword env,
+              cipherSeedMnemonic =
+                coerce $ envLndCipherSeedMnemonic env,
+              aezeedPassphrase =
+                coerce $ envLndAezeedPassphrase env
             }
       if isRight res
         then waitForGrpc env
@@ -173,7 +183,10 @@ mkRpc k = do
       m (Either LndError ())
     subscribeInvoicesChan mq env req = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
-      subscribeInvoices (\x -> atomically $ writeTChan q (req, x)) env req
+      subscribeInvoices
+        (\x -> atomically $ writeTChan q (req, x))
+        env
+        req
 
     subscribeChannelEvents ::
       ($(tcc) m) =>
@@ -196,7 +209,9 @@ mkRpc k = do
       m (Either LndError ())
     subscribeChannelEventsChan mq env = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
-      subscribeChannelEvents (\x -> atomically $ writeTChan q ((), x)) env
+      subscribeChannelEvents
+        (\x -> atomically $ writeTChan q ((), x))
+        env
 
     openChannel ::
       ($(tcc) m) =>
@@ -351,7 +366,22 @@ mkRpc k = do
       m (Either LndError ())
     trackPaymentV2Chan mc env req = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mc
-      trackPaymentV2 (\x -> atomically $ writeTChan q (req, x)) env req
+      trackPaymentV2
+        (\x -> atomically $ writeTChan q (req, x))
+        env
+        req
+
+    pendingChannels ::
+      ($(tcc) m) =>
+      LndEnv ->
+      m (Either LndError PendingChannelsResponse)
+    pendingChannels env =
+      $(grpcSync)
+        PendingChannels
+        GRPC.lightningClient
+        GRPC.lightningPendingChannels
+        env
+        GRPC.PendingChannelsRequest
     |]
   where
     tcc = case k of
