@@ -25,6 +25,7 @@ module LndClient.TestApp
     setupOneChannel,
     liftMaybe,
     receiveInvoice,
+    receiveClosedChannels,
   )
 where
 
@@ -277,10 +278,7 @@ setupOneChannel env = do
       )
       cps
   liftLndResult =<< receiveClosedChannels env cps mq
-  --
-  -- TODO : investigate why this is not working
-  --
-  --liftLndResult =<< receiveClosedChannels env cps cq
+  liftLndResult =<< receiveClosedChannels env cps cq
   --
   -- Open channel from Customer to Merchant
   --
@@ -414,9 +412,11 @@ receiveClosedChannels = this 0
       $(logTM) InfoS $ logStr $
         "receiveClosedChannels - got "
           <> (show x :: Text)
+          <> " and expecting channel points "
+          <> show cps0
       case x of
         Just (ChannelEventUpdateChannelClosedChannel res) -> do
-          case filter (== chPoint res) cps0 of
+          case filter (/= chPoint res) cps0 of
             [] -> pure $ Right ()
             cps -> mine1 env >> this (attempt + 1) env cps cq
         _ ->
@@ -431,10 +431,11 @@ receiveInvoice ::
   TChan (SubscribeInvoicesRequest, Invoice) ->
   m (Either LndError ())
 receiveInvoice rh s q = do
-  mx <- readTChanTimeout (MicroSecondsDelay 30000000) q
+  mx0 <- readTChanTimeout (MicroSecondsDelay 30000000) q
+  let mx = snd <$> mx0
   $(logTM) InfoS $ logStr $
-    "Received Invoice: " <> (show $ snd <$> mx :: Text)
-  case (\x -> Invoice.rHash x == rh && Invoice.state x == s) . snd <$> mx of
+    "receiveInvoice - " <> (show $ mx :: Text)
+  case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
     Just True -> return $ Right ()
     Just False -> receiveInvoice rh s q
     Nothing -> return . Left $ TChanTimeout "receiveInvoice"

@@ -96,13 +96,10 @@ spec = do
     liftIO $ res `shouldSatisfy` isRight
   it "settleNormalInvoice" $ withEnv $ \env -> do
     setupOneChannel env
-    let air =
-          AddInvoiceRequest
-            (MoneyAmount 1000)
-            Nothing
-            Nothing
     q <- atomically . dupTChan $ envMerchantIQ env
-    i <- liftLndResult =<< addInvoice (envLndMerchant env) air
+    i <-
+      liftLndResult
+        =<< addInvoice (envLndMerchant env) addInvoiceRequest
     let rh = AddInvoice.rHash i
     let pr = AddInvoice.paymentRequest i
     let spr = SendPaymentRequest pr $ MoneyAmount 1000
@@ -132,11 +129,6 @@ spec = do
       cw <- newBroadcastTChan
       (cw,) <$> dupTChan cw
     let merEnv = envLndMerchant env
-    let req =
-          AddInvoiceRequest
-            (MoneyAmount 1000)
-            Nothing
-            Nothing
     let sub = SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
     (proc, w) <-
       Watcher.spawnLink
@@ -144,8 +136,8 @@ spec = do
         subscribeInvoicesChan
         $ \_ _ x -> atomically $ writeTChan cw x
     Watcher.watch w sub
-    void . liftLndResult =<< addInvoice merEnv req
-    void . liftLndResult =<< addInvoice merEnv req
+    void . liftLndResult =<< addInvoice merEnv addInvoiceRequest
+    void . liftLndResult =<< addInvoice merEnv addInvoiceRequest
     res <- readTChanTimeout (MicroSecondsDelay 500000) cr
     liftIO $ do
       cancel proc
@@ -272,30 +264,25 @@ spec = do
     liftIO $ res `shouldSatisfy` isRight
   it "listChannelAndClose" $ withEnv $ \env -> do
     setupOneChannel env
-    cs0 <-
-      liftLndResult
-        =<< listChannels
-          (envLndMerchant env)
-          (ListChannelsRequest False False False False Nothing)
+    chan <- atomically . dupTChan $ envMerchantCQ env
+    let lnd = envLndMerchant env
+    let listReq = ListChannelsRequest False False False False Nothing
+    cs0 <- liftLndResult =<< listChannels lnd listReq
     cp <-
       case Channel.channelPoint <$> safeHead cs0 of
-        Just x -> return x
+        Just x -> pure x
         Nothing -> error "No channel point found"
-    t <-
+    proc <-
       spawnLink $ runApp env $
         closeChannel
           (const $ return ())
-          (envLndMerchant env)
+          lnd
           (CloseChannelRequest cp True Nothing Nothing Nothing)
-    liftIO $ delay 3000000
-    mine6 env
-    void . liftIO . wait $ t
-    cs1 <-
-      liftLndResult
-        =<< listChannels
-          (envLndMerchant env)
-          (ListChannelsRequest False False False False Nothing)
-    liftIO $ (length cs0 - length cs1) `shouldBe` 1
+    liftLndResult =<< receiveClosedChannels env [cp] chan
+    cs1 <- liftLndResult =<< listChannels lnd listReq
+    liftIO $ do
+      cancel proc
+      (length cs0 - length cs1) `shouldBe` 1
   it "trackPaymentV2" $ withEnv $ \env -> do
     setupOneChannel env
     (cw, cr) <- atomically $ do
