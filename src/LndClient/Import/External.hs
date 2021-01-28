@@ -9,6 +9,7 @@ import Chronos as Import
 import Control.Concurrent.Async as Import
   ( Async,
     async,
+    asyncThreadId,
     cancel,
     link,
     wait,

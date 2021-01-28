@@ -129,7 +129,7 @@ spec = do
       (cw,) <$> dupTChan cw
     let merEnv = envLndMerchant env
     let sub = SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
-    (proc, w) <-
+    w <-
       Watcher.spawnLink
         merEnv
         subscribeInvoicesChan
@@ -139,14 +139,14 @@ spec = do
     void . liftLndResult =<< addInvoice merEnv addInvoiceRequest
     res <- readTChanTimeout (MicroSecondsDelay 500000) cr
     liftIO $ do
-      cancel proc
+      Watcher.delete w
       res `shouldSatisfy` isJust
   it "watchUnit" $ withEnv $ \env -> do
     (cw, cr) <- atomically $ do
       cw <- newBroadcastTChan
       (cw,) <$> dupTChan cw
     let merEnv = envLndMerchant env
-    (_, w) <-
+    w <-
       Watcher.spawnLinkUnit
         merEnv
         subscribeChannelEventsChan
@@ -171,7 +171,9 @@ spec = do
     void . liftLndResult
       =<< openChannelSync (envLndCustomer env) openChannelRequest
     res <- readTChanTimeout (MicroSecondsDelay 500000) cr
-    liftIO $ isJust res `shouldBe` True
+    liftIO $ do
+      Watcher.delete w
+      isJust res `shouldBe` True
   it "unWatch" $ withEnv $ \env -> do
     (cw, cr) <- atomically $ do
       cw <- newBroadcastTChan
@@ -182,7 +184,7 @@ spec = do
     let emptyChan = do
           x <- readTChanTimeout (MicroSecondsDelay 500000) cr
           if isJust x then emptyChan else return ()
-    (_, w) <-
+    w <-
       Watcher.spawnLink
         merEnv
         subscribeInvoicesChan
@@ -198,7 +200,9 @@ spec = do
     emptyChan
     void . liftLndResult =<< addInvoice merEnv req
     res <- readTChanTimeout (MicroSecondsDelay 500000) cr
-    liftIO $ res `shouldSatisfy` isNothing
+    liftIO $ do
+      Watcher.delete w
+      res `shouldSatisfy` isNothing
   it "ensureHodlInvoice" $ withEnv $ \env -> do
     r <- newRPreimage
     let req =
@@ -214,7 +218,12 @@ spec = do
     setupOneChannel env
     r <- newRPreimage
     let rh = newRHash r
-    let hipr = AddHodlInvoiceRequest Nothing rh (MoneyAmount 1000) Nothing
+    let hipr =
+          AddHodlInvoiceRequest
+            Nothing
+            rh
+            (MoneyAmount 1000)
+            Nothing
     let merchantEnv = envLndMerchant env
     q <- atomically . dupTChan $ envMerchantIQ env
     pr <-
@@ -268,11 +277,10 @@ spec = do
     let listReq = ListChannelsRequest False False False False Nothing
     cs0 <- liftLndResult =<< listChannels lnd listReq
     cp <-
-      case Channel.channelPoint <$> safeHead cs0 of
-        Just x -> pure x
-        Nothing -> error "No channel point found"
+      liftMaybe "ChannelPoint is required" $
+        Channel.channelPoint <$> safeHead cs0
     proc <-
-      spawnLink $ runApp env $
+      spawnLink $
         closeChannel
           (const $ return ())
           lnd
@@ -300,7 +308,7 @@ spec = do
     --
     -- spawn payment watcher and settle invoice
     --
-    (_, w) <-
+    w <-
       Watcher.spawnLink
         cusEnv
         trackPaymentV2Chan
@@ -309,7 +317,9 @@ spec = do
     Watcher.watch w sub
     void $ liftLndResult =<< sendPayment cusEnv spr
     res <- readTChanTimeout (MicroSecondsDelay 500000) cr
-    liftIO $ res `shouldSatisfy` isJust
+    liftIO $ do
+      Watcher.delete w
+      res `shouldSatisfy` isJust
   where
     addInvoiceRequest =
       AddInvoiceRequest

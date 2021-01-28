@@ -12,16 +12,12 @@
 
 module LndClient.TestApp
   ( Env (..),
-    runApp,
-    runApp_,
     liftLndResult,
     customerNodeLocation,
     merchantNodeLocation,
     syncWallets,
     mine6,
-    newEnv,
     withEnv,
-    deleteEnv,
     setupOneChannel,
     liftMaybe,
     receiveInvoice,
@@ -257,27 +253,26 @@ setupOneChannel env = do
         customerEnv
         (ListChannelsRequest True False False False Nothing)
   let cps = Channel.channelPoint <$> cs
-  liftIO $
-    mapM_
-      ( \cp ->
-          spawnLink $ runApp env $
-            closeChannel
-              --
-              -- TODO : investigate why it throws empty gRPC
-              -- response error and as consequence
-              -- probably it's how subscription terminates
-              -- when channel is completely closed
-              --
-              -- but bad thing is that callback sometimes
-              -- is never called, that's why it's not used there
-              -- we are getting TChan events instead from
-              -- previous opened subscription
-              --
-              (const $ return ())
-              (envLndMerchant env)
-              (CloseChannelRequest cp False Nothing Nothing Nothing)
-      )
-      cps
+  mapM_
+    ( \cp ->
+        spawnLink $
+          closeChannel
+            --
+            -- TODO : investigate why it throws empty gRPC
+            -- response error and as consequence
+            -- probably it's how subscription terminates
+            -- when channel is completely closed
+            --
+            -- but bad thing is that callback sometimes
+            -- is never called, that's why it's not used there
+            -- we are getting TChan events instead from
+            -- previous opened subscription
+            --
+            (const $ return ())
+            (envLndMerchant env)
+            (CloseChannelRequest cp False Nothing Nothing Nothing)
+    )
+    cps
   liftLndResult =<< receiveClosedChannels env cps mq
   liftLndResult =<< receiveClosedChannels env cps cq
   --
@@ -359,13 +354,10 @@ instance (MonadIO m) => KatipContext (AppM m) where
 runApp :: Env -> AppM m a -> m a
 runApp env app = runReaderT (unAppM app) env
 
-runApp_ :: (Functor m) => Env -> AppM m a -> m ()
-runApp_ env app = void $ runApp env app
-
 liftMaybe :: MonadIO m => String -> Maybe a -> m a
 liftMaybe msg mx =
   case mx of
-    Just x -> return x
+    Just x -> pure x
     Nothing -> liftIO $ fail msg
 
 receiveActiveChannel ::
