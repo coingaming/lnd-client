@@ -14,6 +14,7 @@ import Control.Concurrent.Async as Import
     link,
     wait,
     waitAnySTM,
+    withAsync,
   )
 import Control.Concurrent.STM as Import (check)
 import Control.Concurrent.STM.TChan as Import

@@ -5,6 +5,7 @@ module LndClient.Util
     retryKatip,
     safeFromIntegral,
     spawnLink,
+    withSpawnLink,
     readTChanTimeout,
     maybeDeadlock,
     MicroSecondsDelay (..),
@@ -68,6 +69,16 @@ spawnLink x =
     pid <- async $ run x
     link pid
     return pid
+
+withSpawnLink :: (MonadUnliftIO m) => m a -> (Async a -> m b) -> m b
+withSpawnLink action inner =
+  withRunInIO $ \run ->
+    withAsync
+      (run action)
+      ( \pid -> do
+          link pid
+          run $ inner pid
+      )
 
 readTChanTimeout ::
   MonadUnliftIO m => MicroSecondsDelay -> TChan a -> m (Maybe a)

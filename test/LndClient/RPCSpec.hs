@@ -232,19 +232,21 @@ spec = do
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
     let spr = SendPaymentRequest pr $ MoneyAmount 1000
-    void . spawnLink $
-      liftLndResult =<< sendPayment (envLndCustomer env) spr
-    --
-    -- NOTE : this is working only in coingaming LND fork
-    -- which is fixing this bug
-    -- https://github.com/lightningnetwork/lnd/issues/4544
-    --
-    liftLndResult
-      =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
-    res <- cancelInvoice merchantEnv rh
-    liftLndResult
-      =<< receiveInvoice rh GRPC.Invoice_InvoiceStateCANCELED q
-    liftIO $ res `shouldSatisfy` isRight
+    withSpawnLink
+      (liftLndResult =<< sendPayment (envLndCustomer env) spr)
+      ( const $ do
+          --
+          -- NOTE : this is working only in coingaming LND fork
+          -- which is fixing this bug
+          -- https://github.com/lightningnetwork/lnd/issues/4544
+          --
+          liftLndResult
+            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
+          res <- cancelInvoice merchantEnv rh
+          liftLndResult
+            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateCANCELED q
+          liftIO $ res `shouldSatisfy` isRight
+      )
   it "settleInvoice" $ withEnv $ \env -> do
     setupOneChannel env
     r <- newRPreimage
@@ -257,19 +259,21 @@ spec = do
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
     let spr = SendPaymentRequest pr $ MoneyAmount 1000
-    void . spawnLink $
-      liftLndResult =<< sendPayment (envLndCustomer env) spr
-    --
-    -- NOTE : this is working only in coingaming LND fork
-    -- which is fixing this bug
-    -- https://github.com/lightningnetwork/lnd/issues/4544
-    --
-    liftLndResult
-      =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
-    res <- settleInvoice merchantEnv r
-    liftLndResult
-      =<< receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
-    liftIO $ res `shouldSatisfy` isRight
+    withSpawnLink
+      (liftLndResult =<< sendPayment (envLndCustomer env) spr)
+      ( const $ do
+          --
+          -- NOTE : this is working only in coingaming LND fork
+          -- which is fixing this bug
+          -- https://github.com/lightningnetwork/lnd/issues/4544
+          --
+          liftLndResult
+            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
+          res <- settleInvoice merchantEnv r
+          liftLndResult
+            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
+          liftIO $ res `shouldSatisfy` isRight
+      )
   it "listChannelAndClose" $ withEnv $ \env -> do
     setupOneChannel env
     chan <- atomically . dupTChan $ envMerchantCQ env
@@ -279,17 +283,17 @@ spec = do
     cp <-
       liftMaybe "ChannelPoint is required" $
         Channel.channelPoint <$> safeHead cs0
-    proc <-
-      spawnLink $
-        closeChannel
+    withSpawnLink
+      ( closeChannel
           (const $ return ())
           lnd
           (CloseChannelRequest cp True Nothing Nothing Nothing)
-    liftLndResult =<< receiveClosedChannels env [cp] chan
-    cs1 <- liftLndResult =<< listChannels lnd listReq
-    liftIO $ do
-      cancel proc
-      (length cs0 - length cs1) `shouldBe` 1
+      )
+      ( const $ do
+          liftLndResult =<< receiveClosedChannels env [cp] chan
+          cs1 <- liftLndResult =<< listChannels lnd listReq
+          liftIO $ (length cs0 - length cs1) `shouldBe` 1
+      )
   it "trackPaymentV2" $ withEnv $ \env -> do
     setupOneChannel env
     (cw, cr) <- atomically $ do
