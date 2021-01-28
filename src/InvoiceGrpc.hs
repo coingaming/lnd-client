@@ -90,6 +90,7 @@ invoicesServer
       initialMetadata
       sslConfig
       logger
+      serverMaxReceiveMessageLength
     ) =
     ( HsGRPC.serverLoop
         HsGRPC.defaultOptions
@@ -126,7 +127,8 @@ invoicesServer
             optUserAgentSuffix = userAgentSuffix,
             optInitialMetadata = initialMetadata,
             optSSLConfig = sslConfig,
-            optLogger = logger
+            optLogger = logger,
+            optMaxReceiveMessageLength = serverMaxReceiveMessageLength
           }
     )
 
@@ -162,7 +164,7 @@ invoicesClient client =
                 )
         )
 
-data CancelInvoiceMsg
+newtype CancelInvoiceMsg
   = CancelInvoiceMsg
       { cancelInvoiceMsgPaymentHash ::
           Hs.ByteString
@@ -647,7 +649,7 @@ instance HsJSONPB.ToSchema AddHoldInvoiceRequest where
             }
         )
 
-data AddHoldInvoiceResp
+newtype AddHoldInvoiceResp
   = AddHoldInvoiceResp
       { addHoldInvoiceRespPaymentRequest ::
           Hs.Text
@@ -742,7 +744,7 @@ instance HsJSONPB.ToSchema AddHoldInvoiceResp where
             }
         )
 
-data SettleInvoiceMsg
+newtype SettleInvoiceMsg
   = SettleInvoiceMsg
       { settleInvoiceMsgPreimage ::
           Hs.ByteString
@@ -881,7 +883,7 @@ instance HsJSONPB.ToSchema SettleInvoiceResp where
             }
         )
 
-data SubscribeSingleInvoiceRequest
+newtype SubscribeSingleInvoiceRequest
   = SubscribeSingleInvoiceRequest
       { subscribeSingleInvoiceRequestRHash ::
           Hs.ByteString

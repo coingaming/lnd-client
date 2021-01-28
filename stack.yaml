@@ -55,15 +55,15 @@ extra-deps:
   - parameterized-0.5.0.0@sha256:880717fbb958de1bac015f0a375ab6636f162a72483d987a11e305da6fac6c97,1969
   - swagger2-2.3.1.1
   - github: coingaming/gRPC-haskell
-    commit: 1e39371d308e6f0ff155dc988f7b6adf1519d7d8
+    commit: 1e5247e9efad3a2e52aca8cf176e885ead308be0
     subdirs:
       - core
   - github: coingaming/gRPC-haskell
-    commit: 1e39371d308e6f0ff155dc988f7b6adf1519d7d8
+    commit: 1e5247e9efad3a2e52aca8cf176e885ead308be0
   - github: coingaming/proto3-suite
-    commit: 45950a3860cbcb3f3177e9725dbdf460d6da9d45
+    commit: 19d83b67f90a7be67bc1d062828d84ae68f3efe0
   - github: coingaming/proto3-wire
-    commit: 5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53
+    commit: 3672ded8b16baa9a9fdf4e4fa5109e2a6cf8a809
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

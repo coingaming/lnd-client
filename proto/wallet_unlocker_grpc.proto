@@ -1,9 +1,5 @@
-// source code
-// https://raw.githubusercontent.com/lightningnetwork/lnd/64b8aa8f114142b4b1d1e8e1e751c846d1a7f422/lnrpc/walletunlocker.proto
-
 syntax = "proto3";
 
-import "google/api/annotations.proto";
 import "lnd_grpc.proto";
 
 package lnrpc;
@@ -41,8 +37,7 @@ service WalletUnlocker {
     method should be used to commit the newly generated seed, and create the
     wallet.
     */
-    rpc GenSeed (GenSeedRequest) returns (GenSeedResponse) {
-    }
+    rpc GenSeed (GenSeedRequest) returns (GenSeedResponse);
 
     /*
     InitWallet is used when lnd is starting up for the first time to fully
@@ -58,23 +53,19 @@ service WalletUnlocker {
     seed, then present it to the user. Once it has been verified by the user,
     the seed can be fed into this RPC in order to commit the new wallet.
     */
-    rpc InitWallet (InitWalletRequest) returns (InitWalletResponse) {
-    }
+    rpc InitWallet (InitWalletRequest) returns (InitWalletResponse);
 
     /* lncli: `unlock`
     UnlockWallet is used at startup of lnd to provide a password to unlock
     the wallet database.
     */
-    rpc UnlockWallet (UnlockWalletRequest) returns (UnlockWalletResponse) {
-    }
+    rpc UnlockWallet (UnlockWalletRequest) returns (UnlockWalletResponse);
 
     /* lncli: `changepassword`
     ChangePassword changes the password of the encrypted wallet. This will
     automatically unlock the wallet database if successful.
     */
-    rpc ChangePassword (ChangePasswordRequest)
-        returns (ChangePasswordResponse) {
-    }
+    rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse);
 }
 
 message GenSeedRequest {
@@ -150,8 +141,24 @@ message InitWalletRequest {
     recover the funds in each channel from a remote force closed transaction.
     */
     ChanBackupSnapshot channel_backups = 5;
+
+    /*
+    stateless_init is an optional argument instructing the daemon NOT to create
+    any *.macaroon files in its filesystem. If this parameter is set, then the
+    admin macaroon returned in the response MUST be stored by the caller of the
+    RPC as otherwise all access to the daemon will be lost!
+    */
+    bool stateless_init = 6;
 }
 message InitWalletResponse {
+    /*
+    The binary serialized admin macaroon that can be used to access the daemon
+    after creating the wallet. If the stateless_init parameter was set to true,
+    this is the ONLY copy of the macaroon and MUST be stored safely by the
+    caller. Otherwise a copy of this macaroon is also persisted on disk by the
+    daemon, together with other macaroon files.
+    */
+    bytes admin_macaroon = 1;
 }
 
 message UnlockWalletRequest {
@@ -180,6 +187,12 @@ message UnlockWalletRequest {
     recover the funds in each channel from a remote force closed transaction.
     */
     ChanBackupSnapshot channel_backups = 3;
+
+    /*
+    stateless_init is an optional argument instructing the daemon NOT to create
+    any *.macaroon files in its file system.
+    */
+    bool stateless_init = 4;
 }
 message UnlockWalletResponse {
 }
@@ -196,6 +209,30 @@ message ChangePasswordRequest {
     daemon. When using REST, this field must be encoded as base64.
     */
     bytes new_password = 2;
+
+    /*
+    stateless_init is an optional argument instructing the daemon NOT to create
+    any *.macaroon files in its filesystem. If this parameter is set, then the
+    admin macaroon returned in the response MUST be stored by the caller of the
+    RPC as otherwise all access to the daemon will be lost!
+    */
+    bool stateless_init = 3;
+
+    /*
+    new_macaroon_root_key is an optional argument instructing the daemon to
+    rotate the macaroon root key when set to true. This will invalidate all
+    previously generated macaroons.
+    */
+    bool new_macaroon_root_key = 4;
 }
 message ChangePasswordResponse {
+    /*
+    The binary serialized admin macaroon that can be used to access the daemon
+    after rotating the macaroon root key. If both the stateless_init and
+    new_macaroon_root_key parameter were set to true, this is the ONLY copy of
+    the macaroon that was created from the new root key and MUST be stored
+    safely by the caller. Otherwise a copy of this macaroon is also persisted on
+    disk by the daemon, together with other macaroon files.
+    */
+    bytes admin_macaroon = 1;
 }

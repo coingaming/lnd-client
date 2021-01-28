@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
@@ -94,6 +95,7 @@ walletUnlockerServer
       initialMetadata
       sslConfig
       logger
+      serverMaxReceiveMessageLength
     ) =
     ( HsGRPC.serverLoop
         HsGRPC.defaultOptions
@@ -129,7 +131,8 @@ walletUnlockerServer
             optUserAgentSuffix = userAgentSuffix,
             optInitialMetadata = initialMetadata,
             optSSLConfig = sslConfig,
-            optLogger = logger
+            optLogger = logger,
+            optMaxReceiveMessageLength = serverMaxReceiveMessageLength
           }
     )
 
@@ -426,7 +429,8 @@ data InitWalletRequest
         initWalletRequestRecoveryWindow :: Hs.Int32,
         initWalletRequestChannelBackups ::
           Hs.Maybe
-            LndGrpc.ChanBackupSnapshot
+            LndGrpc.ChanBackupSnapshot,
+        initWalletRequestStatelessInit :: Hs.Bool
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -446,7 +450,8 @@ instance HsProtobuf.Message InitWalletRequest where
         initWalletRequestAezeedPassphrase =
           initWalletRequestAezeedPassphrase,
         initWalletRequestRecoveryWindow = initWalletRequestRecoveryWindow,
-        initWalletRequestChannelBackups = initWalletRequestChannelBackups
+        initWalletRequestChannelBackups = initWalletRequestChannelBackups,
+        initWalletRequestStatelessInit = initWalletRequestStatelessInit
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -473,6 +478,10 @@ instance HsProtobuf.Message InitWalletRequest where
                     @(HsProtobuf.Nested LndGrpc.ChanBackupSnapshot)
                     initWalletRequestChannelBackups
                 )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 6)
+                initWalletRequestStatelessInit
             )
           ]
       )
@@ -503,6 +512,10 @@ instance HsProtobuf.Message InitWalletRequest where
                   HsProtobuf.decodeMessageField
                   (HsProtobuf.FieldNumber 5)
               )
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 6)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -541,26 +554,35 @@ instance HsProtobuf.Message InitWalletRequest where
           (HsProtobuf.Single "channel_backups")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 6)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "stateless_init")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB InitWalletRequest where
-  toJSONPB (InitWalletRequest f1 f2 f3 f4 f5) =
+  toJSONPB (InitWalletRequest f1 f2 f3 f4 f5 f6) =
     ( HsJSONPB.object
         [ "wallet_password" .= f1,
           "cipher_seed_mnemonic" .= f2,
           "aezeed_passphrase" .= f3,
           "recovery_window" .= f4,
-          "channel_backups" .= f5
+          "channel_backups" .= f5,
+          "stateless_init" .= f6
         ]
     )
-  toEncodingPB (InitWalletRequest f1 f2 f3 f4 f5) =
+  toEncodingPB (InitWalletRequest f1 f2 f3 f4 f5 f6) =
     ( HsJSONPB.pairs
         [ "wallet_password" .= f1,
           "cipher_seed_mnemonic" .= f2,
           "aezeed_passphrase" .= f3,
           "recovery_window" .= f4,
-          "channel_backups" .= f5
+          "channel_backups" .= f5,
+          "stateless_init" .= f6
         ]
     )
 
@@ -574,6 +596,7 @@ instance HsJSONPB.FromJSONPB InitWalletRequest where
               <*> obj .: "aezeed_passphrase"
               <*> obj .: "recovery_window"
               <*> obj .: "channel_backups"
+              <*> obj .: "stateless_init"
         )
     )
 
@@ -607,6 +630,10 @@ instance HsJSONPB.ToSchema InitWalletRequest where
       initWalletRequestChannelBackups <-
         declare_channel_backups
           Proxy.Proxy
+      let declare_stateless_init = HsJSONPB.declareSchemaRef
+      initWalletRequestStatelessInit <-
+        declare_stateless_init
+          Proxy.Proxy
       let _ =
             Hs.pure InitWalletRequest
               <*> HsJSONPB.asProxy declare_wallet_password
@@ -614,6 +641,7 @@ instance HsJSONPB.ToSchema InitWalletRequest where
               <*> HsJSONPB.asProxy declare_aezeed_passphrase
               <*> HsJSONPB.asProxy declare_recovery_window
               <*> HsJSONPB.asProxy declare_channel_backups
+              <*> HsJSONPB.asProxy declare_stateless_init
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -641,13 +669,20 @@ instance HsJSONPB.ToSchema InitWalletRequest where
                           ),
                           ( "channel_backups",
                             initWalletRequestChannelBackups
+                          ),
+                          ( "stateless_init",
+                            initWalletRequestStatelessInit
                           )
                         ]
                   }
             }
         )
 
-data InitWalletResponse = InitWalletResponse {}
+newtype InitWalletResponse
+  = InitWalletResponse
+      { initWalletResponseAdminMacaroon ::
+          Hs.ByteString
+      }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
 instance HsProtobuf.Named InitWalletResponse where
@@ -656,19 +691,48 @@ instance HsProtobuf.Named InitWalletResponse where
 instance HsProtobuf.HasDefault InitWalletResponse
 
 instance HsProtobuf.Message InitWalletResponse where
-  encodeMessage _ InitWalletResponse {} = (Hs.mconcat [])
-  decodeMessage _ = (Hs.pure InitWalletResponse)
-  dotProto _ = []
+  encodeMessage
+    _
+    InitWalletResponse
+      { initWalletResponseAdminMacaroon =
+          initWalletResponseAdminMacaroon
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                initWalletResponseAdminMacaroon
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure InitWalletResponse)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "admin_macaroon")
+          []
+          ""
+      )
+    ]
 
 instance HsJSONPB.ToJSONPB InitWalletResponse where
-  toJSONPB (InitWalletResponse) = (HsJSONPB.object [])
-  toEncodingPB (InitWalletResponse) = (HsJSONPB.pairs [])
+  toJSONPB (InitWalletResponse f1) =
+    (HsJSONPB.object ["admin_macaroon" .= f1])
+  toEncodingPB (InitWalletResponse f1) =
+    (HsJSONPB.pairs ["admin_macaroon" .= f1])
 
 instance HsJSONPB.FromJSONPB InitWalletResponse where
   parseJSONPB =
     ( HsJSONPB.withObject
         "InitWalletResponse"
-        (\obj -> (Hs.pure InitWalletResponse))
+        ( \obj ->
+            (Hs.pure InitWalletResponse) <*> obj .: "admin_macaroon"
+        )
     )
 
 instance HsJSONPB.ToJSON InitWalletResponse where
@@ -681,6 +745,13 @@ instance HsJSONPB.FromJSON InitWalletResponse where
 instance HsJSONPB.ToSchema InitWalletResponse where
   declareNamedSchema _ =
     do
+      let declare_admin_macaroon = HsJSONPB.declareSchemaRef
+      initWalletResponseAdminMacaroon <-
+        declare_admin_macaroon
+          Proxy.Proxy
+      let _ =
+            Hs.pure InitWalletResponse
+              <*> HsJSONPB.asProxy declare_admin_macaroon
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -693,7 +764,11 @@ instance HsJSONPB.ToSchema InitWalletResponse where
                             HsJSONPB.SwaggerObject
                         },
                     HsJSONPB._schemaProperties =
-                      HsJSONPB.insOrdFromList []
+                      HsJSONPB.insOrdFromList
+                        [ ( "admin_macaroon",
+                            initWalletResponseAdminMacaroon
+                          )
+                        ]
                   }
             }
         )
@@ -705,7 +780,8 @@ data UnlockWalletRequest
         unlockWalletRequestRecoveryWindow :: Hs.Int32,
         unlockWalletRequestChannelBackups ::
           Hs.Maybe
-            LndGrpc.ChanBackupSnapshot
+            LndGrpc.ChanBackupSnapshot,
+        unlockWalletRequestStatelessInit :: Hs.Bool
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -723,7 +799,9 @@ instance HsProtobuf.Message UnlockWalletRequest where
         unlockWalletRequestRecoveryWindow =
           unlockWalletRequestRecoveryWindow,
         unlockWalletRequestChannelBackups =
-          unlockWalletRequestChannelBackups
+          unlockWalletRequestChannelBackups,
+        unlockWalletRequestStatelessInit =
+          unlockWalletRequestStatelessInit
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -740,6 +818,10 @@ instance HsProtobuf.Message UnlockWalletRequest where
                     @(HsProtobuf.Nested LndGrpc.ChanBackupSnapshot)
                     unlockWalletRequestChannelBackups
                 )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 4)
+                unlockWalletRequestStatelessInit
             )
           ]
       )
@@ -759,6 +841,10 @@ instance HsProtobuf.Message UnlockWalletRequest where
                   HsProtobuf.decodeMessageField
                   (HsProtobuf.FieldNumber 3)
               )
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 4)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -783,22 +869,31 @@ instance HsProtobuf.Message UnlockWalletRequest where
           (HsProtobuf.Single "channel_backups")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 4)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "stateless_init")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB UnlockWalletRequest where
-  toJSONPB (UnlockWalletRequest f1 f2 f3) =
+  toJSONPB (UnlockWalletRequest f1 f2 f3 f4) =
     ( HsJSONPB.object
         [ "wallet_password" .= f1,
           "recovery_window" .= f2,
-          "channel_backups" .= f3
+          "channel_backups" .= f3,
+          "stateless_init" .= f4
         ]
     )
-  toEncodingPB (UnlockWalletRequest f1 f2 f3) =
+  toEncodingPB (UnlockWalletRequest f1 f2 f3 f4) =
     ( HsJSONPB.pairs
         [ "wallet_password" .= f1,
           "recovery_window" .= f2,
-          "channel_backups" .= f3
+          "channel_backups" .= f3,
+          "stateless_init" .= f4
         ]
     )
 
@@ -810,6 +905,7 @@ instance HsJSONPB.FromJSONPB UnlockWalletRequest where
             (Hs.pure UnlockWalletRequest) <*> obj .: "wallet_password"
               <*> obj .: "recovery_window"
               <*> obj .: "channel_backups"
+              <*> obj .: "stateless_init"
         )
     )
 
@@ -835,11 +931,16 @@ instance HsJSONPB.ToSchema UnlockWalletRequest where
       unlockWalletRequestChannelBackups <-
         declare_channel_backups
           Proxy.Proxy
+      let declare_stateless_init = HsJSONPB.declareSchemaRef
+      unlockWalletRequestStatelessInit <-
+        declare_stateless_init
+          Proxy.Proxy
       let _ =
             Hs.pure UnlockWalletRequest
               <*> HsJSONPB.asProxy declare_wallet_password
               <*> HsJSONPB.asProxy declare_recovery_window
               <*> HsJSONPB.asProxy declare_channel_backups
+              <*> HsJSONPB.asProxy declare_stateless_init
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -861,6 +962,9 @@ instance HsJSONPB.ToSchema UnlockWalletRequest where
                           ),
                           ( "channel_backups",
                             unlockWalletRequestChannelBackups
+                          ),
+                          ( "stateless_init",
+                            unlockWalletRequestStatelessInit
                           )
                         ]
                   }
@@ -923,7 +1027,10 @@ data ChangePasswordRequest
       { changePasswordRequestCurrentPassword ::
           Hs.ByteString,
         changePasswordRequestNewPassword ::
-          Hs.ByteString
+          Hs.ByteString,
+        changePasswordRequestStatelessInit :: Hs.Bool,
+        changePasswordRequestNewMacaroonRootKey ::
+          Hs.Bool
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -939,7 +1046,11 @@ instance HsProtobuf.Message ChangePasswordRequest where
       { changePasswordRequestCurrentPassword =
           changePasswordRequestCurrentPassword,
         changePasswordRequestNewPassword =
-          changePasswordRequestNewPassword
+          changePasswordRequestNewPassword,
+        changePasswordRequestStatelessInit =
+          changePasswordRequestStatelessInit,
+        changePasswordRequestNewMacaroonRootKey =
+          changePasswordRequestNewMacaroonRootKey
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -949,6 +1060,14 @@ instance HsProtobuf.Message ChangePasswordRequest where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 2)
                 changePasswordRequestNewPassword
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 3)
+                changePasswordRequestStatelessInit
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 4)
+                changePasswordRequestNewMacaroonRootKey
             )
           ]
       )
@@ -961,6 +1080,14 @@ instance HsProtobuf.Message ChangePasswordRequest where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 2)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 3)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 4)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -976,16 +1103,40 @@ instance HsProtobuf.Message ChangePasswordRequest where
           (HsProtobuf.Single "new_password")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 3)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "stateless_init")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 4)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "new_macaroon_root_key")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB ChangePasswordRequest where
-  toJSONPB (ChangePasswordRequest f1 f2) =
+  toJSONPB (ChangePasswordRequest f1 f2 f3 f4) =
     ( HsJSONPB.object
-        ["current_password" .= f1, "new_password" .= f2]
+        [ "current_password" .= f1,
+          "new_password" .= f2,
+          "stateless_init" .= f3,
+          "new_macaroon_root_key" .= f4
+        ]
     )
-  toEncodingPB (ChangePasswordRequest f1 f2) =
-    (HsJSONPB.pairs ["current_password" .= f1, "new_password" .= f2])
+  toEncodingPB (ChangePasswordRequest f1 f2 f3 f4) =
+    ( HsJSONPB.pairs
+        [ "current_password" .= f1,
+          "new_password" .= f2,
+          "stateless_init" .= f3,
+          "new_macaroon_root_key" .= f4
+        ]
+    )
 
 instance HsJSONPB.FromJSONPB ChangePasswordRequest where
   parseJSONPB =
@@ -994,6 +1145,8 @@ instance HsJSONPB.FromJSONPB ChangePasswordRequest where
         ( \obj ->
             (Hs.pure ChangePasswordRequest) <*> obj .: "current_password"
               <*> obj .: "new_password"
+              <*> obj .: "stateless_init"
+              <*> obj .: "new_macaroon_root_key"
         )
     )
 
@@ -1015,10 +1168,20 @@ instance HsJSONPB.ToSchema ChangePasswordRequest where
       changePasswordRequestNewPassword <-
         declare_new_password
           Proxy.Proxy
+      let declare_stateless_init = HsJSONPB.declareSchemaRef
+      changePasswordRequestStatelessInit <-
+        declare_stateless_init
+          Proxy.Proxy
+      let declare_new_macaroon_root_key = HsJSONPB.declareSchemaRef
+      changePasswordRequestNewMacaroonRootKey <-
+        declare_new_macaroon_root_key
+          Proxy.Proxy
       let _ =
             Hs.pure ChangePasswordRequest
               <*> HsJSONPB.asProxy declare_current_password
               <*> HsJSONPB.asProxy declare_new_password
+              <*> HsJSONPB.asProxy declare_stateless_init
+              <*> HsJSONPB.asProxy declare_new_macaroon_root_key
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -1037,13 +1200,23 @@ instance HsJSONPB.ToSchema ChangePasswordRequest where
                           ),
                           ( "new_password",
                             changePasswordRequestNewPassword
+                          ),
+                          ( "stateless_init",
+                            changePasswordRequestStatelessInit
+                          ),
+                          ( "new_macaroon_root_key",
+                            changePasswordRequestNewMacaroonRootKey
                           )
                         ]
                   }
             }
         )
 
-data ChangePasswordResponse = ChangePasswordResponse {}
+newtype ChangePasswordResponse
+  = ChangePasswordResponse
+      { changePasswordResponseAdminMacaroon ::
+          Hs.ByteString
+      }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
 instance HsProtobuf.Named ChangePasswordResponse where
@@ -1052,19 +1225,48 @@ instance HsProtobuf.Named ChangePasswordResponse where
 instance HsProtobuf.HasDefault ChangePasswordResponse
 
 instance HsProtobuf.Message ChangePasswordResponse where
-  encodeMessage _ ChangePasswordResponse {} = (Hs.mconcat [])
-  decodeMessage _ = (Hs.pure ChangePasswordResponse)
-  dotProto _ = []
+  encodeMessage
+    _
+    ChangePasswordResponse
+      { changePasswordResponseAdminMacaroon =
+          changePasswordResponseAdminMacaroon
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                changePasswordResponseAdminMacaroon
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure ChangePasswordResponse)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "admin_macaroon")
+          []
+          ""
+      )
+    ]
 
 instance HsJSONPB.ToJSONPB ChangePasswordResponse where
-  toJSONPB (ChangePasswordResponse) = (HsJSONPB.object [])
-  toEncodingPB (ChangePasswordResponse) = (HsJSONPB.pairs [])
+  toJSONPB (ChangePasswordResponse f1) =
+    (HsJSONPB.object ["admin_macaroon" .= f1])
+  toEncodingPB (ChangePasswordResponse f1) =
+    (HsJSONPB.pairs ["admin_macaroon" .= f1])
 
 instance HsJSONPB.FromJSONPB ChangePasswordResponse where
   parseJSONPB =
     ( HsJSONPB.withObject
         "ChangePasswordResponse"
-        (\obj -> (Hs.pure ChangePasswordResponse))
+        ( \obj ->
+            (Hs.pure ChangePasswordResponse) <*> obj .: "admin_macaroon"
+        )
     )
 
 instance HsJSONPB.ToJSON ChangePasswordResponse where
@@ -1077,6 +1279,13 @@ instance HsJSONPB.FromJSON ChangePasswordResponse where
 instance HsJSONPB.ToSchema ChangePasswordResponse where
   declareNamedSchema _ =
     do
+      let declare_admin_macaroon = HsJSONPB.declareSchemaRef
+      changePasswordResponseAdminMacaroon <-
+        declare_admin_macaroon
+          Proxy.Proxy
+      let _ =
+            Hs.pure ChangePasswordResponse
+              <*> HsJSONPB.asProxy declare_admin_macaroon
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -1089,7 +1298,11 @@ instance HsJSONPB.ToSchema ChangePasswordResponse where
                             HsJSONPB.SwaggerObject
                         },
                     HsJSONPB._schemaProperties =
-                      HsJSONPB.insOrdFromList []
+                      HsJSONPB.insOrdFromList
+                        [ ( "admin_macaroon",
+                            changePasswordResponseAdminMacaroon
+                          )
+                        ]
                   }
             }
         )

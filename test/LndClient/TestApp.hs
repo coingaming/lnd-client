@@ -153,8 +153,8 @@ readEnv = do
         envMerchantIQ = miq
       }
 
-newEnv :: IO Env
-newEnv = do
+withEnv :: (Env -> AppM IO ()) -> IO ()
+withEnv f = do
   env <- readEnv
   let merchantEnv = envLndMerchant env
   let customerEnv = envLndCustomer env
@@ -193,26 +193,37 @@ newEnv = do
     void . spawnLink $
       liftLndResult
         =<< subscribeChannelEventsChan (pure customerCQ) customerEnv
-    void . spawnLink $
-      liftLndResult
-        =<< subscribeInvoicesChan
-          (pure $ envMerchantIQ env)
-          merchantEnv
-          --
-          -- TODO : this is related to LND bug
-          -- https://github.com/lightningnetwork/lnd/issues/2469
-          --
-          (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
-    pure env
-
-deleteEnv :: Env -> IO ()
-deleteEnv = void . closeScribes . envKatipLE
-
-withEnv :: (Env -> AppM IO ()) -> IO ()
-withEnv f = do
-  env <- newEnv
-  runApp env $ f env
-  deleteEnv env
+    pid <-
+      spawnLink $
+        liftLndResult
+          =<< subscribeInvoicesChan
+            (pure $ envMerchantIQ env)
+            merchantEnv
+            --
+            -- TODO : this is related to LND bug
+            -- https://github.com/lightningnetwork/lnd/issues/2469
+            --
+            (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
+    f env
+    $(logTM) InfoS "GONNA_TO_CANCEL_SUBSCRIPTION"
+    liftIO $ cancel pid
+    --withSpawnLink
+    --  ( liftLndResult
+    --      =<< subscribeInvoicesChan
+    --        (pure $ envMerchantIQ env)
+    --        merchantEnv
+    --        --
+    --        -- TODO : this is related to LND bug
+    --        -- https://github.com/lightningnetwork/lnd/issues/2469
+    --        --
+    --        (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
+    --  )
+    --  ( const $ do
+    --      f env
+    --      $(logTM) InfoS "GONNA_TO_TERMINATE_SUBSCRIPTION"
+    --  )
+    $(logTM) InfoS "BOOOOOOOMMMMMMMMMMMMMMMM"
+  void . closeScribes $ envKatipLE env
 
 newBtcClient :: IO BTC.Client
 newBtcClient =
