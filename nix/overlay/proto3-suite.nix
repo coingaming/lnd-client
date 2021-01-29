@@ -10,11 +10,11 @@
 }:
 mkDerivation {
   pname = "proto3-suite";
-  version = "0.4.0.2";
+  version = "0.4.2.0";
   src = fetchgit {
     url = "https://github.com/coingaming/proto3-suite";
-    sha256 = "1fm0a5i9q9p393c9if6n6nz0q7di0p1fjx262fyj7j20nnl3f9i3";
-    rev = "45950a3860cbcb3f3177e9725dbdf460d6da9d45";
+    sha256 = "0cmbc0qlv76qkxbzans09f9f52ds2gp06slfx27iqrf6biglc03b";
+    rev = "19d83b67f90a7be67bc1d062828d84ae68f3efe0";
     fetchSubmodules = true;
   };
   isLibrary = true;

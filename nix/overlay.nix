@@ -20,20 +20,20 @@ self: super:
           swagger2 = callPackage ./swagger2.nix {
             stdenv = self.stdenv;
           };
-          grpc-haskell-core = callPackage ./grpc-haskell-core.nix {
+          grpc-haskell-core = callPackage ./overlay/grpc-haskell-core.nix {
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
             grpc = self.grpc;
           };
-          grpc-haskell = dontCheck (callPackage ./grpc-haskell.nix {
+          grpc-haskell = dontCheck (callPackage ./overlay/grpc-haskell.nix {
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
           });
-          proto3-suite = dontCheck (doJailbreak (callPackage ./proto3-suite.nix {
+          proto3-suite = dontCheck (doJailbreak (callPackage ./overlay/proto3-suite.nix {
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
           }));
-          proto3-wire = callPackage ./proto3-wire.nix {
+          proto3-wire = callPackage ./overlay/proto3-wire.nix {
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
           };
