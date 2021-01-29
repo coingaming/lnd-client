@@ -1,5 +1,5 @@
 { mkDerivation, async, base, bytestring, c2hs, clock, containers
-, fetchgit, gpr, grpc, managed, pipes, proto3-suite, QuickCheck
+, fetchgit, grpc, managed, pipes, proto3-suite, QuickCheck
 , safe, sorted-list, stdenv, stm, tasty, tasty-hunit
 , tasty-quickcheck, text, time, transformers, turtle, unix
 }:
@@ -17,7 +17,7 @@ mkDerivation {
     base bytestring clock containers managed sorted-list stm
     transformers
   ];
-  librarySystemDepends = [ gpr grpc ];
+  librarySystemDepends = [ grpc ];
   libraryToolDepends = [ c2hs ];
   testHaskellDepends = [
     async base bytestring clock containers managed pipes proto3-suite
