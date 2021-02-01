@@ -15,6 +15,7 @@ module LndClient.Watcher
     watchUnit,
     unWatch,
     unWatchUnit,
+    dupLndChan,
     delete,
   )
 where
@@ -28,7 +29,8 @@ import LndClient.Import hiding (spawnLink)
 
 data Watcher a b
   = Watcher
-      { watcherChan :: TChan (Cmd a),
+      { watcherCmdChan :: TChan (Cmd a),
+        watcherLndChan :: TChan (a, b),
         watcherProc :: Async ()
       }
 
@@ -43,11 +45,11 @@ data Event a b
 
 data WatcherState a b m
   = WatcherState
-      { watcherChanCmd :: TChan (Cmd a),
-        watcherChanLnd :: TChan (a, b),
-        watcherSub :: a -> m (Either LndError ()),
-        watcherHandler :: a -> LndResult b -> m (),
-        watcherTasks :: Map a (Async (a, Either LndError ()))
+      { watcherStateCmdChan :: TChan (Cmd a),
+        watcherStateLndChan :: TChan (a, b),
+        watcherStateSub :: a -> m (Either LndError ()),
+        watcherStateHandler :: a -> LndResult b -> m (),
+        watcherStateTasks :: Map a (Async (a, Either LndError ()))
       }
 
 data LndResult a
@@ -65,15 +67,20 @@ spawnLink ::
   m (Watcher a b)
 spawnLink env sub handler = do
   w <- withRunInIO $ \run -> do
-    (cw, lw, cr, lr) <- atomically $ do
-      cw <- newBroadcastTChan
-      lw <- newBroadcastTChan
-      cr <- dupTChan cw
-      lr <- dupTChan lw
-      return (cw, lw, cr, lr)
+    ( writeCmdChan,
+      writeLndChan,
+      readCmdChan,
+      readLndChan
+      ) <- atomically $ do
+      writeCmdChan <- newBroadcastTChan
+      writeLndChan <- newBroadcastTChan
+      readCmdChan <- dupTChan writeCmdChan
+      readLndChan <- dupTChan writeLndChan
+      pure (writeCmdChan, writeLndChan, readCmdChan, readLndChan)
     let w =
           Watcher
-            { watcherChan = cw,
+            { watcherCmdChan = writeCmdChan,
+              watcherLndChan = writeLndChan,
               watcherProc = error "PARTIAL_WATCHER"
             }
     varProc <- newEmptyMVar
@@ -82,11 +89,11 @@ spawnLink env sub handler = do
         proc <- takeMVar varProc
         loop $
           WatcherState
-            { watcherChanCmd = cr,
-              watcherChanLnd = lr,
-              watcherSub = sub (Just lw) env,
-              watcherHandler = handler $ w {watcherProc = proc},
-              watcherTasks = mempty
+            { watcherStateCmdChan = readCmdChan,
+              watcherStateLndChan = readLndChan,
+              watcherStateSub = sub (Just writeLndChan) env,
+              watcherStateHandler = handler $ w {watcherProc = proc},
+              watcherStateTasks = mempty
             }
     liftIO $ putMVar varProc proc
     pure $ w {watcherProc = proc}
@@ -113,22 +120,25 @@ spawnLinkUnit env0 sub handler =
     (\chan _ x -> handler chan x)
 
 watch :: (MonadUnliftIO m) => Watcher a b -> a -> m ()
-watch (Watcher cw _) = atomically . writeTChan cw . Watch
+watch w = atomically . writeTChan (watcherCmdChan w) . Watch
 
 watchUnit :: (MonadUnliftIO m) => Watcher () b -> m ()
-watchUnit cw = watch cw ()
+watchUnit w = watch w ()
 
 unWatch :: (MonadUnliftIO m) => Watcher a b -> a -> m ()
-unWatch (Watcher cw _) = atomically . writeTChan cw . UnWatch
+unWatch w = atomically . writeTChan (watcherCmdChan w) . UnWatch
 
 unWatchUnit :: (MonadUnliftIO m) => Watcher () b -> m ()
-unWatchUnit cw = unWatch cw ()
+unWatchUnit w = unWatch w ()
+
+dupLndChan :: (MonadIO m) => Watcher a b -> m (TChan (a, b))
+dupLndChan = atomically . dupTChan . watcherLndChan
 
 --
 -- TODO : atomically cancel all linked processes
 --
 delete :: (MonadUnliftIO m) => Watcher a b -> m ()
-delete (Watcher _ proc) = liftIO $ cancel proc
+delete (Watcher _ _ proc) = liftIO $ cancel proc
 
 loop ::
   (Ord a, MonadUnliftIO m, KatipContext m) =>
@@ -137,11 +147,12 @@ loop ::
 loop w = do
   -- Here is the trick. Async watcher task can be already
   -- terminated, and runtime detects that there are no any references
-  -- to watcherChanLnd anymore.
+  -- to watcherStateLndChan anymore.
   -- This may cause `BlockedIndefinitelyOnSTM`
   -- async exception, because all alternative <|> expressions are
   -- evaluated independently. In this case we need to retry
-  -- alternative computation but without reading from watcherChanLnd.
+  -- alternative computation but without reading from
+  -- watcherStateLndChan.
   me <- maybeDeadlock . atomically $ cmd <|> lnd <|> task
   event <- case me of
     Nothing -> atomically $ cmd <|> task
@@ -151,9 +162,11 @@ loop w = do
     EventLnd x -> applyLnd w (second Ok x)
     EventTask x -> applyTask w x
   where
-    cmd = EventCmd <$> readTChan (watcherChanCmd w)
-    lnd = EventLnd <$> readTChan (watcherChanLnd w)
-    task = EventTask . snd <$> waitAnySTM (Map.elems $ watcherTasks w)
+    cmd = EventCmd <$> readTChan (watcherStateCmdChan w)
+    lnd = EventLnd <$> readTChan (watcherStateLndChan w)
+    task =
+      EventTask . snd
+        <$> waitAnySTM (Map.elems $ watcherStateTasks w)
 
 applyCmd ::
   (Ord a, MonadUnliftIO m, KatipContext m) =>
@@ -168,19 +181,19 @@ applyCmd w = \case
       else do
         t <-
           withRunInIO $ \run -> do
-            t <- async . run $ (x,) <$> watcherSub w x
+            t <- async . run $ (x,) <$> watcherStateSub w x
             link t
             return t
-        loop w {watcherTasks = Map.insert x t ts}
+        loop w {watcherStateTasks = Map.insert x t ts}
   UnWatch x -> do
     $(logTM) InfoS "Watcher - applying Cmd UnWatch"
     case Map.lookup x ts of
       Nothing -> loop w
       Just t -> do
         liftIO $ cancel t
-        loop w {watcherTasks = Map.delete x ts}
+        loop w {watcherStateTasks = Map.delete x ts}
   where
-    ts = watcherTasks w
+    ts = watcherStateTasks w
 
 applyLnd ::
   (Ord a, MonadUnliftIO m, KatipContext m) =>
@@ -189,7 +202,7 @@ applyLnd ::
   m ()
 applyLnd w (x0, x1) = do
   $(logTM) InfoS "Watcher - applying Lnd"
-  watcherHandler w x0 x1
+  watcherStateHandler w x0 x1
   loop w
 
 applyTask ::
@@ -203,9 +216,9 @@ applyTask w0 (x, res) = do
     Nothing -> loop w0
     Just t -> do
       case res of
-        Left (e :: LndError) -> watcherHandler w0 x $ Error e
+        Left (e :: LndError) -> watcherStateHandler w0 x $ Error e
         Right () -> liftIO $ cancel t
       loop w1
   where
-    ts = watcherTasks w0
-    w1 = w0 {watcherTasks = Map.delete x ts}
+    ts = watcherStateTasks w0
+    w1 = w0 {watcherStateTasks = Map.delete x ts}

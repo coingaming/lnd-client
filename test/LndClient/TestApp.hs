@@ -21,6 +21,7 @@ module LndClient.TestApp
     setupOneChannel,
     liftMaybe,
     receiveInvoice,
+    receiveActiveChannel,
     receiveClosedChannels,
   )
 where
@@ -206,6 +207,7 @@ withEnv f = do
               -- https://github.com/lightningnetwork/lnd/issues/2469
               --
               (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
+      closeAllChannels env
       f env
   --
   -- TODO : we can't really use async `cance` or `withAsync`
@@ -254,18 +256,15 @@ mine1 env = do
   btcAddr <- customerAddress env
   mine 1 btcAddr env
 
-setupOneChannel :: (KatipContext m, MonadUnliftIO m) => Env -> m ()
-setupOneChannel env = do
+closeAllChannels :: (KatipContext m, MonadUnliftIO m) => Env -> m ()
+closeAllChannels env = do
   mq <- atomically . dupTChan $ envMerchantCQ env
   cq <- atomically . dupTChan $ envCustomerCQ env
-  --
-  -- Initialize closing channels procedure
-  --
-  $(logTM) InfoS "SetupOneChannel - closing channels ..."
+  $(logTM) InfoS "CloseAllChannels - closing channels ..."
   cs <-
     liftLndResult
       =<< listChannels
-        customerEnv
+        (envLndCustomer env)
         (ListChannelsRequest True False False False Nothing)
   let cps = Channel.channelPoint <$> cs
   mapM_
@@ -290,6 +289,11 @@ setupOneChannel env = do
     cps
   liftLndResult =<< receiveClosedChannels env cps mq
   liftLndResult =<< receiveClosedChannels env cps cq
+
+setupOneChannel :: (KatipContext m, MonadUnliftIO m) => Env -> m ()
+setupOneChannel env = do
+  mq <- atomically . dupTChan $ envMerchantCQ env
+  cq <- atomically . dupTChan $ envCustomerCQ env
   --
   -- Open channel from Customer to Merchant
   --
@@ -439,7 +443,7 @@ receiveInvoice rh s q = do
   mx0 <- readTChanTimeout (MicroSecondsDelay 30000000) q
   let mx = snd <$> mx0
   $(logTM) InfoS $ logStr $
-    "receiveInvoice - " <> (show $ mx :: Text)
+    "receiveInvoice - " <> (show mx :: Text)
   case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
     Just True -> return $ Right ()
     Just False -> receiveInvoice rh s q

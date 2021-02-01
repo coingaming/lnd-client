@@ -84,23 +84,23 @@ spec = do
     liftIO $ qr `shouldSatisfy` isJust
   it "addNormalInvoice" $ withEnv $ \env -> do
     queue <- atomically . dupTChan $ envMerchantIQ env
-    i <-
+    inv <-
       liftLndResult
         =<< addInvoice (envLndMerchant env) addInvoiceRequest
     res <-
       receiveInvoice
-        (AddInvoice.rHash i)
+        (AddInvoice.rHash inv)
         GRPC.Invoice_InvoiceStateOPEN
         queue
     liftIO $ res `shouldSatisfy` isRight
   it "settleNormalInvoice" $ withEnv $ \env -> do
     setupOneChannel env
     q <- atomically . dupTChan $ envMerchantIQ env
-    i <-
+    inv <-
       liftLndResult
         =<< addInvoice (envLndMerchant env) addInvoiceRequest
-    let rh = AddInvoice.rHash i
-    let pr = AddInvoice.paymentRequest i
+    let rh = AddInvoice.rHash inv
+    let pr = AddInvoice.paymentRequest inv
     let spr = SendPaymentRequest pr $ MoneyAmount 1000
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
@@ -123,34 +123,31 @@ spec = do
     liftIO $ do
       x0 `shouldSatisfy` isRight
       x0 `shouldBe` AddInvoice.paymentRequest <$> x1
-  it "watch" $ withEnv $ \env -> do
-    (cw, cr) <- atomically $ do
-      cw <- newBroadcastTChan
-      (cw,) <$> dupTChan cw
+  it "watchNormal" $ withEnv $ \env -> do
     let merEnv = envLndMerchant env
-    let sub = SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
     w <-
       Watcher.spawnLink
         merEnv
         subscribeInvoicesChan
-        $ \_ _ x -> atomically $ writeTChan cw x
-    Watcher.watch w sub
-    void . liftLndResult =<< addInvoice merEnv addInvoiceRequest
-    void . liftLndResult =<< addInvoice merEnv addInvoiceRequest
-    res <- readTChanTimeout (MicroSecondsDelay 500000) cr
-    liftIO $ do
-      Watcher.delete w
-      res `shouldSatisfy` isJust
+        $ \_ _ _ -> pure ()
+    chan <- Watcher.dupLndChan w
+    Watcher.watch w subscribeInvoicesRequest
+    inv <- liftLndResult =<< addInvoice merEnv addInvoiceRequest
+    res <-
+      receiveInvoice
+        (AddInvoice.rHash inv)
+        GRPC.Invoice_InvoiceStateOPEN
+        chan
+    Watcher.delete w
+    liftIO $ res `shouldSatisfy` isRight
   it "watchUnit" $ withEnv $ \env -> do
-    (cw, cr) <- atomically $ do
-      cw <- newBroadcastTChan
-      (cw,) <$> dupTChan cw
     let merEnv = envLndMerchant env
     w <-
       Watcher.spawnLinkUnit
         merEnv
         subscribeChannelEventsChan
-        $ \_ x -> atomically $ writeTChan cw x
+        $ \_ _ -> pure ()
+    chan <- Watcher.dupLndChan w
     Watcher.watchUnit w
     GetInfoResponse merchantPubKey _ _ <-
       liftLndResult =<< getInfo merEnv
@@ -168,41 +165,35 @@ spec = do
               spendUnconfirmed = Nothing,
               closeAddress = Nothing
             }
-    void . liftLndResult
-      =<< openChannelSync (envLndCustomer env) openChannelRequest
-    res <- readTChanTimeout (MicroSecondsDelay 500000) cr
-    liftIO $ do
-      Watcher.delete w
-      isJust res `shouldBe` True
+    cp <-
+      liftLndResult
+        =<< openChannelSync
+          (envLndCustomer env)
+          openChannelRequest
+    res <- receiveActiveChannel env cp chan
+    Watcher.delete w
+    liftIO $ res `shouldSatisfy` isRight
   it "unWatch" $ withEnv $ \env -> do
-    (cw, cr) <- atomically $ do
-      cw <- newBroadcastTChan
-      (cw,) <$> dupTChan cw
     let merEnv = envLndMerchant env
-    let req = AddInvoiceRequest (MoneyAmount 1000) Nothing Nothing
-    let sub = SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
-    let emptyChan = do
-          x <- readTChanTimeout (MicroSecondsDelay 500000) cr
-          if isJust x then emptyChan else return ()
     w <-
       Watcher.spawnLink
         merEnv
         subscribeInvoicesChan
-        $ \w k x -> do
-          -- can unWatch from the callback
-          Watcher.unWatch w k
-          atomically $ writeTChan cw x
-    Watcher.watch w sub
-    void . liftLndResult =<< addInvoice merEnv req
-    void . liftLndResult =<< addInvoice merEnv req
+        -- can unWatch from the callback
+        $ \w k _ -> Watcher.unWatch w k
+    chan <- Watcher.dupLndChan w
+    let emptyChan = do
+          x <- readTChanTimeout (MicroSecondsDelay 500000) chan
+          if isJust x then emptyChan else return ()
+    Watcher.watch w subscribeInvoicesRequest
+    void . liftLndResult =<< addInvoice merEnv addInvoiceRequest
     -- can unWatch from the outside as well
-    --Watcher.unWatch w sub
+    Watcher.unWatch w subscribeInvoicesRequest
     emptyChan
-    void . liftLndResult =<< addInvoice merEnv req
-    res <- readTChanTimeout (MicroSecondsDelay 500000) cr
-    liftIO $ do
-      Watcher.delete w
-      res `shouldSatisfy` isNothing
+    void . liftLndResult =<< addInvoice merEnv addInvoiceRequest
+    res <- readTChanTimeout (MicroSecondsDelay 500000) chan
+    Watcher.delete w
+    liftIO $ res `shouldBe` Nothing
   it "ensureHodlInvoice" $ withEnv $ \env -> do
     r <- newRPreimage
     let req =
@@ -302,10 +293,11 @@ spec = do
     --
     -- prepare invoice and subscription
     --
-    let air = AddInvoiceRequest (MoneyAmount 1000) Nothing Nothing
-    i <- liftLndResult =<< addInvoice (envLndMerchant env) air
-    let rh = AddInvoice.rHash i
-    let pr = AddInvoice.paymentRequest i
+    inv <-
+      liftLndResult
+        =<< addInvoice (envLndMerchant env) addInvoiceRequest
+    let rh = AddInvoice.rHash inv
+    let pr = AddInvoice.paymentRequest inv
     let spr = SendPaymentRequest pr $ MoneyAmount 1000
     let cusEnv = envLndCustomer env
     let sub = TrackPaymentRequest rh False
@@ -321,10 +313,11 @@ spec = do
     Watcher.watch w sub
     void $ liftLndResult =<< sendPayment cusEnv spr
     res <- readTChanTimeout (MicroSecondsDelay 500000) cr
-    liftIO $ do
-      Watcher.delete w
-      res `shouldSatisfy` isJust
+    Watcher.delete w
+    liftIO $ res `shouldSatisfy` isJust
   where
+    subscribeInvoicesRequest =
+      SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
     addInvoiceRequest =
       AddInvoiceRequest
         { memo = Just "HELLO",
