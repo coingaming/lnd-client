@@ -13,7 +13,11 @@ module LndClient.RPC.Generic
   )
 where
 
-import qualified Control.Exception as CE (catch, throw)
+import qualified Control.Exception as CE
+  ( Handler (..),
+    catches,
+    throw,
+  )
 import LndClient.Import
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel
@@ -165,7 +169,12 @@ grpcSubscribeSilent _ service method handler env req =
                 )
                 (grpcMeta env)
                 (\_ _ s -> genStreamHandler s handler)
-        rawGrpc <- CE.catch (Right <$> method' greq) $ return . Left
+        rawGrpc <-
+          CE.catches
+            (Right <$> method' greq)
+            [ CE.Handler $
+                \(x :: LndError) -> pure $ Left x
+            ]
         return $ case rawGrpc of
           Right ClientNormalResponse {} ->
             Left $ GrpcUnexpectedResult "ClientNormalResponse"
@@ -208,7 +217,8 @@ grpcSubscribeKatip rpcName service method handler env req =
     katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $ do
       case res of
         Left e -> do
-          let logMsg = logStr ("RPC exited with message " <> show e :: Text)
+          let logMsg =
+                logStr ("RPC exited with message " <> show e :: Text)
           $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) logMsg
         Right _ ->
           $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"

@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
 {-# OPTIONS_GHC -Wno-missing-export-lists #-}
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
@@ -27,7 +28,6 @@ import qualified Data.Vector as Hs (Vector)
 import qualified Data.Word as Hs (Word16, Word32, Word64)
 import qualified GHC.Enum as Hs
 import qualified GHC.Generics as Hs
-import LndGrpc.Orphan
 import Network.GRPC.HighLevel.Client as HsGRPC
 import Network.GRPC.HighLevel.Generated as HsGRPC
 import Network.GRPC.HighLevel.Server as HsGRPC hiding (serverLoop)
@@ -40,7 +40,6 @@ import qualified Proto3.Suite.JSONPB as HsJSONPB
 import Proto3.Suite.JSONPB ((.:), (.=))
 import qualified Proto3.Suite.Types as HsProtobuf
 import qualified Proto3.Wire as HsProtobuf
-import Universum
 import qualified Unsafe.Coerce as Hs
 import qualified Prelude as Hs
 
@@ -152,6 +151,13 @@ data Lightning request response
             LndGrpc.GetInfoResponse ->
           Hs.IO
             (response 'HsGRPC.Normal LndGrpc.GetInfoResponse),
+        lightningGetRecoveryInfo ::
+          request 'HsGRPC.Normal LndGrpc.GetRecoveryInfoRequest
+            LndGrpc.GetRecoveryInfoResponse ->
+          Hs.IO
+            ( response 'HsGRPC.Normal
+                LndGrpc.GetRecoveryInfoResponse
+            ),
         lightningPendingChannels ::
           request 'HsGRPC.Normal LndGrpc.PendingChannelsRequest
             LndGrpc.PendingChannelsResponse ->
@@ -395,6 +401,27 @@ data Lightning request response
           Hs.IO
             ( response 'HsGRPC.Normal
                 LndGrpc.BakeMacaroonResponse
+            ),
+        lightningListMacaroonIDs ::
+          request 'HsGRPC.Normal LndGrpc.ListMacaroonIDsRequest
+            LndGrpc.ListMacaroonIDsResponse ->
+          Hs.IO
+            ( response 'HsGRPC.Normal
+                LndGrpc.ListMacaroonIDsResponse
+            ),
+        lightningDeleteMacaroonID ::
+          request 'HsGRPC.Normal LndGrpc.DeleteMacaroonIDRequest
+            LndGrpc.DeleteMacaroonIDResponse ->
+          Hs.IO
+            ( response 'HsGRPC.Normal
+                LndGrpc.DeleteMacaroonIDResponse
+            ),
+        lightningListPermissions ::
+          request 'HsGRPC.Normal LndGrpc.ListPermissionsRequest
+            LndGrpc.ListPermissionsResponse ->
+          Hs.IO
+            ( response 'HsGRPC.Normal
+                LndGrpc.ListPermissionsResponse
             )
       }
   deriving (Hs.Generic)
@@ -421,6 +448,7 @@ lightningServer
       lightningListPeers = lightningListPeers,
       lightningSubscribePeerEvents = lightningSubscribePeerEvents,
       lightningGetInfo = lightningGetInfo,
+      lightningGetRecoveryInfo = lightningGetRecoveryInfo,
       lightningPendingChannels = lightningPendingChannels,
       lightningListChannels = lightningListChannels,
       lightningSubscribeChannelEvents = lightningSubscribeChannelEvents,
@@ -461,7 +489,10 @@ lightningServer
       lightningRestoreChannelBackups = lightningRestoreChannelBackups,
       lightningSubscribeChannelBackups =
         lightningSubscribeChannelBackups,
-      lightningBakeMacaroon = lightningBakeMacaroon
+      lightningBakeMacaroon = lightningBakeMacaroon,
+      lightningListMacaroonIDs = lightningListMacaroonIDs,
+      lightningDeleteMacaroonID = lightningDeleteMacaroonID,
+      lightningListPermissions = lightningListPermissions
     }
   ( ServiceOptions
       serverHost
@@ -472,6 +503,7 @@ lightningServer
       initialMetadata
       sslConfig
       logger
+      serverMaxReceiveMessageLength
     ) =
     ( HsGRPC.serverLoop
         HsGRPC.defaultOptions
@@ -531,6 +563,10 @@ lightningServer
                 ( HsGRPC.UnaryHandler
                     (HsGRPC.MethodName "/lnrpc.Lightning/GetInfo")
                     (HsGRPC.convertGeneratedServerHandler lightningGetInfo)
+                ),
+                ( HsGRPC.UnaryHandler
+                    (HsGRPC.MethodName "/lnrpc.Lightning/GetRecoveryInfo")
+                    (HsGRPC.convertGeneratedServerHandler lightningGetRecoveryInfo)
                 ),
                 ( HsGRPC.UnaryHandler
                     (HsGRPC.MethodName "/lnrpc.Lightning/PendingChannels")
@@ -667,6 +703,22 @@ lightningServer
                 ( HsGRPC.UnaryHandler
                     (HsGRPC.MethodName "/lnrpc.Lightning/BakeMacaroon")
                     (HsGRPC.convertGeneratedServerHandler lightningBakeMacaroon)
+                ),
+                ( HsGRPC.UnaryHandler
+                    (HsGRPC.MethodName "/lnrpc.Lightning/ListMacaroonIDs")
+                    (HsGRPC.convertGeneratedServerHandler lightningListMacaroonIDs)
+                ),
+                ( HsGRPC.UnaryHandler
+                    (HsGRPC.MethodName "/lnrpc.Lightning/DeleteMacaroonID")
+                    ( HsGRPC.convertGeneratedServerHandler
+                        lightningDeleteMacaroonID
+                    )
+                ),
+                ( HsGRPC.UnaryHandler
+                    (HsGRPC.MethodName "/lnrpc.Lightning/ListPermissions")
+                    ( HsGRPC.convertGeneratedServerHandler
+                        lightningListPermissions
+                    )
                 )
               ],
             HsGRPC.optClientStreamHandlers = [],
@@ -743,7 +795,8 @@ lightningServer
             optUserAgentSuffix = userAgentSuffix,
             optInitialMetadata = initialMetadata,
             optSSLConfig = sslConfig,
-            optLogger = logger
+            optLogger = logger,
+            optMaxReceiveMessageLength = serverMaxReceiveMessageLength
           }
     )
 
@@ -846,6 +899,12 @@ lightningClient client =
             <*> ( HsGRPC.clientRegisterMethod
                     client
                     (HsGRPC.MethodName "/lnrpc.Lightning/GetInfo")
+                )
+        )
+    <*> ( (Hs.pure (HsGRPC.clientRequest client))
+            <*> ( HsGRPC.clientRegisterMethod
+                    client
+                    (HsGRPC.MethodName "/lnrpc.Lightning/GetRecoveryInfo")
                 )
         )
     <*> ( (Hs.pure (HsGRPC.clientRequest client))
@@ -1080,6 +1139,24 @@ lightningClient client =
             <*> ( HsGRPC.clientRegisterMethod
                     client
                     (HsGRPC.MethodName "/lnrpc.Lightning/BakeMacaroon")
+                )
+        )
+    <*> ( (Hs.pure (HsGRPC.clientRequest client))
+            <*> ( HsGRPC.clientRegisterMethod
+                    client
+                    (HsGRPC.MethodName "/lnrpc.Lightning/ListMacaroonIDs")
+                )
+        )
+    <*> ( (Hs.pure (HsGRPC.clientRequest client))
+            <*> ( HsGRPC.clientRegisterMethod
+                    client
+                    (HsGRPC.MethodName "/lnrpc.Lightning/DeleteMacaroonID")
+                )
+        )
+    <*> ( (Hs.pure (HsGRPC.clientRequest client))
+            <*> ( HsGRPC.clientRegisterMethod
+                    client
+                    (HsGRPC.MethodName "/lnrpc.Lightning/ListPermissions")
                 )
         )
 
@@ -1315,7 +1392,8 @@ data Transaction
         transactionTimeStamp :: Hs.Int64,
         transactionTotalFees :: Hs.Int64,
         transactionDestAddresses :: Hs.Vector Hs.Text,
-        transactionRawTxHex :: Hs.Text
+        transactionRawTxHex :: Hs.Text,
+        transactionLabel :: Hs.Text
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -1336,7 +1414,8 @@ instance HsProtobuf.Message Transaction where
         transactionTimeStamp = transactionTimeStamp,
         transactionTotalFees = transactionTotalFees,
         transactionDestAddresses = transactionDestAddresses,
-        transactionRawTxHex = transactionRawTxHex
+        transactionRawTxHex = transactionRawTxHex,
+        transactionLabel = transactionLabel
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -1376,6 +1455,10 @@ instance HsProtobuf.Message Transaction where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 9)
                 transactionRawTxHex
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 10)
+                transactionLabel
             )
           ]
       )
@@ -1419,6 +1502,10 @@ instance HsProtobuf.Message Transaction where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 9)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 10)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -1483,11 +1570,18 @@ instance HsProtobuf.Message Transaction where
           (HsProtobuf.Single "raw_tx_hex")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 10)
+          (HsProtobuf.Prim HsProtobuf.String)
+          (HsProtobuf.Single "label")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB Transaction where
-  toJSONPB (Transaction f1 f2 f3 f4 f5 f6 f7 f8 f9) =
+  toJSONPB (Transaction f1 f2 f3 f4 f5 f6 f7 f8 f9 f10) =
     ( HsJSONPB.object
         [ "tx_hash" .= f1,
           "amount" .= f2,
@@ -1497,10 +1591,11 @@ instance HsJSONPB.ToJSONPB Transaction where
           "time_stamp" .= f6,
           "total_fees" .= f7,
           "dest_addresses" .= f8,
-          "raw_tx_hex" .= f9
+          "raw_tx_hex" .= f9,
+          "label" .= f10
         ]
     )
-  toEncodingPB (Transaction f1 f2 f3 f4 f5 f6 f7 f8 f9) =
+  toEncodingPB (Transaction f1 f2 f3 f4 f5 f6 f7 f8 f9 f10) =
     ( HsJSONPB.pairs
         [ "tx_hash" .= f1,
           "amount" .= f2,
@@ -1510,7 +1605,8 @@ instance HsJSONPB.ToJSONPB Transaction where
           "time_stamp" .= f6,
           "total_fees" .= f7,
           "dest_addresses" .= f8,
-          "raw_tx_hex" .= f9
+          "raw_tx_hex" .= f9,
+          "label" .= f10
         ]
     )
 
@@ -1527,6 +1623,7 @@ instance HsJSONPB.FromJSONPB Transaction where
               <*> obj .: "total_fees"
               <*> obj .: "dest_addresses"
               <*> obj .: "raw_tx_hex"
+              <*> obj .: "label"
         )
     )
 
@@ -1560,6 +1657,8 @@ instance HsJSONPB.ToSchema Transaction where
       transactionDestAddresses <- declare_dest_addresses Proxy.Proxy
       let declare_raw_tx_hex = HsJSONPB.declareSchemaRef
       transactionRawTxHex <- declare_raw_tx_hex Proxy.Proxy
+      let declare_label = HsJSONPB.declareSchemaRef
+      transactionLabel <- declare_label Proxy.Proxy
       let _ =
             Hs.pure Transaction <*> HsJSONPB.asProxy declare_tx_hash
               <*> HsJSONPB.asProxy declare_amount
@@ -1570,6 +1669,7 @@ instance HsJSONPB.ToSchema Transaction where
               <*> HsJSONPB.asProxy declare_total_fees
               <*> HsJSONPB.asProxy declare_dest_addresses
               <*> HsJSONPB.asProxy declare_raw_tx_hex
+              <*> HsJSONPB.asProxy declare_label
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -1595,7 +1695,8 @@ instance HsJSONPB.ToSchema Transaction where
                           ( "dest_addresses",
                             transactionDestAddresses
                           ),
-                          ("raw_tx_hex", transactionRawTxHex)
+                          ("raw_tx_hex", transactionRawTxHex),
+                          ("label", transactionLabel)
                         ]
                   }
             }
@@ -1720,7 +1821,7 @@ instance HsJSONPB.ToSchema GetTransactionsRequest where
             }
         )
 
-data TransactionDetails
+newtype TransactionDetails
   = TransactionDetails
       { transactionDetailsTransactions ::
           Hs.Vector
@@ -1820,7 +1921,12 @@ instance HsJSONPB.ToSchema TransactionDetails where
             }
         )
 
-data FeeLimit = FeeLimit {feeLimitLimit :: Hs.Maybe FeeLimitLimit}
+newtype FeeLimit
+  = FeeLimit
+      { feeLimitLimit ::
+          Hs.Maybe
+            FeeLimitLimit
+      }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
 instance HsProtobuf.Named FeeLimit where
@@ -3250,7 +3356,16 @@ data ChannelAcceptResponse
       { channelAcceptResponseAccept ::
           Hs.Bool,
         channelAcceptResponsePendingChanId ::
-          Hs.ByteString
+          Hs.ByteString,
+        channelAcceptResponseError :: Hs.Text,
+        channelAcceptResponseUpfrontShutdown :: Hs.Text,
+        channelAcceptResponseCsvDelay :: Hs.Word32,
+        channelAcceptResponseReserveSat :: Hs.Word64,
+        channelAcceptResponseInFlightMaxMsat ::
+          Hs.Word64,
+        channelAcceptResponseMaxHtlcCount :: Hs.Word32,
+        channelAcceptResponseMinHtlcIn :: Hs.Word64,
+        channelAcceptResponseMinAcceptDepth :: Hs.Word32
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -3266,7 +3381,19 @@ instance HsProtobuf.Message ChannelAcceptResponse where
       { channelAcceptResponseAccept =
           channelAcceptResponseAccept,
         channelAcceptResponsePendingChanId =
-          channelAcceptResponsePendingChanId
+          channelAcceptResponsePendingChanId,
+        channelAcceptResponseError = channelAcceptResponseError,
+        channelAcceptResponseUpfrontShutdown =
+          channelAcceptResponseUpfrontShutdown,
+        channelAcceptResponseCsvDelay = channelAcceptResponseCsvDelay,
+        channelAcceptResponseReserveSat = channelAcceptResponseReserveSat,
+        channelAcceptResponseInFlightMaxMsat =
+          channelAcceptResponseInFlightMaxMsat,
+        channelAcceptResponseMaxHtlcCount =
+          channelAcceptResponseMaxHtlcCount,
+        channelAcceptResponseMinHtlcIn = channelAcceptResponseMinHtlcIn,
+        channelAcceptResponseMinAcceptDepth =
+          channelAcceptResponseMinAcceptDepth
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -3276,6 +3403,38 @@ instance HsProtobuf.Message ChannelAcceptResponse where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 2)
                 channelAcceptResponsePendingChanId
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 3)
+                channelAcceptResponseError
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 4)
+                channelAcceptResponseUpfrontShutdown
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 5)
+                channelAcceptResponseCsvDelay
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 6)
+                channelAcceptResponseReserveSat
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 7)
+                channelAcceptResponseInFlightMaxMsat
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 8)
+                channelAcceptResponseMaxHtlcCount
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 9)
+                channelAcceptResponseMinHtlcIn
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 10)
+                channelAcceptResponseMinAcceptDepth
             )
           ]
       )
@@ -3288,6 +3447,38 @@ instance HsProtobuf.Message ChannelAcceptResponse where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 2)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 3)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 4)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 5)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 6)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 7)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 8)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 9)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 10)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -3303,14 +3494,94 @@ instance HsProtobuf.Message ChannelAcceptResponse where
           (HsProtobuf.Single "pending_chan_id")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 3)
+          (HsProtobuf.Prim HsProtobuf.String)
+          (HsProtobuf.Single "error")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 4)
+          (HsProtobuf.Prim HsProtobuf.String)
+          (HsProtobuf.Single "upfront_shutdown")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 5)
+          (HsProtobuf.Prim HsProtobuf.UInt32)
+          (HsProtobuf.Single "csv_delay")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 6)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "reserve_sat")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 7)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "in_flight_max_msat")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 8)
+          (HsProtobuf.Prim HsProtobuf.UInt32)
+          (HsProtobuf.Single "max_htlc_count")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 9)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "min_htlc_in")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 10)
+          (HsProtobuf.Prim HsProtobuf.UInt32)
+          (HsProtobuf.Single "min_accept_depth")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB ChannelAcceptResponse where
-  toJSONPB (ChannelAcceptResponse f1 f2) =
-    (HsJSONPB.object ["accept" .= f1, "pending_chan_id" .= f2])
-  toEncodingPB (ChannelAcceptResponse f1 f2) =
-    (HsJSONPB.pairs ["accept" .= f1, "pending_chan_id" .= f2])
+  toJSONPB (ChannelAcceptResponse f1 f2 f3 f4 f5 f6 f7 f8 f9 f10) =
+    ( HsJSONPB.object
+        [ "accept" .= f1,
+          "pending_chan_id" .= f2,
+          "error" .= f3,
+          "upfront_shutdown" .= f4,
+          "csv_delay" .= f5,
+          "reserve_sat" .= f6,
+          "in_flight_max_msat" .= f7,
+          "max_htlc_count" .= f8,
+          "min_htlc_in" .= f9,
+          "min_accept_depth" .= f10
+        ]
+    )
+  toEncodingPB (ChannelAcceptResponse f1 f2 f3 f4 f5 f6 f7 f8 f9 f10) =
+    ( HsJSONPB.pairs
+        [ "accept" .= f1,
+          "pending_chan_id" .= f2,
+          "error" .= f3,
+          "upfront_shutdown" .= f4,
+          "csv_delay" .= f5,
+          "reserve_sat" .= f6,
+          "in_flight_max_msat" .= f7,
+          "max_htlc_count" .= f8,
+          "min_htlc_in" .= f9,
+          "min_accept_depth" .= f10
+        ]
+    )
 
 instance HsJSONPB.FromJSONPB ChannelAcceptResponse where
   parseJSONPB =
@@ -3319,6 +3590,14 @@ instance HsJSONPB.FromJSONPB ChannelAcceptResponse where
         ( \obj ->
             (Hs.pure ChannelAcceptResponse) <*> obj .: "accept"
               <*> obj .: "pending_chan_id"
+              <*> obj .: "error"
+              <*> obj .: "upfront_shutdown"
+              <*> obj .: "csv_delay"
+              <*> obj .: "reserve_sat"
+              <*> obj .: "in_flight_max_msat"
+              <*> obj .: "max_htlc_count"
+              <*> obj .: "min_htlc_in"
+              <*> obj .: "min_accept_depth"
         )
     )
 
@@ -3338,10 +3617,42 @@ instance HsJSONPB.ToSchema ChannelAcceptResponse where
       channelAcceptResponsePendingChanId <-
         declare_pending_chan_id
           Proxy.Proxy
+      let declare_error = HsJSONPB.declareSchemaRef
+      channelAcceptResponseError <- declare_error Proxy.Proxy
+      let declare_upfront_shutdown = HsJSONPB.declareSchemaRef
+      channelAcceptResponseUpfrontShutdown <-
+        declare_upfront_shutdown
+          Proxy.Proxy
+      let declare_csv_delay = HsJSONPB.declareSchemaRef
+      channelAcceptResponseCsvDelay <- declare_csv_delay Proxy.Proxy
+      let declare_reserve_sat = HsJSONPB.declareSchemaRef
+      channelAcceptResponseReserveSat <- declare_reserve_sat Proxy.Proxy
+      let declare_in_flight_max_msat = HsJSONPB.declareSchemaRef
+      channelAcceptResponseInFlightMaxMsat <-
+        declare_in_flight_max_msat
+          Proxy.Proxy
+      let declare_max_htlc_count = HsJSONPB.declareSchemaRef
+      channelAcceptResponseMaxHtlcCount <-
+        declare_max_htlc_count
+          Proxy.Proxy
+      let declare_min_htlc_in = HsJSONPB.declareSchemaRef
+      channelAcceptResponseMinHtlcIn <- declare_min_htlc_in Proxy.Proxy
+      let declare_min_accept_depth = HsJSONPB.declareSchemaRef
+      channelAcceptResponseMinAcceptDepth <-
+        declare_min_accept_depth
+          Proxy.Proxy
       let _ =
             Hs.pure ChannelAcceptResponse
               <*> HsJSONPB.asProxy declare_accept
               <*> HsJSONPB.asProxy declare_pending_chan_id
+              <*> HsJSONPB.asProxy declare_error
+              <*> HsJSONPB.asProxy declare_upfront_shutdown
+              <*> HsJSONPB.asProxy declare_csv_delay
+              <*> HsJSONPB.asProxy declare_reserve_sat
+              <*> HsJSONPB.asProxy declare_in_flight_max_msat
+              <*> HsJSONPB.asProxy declare_max_htlc_count
+              <*> HsJSONPB.asProxy declare_min_htlc_in
+              <*> HsJSONPB.asProxy declare_min_accept_depth
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -3358,6 +3669,28 @@ instance HsJSONPB.ToSchema ChannelAcceptResponse where
                         [ ("accept", channelAcceptResponseAccept),
                           ( "pending_chan_id",
                             channelAcceptResponsePendingChanId
+                          ),
+                          ("error", channelAcceptResponseError),
+                          ( "upfront_shutdown",
+                            channelAcceptResponseUpfrontShutdown
+                          ),
+                          ( "csv_delay",
+                            channelAcceptResponseCsvDelay
+                          ),
+                          ( "reserve_sat",
+                            channelAcceptResponseReserveSat
+                          ),
+                          ( "in_flight_max_msat",
+                            channelAcceptResponseInFlightMaxMsat
+                          ),
+                          ( "max_htlc_count",
+                            channelAcceptResponseMaxHtlcCount
+                          ),
+                          ( "min_htlc_in",
+                            channelAcceptResponseMinHtlcIn
+                          ),
+                          ( "min_accept_depth",
+                            channelAcceptResponseMinAcceptDepth
                           )
                         ]
                   }
@@ -4083,7 +4416,10 @@ data SendManyRequest
           Hs.Map Hs.Text
             Hs.Int64,
         sendManyRequestTargetConf :: Hs.Int32,
-        sendManyRequestSatPerByte :: Hs.Int64
+        sendManyRequestSatPerByte :: Hs.Int64,
+        sendManyRequestLabel :: Hs.Text,
+        sendManyRequestMinConfs :: Hs.Int32,
+        sendManyRequestSpendUnconfirmed :: Hs.Bool
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -4099,7 +4435,10 @@ instance HsProtobuf.Message SendManyRequest where
       { sendManyRequestAddrToAmount =
           sendManyRequestAddrToAmount,
         sendManyRequestTargetConf = sendManyRequestTargetConf,
-        sendManyRequestSatPerByte = sendManyRequestSatPerByte
+        sendManyRequestSatPerByte = sendManyRequestSatPerByte,
+        sendManyRequestLabel = sendManyRequestLabel,
+        sendManyRequestMinConfs = sendManyRequestMinConfs,
+        sendManyRequestSpendUnconfirmed = sendManyRequestSpendUnconfirmed
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -4113,6 +4452,18 @@ instance HsProtobuf.Message SendManyRequest where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 5)
                 sendManyRequestSatPerByte
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 6)
+                sendManyRequestLabel
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 7)
+                sendManyRequestMinConfs
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 8)
+                sendManyRequestSpendUnconfirmed
             )
           ]
       )
@@ -4129,6 +4480,18 @@ instance HsProtobuf.Message SendManyRequest where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 5)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 6)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 7)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 8)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -4151,17 +4514,50 @@ instance HsProtobuf.Message SendManyRequest where
           (HsProtobuf.Single "sat_per_byte")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 6)
+          (HsProtobuf.Prim HsProtobuf.String)
+          (HsProtobuf.Single "label")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 7)
+          (HsProtobuf.Prim HsProtobuf.Int32)
+          (HsProtobuf.Single "min_confs")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 8)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "spend_unconfirmed")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB SendManyRequest where
-  toJSONPB (SendManyRequest f1 f3 f5) =
+  toJSONPB (SendManyRequest f1 f3 f5 f6 f7 f8) =
     ( HsJSONPB.object
-        ["AddrToAmount" .= f1, "target_conf" .= f3, "sat_per_byte" .= f5]
+        [ "AddrToAmount" .= f1,
+          "target_conf" .= f3,
+          "sat_per_byte" .= f5,
+          "label" .= f6,
+          "min_confs" .= f7,
+          "spend_unconfirmed" .= f8
+        ]
     )
-  toEncodingPB (SendManyRequest f1 f3 f5) =
+  toEncodingPB (SendManyRequest f1 f3 f5 f6 f7 f8) =
     ( HsJSONPB.pairs
-        ["AddrToAmount" .= f1, "target_conf" .= f3, "sat_per_byte" .= f5]
+        [ "AddrToAmount" .= f1,
+          "target_conf" .= f3,
+          "sat_per_byte" .= f5,
+          "label" .= f6,
+          "min_confs" .= f7,
+          "spend_unconfirmed" .= f8
+        ]
     )
 
 instance HsJSONPB.FromJSONPB SendManyRequest where
@@ -4172,6 +4568,9 @@ instance HsJSONPB.FromJSONPB SendManyRequest where
             (Hs.pure SendManyRequest) <*> obj .: "AddrToAmount"
               <*> obj .: "target_conf"
               <*> obj .: "sat_per_byte"
+              <*> obj .: "label"
+              <*> obj .: "min_confs"
+              <*> obj .: "spend_unconfirmed"
         )
     )
 
@@ -4191,11 +4590,22 @@ instance HsJSONPB.ToSchema SendManyRequest where
       sendManyRequestTargetConf <- declare_target_conf Proxy.Proxy
       let declare_sat_per_byte = HsJSONPB.declareSchemaRef
       sendManyRequestSatPerByte <- declare_sat_per_byte Proxy.Proxy
+      let declare_label = HsJSONPB.declareSchemaRef
+      sendManyRequestLabel <- declare_label Proxy.Proxy
+      let declare_min_confs = HsJSONPB.declareSchemaRef
+      sendManyRequestMinConfs <- declare_min_confs Proxy.Proxy
+      let declare_spend_unconfirmed = HsJSONPB.declareSchemaRef
+      sendManyRequestSpendUnconfirmed <-
+        declare_spend_unconfirmed
+          Proxy.Proxy
       let _ =
             Hs.pure SendManyRequest
               <*> HsJSONPB.asProxy declare_AddrToAmount
               <*> HsJSONPB.asProxy declare_target_conf
               <*> HsJSONPB.asProxy declare_sat_per_byte
+              <*> HsJSONPB.asProxy declare_label
+              <*> HsJSONPB.asProxy declare_min_confs
+              <*> HsJSONPB.asProxy declare_spend_unconfirmed
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -4213,15 +4623,18 @@ instance HsJSONPB.ToSchema SendManyRequest where
                             sendManyRequestAddrToAmount
                           ),
                           ("target_conf", sendManyRequestTargetConf),
-                          ( "sat_per_byte",
-                            sendManyRequestSatPerByte
+                          ("sat_per_byte", sendManyRequestSatPerByte),
+                          ("label", sendManyRequestLabel),
+                          ("min_confs", sendManyRequestMinConfs),
+                          ( "spend_unconfirmed",
+                            sendManyRequestSpendUnconfirmed
                           )
                         ]
                   }
             }
         )
 
-data SendManyResponse
+newtype SendManyResponse
   = SendManyResponse
       { sendManyResponseTxid ::
           Hs.Text
@@ -4310,7 +4723,10 @@ data SendCoinsRequest
         sendCoinsRequestAmount :: Hs.Int64,
         sendCoinsRequestTargetConf :: Hs.Int32,
         sendCoinsRequestSatPerByte :: Hs.Int64,
-        sendCoinsRequestSendAll :: Hs.Bool
+        sendCoinsRequestSendAll :: Hs.Bool,
+        sendCoinsRequestLabel :: Hs.Text,
+        sendCoinsRequestMinConfs :: Hs.Int32,
+        sendCoinsRequestSpendUnconfirmed :: Hs.Bool
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -4327,7 +4743,11 @@ instance HsProtobuf.Message SendCoinsRequest where
         sendCoinsRequestAmount = sendCoinsRequestAmount,
         sendCoinsRequestTargetConf = sendCoinsRequestTargetConf,
         sendCoinsRequestSatPerByte = sendCoinsRequestSatPerByte,
-        sendCoinsRequestSendAll = sendCoinsRequestSendAll
+        sendCoinsRequestSendAll = sendCoinsRequestSendAll,
+        sendCoinsRequestLabel = sendCoinsRequestLabel,
+        sendCoinsRequestMinConfs = sendCoinsRequestMinConfs,
+        sendCoinsRequestSpendUnconfirmed =
+          sendCoinsRequestSpendUnconfirmed
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -4349,6 +4769,18 @@ instance HsProtobuf.Message SendCoinsRequest where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 6)
                 sendCoinsRequestSendAll
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 7)
+                sendCoinsRequestLabel
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 8)
+                sendCoinsRequestMinConfs
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 9)
+                sendCoinsRequestSpendUnconfirmed
             )
           ]
       )
@@ -4373,6 +4805,18 @@ instance HsProtobuf.Message SendCoinsRequest where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 6)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 7)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 8)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 9)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -4409,26 +4853,53 @@ instance HsProtobuf.Message SendCoinsRequest where
           (HsProtobuf.Single "send_all")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 7)
+          (HsProtobuf.Prim HsProtobuf.String)
+          (HsProtobuf.Single "label")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 8)
+          (HsProtobuf.Prim HsProtobuf.Int32)
+          (HsProtobuf.Single "min_confs")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 9)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "spend_unconfirmed")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB SendCoinsRequest where
-  toJSONPB (SendCoinsRequest f1 f2 f3 f5 f6) =
+  toJSONPB (SendCoinsRequest f1 f2 f3 f5 f6 f7 f8 f9) =
     ( HsJSONPB.object
         [ "addr" .= f1,
           "amount" .= f2,
           "target_conf" .= f3,
           "sat_per_byte" .= f5,
-          "send_all" .= f6
+          "send_all" .= f6,
+          "label" .= f7,
+          "min_confs" .= f8,
+          "spend_unconfirmed" .= f9
         ]
     )
-  toEncodingPB (SendCoinsRequest f1 f2 f3 f5 f6) =
+  toEncodingPB (SendCoinsRequest f1 f2 f3 f5 f6 f7 f8 f9) =
     ( HsJSONPB.pairs
         [ "addr" .= f1,
           "amount" .= f2,
           "target_conf" .= f3,
           "sat_per_byte" .= f5,
-          "send_all" .= f6
+          "send_all" .= f6,
+          "label" .= f7,
+          "min_confs" .= f8,
+          "spend_unconfirmed" .= f9
         ]
     )
 
@@ -4441,6 +4912,9 @@ instance HsJSONPB.FromJSONPB SendCoinsRequest where
               <*> obj .: "target_conf"
               <*> obj .: "sat_per_byte"
               <*> obj .: "send_all"
+              <*> obj .: "label"
+              <*> obj .: "min_confs"
+              <*> obj .: "spend_unconfirmed"
         )
     )
 
@@ -4464,12 +4938,23 @@ instance HsJSONPB.ToSchema SendCoinsRequest where
       sendCoinsRequestSatPerByte <- declare_sat_per_byte Proxy.Proxy
       let declare_send_all = HsJSONPB.declareSchemaRef
       sendCoinsRequestSendAll <- declare_send_all Proxy.Proxy
+      let declare_label = HsJSONPB.declareSchemaRef
+      sendCoinsRequestLabel <- declare_label Proxy.Proxy
+      let declare_min_confs = HsJSONPB.declareSchemaRef
+      sendCoinsRequestMinConfs <- declare_min_confs Proxy.Proxy
+      let declare_spend_unconfirmed = HsJSONPB.declareSchemaRef
+      sendCoinsRequestSpendUnconfirmed <-
+        declare_spend_unconfirmed
+          Proxy.Proxy
       let _ =
             Hs.pure SendCoinsRequest <*> HsJSONPB.asProxy declare_addr
               <*> HsJSONPB.asProxy declare_amount
               <*> HsJSONPB.asProxy declare_target_conf
               <*> HsJSONPB.asProxy declare_sat_per_byte
               <*> HsJSONPB.asProxy declare_send_all
+              <*> HsJSONPB.asProxy declare_label
+              <*> HsJSONPB.asProxy declare_min_confs
+              <*> HsJSONPB.asProxy declare_spend_unconfirmed
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -4489,13 +4974,18 @@ instance HsJSONPB.ToSchema SendCoinsRequest where
                           ( "sat_per_byte",
                             sendCoinsRequestSatPerByte
                           ),
-                          ("send_all", sendCoinsRequestSendAll)
+                          ("send_all", sendCoinsRequestSendAll),
+                          ("label", sendCoinsRequestLabel),
+                          ("min_confs", sendCoinsRequestMinConfs),
+                          ( "spend_unconfirmed",
+                            sendCoinsRequestSpendUnconfirmed
+                          )
                         ]
                   }
             }
         )
 
-data SendCoinsResponse
+newtype SendCoinsResponse
   = SendCoinsResponse
       { sendCoinsResponseTxid ::
           Hs.Text
@@ -4692,7 +5182,7 @@ instance HsJSONPB.ToSchema ListUnspentRequest where
             }
         )
 
-data ListUnspentResponse
+newtype ListUnspentResponse
   = ListUnspentResponse
       { listUnspentResponseUtxos ::
           Hs.Vector
@@ -4844,7 +5334,7 @@ instance HsJSONPB.FromJSON AddressType where
 
 instance HsProtobuf.Finite AddressType
 
-data NewAddressRequest
+newtype NewAddressRequest
   = NewAddressRequest
       { newAddressRequestType ::
           HsProtobuf.Enumerated
@@ -4929,7 +5419,7 @@ instance HsJSONPB.ToSchema NewAddressRequest where
             }
         )
 
-data NewAddressResponse
+newtype NewAddressResponse
   = NewAddressResponse
       { newAddressResponseAddress ::
           Hs.Text
@@ -5017,7 +5507,7 @@ instance HsJSONPB.ToSchema NewAddressResponse where
             }
         )
 
-data SignMessageRequest
+newtype SignMessageRequest
   = SignMessageRequest
       { signMessageRequestMsg ::
           Hs.ByteString
@@ -5099,7 +5589,7 @@ instance HsJSONPB.ToSchema SignMessageRequest where
             }
         )
 
-data SignMessageResponse
+newtype SignMessageResponse
   = SignMessageResponse
       { signMessageResponseSignature ::
           Hs.Text
@@ -5423,7 +5913,8 @@ data ConnectPeerRequest
       { connectPeerRequestAddr ::
           Hs.Maybe
             LndGrpc.LightningAddress,
-        connectPeerRequestPerm :: Hs.Bool
+        connectPeerRequestPerm :: Hs.Bool,
+        connectPeerRequestTimeout :: Hs.Word64
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -5437,7 +5928,8 @@ instance HsProtobuf.Message ConnectPeerRequest where
     _
     ConnectPeerRequest
       { connectPeerRequestAddr = connectPeerRequestAddr,
-        connectPeerRequestPerm = connectPeerRequestPerm
+        connectPeerRequestPerm = connectPeerRequestPerm,
+        connectPeerRequestTimeout = connectPeerRequestTimeout
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -5450,6 +5942,10 @@ instance HsProtobuf.Message ConnectPeerRequest where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 2)
                 connectPeerRequestPerm
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 3)
+                connectPeerRequestTimeout
             )
           ]
       )
@@ -5465,6 +5961,10 @@ instance HsProtobuf.Message ConnectPeerRequest where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 2)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 3)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -5482,14 +5982,21 @@ instance HsProtobuf.Message ConnectPeerRequest where
           (HsProtobuf.Single "perm")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 3)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "timeout")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB ConnectPeerRequest where
-  toJSONPB (ConnectPeerRequest f1 f2) =
-    (HsJSONPB.object ["addr" .= f1, "perm" .= f2])
-  toEncodingPB (ConnectPeerRequest f1 f2) =
-    (HsJSONPB.pairs ["addr" .= f1, "perm" .= f2])
+  toJSONPB (ConnectPeerRequest f1 f2 f3) =
+    (HsJSONPB.object ["addr" .= f1, "perm" .= f2, "timeout" .= f3])
+  toEncodingPB (ConnectPeerRequest f1 f2 f3) =
+    (HsJSONPB.pairs ["addr" .= f1, "perm" .= f2, "timeout" .= f3])
 
 instance HsJSONPB.FromJSONPB ConnectPeerRequest where
   parseJSONPB =
@@ -5497,6 +6004,8 @@ instance HsJSONPB.FromJSONPB ConnectPeerRequest where
         "ConnectPeerRequest"
         ( \obj ->
             (Hs.pure ConnectPeerRequest) <*> obj .: "addr" <*> obj .: "perm"
+              <*> obj
+              .: "timeout"
         )
     )
 
@@ -5514,10 +6023,13 @@ instance HsJSONPB.ToSchema ConnectPeerRequest where
       connectPeerRequestAddr <- declare_addr Proxy.Proxy
       let declare_perm = HsJSONPB.declareSchemaRef
       connectPeerRequestPerm <- declare_perm Proxy.Proxy
+      let declare_timeout = HsJSONPB.declareSchemaRef
+      connectPeerRequestTimeout <- declare_timeout Proxy.Proxy
       let _ =
             Hs.pure ConnectPeerRequest
               <*> HsJSONPB.asProxy declare_addr
               <*> HsJSONPB.asProxy declare_perm
+              <*> HsJSONPB.asProxy declare_timeout
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -5532,7 +6044,8 @@ instance HsJSONPB.ToSchema ConnectPeerRequest where
                     HsJSONPB._schemaProperties =
                       HsJSONPB.insOrdFromList
                         [ ("addr", connectPeerRequestAddr),
-                          ("perm", connectPeerRequestPerm)
+                          ("perm", connectPeerRequestPerm),
+                          ("timeout", connectPeerRequestTimeout)
                         ]
                   }
             }
@@ -5589,7 +6102,7 @@ instance HsJSONPB.ToSchema ConnectPeerResponse where
             }
         )
 
-data DisconnectPeerRequest
+newtype DisconnectPeerRequest
   = DisconnectPeerRequest
       { disconnectPeerRequestPubKey ::
           Hs.Text
@@ -5733,7 +6246,10 @@ data HTLC
       { htlcIncoming :: Hs.Bool,
         htlcAmount :: Hs.Int64,
         htlcHashLock :: Hs.ByteString,
-        htlcExpirationHeight :: Hs.Word32
+        htlcExpirationHeight :: Hs.Word32,
+        htlcHtlcIndex :: Hs.Word64,
+        htlcForwardingChannel :: Hs.Word64,
+        htlcForwardingHtlcIndex :: Hs.Word64
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -5749,7 +6265,10 @@ instance HsProtobuf.Message HTLC where
       { htlcIncoming = htlcIncoming,
         htlcAmount = htlcAmount,
         htlcHashLock = htlcHashLock,
-        htlcExpirationHeight = htlcExpirationHeight
+        htlcExpirationHeight = htlcExpirationHeight,
+        htlcHtlcIndex = htlcHtlcIndex,
+        htlcForwardingChannel = htlcForwardingChannel,
+        htlcForwardingHtlcIndex = htlcForwardingHtlcIndex
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -5767,6 +6286,18 @@ instance HsProtobuf.Message HTLC where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 4)
                 htlcExpirationHeight
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 5)
+                htlcHtlcIndex
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 6)
+                htlcForwardingChannel
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 7)
+                htlcForwardingHtlcIndex
             )
           ]
       )
@@ -5787,6 +6318,18 @@ instance HsProtobuf.Message HTLC where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 4)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 5)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 6)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 7)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -5816,24 +6359,51 @@ instance HsProtobuf.Message HTLC where
           (HsProtobuf.Single "expiration_height")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 5)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "htlc_index")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 6)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "forwarding_channel")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 7)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "forwarding_htlc_index")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB HTLC where
-  toJSONPB (HTLC f1 f2 f3 f4) =
+  toJSONPB (HTLC f1 f2 f3 f4 f5 f6 f7) =
     ( HsJSONPB.object
         [ "incoming" .= f1,
           "amount" .= f2,
           "hash_lock" .= f3,
-          "expiration_height" .= f4
+          "expiration_height" .= f4,
+          "htlc_index" .= f5,
+          "forwarding_channel" .= f6,
+          "forwarding_htlc_index" .= f7
         ]
     )
-  toEncodingPB (HTLC f1 f2 f3 f4) =
+  toEncodingPB (HTLC f1 f2 f3 f4 f5 f6 f7) =
     ( HsJSONPB.pairs
         [ "incoming" .= f1,
           "amount" .= f2,
           "hash_lock" .= f3,
-          "expiration_height" .= f4
+          "expiration_height" .= f4,
+          "htlc_index" .= f5,
+          "forwarding_channel" .= f6,
+          "forwarding_htlc_index" .= f7
         ]
     )
 
@@ -5843,10 +6413,11 @@ instance HsJSONPB.FromJSONPB HTLC where
         "HTLC"
         ( \obj ->
             (Hs.pure HTLC) <*> obj .: "incoming" <*> obj .: "amount"
-              <*> obj
-              .: "hash_lock"
-              <*> obj
-              .: "expiration_height"
+              <*> obj .: "hash_lock"
+              <*> obj .: "expiration_height"
+              <*> obj .: "htlc_index"
+              <*> obj .: "forwarding_channel"
+              <*> obj .: "forwarding_htlc_index"
         )
     )
 
@@ -5868,11 +6439,22 @@ instance HsJSONPB.ToSchema HTLC where
       htlcHashLock <- declare_hash_lock Proxy.Proxy
       let declare_expiration_height = HsJSONPB.declareSchemaRef
       htlcExpirationHeight <- declare_expiration_height Proxy.Proxy
+      let declare_htlc_index = HsJSONPB.declareSchemaRef
+      htlcHtlcIndex <- declare_htlc_index Proxy.Proxy
+      let declare_forwarding_channel = HsJSONPB.declareSchemaRef
+      htlcForwardingChannel <- declare_forwarding_channel Proxy.Proxy
+      let declare_forwarding_htlc_index = HsJSONPB.declareSchemaRef
+      htlcForwardingHtlcIndex <-
+        declare_forwarding_htlc_index
+          Proxy.Proxy
       let _ =
             Hs.pure HTLC <*> HsJSONPB.asProxy declare_incoming
               <*> HsJSONPB.asProxy declare_amount
               <*> HsJSONPB.asProxy declare_hash_lock
               <*> HsJSONPB.asProxy declare_expiration_height
+              <*> HsJSONPB.asProxy declare_htlc_index
+              <*> HsJSONPB.asProxy declare_forwarding_channel
+              <*> HsJSONPB.asProxy declare_forwarding_htlc_index
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName = Hs.Just "HTLC",
@@ -5888,8 +6470,13 @@ instance HsJSONPB.ToSchema HTLC where
                         [ ("incoming", htlcIncoming),
                           ("amount", htlcAmount),
                           ("hash_lock", htlcHashLock),
-                          ( "expiration_height",
-                            htlcExpirationHeight
+                          ("expiration_height", htlcExpirationHeight),
+                          ("htlc_index", htlcHtlcIndex),
+                          ( "forwarding_channel",
+                            htlcForwardingChannel
+                          ),
+                          ( "forwarding_htlc_index",
+                            htlcForwardingHtlcIndex
                           )
                         ]
                   }
@@ -5953,6 +6540,244 @@ instance HsJSONPB.FromJSON CommitmentType where
 
 instance HsProtobuf.Finite CommitmentType
 
+data ChannelConstraints
+  = ChannelConstraints
+      { channelConstraintsCsvDelay ::
+          Hs.Word32,
+        channelConstraintsChanReserveSat :: Hs.Word64,
+        channelConstraintsDustLimitSat :: Hs.Word64,
+        channelConstraintsMaxPendingAmtMsat :: Hs.Word64,
+        channelConstraintsMinHtlcMsat :: Hs.Word64,
+        channelConstraintsMaxAcceptedHtlcs :: Hs.Word32
+      }
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named ChannelConstraints where
+  nameOf _ = (Hs.fromString "ChannelConstraints")
+
+instance HsProtobuf.HasDefault ChannelConstraints
+
+instance HsProtobuf.Message ChannelConstraints where
+  encodeMessage
+    _
+    ChannelConstraints
+      { channelConstraintsCsvDelay =
+          channelConstraintsCsvDelay,
+        channelConstraintsChanReserveSat =
+          channelConstraintsChanReserveSat,
+        channelConstraintsDustLimitSat = channelConstraintsDustLimitSat,
+        channelConstraintsMaxPendingAmtMsat =
+          channelConstraintsMaxPendingAmtMsat,
+        channelConstraintsMinHtlcMsat = channelConstraintsMinHtlcMsat,
+        channelConstraintsMaxAcceptedHtlcs =
+          channelConstraintsMaxAcceptedHtlcs
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                channelConstraintsCsvDelay
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 2)
+                channelConstraintsChanReserveSat
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 3)
+                channelConstraintsDustLimitSat
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 4)
+                channelConstraintsMaxPendingAmtMsat
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 5)
+                channelConstraintsMinHtlcMsat
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 6)
+                channelConstraintsMaxAcceptedHtlcs
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure ChannelConstraints)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 2)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 3)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 4)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 5)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 6)
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Prim HsProtobuf.UInt32)
+          (HsProtobuf.Single "csv_delay")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 2)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "chan_reserve_sat")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 3)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "dust_limit_sat")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 4)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "max_pending_amt_msat")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 5)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "min_htlc_msat")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 6)
+          (HsProtobuf.Prim HsProtobuf.UInt32)
+          (HsProtobuf.Single "max_accepted_htlcs")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB ChannelConstraints where
+  toJSONPB (ChannelConstraints f1 f2 f3 f4 f5 f6) =
+    ( HsJSONPB.object
+        [ "csv_delay" .= f1,
+          "chan_reserve_sat" .= f2,
+          "dust_limit_sat" .= f3,
+          "max_pending_amt_msat" .= f4,
+          "min_htlc_msat" .= f5,
+          "max_accepted_htlcs" .= f6
+        ]
+    )
+  toEncodingPB (ChannelConstraints f1 f2 f3 f4 f5 f6) =
+    ( HsJSONPB.pairs
+        [ "csv_delay" .= f1,
+          "chan_reserve_sat" .= f2,
+          "dust_limit_sat" .= f3,
+          "max_pending_amt_msat" .= f4,
+          "min_htlc_msat" .= f5,
+          "max_accepted_htlcs" .= f6
+        ]
+    )
+
+instance HsJSONPB.FromJSONPB ChannelConstraints where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "ChannelConstraints"
+        ( \obj ->
+            (Hs.pure ChannelConstraints) <*> obj .: "csv_delay"
+              <*> obj .: "chan_reserve_sat"
+              <*> obj .: "dust_limit_sat"
+              <*> obj .: "max_pending_amt_msat"
+              <*> obj .: "min_htlc_msat"
+              <*> obj .: "max_accepted_htlcs"
+        )
+    )
+
+instance HsJSONPB.ToJSON ChannelConstraints where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON ChannelConstraints where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema ChannelConstraints where
+  declareNamedSchema _ =
+    do
+      let declare_csv_delay = HsJSONPB.declareSchemaRef
+      channelConstraintsCsvDelay <- declare_csv_delay Proxy.Proxy
+      let declare_chan_reserve_sat = HsJSONPB.declareSchemaRef
+      channelConstraintsChanReserveSat <-
+        declare_chan_reserve_sat
+          Proxy.Proxy
+      let declare_dust_limit_sat = HsJSONPB.declareSchemaRef
+      channelConstraintsDustLimitSat <-
+        declare_dust_limit_sat
+          Proxy.Proxy
+      let declare_max_pending_amt_msat = HsJSONPB.declareSchemaRef
+      channelConstraintsMaxPendingAmtMsat <-
+        declare_max_pending_amt_msat
+          Proxy.Proxy
+      let declare_min_htlc_msat = HsJSONPB.declareSchemaRef
+      channelConstraintsMinHtlcMsat <- declare_min_htlc_msat Proxy.Proxy
+      let declare_max_accepted_htlcs = HsJSONPB.declareSchemaRef
+      channelConstraintsMaxAcceptedHtlcs <-
+        declare_max_accepted_htlcs
+          Proxy.Proxy
+      let _ =
+            Hs.pure ChannelConstraints
+              <*> HsJSONPB.asProxy declare_csv_delay
+              <*> HsJSONPB.asProxy declare_chan_reserve_sat
+              <*> HsJSONPB.asProxy declare_dust_limit_sat
+              <*> HsJSONPB.asProxy declare_max_pending_amt_msat
+              <*> HsJSONPB.asProxy declare_min_htlc_msat
+              <*> HsJSONPB.asProxy declare_max_accepted_htlcs
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "ChannelConstraints",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [ ("csv_delay", channelConstraintsCsvDelay),
+                          ( "chan_reserve_sat",
+                            channelConstraintsChanReserveSat
+                          ),
+                          ( "dust_limit_sat",
+                            channelConstraintsDustLimitSat
+                          ),
+                          ( "max_pending_amt_msat",
+                            channelConstraintsMaxPendingAmtMsat
+                          ),
+                          ( "min_htlc_msat",
+                            channelConstraintsMinHtlcMsat
+                          ),
+                          ( "max_accepted_htlcs",
+                            channelConstraintsMaxAcceptedHtlcs
+                          )
+                        ]
+                  }
+            }
+        )
+
 data Channel
   = Channel
       { channelActive :: Hs.Bool,
@@ -5984,7 +6809,9 @@ data Channel
         channelUptime :: Hs.Int64,
         channelCloseAddress :: Hs.Text,
         channelPushAmountSat :: Hs.Word64,
-        channelThawHeight :: Hs.Word32
+        channelThawHeight :: Hs.Word32,
+        channelLocalConstraints :: Hs.Maybe LndGrpc.ChannelConstraints,
+        channelRemoteConstraints :: Hs.Maybe LndGrpc.ChannelConstraints
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -6024,7 +6851,9 @@ instance HsProtobuf.Message Channel where
         channelUptime = channelUptime,
         channelCloseAddress = channelCloseAddress,
         channelPushAmountSat = channelPushAmountSat,
-        channelThawHeight = channelThawHeight
+        channelThawHeight = channelThawHeight,
+        channelLocalConstraints = channelLocalConstraints,
+        channelRemoteConstraints = channelRemoteConstraints
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -6141,6 +6970,20 @@ instance HsProtobuf.Message Channel where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 28)
                 channelThawHeight
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 29)
+                ( Hs.coerce @(Hs.Maybe LndGrpc.ChannelConstraints)
+                    @(HsProtobuf.Nested LndGrpc.ChannelConstraints)
+                    channelLocalConstraints
+                )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 30)
+                ( Hs.coerce @(Hs.Maybe LndGrpc.ChannelConstraints)
+                    @(HsProtobuf.Nested LndGrpc.ChannelConstraints)
+                    channelRemoteConstraints
+                )
             )
           ]
       )
@@ -6261,6 +7104,20 @@ instance HsProtobuf.Message Channel where
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 28)
           )
+      <*> ( Hs.coerce @(_ (HsProtobuf.Nested LndGrpc.ChannelConstraints))
+              @(_ (Hs.Maybe LndGrpc.ChannelConstraints))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 29)
+              )
+          )
+      <*> ( Hs.coerce @(_ (HsProtobuf.Nested LndGrpc.ChannelConstraints))
+              @(_ (Hs.Maybe LndGrpc.ChannelConstraints))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 30)
+              )
+          )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 1)
@@ -6375,7 +7232,11 @@ instance HsProtobuf.Message Channel where
           (HsProtobuf.FieldNumber 16)
           (HsProtobuf.Prim HsProtobuf.UInt32)
           (HsProtobuf.Single "csv_delay")
-          []
+          [ ( HsProtobuf.DotProtoOption
+                (HsProtobuf.Single "deprecated")
+                (HsProtobuf.BoolLit Hs.True)
+            )
+          ]
           ""
       ),
       ( HsProtobuf.DotProtoField
@@ -6403,14 +7264,22 @@ instance HsProtobuf.Message Channel where
           (HsProtobuf.FieldNumber 20)
           (HsProtobuf.Prim HsProtobuf.Int64)
           (HsProtobuf.Single "local_chan_reserve_sat")
-          []
+          [ ( HsProtobuf.DotProtoOption
+                (HsProtobuf.Single "deprecated")
+                (HsProtobuf.BoolLit Hs.True)
+            )
+          ]
           ""
       ),
       ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 21)
           (HsProtobuf.Prim HsProtobuf.Int64)
           (HsProtobuf.Single "remote_chan_reserve_sat")
-          []
+          [ ( HsProtobuf.DotProtoOption
+                (HsProtobuf.Single "deprecated")
+                (HsProtobuf.BoolLit Hs.True)
+            )
+          ]
           ""
       ),
       ( HsProtobuf.DotProtoField
@@ -6467,6 +7336,24 @@ instance HsProtobuf.Message Channel where
           (HsProtobuf.Single "thaw_height")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 29)
+          ( HsProtobuf.Prim
+              (HsProtobuf.Named (HsProtobuf.Single "ChannelConstraints"))
+          )
+          (HsProtobuf.Single "local_constraints")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 30)
+          ( HsProtobuf.Prim
+              (HsProtobuf.Named (HsProtobuf.Single "ChannelConstraints"))
+          )
+          (HsProtobuf.Single "remote_constraints")
+          []
+          ""
       )
     ]
 
@@ -6501,6 +7388,8 @@ instance HsJSONPB.ToJSONPB Channel where
         f25
         f27
         f28
+        f29
+        f30
       ) =
       ( HsJSONPB.object
           [ "active" .= f1,
@@ -6530,7 +7419,9 @@ instance HsJSONPB.ToJSONPB Channel where
             "uptime" .= f24,
             "close_address" .= f25,
             "push_amount_sat" .= f27,
-            "thaw_height" .= f28
+            "thaw_height" .= f28,
+            "local_constraints" .= f29,
+            "remote_constraints" .= f30
           ]
       )
   toEncodingPB
@@ -6563,6 +7454,8 @@ instance HsJSONPB.ToJSONPB Channel where
         f25
         f27
         f28
+        f29
+        f30
       ) =
       ( HsJSONPB.pairs
           [ "active" .= f1,
@@ -6592,7 +7485,9 @@ instance HsJSONPB.ToJSONPB Channel where
             "uptime" .= f24,
             "close_address" .= f25,
             "push_amount_sat" .= f27,
-            "thaw_height" .= f28
+            "thaw_height" .= f28,
+            "local_constraints" .= f29,
+            "remote_constraints" .= f30
           ]
       )
 
@@ -6628,6 +7523,8 @@ instance HsJSONPB.FromJSONPB Channel where
               <*> obj .: "close_address"
               <*> obj .: "push_amount_sat"
               <*> obj .: "thaw_height"
+              <*> obj .: "local_constraints"
+              <*> obj .: "remote_constraints"
         )
     )
 
@@ -6703,6 +7600,10 @@ instance HsJSONPB.ToSchema Channel where
       channelPushAmountSat <- declare_push_amount_sat Proxy.Proxy
       let declare_thaw_height = HsJSONPB.declareSchemaRef
       channelThawHeight <- declare_thaw_height Proxy.Proxy
+      let declare_local_constraints = HsJSONPB.declareSchemaRef
+      channelLocalConstraints <- declare_local_constraints Proxy.Proxy
+      let declare_remote_constraints = HsJSONPB.declareSchemaRef
+      channelRemoteConstraints <- declare_remote_constraints Proxy.Proxy
       let _ =
             Hs.pure Channel <*> HsJSONPB.asProxy declare_active
               <*> HsJSONPB.asProxy declare_remote_pubkey
@@ -6732,6 +7633,8 @@ instance HsJSONPB.ToSchema Channel where
               <*> HsJSONPB.asProxy declare_close_address
               <*> HsJSONPB.asProxy declare_push_amount_sat
               <*> HsJSONPB.asProxy declare_thaw_height
+              <*> HsJSONPB.asProxy declare_local_constraints
+              <*> HsJSONPB.asProxy declare_remote_constraints
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -6786,7 +7689,13 @@ instance HsJSONPB.ToSchema Channel where
                           ("uptime", channelUptime),
                           ("close_address", channelCloseAddress),
                           ("push_amount_sat", channelPushAmountSat),
-                          ("thaw_height", channelThawHeight)
+                          ("thaw_height", channelThawHeight),
+                          ( "local_constraints",
+                            channelLocalConstraints
+                          ),
+                          ( "remote_constraints",
+                            channelRemoteConstraints
+                          )
                         ]
                   }
             }
@@ -6995,7 +7904,7 @@ instance HsJSONPB.ToSchema ListChannelsRequest where
             }
         )
 
-data ListChannelsResponse
+newtype ListChannelsResponse
   = ListChannelsResponse
       { listChannelsResponseChannels ::
           Hs.Vector
@@ -7172,7 +8081,10 @@ data ChannelCloseSummary
             LndGrpc.Initiator,
         channelCloseSummaryCloseInitiator ::
           HsProtobuf.Enumerated
-            LndGrpc.Initiator
+            LndGrpc.Initiator,
+        channelCloseSummaryResolutions ::
+          Hs.Vector
+            LndGrpc.Resolution
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -7202,7 +8114,8 @@ instance HsProtobuf.Message ChannelCloseSummary where
         channelCloseSummaryOpenInitiator =
           channelCloseSummaryOpenInitiator,
         channelCloseSummaryCloseInitiator =
-          channelCloseSummaryCloseInitiator
+          channelCloseSummaryCloseInitiator,
+        channelCloseSummaryResolutions = channelCloseSummaryResolutions
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -7252,6 +8165,13 @@ instance HsProtobuf.Message ChannelCloseSummary where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 12)
                 channelCloseSummaryCloseInitiator
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 13)
+                ( Hs.coerce @(Hs.Vector LndGrpc.Resolution)
+                    @(HsProtobuf.NestedVec LndGrpc.Resolution)
+                    channelCloseSummaryResolutions
+                )
             )
           ]
       )
@@ -7304,6 +8224,13 @@ instance HsProtobuf.Message ChannelCloseSummary where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 12)
+          )
+      <*> ( Hs.coerce @(_ (HsProtobuf.NestedVec LndGrpc.Resolution))
+              @(_ (Hs.Vector LndGrpc.Resolution))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 13)
+              )
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -7399,11 +8326,20 @@ instance HsProtobuf.Message ChannelCloseSummary where
           (HsProtobuf.Single "close_initiator")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 13)
+          ( HsProtobuf.Repeated
+              (HsProtobuf.Named (HsProtobuf.Single "Resolution"))
+          )
+          (HsProtobuf.Single "resolutions")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB ChannelCloseSummary where
-  toJSONPB (ChannelCloseSummary f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12) =
+  toJSONPB (ChannelCloseSummary f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13) =
     ( HsJSONPB.object
         [ "channel_point" .= f1,
           "chan_id" .= f2,
@@ -7416,10 +8352,11 @@ instance HsJSONPB.ToJSONPB ChannelCloseSummary where
           "time_locked_balance" .= f9,
           "close_type" .= f10,
           "open_initiator" .= f11,
-          "close_initiator" .= f12
+          "close_initiator" .= f12,
+          "resolutions" .= f13
         ]
     )
-  toEncodingPB (ChannelCloseSummary f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12) =
+  toEncodingPB (ChannelCloseSummary f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13) =
     ( HsJSONPB.pairs
         [ "channel_point" .= f1,
           "chan_id" .= f2,
@@ -7432,7 +8369,8 @@ instance HsJSONPB.ToJSONPB ChannelCloseSummary where
           "time_locked_balance" .= f9,
           "close_type" .= f10,
           "open_initiator" .= f11,
-          "close_initiator" .= f12
+          "close_initiator" .= f12,
+          "resolutions" .= f13
         ]
     )
 
@@ -7453,6 +8391,7 @@ instance HsJSONPB.FromJSONPB ChannelCloseSummary where
               <*> obj .: "close_type"
               <*> obj .: "open_initiator"
               <*> obj .: "close_initiator"
+              <*> obj .: "resolutions"
         )
     )
 
@@ -7504,6 +8443,8 @@ instance HsJSONPB.ToSchema ChannelCloseSummary where
       channelCloseSummaryCloseInitiator <-
         declare_close_initiator
           Proxy.Proxy
+      let declare_resolutions = HsJSONPB.declareSchemaRef
+      channelCloseSummaryResolutions <- declare_resolutions Proxy.Proxy
       let _ =
             Hs.pure ChannelCloseSummary
               <*> HsJSONPB.asProxy declare_channel_point
@@ -7518,6 +8459,7 @@ instance HsJSONPB.ToSchema ChannelCloseSummary where
               <*> HsJSONPB.asProxy declare_close_type
               <*> HsJSONPB.asProxy declare_open_initiator
               <*> HsJSONPB.asProxy declare_close_initiator
+              <*> HsJSONPB.asProxy declare_resolutions
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -7562,6 +8504,9 @@ instance HsJSONPB.ToSchema ChannelCloseSummary where
                           ),
                           ( "close_initiator",
                             channelCloseSummaryCloseInitiator
+                          ),
+                          ( "resolutions",
+                            channelCloseSummaryResolutions
                           )
                         ]
                   }
@@ -7643,6 +8588,342 @@ instance HsJSONPB.FromJSON ChannelCloseSummary_ClosureType where
   parseJSON = HsJSONPB.parseJSONPB
 
 instance HsProtobuf.Finite ChannelCloseSummary_ClosureType
+
+data ResolutionType
+  = ResolutionTypeTYPE_UNKNOWN
+  | ResolutionTypeANCHOR
+  | ResolutionTypeINCOMING_HTLC
+  | ResolutionTypeOUTGOING_HTLC
+  | ResolutionTypeCOMMIT
+  deriving (Hs.Show, Hs.Eq, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named ResolutionType where
+  nameOf _ = (Hs.fromString "ResolutionType")
+
+instance HsProtobuf.HasDefault ResolutionType
+
+instance Hs.Bounded ResolutionType where
+  minBound = ResolutionTypeTYPE_UNKNOWN
+  maxBound = ResolutionTypeCOMMIT
+
+instance Hs.Ord ResolutionType where
+  compare x y =
+    Hs.compare
+      (HsProtobuf.fromProtoEnum x)
+      (HsProtobuf.fromProtoEnum y)
+
+instance HsProtobuf.ProtoEnum ResolutionType where
+  toProtoEnumMay 0 = Hs.Just ResolutionTypeTYPE_UNKNOWN
+  toProtoEnumMay 1 = Hs.Just ResolutionTypeANCHOR
+  toProtoEnumMay 2 = Hs.Just ResolutionTypeINCOMING_HTLC
+  toProtoEnumMay 3 = Hs.Just ResolutionTypeOUTGOING_HTLC
+  toProtoEnumMay 4 = Hs.Just ResolutionTypeCOMMIT
+  toProtoEnumMay _ = Hs.Nothing
+  fromProtoEnum (ResolutionTypeTYPE_UNKNOWN) = 0
+  fromProtoEnum (ResolutionTypeANCHOR) = 1
+  fromProtoEnum (ResolutionTypeINCOMING_HTLC) = 2
+  fromProtoEnum (ResolutionTypeOUTGOING_HTLC) = 3
+  fromProtoEnum (ResolutionTypeCOMMIT) = 4
+
+instance HsJSONPB.ToJSONPB ResolutionType where
+  toJSONPB x _ = HsJSONPB.enumFieldString x
+  toEncodingPB x _ = HsJSONPB.enumFieldEncoding x
+
+instance HsJSONPB.FromJSONPB ResolutionType where
+  parseJSONPB (HsJSONPB.String "TYPE_UNKNOWN") =
+    Hs.pure ResolutionTypeTYPE_UNKNOWN
+  parseJSONPB (HsJSONPB.String "ANCHOR") =
+    Hs.pure ResolutionTypeANCHOR
+  parseJSONPB (HsJSONPB.String "INCOMING_HTLC") =
+    Hs.pure ResolutionTypeINCOMING_HTLC
+  parseJSONPB (HsJSONPB.String "OUTGOING_HTLC") =
+    Hs.pure ResolutionTypeOUTGOING_HTLC
+  parseJSONPB (HsJSONPB.String "COMMIT") =
+    Hs.pure ResolutionTypeCOMMIT
+  parseJSONPB v = (HsJSONPB.typeMismatch "ResolutionType" v)
+
+instance HsJSONPB.ToJSON ResolutionType where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON ResolutionType where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsProtobuf.Finite ResolutionType
+
+data ResolutionOutcome
+  = ResolutionOutcomeOUTCOME_UNKNOWN
+  | ResolutionOutcomeCLAIMED
+  | ResolutionOutcomeUNCLAIMED
+  | ResolutionOutcomeABANDONED
+  | ResolutionOutcomeFIRST_STAGE
+  | ResolutionOutcomeTIMEOUT
+  deriving (Hs.Show, Hs.Eq, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named ResolutionOutcome where
+  nameOf _ = (Hs.fromString "ResolutionOutcome")
+
+instance HsProtobuf.HasDefault ResolutionOutcome
+
+instance Hs.Bounded ResolutionOutcome where
+  minBound = ResolutionOutcomeOUTCOME_UNKNOWN
+  maxBound = ResolutionOutcomeTIMEOUT
+
+instance Hs.Ord ResolutionOutcome where
+  compare x y =
+    Hs.compare
+      (HsProtobuf.fromProtoEnum x)
+      (HsProtobuf.fromProtoEnum y)
+
+instance HsProtobuf.ProtoEnum ResolutionOutcome where
+  toProtoEnumMay 0 = Hs.Just ResolutionOutcomeOUTCOME_UNKNOWN
+  toProtoEnumMay 1 = Hs.Just ResolutionOutcomeCLAIMED
+  toProtoEnumMay 2 = Hs.Just ResolutionOutcomeUNCLAIMED
+  toProtoEnumMay 3 = Hs.Just ResolutionOutcomeABANDONED
+  toProtoEnumMay 4 = Hs.Just ResolutionOutcomeFIRST_STAGE
+  toProtoEnumMay 5 = Hs.Just ResolutionOutcomeTIMEOUT
+  toProtoEnumMay _ = Hs.Nothing
+  fromProtoEnum (ResolutionOutcomeOUTCOME_UNKNOWN) = 0
+  fromProtoEnum (ResolutionOutcomeCLAIMED) = 1
+  fromProtoEnum (ResolutionOutcomeUNCLAIMED) = 2
+  fromProtoEnum (ResolutionOutcomeABANDONED) = 3
+  fromProtoEnum (ResolutionOutcomeFIRST_STAGE) = 4
+  fromProtoEnum (ResolutionOutcomeTIMEOUT) = 5
+
+instance HsJSONPB.ToJSONPB ResolutionOutcome where
+  toJSONPB x _ = HsJSONPB.enumFieldString x
+  toEncodingPB x _ = HsJSONPB.enumFieldEncoding x
+
+instance HsJSONPB.FromJSONPB ResolutionOutcome where
+  parseJSONPB (HsJSONPB.String "OUTCOME_UNKNOWN") =
+    Hs.pure ResolutionOutcomeOUTCOME_UNKNOWN
+  parseJSONPB (HsJSONPB.String "CLAIMED") =
+    Hs.pure ResolutionOutcomeCLAIMED
+  parseJSONPB (HsJSONPB.String "UNCLAIMED") =
+    Hs.pure ResolutionOutcomeUNCLAIMED
+  parseJSONPB (HsJSONPB.String "ABANDONED") =
+    Hs.pure ResolutionOutcomeABANDONED
+  parseJSONPB (HsJSONPB.String "FIRST_STAGE") =
+    Hs.pure ResolutionOutcomeFIRST_STAGE
+  parseJSONPB (HsJSONPB.String "TIMEOUT") =
+    Hs.pure ResolutionOutcomeTIMEOUT
+  parseJSONPB v = (HsJSONPB.typeMismatch "ResolutionOutcome" v)
+
+instance HsJSONPB.ToJSON ResolutionOutcome where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON ResolutionOutcome where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsProtobuf.Finite ResolutionOutcome
+
+data Resolution
+  = Resolution
+      { resolutionResolutionType ::
+          HsProtobuf.Enumerated
+            LndGrpc.ResolutionType,
+        resolutionOutcome ::
+          HsProtobuf.Enumerated
+            LndGrpc.ResolutionOutcome,
+        resolutionOutpoint :: Hs.Maybe LndGrpc.OutPoint,
+        resolutionAmountSat :: Hs.Word64,
+        resolutionSweepTxid :: Hs.Text
+      }
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named Resolution where
+  nameOf _ = (Hs.fromString "Resolution")
+
+instance HsProtobuf.HasDefault Resolution
+
+instance HsProtobuf.Message Resolution where
+  encodeMessage
+    _
+    Resolution
+      { resolutionResolutionType = resolutionResolutionType,
+        resolutionOutcome = resolutionOutcome,
+        resolutionOutpoint = resolutionOutpoint,
+        resolutionAmountSat = resolutionAmountSat,
+        resolutionSweepTxid = resolutionSweepTxid
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                resolutionResolutionType
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 2)
+                resolutionOutcome
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 3)
+                ( Hs.coerce @(Hs.Maybe LndGrpc.OutPoint)
+                    @(HsProtobuf.Nested LndGrpc.OutPoint)
+                    resolutionOutpoint
+                )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 4)
+                resolutionAmountSat
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 5)
+                resolutionSweepTxid
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure Resolution)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 2)
+          )
+      <*> ( Hs.coerce @(_ (HsProtobuf.Nested LndGrpc.OutPoint))
+              @(_ (Hs.Maybe LndGrpc.OutPoint))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 3)
+              )
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 4)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 5)
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          ( HsProtobuf.Prim
+              (HsProtobuf.Named (HsProtobuf.Single "ResolutionType"))
+          )
+          (HsProtobuf.Single "resolution_type")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 2)
+          ( HsProtobuf.Prim
+              (HsProtobuf.Named (HsProtobuf.Single "ResolutionOutcome"))
+          )
+          (HsProtobuf.Single "outcome")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 3)
+          (HsProtobuf.Prim (HsProtobuf.Named (HsProtobuf.Single "OutPoint")))
+          (HsProtobuf.Single "outpoint")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 4)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "amount_sat")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 5)
+          (HsProtobuf.Prim HsProtobuf.String)
+          (HsProtobuf.Single "sweep_txid")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB Resolution where
+  toJSONPB (Resolution f1 f2 f3 f4 f5) =
+    ( HsJSONPB.object
+        [ "resolution_type" .= f1,
+          "outcome" .= f2,
+          "outpoint" .= f3,
+          "amount_sat" .= f4,
+          "sweep_txid" .= f5
+        ]
+    )
+  toEncodingPB (Resolution f1 f2 f3 f4 f5) =
+    ( HsJSONPB.pairs
+        [ "resolution_type" .= f1,
+          "outcome" .= f2,
+          "outpoint" .= f3,
+          "amount_sat" .= f4,
+          "sweep_txid" .= f5
+        ]
+    )
+
+instance HsJSONPB.FromJSONPB Resolution where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "Resolution"
+        ( \obj ->
+            (Hs.pure Resolution) <*> obj .: "resolution_type"
+              <*> obj .: "outcome"
+              <*> obj .: "outpoint"
+              <*> obj .: "amount_sat"
+              <*> obj .: "sweep_txid"
+        )
+    )
+
+instance HsJSONPB.ToJSON Resolution where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON Resolution where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema Resolution where
+  declareNamedSchema _ =
+    do
+      let declare_resolution_type = HsJSONPB.declareSchemaRef
+      resolutionResolutionType <- declare_resolution_type Proxy.Proxy
+      let declare_outcome = HsJSONPB.declareSchemaRef
+      resolutionOutcome <- declare_outcome Proxy.Proxy
+      let declare_outpoint = HsJSONPB.declareSchemaRef
+      resolutionOutpoint <- declare_outpoint Proxy.Proxy
+      let declare_amount_sat = HsJSONPB.declareSchemaRef
+      resolutionAmountSat <- declare_amount_sat Proxy.Proxy
+      let declare_sweep_txid = HsJSONPB.declareSchemaRef
+      resolutionSweepTxid <- declare_sweep_txid Proxy.Proxy
+      let _ =
+            Hs.pure Resolution
+              <*> HsJSONPB.asProxy declare_resolution_type
+              <*> HsJSONPB.asProxy declare_outcome
+              <*> HsJSONPB.asProxy declare_outpoint
+              <*> HsJSONPB.asProxy declare_amount_sat
+              <*> HsJSONPB.asProxy declare_sweep_txid
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "Resolution",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [ ( "resolution_type",
+                            resolutionResolutionType
+                          ),
+                          ("outcome", resolutionOutcome),
+                          ("outpoint", resolutionOutpoint),
+                          ("amount_sat", resolutionAmountSat),
+                          ("sweep_txid", resolutionSweepTxid)
+                        ]
+                  }
+            }
+        )
 
 data ClosedChannelsRequest
   = ClosedChannelsRequest
@@ -7877,7 +9158,7 @@ instance HsJSONPB.ToSchema ClosedChannelsRequest where
             }
         )
 
-data ClosedChannelsResponse
+newtype ClosedChannelsResponse
   = ClosedChannelsResponse
       { closedChannelsResponseChannels ::
           Hs.Vector
@@ -7989,7 +9270,9 @@ data Peer
         peerPingTime :: Hs.Int64,
         peerSyncType :: HsProtobuf.Enumerated LndGrpc.Peer_SyncType,
         peerFeatures :: Hs.Map Hs.Word32 (Hs.Maybe LndGrpc.Feature),
-        peerErrors :: Hs.Vector LndGrpc.TimestampedError
+        peerErrors :: Hs.Vector LndGrpc.TimestampedError,
+        peerFlapCount :: Hs.Int32,
+        peerLastFlapNs :: Hs.Int64
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -8012,7 +9295,9 @@ instance HsProtobuf.Message Peer where
         peerPingTime = peerPingTime,
         peerSyncType = peerSyncType,
         peerFeatures = peerFeatures,
-        peerErrors = peerErrors
+        peerErrors = peerErrors,
+        peerFlapCount = peerFlapCount,
+        peerLastFlapNs = peerLastFlapNs
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -8064,6 +9349,14 @@ instance HsProtobuf.Message Peer where
                     @(HsProtobuf.NestedVec LndGrpc.TimestampedError)
                     peerErrors
                 )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 13)
+                peerFlapCount
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 14)
+                peerLastFlapNs
             )
           ]
       )
@@ -8119,6 +9412,14 @@ instance HsProtobuf.Message Peer where
                   HsProtobuf.decodeMessageField
                   (HsProtobuf.FieldNumber 12)
               )
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 13)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 14)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -8202,11 +9503,25 @@ instance HsProtobuf.Message Peer where
           (HsProtobuf.Single "errors")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 13)
+          (HsProtobuf.Prim HsProtobuf.Int32)
+          (HsProtobuf.Single "flap_count")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 14)
+          (HsProtobuf.Prim HsProtobuf.Int64)
+          (HsProtobuf.Single "last_flap_ns")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB Peer where
-  toJSONPB (Peer f1 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12) =
+  toJSONPB (Peer f1 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14) =
     ( HsJSONPB.object
         [ "pub_key" .= f1,
           "address" .= f3,
@@ -8218,10 +9533,12 @@ instance HsJSONPB.ToJSONPB Peer where
           "ping_time" .= f9,
           "sync_type" .= f10,
           "features" .= f11,
-          "errors" .= f12
+          "errors" .= f12,
+          "flap_count" .= f13,
+          "last_flap_ns" .= f14
         ]
     )
-  toEncodingPB (Peer f1 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12) =
+  toEncodingPB (Peer f1 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14) =
     ( HsJSONPB.pairs
         [ "pub_key" .= f1,
           "address" .= f3,
@@ -8233,7 +9550,9 @@ instance HsJSONPB.ToJSONPB Peer where
           "ping_time" .= f9,
           "sync_type" .= f10,
           "features" .= f11,
-          "errors" .= f12
+          "errors" .= f12,
+          "flap_count" .= f13,
+          "last_flap_ns" .= f14
         ]
     )
 
@@ -8252,6 +9571,8 @@ instance HsJSONPB.FromJSONPB Peer where
               <*> obj .: "sync_type"
               <*> obj .: "features"
               <*> obj .: "errors"
+              <*> obj .: "flap_count"
+              <*> obj .: "last_flap_ns"
         )
     )
 
@@ -8287,6 +9608,10 @@ instance HsJSONPB.ToSchema Peer where
       peerFeatures <- declare_features Proxy.Proxy
       let declare_errors = HsJSONPB.declareSchemaRef
       peerErrors <- declare_errors Proxy.Proxy
+      let declare_flap_count = HsJSONPB.declareSchemaRef
+      peerFlapCount <- declare_flap_count Proxy.Proxy
+      let declare_last_flap_ns = HsJSONPB.declareSchemaRef
+      peerLastFlapNs <- declare_last_flap_ns Proxy.Proxy
       let _ =
             Hs.pure Peer <*> HsJSONPB.asProxy declare_pub_key
               <*> HsJSONPB.asProxy declare_address
@@ -8299,6 +9624,8 @@ instance HsJSONPB.ToSchema Peer where
               <*> HsJSONPB.asProxy declare_sync_type
               <*> HsJSONPB.asProxy declare_features
               <*> HsJSONPB.asProxy declare_errors
+              <*> HsJSONPB.asProxy declare_flap_count
+              <*> HsJSONPB.asProxy declare_last_flap_ns
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName = Hs.Just "Peer",
@@ -8321,7 +9648,9 @@ instance HsJSONPB.ToSchema Peer where
                           ("ping_time", peerPingTime),
                           ("sync_type", peerSyncType),
                           ("features", peerFeatures),
-                          ("errors", peerErrors)
+                          ("errors", peerErrors),
+                          ("flap_count", peerFlapCount),
+                          ("last_flap_ns", peerLastFlapNs)
                         ]
                   }
             }
@@ -8492,7 +9821,7 @@ instance HsJSONPB.ToSchema TimestampedError where
             }
         )
 
-data ListPeersRequest
+newtype ListPeersRequest
   = ListPeersRequest
       { listPeersRequestLatestError ::
           Hs.Bool
@@ -8583,7 +9912,7 @@ instance HsJSONPB.ToSchema ListPeersRequest where
             }
         )
 
-data ListPeersResponse
+newtype ListPeersResponse
   = ListPeersResponse
       { listPeersResponsePeers ::
           Hs.Vector
@@ -9537,6 +10866,214 @@ instance HsJSONPB.ToSchema GetInfoResponse where
             }
         )
 
+data GetRecoveryInfoRequest = GetRecoveryInfoRequest {}
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named GetRecoveryInfoRequest where
+  nameOf _ = (Hs.fromString "GetRecoveryInfoRequest")
+
+instance HsProtobuf.HasDefault GetRecoveryInfoRequest
+
+instance HsProtobuf.Message GetRecoveryInfoRequest where
+  encodeMessage _ GetRecoveryInfoRequest {} = (Hs.mconcat [])
+  decodeMessage _ = (Hs.pure GetRecoveryInfoRequest)
+  dotProto _ = []
+
+instance HsJSONPB.ToJSONPB GetRecoveryInfoRequest where
+  toJSONPB (GetRecoveryInfoRequest) = (HsJSONPB.object [])
+  toEncodingPB (GetRecoveryInfoRequest) = (HsJSONPB.pairs [])
+
+instance HsJSONPB.FromJSONPB GetRecoveryInfoRequest where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "GetRecoveryInfoRequest"
+        (\obj -> (Hs.pure GetRecoveryInfoRequest))
+    )
+
+instance HsJSONPB.ToJSON GetRecoveryInfoRequest where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON GetRecoveryInfoRequest where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema GetRecoveryInfoRequest where
+  declareNamedSchema _ =
+    do
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "GetRecoveryInfoRequest",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList []
+                  }
+            }
+        )
+
+data GetRecoveryInfoResponse
+  = GetRecoveryInfoResponse
+      { getRecoveryInfoResponseRecoveryMode ::
+          Hs.Bool,
+        getRecoveryInfoResponseRecoveryFinished ::
+          Hs.Bool,
+        getRecoveryInfoResponseProgress :: Hs.Double
+      }
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named GetRecoveryInfoResponse where
+  nameOf _ = (Hs.fromString "GetRecoveryInfoResponse")
+
+instance HsProtobuf.HasDefault GetRecoveryInfoResponse
+
+instance HsProtobuf.Message GetRecoveryInfoResponse where
+  encodeMessage
+    _
+    GetRecoveryInfoResponse
+      { getRecoveryInfoResponseRecoveryMode =
+          getRecoveryInfoResponseRecoveryMode,
+        getRecoveryInfoResponseRecoveryFinished =
+          getRecoveryInfoResponseRecoveryFinished,
+        getRecoveryInfoResponseProgress = getRecoveryInfoResponseProgress
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                getRecoveryInfoResponseRecoveryMode
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 2)
+                getRecoveryInfoResponseRecoveryFinished
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 3)
+                getRecoveryInfoResponseProgress
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure GetRecoveryInfoResponse)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 2)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 3)
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "recovery_mode")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 2)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "recovery_finished")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 3)
+          (HsProtobuf.Prim HsProtobuf.Double)
+          (HsProtobuf.Single "progress")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB GetRecoveryInfoResponse where
+  toJSONPB (GetRecoveryInfoResponse f1 f2 f3) =
+    ( HsJSONPB.object
+        [ "recovery_mode" .= f1,
+          "recovery_finished" .= f2,
+          "progress" .= f3
+        ]
+    )
+  toEncodingPB (GetRecoveryInfoResponse f1 f2 f3) =
+    ( HsJSONPB.pairs
+        [ "recovery_mode" .= f1,
+          "recovery_finished" .= f2,
+          "progress" .= f3
+        ]
+    )
+
+instance HsJSONPB.FromJSONPB GetRecoveryInfoResponse where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "GetRecoveryInfoResponse"
+        ( \obj ->
+            (Hs.pure GetRecoveryInfoResponse) <*> obj .: "recovery_mode"
+              <*> obj .: "recovery_finished"
+              <*> obj .: "progress"
+        )
+    )
+
+instance HsJSONPB.ToJSON GetRecoveryInfoResponse where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON GetRecoveryInfoResponse where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema GetRecoveryInfoResponse where
+  declareNamedSchema _ =
+    do
+      let declare_recovery_mode = HsJSONPB.declareSchemaRef
+      getRecoveryInfoResponseRecoveryMode <-
+        declare_recovery_mode
+          Proxy.Proxy
+      let declare_recovery_finished = HsJSONPB.declareSchemaRef
+      getRecoveryInfoResponseRecoveryFinished <-
+        declare_recovery_finished
+          Proxy.Proxy
+      let declare_progress = HsJSONPB.declareSchemaRef
+      getRecoveryInfoResponseProgress <- declare_progress Proxy.Proxy
+      let _ =
+            Hs.pure GetRecoveryInfoResponse
+              <*> HsJSONPB.asProxy declare_recovery_mode
+              <*> HsJSONPB.asProxy declare_recovery_finished
+              <*> HsJSONPB.asProxy declare_progress
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "GetRecoveryInfoResponse",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [ ( "recovery_mode",
+                            getRecoveryInfoResponseRecoveryMode
+                          ),
+                          ( "recovery_finished",
+                            getRecoveryInfoResponseRecoveryFinished
+                          ),
+                          ( "progress",
+                            getRecoveryInfoResponseProgress
+                          )
+                        ]
+                  }
+            }
+        )
+
 data Chain = Chain {chainChain :: Hs.Text, chainNetwork :: Hs.Text}
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -9781,7 +11318,7 @@ instance HsJSONPB.ToSchema ConfirmationUpdate where
             }
         )
 
-data ChannelOpenUpdate
+newtype ChannelOpenUpdate
   = ChannelOpenUpdate
       { channelOpenUpdateChannelPoint ::
           Hs.Maybe
@@ -10211,7 +11748,7 @@ instance HsJSONPB.ToSchema CloseChannelRequest where
             }
         )
 
-data CloseStatusUpdate
+newtype CloseStatusUpdate
   = CloseStatusUpdate
       { closeStatusUpdateUpdate ::
           Hs.Maybe
@@ -10696,7 +12233,11 @@ data OpenChannelRequest
         openChannelRequestCloseAddress :: Hs.Text,
         openChannelRequestFundingShim ::
           Hs.Maybe
-            LndGrpc.FundingShim
+            LndGrpc.FundingShim,
+        openChannelRequestRemoteMaxValueInFlightMsat ::
+          Hs.Word64,
+        openChannelRequestRemoteMaxHtlcs :: Hs.Word32,
+        openChannelRequestMaxLocalCsv :: Hs.Word32
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -10726,7 +12267,12 @@ instance HsProtobuf.Message OpenChannelRequest where
         openChannelRequestSpendUnconfirmed =
           openChannelRequestSpendUnconfirmed,
         openChannelRequestCloseAddress = openChannelRequestCloseAddress,
-        openChannelRequestFundingShim = openChannelRequestFundingShim
+        openChannelRequestFundingShim = openChannelRequestFundingShim,
+        openChannelRequestRemoteMaxValueInFlightMsat =
+          openChannelRequestRemoteMaxValueInFlightMsat,
+        openChannelRequestRemoteMaxHtlcs =
+          openChannelRequestRemoteMaxHtlcs,
+        openChannelRequestMaxLocalCsv = openChannelRequestMaxLocalCsv
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -10783,6 +12329,18 @@ instance HsProtobuf.Message OpenChannelRequest where
                     @(HsProtobuf.Nested LndGrpc.FundingShim)
                     openChannelRequestFundingShim
                 )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 15)
+                openChannelRequestRemoteMaxValueInFlightMsat
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 16)
+                openChannelRequestRemoteMaxHtlcs
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 17)
+                openChannelRequestMaxLocalCsv
             )
           ]
       )
@@ -10842,6 +12400,18 @@ instance HsProtobuf.Message OpenChannelRequest where
                   HsProtobuf.decodeMessageField
                   (HsProtobuf.FieldNumber 14)
               )
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 15)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 16)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 17)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -10940,44 +12510,107 @@ instance HsProtobuf.Message OpenChannelRequest where
           (HsProtobuf.Single "funding_shim")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 15)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "remote_max_value_in_flight_msat")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 16)
+          (HsProtobuf.Prim HsProtobuf.UInt32)
+          (HsProtobuf.Single "remote_max_htlcs")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 17)
+          (HsProtobuf.Prim HsProtobuf.UInt32)
+          (HsProtobuf.Single "max_local_csv")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB OpenChannelRequest where
-  toJSONPB (OpenChannelRequest f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14) =
-    ( HsJSONPB.object
-        [ "node_pubkey" .= f2,
-          "node_pubkey_string" .= f3,
-          "local_funding_amount" .= f4,
-          "push_sat" .= f5,
-          "target_conf" .= f6,
-          "sat_per_byte" .= f7,
-          "private" .= f8,
-          "min_htlc_msat" .= f9,
-          "remote_csv_delay" .= f10,
-          "min_confs" .= f11,
-          "spend_unconfirmed" .= f12,
-          "close_address" .= f13,
-          "funding_shim" .= f14
-        ]
-    )
-  toEncodingPB (OpenChannelRequest f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14) =
-    ( HsJSONPB.pairs
-        [ "node_pubkey" .= f2,
-          "node_pubkey_string" .= f3,
-          "local_funding_amount" .= f4,
-          "push_sat" .= f5,
-          "target_conf" .= f6,
-          "sat_per_byte" .= f7,
-          "private" .= f8,
-          "min_htlc_msat" .= f9,
-          "remote_csv_delay" .= f10,
-          "min_confs" .= f11,
-          "spend_unconfirmed" .= f12,
-          "close_address" .= f13,
-          "funding_shim" .= f14
-        ]
-    )
+  toJSONPB
+    ( OpenChannelRequest
+        f2
+        f3
+        f4
+        f5
+        f6
+        f7
+        f8
+        f9
+        f10
+        f11
+        f12
+        f13
+        f14
+        f15
+        f16
+        f17
+      ) =
+      ( HsJSONPB.object
+          [ "node_pubkey" .= f2,
+            "node_pubkey_string" .= f3,
+            "local_funding_amount" .= f4,
+            "push_sat" .= f5,
+            "target_conf" .= f6,
+            "sat_per_byte" .= f7,
+            "private" .= f8,
+            "min_htlc_msat" .= f9,
+            "remote_csv_delay" .= f10,
+            "min_confs" .= f11,
+            "spend_unconfirmed" .= f12,
+            "close_address" .= f13,
+            "funding_shim" .= f14,
+            "remote_max_value_in_flight_msat" .= f15,
+            "remote_max_htlcs" .= f16,
+            "max_local_csv" .= f17
+          ]
+      )
+  toEncodingPB
+    ( OpenChannelRequest
+        f2
+        f3
+        f4
+        f5
+        f6
+        f7
+        f8
+        f9
+        f10
+        f11
+        f12
+        f13
+        f14
+        f15
+        f16
+        f17
+      ) =
+      ( HsJSONPB.pairs
+          [ "node_pubkey" .= f2,
+            "node_pubkey_string" .= f3,
+            "local_funding_amount" .= f4,
+            "push_sat" .= f5,
+            "target_conf" .= f6,
+            "sat_per_byte" .= f7,
+            "private" .= f8,
+            "min_htlc_msat" .= f9,
+            "remote_csv_delay" .= f10,
+            "min_confs" .= f11,
+            "spend_unconfirmed" .= f12,
+            "close_address" .= f13,
+            "funding_shim" .= f14,
+            "remote_max_value_in_flight_msat" .= f15,
+            "remote_max_htlcs" .= f16,
+            "max_local_csv" .= f17
+          ]
+      )
 
 instance HsJSONPB.FromJSONPB OpenChannelRequest where
   parseJSONPB =
@@ -10997,6 +12630,9 @@ instance HsJSONPB.FromJSONPB OpenChannelRequest where
               <*> obj .: "spend_unconfirmed"
               <*> obj .: "close_address"
               <*> obj .: "funding_shim"
+              <*> obj .: "remote_max_value_in_flight_msat"
+              <*> obj .: "remote_max_htlcs"
+              <*> obj .: "max_local_csv"
         )
     )
 
@@ -11044,6 +12680,17 @@ instance HsJSONPB.ToSchema OpenChannelRequest where
       openChannelRequestCloseAddress <- declare_close_address Proxy.Proxy
       let declare_funding_shim = HsJSONPB.declareSchemaRef
       openChannelRequestFundingShim <- declare_funding_shim Proxy.Proxy
+      let declare_remote_max_value_in_flight_msat =
+            HsJSONPB.declareSchemaRef
+      openChannelRequestRemoteMaxValueInFlightMsat <-
+        declare_remote_max_value_in_flight_msat
+          Proxy.Proxy
+      let declare_remote_max_htlcs = HsJSONPB.declareSchemaRef
+      openChannelRequestRemoteMaxHtlcs <-
+        declare_remote_max_htlcs
+          Proxy.Proxy
+      let declare_max_local_csv = HsJSONPB.declareSchemaRef
+      openChannelRequestMaxLocalCsv <- declare_max_local_csv Proxy.Proxy
       let _ =
             Hs.pure OpenChannelRequest
               <*> HsJSONPB.asProxy declare_node_pubkey
@@ -11059,6 +12706,9 @@ instance HsJSONPB.ToSchema OpenChannelRequest where
               <*> HsJSONPB.asProxy declare_spend_unconfirmed
               <*> HsJSONPB.asProxy declare_close_address
               <*> HsJSONPB.asProxy declare_funding_shim
+              <*> HsJSONPB.asProxy declare_remote_max_value_in_flight_msat
+              <*> HsJSONPB.asProxy declare_remote_max_htlcs
+              <*> HsJSONPB.asProxy declare_max_local_csv
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -11104,6 +12754,15 @@ instance HsJSONPB.ToSchema OpenChannelRequest where
                           ),
                           ( "funding_shim",
                             openChannelRequestFundingShim
+                          ),
+                          ( "remote_max_value_in_flight_msat",
+                            openChannelRequestRemoteMaxValueInFlightMsat
+                          ),
+                          ( "remote_max_htlcs",
+                            openChannelRequestRemoteMaxHtlcs
+                          ),
+                          ( "max_local_csv",
+                            openChannelRequestMaxLocalCsv
                           )
                         ]
                   }
@@ -11840,7 +13499,8 @@ instance HsJSONPB.ToSchema ChanPointShim where
 data PsbtShim
   = PsbtShim
       { psbtShimPendingChanId :: Hs.ByteString,
-        psbtShimBasePsbt :: Hs.ByteString
+        psbtShimBasePsbt :: Hs.ByteString,
+        psbtShimNoPublish :: Hs.Bool
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -11854,7 +13514,8 @@ instance HsProtobuf.Message PsbtShim where
     _
     PsbtShim
       { psbtShimPendingChanId = psbtShimPendingChanId,
-        psbtShimBasePsbt = psbtShimBasePsbt
+        psbtShimBasePsbt = psbtShimBasePsbt,
+        psbtShimNoPublish = psbtShimNoPublish
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -11864,6 +13525,10 @@ instance HsProtobuf.Message PsbtShim where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 2)
                 psbtShimBasePsbt
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 3)
+                psbtShimNoPublish
             )
           ]
       )
@@ -11876,6 +13541,10 @@ instance HsProtobuf.Message PsbtShim where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 2)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 3)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -11891,14 +13560,25 @@ instance HsProtobuf.Message PsbtShim where
           (HsProtobuf.Single "base_psbt")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 3)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "no_publish")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB PsbtShim where
-  toJSONPB (PsbtShim f1 f2) =
-    (HsJSONPB.object ["pending_chan_id" .= f1, "base_psbt" .= f2])
-  toEncodingPB (PsbtShim f1 f2) =
-    (HsJSONPB.pairs ["pending_chan_id" .= f1, "base_psbt" .= f2])
+  toJSONPB (PsbtShim f1 f2 f3) =
+    ( HsJSONPB.object
+        ["pending_chan_id" .= f1, "base_psbt" .= f2, "no_publish" .= f3]
+    )
+  toEncodingPB (PsbtShim f1 f2 f3) =
+    ( HsJSONPB.pairs
+        ["pending_chan_id" .= f1, "base_psbt" .= f2, "no_publish" .= f3]
+    )
 
 instance HsJSONPB.FromJSONPB PsbtShim where
   parseJSONPB =
@@ -11907,6 +13587,7 @@ instance HsJSONPB.FromJSONPB PsbtShim where
         ( \obj ->
             (Hs.pure PsbtShim) <*> obj .: "pending_chan_id"
               <*> obj .: "base_psbt"
+              <*> obj .: "no_publish"
         )
     )
 
@@ -11924,10 +13605,13 @@ instance HsJSONPB.ToSchema PsbtShim where
       psbtShimPendingChanId <- declare_pending_chan_id Proxy.Proxy
       let declare_base_psbt = HsJSONPB.declareSchemaRef
       psbtShimBasePsbt <- declare_base_psbt Proxy.Proxy
+      let declare_no_publish = HsJSONPB.declareSchemaRef
+      psbtShimNoPublish <- declare_no_publish Proxy.Proxy
       let _ =
             Hs.pure PsbtShim
               <*> HsJSONPB.asProxy declare_pending_chan_id
               <*> HsJSONPB.asProxy declare_base_psbt
+              <*> HsJSONPB.asProxy declare_no_publish
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -11942,13 +13626,14 @@ instance HsJSONPB.ToSchema PsbtShim where
                     HsJSONPB._schemaProperties =
                       HsJSONPB.insOrdFromList
                         [ ("pending_chan_id", psbtShimPendingChanId),
-                          ("base_psbt", psbtShimBasePsbt)
+                          ("base_psbt", psbtShimBasePsbt),
+                          ("no_publish", psbtShimNoPublish)
                         ]
                   }
             }
         )
 
-data FundingShim
+newtype FundingShim
   = FundingShim
       { fundingShimShim ::
           Hs.Maybe
@@ -12140,7 +13825,7 @@ instance HsJSONPB.ToSchema FundingShimShim where
             }
         )
 
-data FundingShimCancel
+newtype FundingShimCancel
   = FundingShimCancel
       { fundingShimCancelPendingChanId ::
           Hs.ByteString
@@ -12358,7 +14043,8 @@ data FundingPsbtFinalize
   = FundingPsbtFinalize
       { fundingPsbtFinalizeSignedPsbt ::
           Hs.ByteString,
-        fundingPsbtFinalizePendingChanId :: Hs.ByteString
+        fundingPsbtFinalizePendingChanId :: Hs.ByteString,
+        fundingPsbtFinalizeFinalRawTx :: Hs.ByteString
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -12374,7 +14060,8 @@ instance HsProtobuf.Message FundingPsbtFinalize where
       { fundingPsbtFinalizeSignedPsbt =
           fundingPsbtFinalizeSignedPsbt,
         fundingPsbtFinalizePendingChanId =
-          fundingPsbtFinalizePendingChanId
+          fundingPsbtFinalizePendingChanId,
+        fundingPsbtFinalizeFinalRawTx = fundingPsbtFinalizeFinalRawTx
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -12384,6 +14071,10 @@ instance HsProtobuf.Message FundingPsbtFinalize where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 2)
                 fundingPsbtFinalizePendingChanId
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 3)
+                fundingPsbtFinalizeFinalRawTx
             )
           ]
       )
@@ -12396,6 +14087,10 @@ instance HsProtobuf.Message FundingPsbtFinalize where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 2)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 3)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -12411,14 +14106,31 @@ instance HsProtobuf.Message FundingPsbtFinalize where
           (HsProtobuf.Single "pending_chan_id")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 3)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "final_raw_tx")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB FundingPsbtFinalize where
-  toJSONPB (FundingPsbtFinalize f1 f2) =
-    (HsJSONPB.object ["signed_psbt" .= f1, "pending_chan_id" .= f2])
-  toEncodingPB (FundingPsbtFinalize f1 f2) =
-    (HsJSONPB.pairs ["signed_psbt" .= f1, "pending_chan_id" .= f2])
+  toJSONPB (FundingPsbtFinalize f1 f2 f3) =
+    ( HsJSONPB.object
+        [ "signed_psbt" .= f1,
+          "pending_chan_id" .= f2,
+          "final_raw_tx" .= f3
+        ]
+    )
+  toEncodingPB (FundingPsbtFinalize f1 f2 f3) =
+    ( HsJSONPB.pairs
+        [ "signed_psbt" .= f1,
+          "pending_chan_id" .= f2,
+          "final_raw_tx" .= f3
+        ]
+    )
 
 instance HsJSONPB.FromJSONPB FundingPsbtFinalize where
   parseJSONPB =
@@ -12427,6 +14139,7 @@ instance HsJSONPB.FromJSONPB FundingPsbtFinalize where
         ( \obj ->
             (Hs.pure FundingPsbtFinalize) <*> obj .: "signed_psbt"
               <*> obj .: "pending_chan_id"
+              <*> obj .: "final_raw_tx"
         )
     )
 
@@ -12446,10 +14159,13 @@ instance HsJSONPB.ToSchema FundingPsbtFinalize where
       fundingPsbtFinalizePendingChanId <-
         declare_pending_chan_id
           Proxy.Proxy
+      let declare_final_raw_tx = HsJSONPB.declareSchemaRef
+      fundingPsbtFinalizeFinalRawTx <- declare_final_raw_tx Proxy.Proxy
       let _ =
             Hs.pure FundingPsbtFinalize
               <*> HsJSONPB.asProxy declare_signed_psbt
               <*> HsJSONPB.asProxy declare_pending_chan_id
+              <*> HsJSONPB.asProxy declare_final_raw_tx
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -12468,13 +14184,16 @@ instance HsJSONPB.ToSchema FundingPsbtFinalize where
                           ),
                           ( "pending_chan_id",
                             fundingPsbtFinalizePendingChanId
+                          ),
+                          ( "final_raw_tx",
+                            fundingPsbtFinalizeFinalRawTx
                           )
                         ]
                   }
             }
         )
 
-data FundingTransitionMsg
+newtype FundingTransitionMsg
   = FundingTransitionMsg
       { fundingTransitionMsgTrigger ::
           Hs.Maybe
@@ -14567,7 +16286,7 @@ data PendingChannelsResponse_ForceClosedChannel
             LndGrpc.PendingHTLC,
         pendingChannelsResponse_ForceClosedChannelAnchor ::
           HsProtobuf.Enumerated
-            LndGrpc.PendingChannelsResponse_ForceClosedChannel_AnchorState
+            PendingChannelsResponse_ForceClosedChannel_AnchorState
       }
   deriving
     ( Hs.Show,
@@ -15702,6 +17421,107 @@ instance HsJSONPB.ToSchema WalletBalanceResponse where
             }
         )
 
+data Amount
+  = Amount
+      { amountSat :: Hs.Word64,
+        amountMsat :: Hs.Word64
+      }
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named Amount where
+  nameOf _ = (Hs.fromString "Amount")
+
+instance HsProtobuf.HasDefault Amount
+
+instance HsProtobuf.Message Amount where
+  encodeMessage
+    _
+    Amount {amountSat = amountSat, amountMsat = amountMsat} =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                amountSat
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 2)
+                amountMsat
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure Amount)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 2)
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "sat")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 2)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "msat")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB Amount where
+  toJSONPB (Amount f1 f2) =
+    (HsJSONPB.object ["sat" .= f1, "msat" .= f2])
+  toEncodingPB (Amount f1 f2) =
+    (HsJSONPB.pairs ["sat" .= f1, "msat" .= f2])
+
+instance HsJSONPB.FromJSONPB Amount where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "Amount"
+        (\obj -> (Hs.pure Amount) <*> obj .: "sat" <*> obj .: "msat")
+    )
+
+instance HsJSONPB.ToJSON Amount where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON Amount where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema Amount where
+  declareNamedSchema _ =
+    do
+      let declare_sat = HsJSONPB.declareSchemaRef
+      amountSat <- declare_sat Proxy.Proxy
+      let declare_msat = HsJSONPB.declareSchemaRef
+      amountMsat <- declare_msat Proxy.Proxy
+      let _ =
+            Hs.pure Amount <*> HsJSONPB.asProxy declare_sat
+              <*> HsJSONPB.asProxy declare_msat
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName = Hs.Just "Amount",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [("sat", amountSat), ("msat", amountMsat)]
+                  }
+            }
+        )
+
 data ChannelBalanceRequest = ChannelBalanceRequest {}
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -15758,7 +17578,25 @@ data ChannelBalanceResponse
       { channelBalanceResponseBalance ::
           Hs.Int64,
         channelBalanceResponsePendingOpenBalance ::
-          Hs.Int64
+          Hs.Int64,
+        channelBalanceResponseLocalBalance ::
+          Hs.Maybe
+            LndGrpc.Amount,
+        channelBalanceResponseRemoteBalance ::
+          Hs.Maybe
+            LndGrpc.Amount,
+        channelBalanceResponseUnsettledLocalBalance ::
+          Hs.Maybe
+            LndGrpc.Amount,
+        channelBalanceResponseUnsettledRemoteBalance ::
+          Hs.Maybe
+            LndGrpc.Amount,
+        channelBalanceResponsePendingOpenLocalBalance ::
+          Hs.Maybe
+            LndGrpc.Amount,
+        channelBalanceResponsePendingOpenRemoteBalance ::
+          Hs.Maybe
+            LndGrpc.Amount
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -15774,7 +17612,19 @@ instance HsProtobuf.Message ChannelBalanceResponse where
       { channelBalanceResponseBalance =
           channelBalanceResponseBalance,
         channelBalanceResponsePendingOpenBalance =
-          channelBalanceResponsePendingOpenBalance
+          channelBalanceResponsePendingOpenBalance,
+        channelBalanceResponseLocalBalance =
+          channelBalanceResponseLocalBalance,
+        channelBalanceResponseRemoteBalance =
+          channelBalanceResponseRemoteBalance,
+        channelBalanceResponseUnsettledLocalBalance =
+          channelBalanceResponseUnsettledLocalBalance,
+        channelBalanceResponseUnsettledRemoteBalance =
+          channelBalanceResponseUnsettledRemoteBalance,
+        channelBalanceResponsePendingOpenLocalBalance =
+          channelBalanceResponsePendingOpenLocalBalance,
+        channelBalanceResponsePendingOpenRemoteBalance =
+          channelBalanceResponsePendingOpenRemoteBalance
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -15784,6 +17634,48 @@ instance HsProtobuf.Message ChannelBalanceResponse where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 2)
                 channelBalanceResponsePendingOpenBalance
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 3)
+                ( Hs.coerce @(Hs.Maybe LndGrpc.Amount)
+                    @(HsProtobuf.Nested LndGrpc.Amount)
+                    channelBalanceResponseLocalBalance
+                )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 4)
+                ( Hs.coerce @(Hs.Maybe LndGrpc.Amount)
+                    @(HsProtobuf.Nested LndGrpc.Amount)
+                    channelBalanceResponseRemoteBalance
+                )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 5)
+                ( Hs.coerce @(Hs.Maybe LndGrpc.Amount)
+                    @(HsProtobuf.Nested LndGrpc.Amount)
+                    channelBalanceResponseUnsettledLocalBalance
+                )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 6)
+                ( Hs.coerce @(Hs.Maybe LndGrpc.Amount)
+                    @(HsProtobuf.Nested LndGrpc.Amount)
+                    channelBalanceResponseUnsettledRemoteBalance
+                )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 7)
+                ( Hs.coerce @(Hs.Maybe LndGrpc.Amount)
+                    @(HsProtobuf.Nested LndGrpc.Amount)
+                    channelBalanceResponsePendingOpenLocalBalance
+                )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 8)
+                ( Hs.coerce @(Hs.Maybe LndGrpc.Amount)
+                    @(HsProtobuf.Nested LndGrpc.Amount)
+                    channelBalanceResponsePendingOpenRemoteBalance
+                )
             )
           ]
       )
@@ -15797,28 +17689,140 @@ instance HsProtobuf.Message ChannelBalanceResponse where
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 2)
           )
+      <*> ( Hs.coerce @(_ (HsProtobuf.Nested LndGrpc.Amount))
+              @(_ (Hs.Maybe LndGrpc.Amount))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 3)
+              )
+          )
+      <*> ( Hs.coerce @(_ (HsProtobuf.Nested LndGrpc.Amount))
+              @(_ (Hs.Maybe LndGrpc.Amount))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 4)
+              )
+          )
+      <*> ( Hs.coerce @(_ (HsProtobuf.Nested LndGrpc.Amount))
+              @(_ (Hs.Maybe LndGrpc.Amount))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 5)
+              )
+          )
+      <*> ( Hs.coerce @(_ (HsProtobuf.Nested LndGrpc.Amount))
+              @(_ (Hs.Maybe LndGrpc.Amount))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 6)
+              )
+          )
+      <*> ( Hs.coerce @(_ (HsProtobuf.Nested LndGrpc.Amount))
+              @(_ (Hs.Maybe LndGrpc.Amount))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 7)
+              )
+          )
+      <*> ( Hs.coerce @(_ (HsProtobuf.Nested LndGrpc.Amount))
+              @(_ (Hs.Maybe LndGrpc.Amount))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 8)
+              )
+          )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 1)
           (HsProtobuf.Prim HsProtobuf.Int64)
           (HsProtobuf.Single "balance")
-          []
+          [ ( HsProtobuf.DotProtoOption
+                (HsProtobuf.Single "deprecated")
+                (HsProtobuf.BoolLit Hs.True)
+            )
+          ]
           ""
       ),
       ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 2)
           (HsProtobuf.Prim HsProtobuf.Int64)
           (HsProtobuf.Single "pending_open_balance")
+          [ ( HsProtobuf.DotProtoOption
+                (HsProtobuf.Single "deprecated")
+                (HsProtobuf.BoolLit Hs.True)
+            )
+          ]
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 3)
+          (HsProtobuf.Prim (HsProtobuf.Named (HsProtobuf.Single "Amount")))
+          (HsProtobuf.Single "local_balance")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 4)
+          (HsProtobuf.Prim (HsProtobuf.Named (HsProtobuf.Single "Amount")))
+          (HsProtobuf.Single "remote_balance")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 5)
+          (HsProtobuf.Prim (HsProtobuf.Named (HsProtobuf.Single "Amount")))
+          (HsProtobuf.Single "unsettled_local_balance")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 6)
+          (HsProtobuf.Prim (HsProtobuf.Named (HsProtobuf.Single "Amount")))
+          (HsProtobuf.Single "unsettled_remote_balance")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 7)
+          (HsProtobuf.Prim (HsProtobuf.Named (HsProtobuf.Single "Amount")))
+          (HsProtobuf.Single "pending_open_local_balance")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 8)
+          (HsProtobuf.Prim (HsProtobuf.Named (HsProtobuf.Single "Amount")))
+          (HsProtobuf.Single "pending_open_remote_balance")
           []
           ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB ChannelBalanceResponse where
-  toJSONPB (ChannelBalanceResponse f1 f2) =
-    (HsJSONPB.object ["balance" .= f1, "pending_open_balance" .= f2])
-  toEncodingPB (ChannelBalanceResponse f1 f2) =
-    (HsJSONPB.pairs ["balance" .= f1, "pending_open_balance" .= f2])
+  toJSONPB (ChannelBalanceResponse f1 f2 f3 f4 f5 f6 f7 f8) =
+    ( HsJSONPB.object
+        [ "balance" .= f1,
+          "pending_open_balance" .= f2,
+          "local_balance" .= f3,
+          "remote_balance" .= f4,
+          "unsettled_local_balance" .= f5,
+          "unsettled_remote_balance" .= f6,
+          "pending_open_local_balance" .= f7,
+          "pending_open_remote_balance" .= f8
+        ]
+    )
+  toEncodingPB (ChannelBalanceResponse f1 f2 f3 f4 f5 f6 f7 f8) =
+    ( HsJSONPB.pairs
+        [ "balance" .= f1,
+          "pending_open_balance" .= f2,
+          "local_balance" .= f3,
+          "remote_balance" .= f4,
+          "unsettled_local_balance" .= f5,
+          "unsettled_remote_balance" .= f6,
+          "pending_open_local_balance" .= f7,
+          "pending_open_remote_balance" .= f8
+        ]
+    )
 
 instance HsJSONPB.FromJSONPB ChannelBalanceResponse where
   parseJSONPB =
@@ -15827,6 +17831,12 @@ instance HsJSONPB.FromJSONPB ChannelBalanceResponse where
         ( \obj ->
             (Hs.pure ChannelBalanceResponse) <*> obj .: "balance"
               <*> obj .: "pending_open_balance"
+              <*> obj .: "local_balance"
+              <*> obj .: "remote_balance"
+              <*> obj .: "unsettled_local_balance"
+              <*> obj .: "unsettled_remote_balance"
+              <*> obj .: "pending_open_local_balance"
+              <*> obj .: "pending_open_remote_balance"
         )
     )
 
@@ -15846,10 +17856,40 @@ instance HsJSONPB.ToSchema ChannelBalanceResponse where
       channelBalanceResponsePendingOpenBalance <-
         declare_pending_open_balance
           Proxy.Proxy
+      let declare_local_balance = HsJSONPB.declareSchemaRef
+      channelBalanceResponseLocalBalance <-
+        declare_local_balance
+          Proxy.Proxy
+      let declare_remote_balance = HsJSONPB.declareSchemaRef
+      channelBalanceResponseRemoteBalance <-
+        declare_remote_balance
+          Proxy.Proxy
+      let declare_unsettled_local_balance = HsJSONPB.declareSchemaRef
+      channelBalanceResponseUnsettledLocalBalance <-
+        declare_unsettled_local_balance
+          Proxy.Proxy
+      let declare_unsettled_remote_balance = HsJSONPB.declareSchemaRef
+      channelBalanceResponseUnsettledRemoteBalance <-
+        declare_unsettled_remote_balance
+          Proxy.Proxy
+      let declare_pending_open_local_balance = HsJSONPB.declareSchemaRef
+      channelBalanceResponsePendingOpenLocalBalance <-
+        declare_pending_open_local_balance
+          Proxy.Proxy
+      let declare_pending_open_remote_balance = HsJSONPB.declareSchemaRef
+      channelBalanceResponsePendingOpenRemoteBalance <-
+        declare_pending_open_remote_balance
+          Proxy.Proxy
       let _ =
             Hs.pure ChannelBalanceResponse
               <*> HsJSONPB.asProxy declare_balance
               <*> HsJSONPB.asProxy declare_pending_open_balance
+              <*> HsJSONPB.asProxy declare_local_balance
+              <*> HsJSONPB.asProxy declare_remote_balance
+              <*> HsJSONPB.asProxy declare_unsettled_local_balance
+              <*> HsJSONPB.asProxy declare_unsettled_remote_balance
+              <*> HsJSONPB.asProxy declare_pending_open_local_balance
+              <*> HsJSONPB.asProxy declare_pending_open_remote_balance
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -15866,6 +17906,24 @@ instance HsJSONPB.ToSchema ChannelBalanceResponse where
                         [ ("balance", channelBalanceResponseBalance),
                           ( "pending_open_balance",
                             channelBalanceResponsePendingOpenBalance
+                          ),
+                          ( "local_balance",
+                            channelBalanceResponseLocalBalance
+                          ),
+                          ( "remote_balance",
+                            channelBalanceResponseRemoteBalance
+                          ),
+                          ( "unsettled_local_balance",
+                            channelBalanceResponseUnsettledLocalBalance
+                          ),
+                          ( "unsettled_remote_balance",
+                            channelBalanceResponseUnsettledRemoteBalance
+                          ),
+                          ( "pending_open_local_balance",
+                            channelBalanceResponsePendingOpenLocalBalance
+                          ),
+                          ( "pending_open_remote_balance",
+                            channelBalanceResponsePendingOpenRemoteBalance
                           )
                         ]
                   }
@@ -18686,7 +20744,7 @@ instance HsJSONPB.ToSchema ChannelEdge where
             }
         )
 
-data ChannelGraphRequest
+newtype ChannelGraphRequest
   = ChannelGraphRequest
       { channelGraphRequestIncludeUnannounced ::
           Hs.Bool
@@ -18955,7 +21013,7 @@ instance HsJSONPB.FromJSON NodeMetricType where
 
 instance HsProtobuf.Finite NodeMetricType
 
-data NodeMetricsRequest
+newtype NodeMetricsRequest
   = NodeMetricsRequest
       { nodeMetricsRequestTypes ::
           Hs.Vector
@@ -19054,7 +21112,7 @@ instance HsJSONPB.ToSchema NodeMetricsRequest where
             }
         )
 
-data NodeMetricsResponse
+newtype NodeMetricsResponse
   = NodeMetricsResponse
       { nodeMetricsResponseBetweennessCentrality ::
           Hs.Map Hs.Text
@@ -19272,7 +21330,7 @@ instance HsJSONPB.ToSchema FloatMetric where
             }
         )
 
-data ChanInfoRequest
+newtype ChanInfoRequest
   = ChanInfoRequest
       { chanInfoRequestChanId ::
           Hs.Word64
@@ -20109,7 +22167,8 @@ data NodeUpdate
         nodeUpdateIdentityKey :: Hs.Text,
         nodeUpdateGlobalFeatures :: Hs.ByteString,
         nodeUpdateAlias :: Hs.Text,
-        nodeUpdateColor :: Hs.Text
+        nodeUpdateColor :: Hs.Text,
+        nodeUpdateFeatures :: Hs.Map Hs.Word32 (Hs.Maybe LndGrpc.Feature)
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -20126,7 +22185,8 @@ instance HsProtobuf.Message NodeUpdate where
         nodeUpdateIdentityKey = nodeUpdateIdentityKey,
         nodeUpdateGlobalFeatures = nodeUpdateGlobalFeatures,
         nodeUpdateAlias = nodeUpdateAlias,
-        nodeUpdateColor = nodeUpdateColor
+        nodeUpdateColor = nodeUpdateColor,
+        nodeUpdateFeatures = nodeUpdateFeatures
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -20150,6 +22210,13 @@ instance HsProtobuf.Message NodeUpdate where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 5)
                 nodeUpdateColor
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 6)
+                ( Hs.unsafeCoerce @(Hs.Map Hs.Word32 (Hs.Maybe LndGrpc.Feature))
+                    @(Hs.Map Hs.Word32 (HsProtobuf.Nested LndGrpc.Feature))
+                    nodeUpdateFeatures
+                )
             )
           ]
       )
@@ -20178,6 +22245,14 @@ instance HsProtobuf.Message NodeUpdate where
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 5)
           )
+      <*> ( Hs.unsafeCoerce
+              @(_ (Hs.Map Hs.Word32 (HsProtobuf.Nested LndGrpc.Feature)))
+              @(_ (Hs.Map Hs.Word32 (Hs.Maybe LndGrpc.Feature)))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 6)
+              )
+          )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 1)
@@ -20197,7 +22272,11 @@ instance HsProtobuf.Message NodeUpdate where
           (HsProtobuf.FieldNumber 3)
           (HsProtobuf.Prim HsProtobuf.Bytes)
           (HsProtobuf.Single "global_features")
-          []
+          [ ( HsProtobuf.DotProtoOption
+                (HsProtobuf.Single "deprecated")
+                (HsProtobuf.BoolLit Hs.True)
+            )
+          ]
           ""
       ),
       ( HsProtobuf.DotProtoField
@@ -20213,26 +22292,38 @@ instance HsProtobuf.Message NodeUpdate where
           (HsProtobuf.Single "color")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 6)
+          ( HsProtobuf.Map
+              HsProtobuf.UInt32
+              (HsProtobuf.Named (HsProtobuf.Single "Feature"))
+          )
+          (HsProtobuf.Single "features")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB NodeUpdate where
-  toJSONPB (NodeUpdate f1 f2 f3 f4 f5) =
+  toJSONPB (NodeUpdate f1 f2 f3 f4 f5 f6) =
     ( HsJSONPB.object
         [ "addresses" .= f1,
           "identity_key" .= f2,
           "global_features" .= f3,
           "alias" .= f4,
-          "color" .= f5
+          "color" .= f5,
+          "features" .= f6
         ]
     )
-  toEncodingPB (NodeUpdate f1 f2 f3 f4 f5) =
+  toEncodingPB (NodeUpdate f1 f2 f3 f4 f5 f6) =
     ( HsJSONPB.pairs
         [ "addresses" .= f1,
           "identity_key" .= f2,
           "global_features" .= f3,
           "alias" .= f4,
-          "color" .= f5
+          "color" .= f5,
+          "features" .= f6
         ]
     )
 
@@ -20246,6 +22337,7 @@ instance HsJSONPB.FromJSONPB NodeUpdate where
               <*> obj .: "global_features"
               <*> obj .: "alias"
               <*> obj .: "color"
+              <*> obj .: "features"
         )
     )
 
@@ -20269,12 +22361,15 @@ instance HsJSONPB.ToSchema NodeUpdate where
       nodeUpdateAlias <- declare_alias Proxy.Proxy
       let declare_color = HsJSONPB.declareSchemaRef
       nodeUpdateColor <- declare_color Proxy.Proxy
+      let declare_features = HsJSONPB.declareSchemaRef
+      nodeUpdateFeatures <- declare_features Proxy.Proxy
       let _ =
             Hs.pure NodeUpdate <*> HsJSONPB.asProxy declare_addresses
               <*> HsJSONPB.asProxy declare_identity_key
               <*> HsJSONPB.asProxy declare_global_features
               <*> HsJSONPB.asProxy declare_alias
               <*> HsJSONPB.asProxy declare_color
+              <*> HsJSONPB.asProxy declare_features
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -20294,7 +22389,8 @@ instance HsJSONPB.ToSchema NodeUpdate where
                             nodeUpdateGlobalFeatures
                           ),
                           ("alias", nodeUpdateAlias),
-                          ("color", nodeUpdateColor)
+                          ("color", nodeUpdateColor),
+                          ("features", nodeUpdateFeatures)
                         ]
                   }
             }
@@ -20943,7 +23039,7 @@ instance HsJSONPB.ToSchema HopHint where
             }
         )
 
-data RouteHint
+newtype RouteHint
   = RouteHint
       { routeHintHopHints ::
           Hs.Vector
@@ -21056,7 +23152,8 @@ data Invoice
         invoiceState :: HsProtobuf.Enumerated LndGrpc.Invoice_InvoiceState,
         invoiceHtlcs :: Hs.Vector LndGrpc.InvoiceHTLC,
         invoiceFeatures :: Hs.Map Hs.Word32 (Hs.Maybe LndGrpc.Feature),
-        invoiceIsKeysend :: Hs.Bool
+        invoiceIsKeysend :: Hs.Bool,
+        invoicePaymentAddr :: Hs.ByteString
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -21092,7 +23189,8 @@ instance HsProtobuf.Message Invoice where
         invoiceState = invoiceState,
         invoiceHtlcs = invoiceHtlcs,
         invoiceFeatures = invoiceFeatures,
-        invoiceIsKeysend = invoiceIsKeysend
+        invoiceIsKeysend = invoiceIsKeysend,
+        invoicePaymentAddr = invoicePaymentAddr
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -21199,6 +23297,10 @@ instance HsProtobuf.Message Invoice where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 25)
                 invoiceIsKeysend
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 26)
+                invoicePaymentAddr
             )
           ]
       )
@@ -21309,6 +23411,10 @@ instance HsProtobuf.Message Invoice where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 25)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 26)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -21495,6 +23601,13 @@ instance HsProtobuf.Message Invoice where
           (HsProtobuf.Single "is_keysend")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 26)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "payment_addr")
+          []
+          ""
       )
     ]
 
@@ -21525,6 +23638,7 @@ instance HsJSONPB.ToJSONPB Invoice where
         f22
         f24
         f25
+        f26
       ) =
       ( HsJSONPB.object
           [ "memo" .= f1,
@@ -21550,7 +23664,8 @@ instance HsJSONPB.ToJSONPB Invoice where
             "state" .= f21,
             "htlcs" .= f22,
             "features" .= f24,
-            "is_keysend" .= f25
+            "is_keysend" .= f25,
+            "payment_addr" .= f26
           ]
       )
   toEncodingPB
@@ -21579,6 +23694,7 @@ instance HsJSONPB.ToJSONPB Invoice where
         f22
         f24
         f25
+        f26
       ) =
       ( HsJSONPB.pairs
           [ "memo" .= f1,
@@ -21604,7 +23720,8 @@ instance HsJSONPB.ToJSONPB Invoice where
             "state" .= f21,
             "htlcs" .= f22,
             "features" .= f24,
-            "is_keysend" .= f25
+            "is_keysend" .= f25,
+            "payment_addr" .= f26
           ]
       )
 
@@ -21636,6 +23753,7 @@ instance HsJSONPB.FromJSONPB Invoice where
               <*> obj .: "htlcs"
               <*> obj .: "features"
               <*> obj .: "is_keysend"
+              <*> obj .: "payment_addr"
         )
     )
 
@@ -21697,6 +23815,8 @@ instance HsJSONPB.ToSchema Invoice where
       invoiceFeatures <- declare_features Proxy.Proxy
       let declare_is_keysend = HsJSONPB.declareSchemaRef
       invoiceIsKeysend <- declare_is_keysend Proxy.Proxy
+      let declare_payment_addr = HsJSONPB.declareSchemaRef
+      invoicePaymentAddr <- declare_payment_addr Proxy.Proxy
       let _ =
             Hs.pure Invoice <*> HsJSONPB.asProxy declare_memo
               <*> HsJSONPB.asProxy declare_r_preimage
@@ -21722,6 +23842,7 @@ instance HsJSONPB.ToSchema Invoice where
               <*> HsJSONPB.asProxy declare_htlcs
               <*> HsJSONPB.asProxy declare_features
               <*> HsJSONPB.asProxy declare_is_keysend
+              <*> HsJSONPB.asProxy declare_payment_addr
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -21760,7 +23881,8 @@ instance HsJSONPB.ToSchema Invoice where
                           ("state", invoiceState),
                           ("htlcs", invoiceHtlcs),
                           ("features", invoiceFeatures),
-                          ("is_keysend", invoiceIsKeysend)
+                          ("is_keysend", invoiceIsKeysend),
+                          ("payment_addr", invoicePaymentAddr)
                         ]
                   }
             }
@@ -22201,7 +24323,8 @@ data AddInvoiceResponse
       { addInvoiceResponseRHash ::
           Hs.ByteString,
         addInvoiceResponsePaymentRequest :: Hs.Text,
-        addInvoiceResponseAddIndex :: Hs.Word64
+        addInvoiceResponseAddIndex :: Hs.Word64,
+        addInvoiceResponsePaymentAddr :: Hs.ByteString
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -22218,7 +24341,8 @@ instance HsProtobuf.Message AddInvoiceResponse where
           addInvoiceResponseRHash,
         addInvoiceResponsePaymentRequest =
           addInvoiceResponsePaymentRequest,
-        addInvoiceResponseAddIndex = addInvoiceResponseAddIndex
+        addInvoiceResponseAddIndex = addInvoiceResponseAddIndex,
+        addInvoiceResponsePaymentAddr = addInvoiceResponsePaymentAddr
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -22232,6 +24356,10 @@ instance HsProtobuf.Message AddInvoiceResponse where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 16)
                 addInvoiceResponseAddIndex
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 17)
+                addInvoiceResponsePaymentAddr
             )
           ]
       )
@@ -22248,6 +24376,10 @@ instance HsProtobuf.Message AddInvoiceResponse where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 16)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 17)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -22270,17 +24402,32 @@ instance HsProtobuf.Message AddInvoiceResponse where
           (HsProtobuf.Single "add_index")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 17)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "payment_addr")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB AddInvoiceResponse where
-  toJSONPB (AddInvoiceResponse f1 f2 f16) =
+  toJSONPB (AddInvoiceResponse f1 f2 f16 f17) =
     ( HsJSONPB.object
-        ["r_hash" .= f1, "payment_request" .= f2, "add_index" .= f16]
+        [ "r_hash" .= f1,
+          "payment_request" .= f2,
+          "add_index" .= f16,
+          "payment_addr" .= f17
+        ]
     )
-  toEncodingPB (AddInvoiceResponse f1 f2 f16) =
+  toEncodingPB (AddInvoiceResponse f1 f2 f16 f17) =
     ( HsJSONPB.pairs
-        ["r_hash" .= f1, "payment_request" .= f2, "add_index" .= f16]
+        [ "r_hash" .= f1,
+          "payment_request" .= f2,
+          "add_index" .= f16,
+          "payment_addr" .= f17
+        ]
     )
 
 instance HsJSONPB.FromJSONPB AddInvoiceResponse where
@@ -22291,6 +24438,7 @@ instance HsJSONPB.FromJSONPB AddInvoiceResponse where
             (Hs.pure AddInvoiceResponse) <*> obj .: "r_hash"
               <*> obj .: "payment_request"
               <*> obj .: "add_index"
+              <*> obj .: "payment_addr"
         )
     )
 
@@ -22312,11 +24460,14 @@ instance HsJSONPB.ToSchema AddInvoiceResponse where
           Proxy.Proxy
       let declare_add_index = HsJSONPB.declareSchemaRef
       addInvoiceResponseAddIndex <- declare_add_index Proxy.Proxy
+      let declare_payment_addr = HsJSONPB.declareSchemaRef
+      addInvoiceResponsePaymentAddr <- declare_payment_addr Proxy.Proxy
       let _ =
             Hs.pure AddInvoiceResponse
               <*> HsJSONPB.asProxy declare_r_hash
               <*> HsJSONPB.asProxy declare_payment_request
               <*> HsJSONPB.asProxy declare_add_index
+              <*> HsJSONPB.asProxy declare_payment_addr
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -22334,8 +24485,9 @@ instance HsJSONPB.ToSchema AddInvoiceResponse where
                           ( "payment_request",
                             addInvoiceResponsePaymentRequest
                           ),
-                          ( "add_index",
-                            addInvoiceResponseAddIndex
+                          ("add_index", addInvoiceResponseAddIndex),
+                          ( "payment_addr",
+                            addInvoiceResponsePaymentAddr
                           )
                         ]
                   }
@@ -24235,7 +26387,9 @@ data AbandonChannelRequest
   = AbandonChannelRequest
       { abandonChannelRequestChannelPoint ::
           Hs.Maybe
-            LndGrpc.ChannelPoint
+            LndGrpc.ChannelPoint,
+        abandonChannelRequestPendingFundingShimOnly ::
+          Hs.Bool
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -24249,7 +26403,9 @@ instance HsProtobuf.Message AbandonChannelRequest where
     _
     AbandonChannelRequest
       { abandonChannelRequestChannelPoint =
-          abandonChannelRequestChannelPoint
+          abandonChannelRequestChannelPoint,
+        abandonChannelRequestPendingFundingShimOnly =
+          abandonChannelRequestPendingFundingShimOnly
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -24258,6 +26414,10 @@ instance HsProtobuf.Message AbandonChannelRequest where
                     @(HsProtobuf.Nested LndGrpc.ChannelPoint)
                     abandonChannelRequestChannelPoint
                 )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 2)
+                abandonChannelRequestPendingFundingShimOnly
             )
           ]
       )
@@ -24270,6 +26430,10 @@ instance HsProtobuf.Message AbandonChannelRequest where
                   (HsProtobuf.FieldNumber 1)
               )
           )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 2)
+          )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 1)
@@ -24279,14 +26443,25 @@ instance HsProtobuf.Message AbandonChannelRequest where
           (HsProtobuf.Single "channel_point")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 2)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "pending_funding_shim_only")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB AbandonChannelRequest where
-  toJSONPB (AbandonChannelRequest f1) =
-    (HsJSONPB.object ["channel_point" .= f1])
-  toEncodingPB (AbandonChannelRequest f1) =
-    (HsJSONPB.pairs ["channel_point" .= f1])
+  toJSONPB (AbandonChannelRequest f1 f2) =
+    ( HsJSONPB.object
+        ["channel_point" .= f1, "pending_funding_shim_only" .= f2]
+    )
+  toEncodingPB (AbandonChannelRequest f1 f2) =
+    ( HsJSONPB.pairs
+        ["channel_point" .= f1, "pending_funding_shim_only" .= f2]
+    )
 
 instance HsJSONPB.FromJSONPB AbandonChannelRequest where
   parseJSONPB =
@@ -24294,6 +26469,7 @@ instance HsJSONPB.FromJSONPB AbandonChannelRequest where
         "AbandonChannelRequest"
         ( \obj ->
             (Hs.pure AbandonChannelRequest) <*> obj .: "channel_point"
+              <*> obj .: "pending_funding_shim_only"
         )
     )
 
@@ -24311,9 +26487,14 @@ instance HsJSONPB.ToSchema AbandonChannelRequest where
       abandonChannelRequestChannelPoint <-
         declare_channel_point
           Proxy.Proxy
+      let declare_pending_funding_shim_only = HsJSONPB.declareSchemaRef
+      abandonChannelRequestPendingFundingShimOnly <-
+        declare_pending_funding_shim_only
+          Proxy.Proxy
       let _ =
             Hs.pure AbandonChannelRequest
               <*> HsJSONPB.asProxy declare_channel_point
+              <*> HsJSONPB.asProxy declare_pending_funding_shim_only
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -24329,6 +26510,9 @@ instance HsJSONPB.ToSchema AbandonChannelRequest where
                       HsJSONPB.insOrdFromList
                         [ ( "channel_point",
                             abandonChannelRequestChannelPoint
+                          ),
+                          ( "pending_funding_shim_only",
+                            abandonChannelRequestPendingFundingShimOnly
                           )
                         ]
                   }
@@ -24499,7 +26683,7 @@ instance HsJSONPB.ToSchema DebugLevelRequest where
             }
         )
 
-data DebugLevelResponse
+newtype DebugLevelResponse
   = DebugLevelResponse
       { debugLevelResponseSubSystems ::
           Hs.Text
@@ -24590,7 +26774,7 @@ instance HsJSONPB.ToSchema DebugLevelResponse where
             }
         )
 
-data PayReqString = PayReqString {payReqStringPayReq :: Hs.Text}
+newtype PayReqString = PayReqString {payReqStringPayReq :: Hs.Text}
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
 instance HsProtobuf.Named PayReqString where
@@ -26784,7 +28968,7 @@ instance HsJSONPB.ToSchema ForwardingHistoryResponse where
             }
         )
 
-data ExportChannelBackupRequest
+newtype ExportChannelBackupRequest
   = ExportChannelBackupRequest
       { exportChannelBackupRequestChanPoint ::
           Hs.Maybe
@@ -27333,7 +29517,7 @@ instance HsJSONPB.ToSchema ChanBackupSnapshot where
             }
         )
 
-data ChannelBackups
+newtype ChannelBackups
   = ChannelBackups
       { channelBackupsChanBackups ::
           Hs.Vector
@@ -27433,7 +29617,7 @@ instance HsJSONPB.ToSchema ChannelBackups where
             }
         )
 
-data RestoreChanBackupRequest
+newtype RestoreChanBackupRequest
   = RestoreChanBackupRequest
       { restoreChanBackupRequestBackup ::
           Hs.Maybe
@@ -27911,7 +30095,8 @@ data BakeMacaroonRequest
   = BakeMacaroonRequest
       { bakeMacaroonRequestPermissions ::
           Hs.Vector
-            LndGrpc.MacaroonPermission
+            LndGrpc.MacaroonPermission,
+        bakeMacaroonRequestRootKeyId :: Hs.Word64
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -27925,7 +30110,8 @@ instance HsProtobuf.Message BakeMacaroonRequest where
     _
     BakeMacaroonRequest
       { bakeMacaroonRequestPermissions =
-          bakeMacaroonRequestPermissions
+          bakeMacaroonRequestPermissions,
+        bakeMacaroonRequestRootKeyId = bakeMacaroonRequestRootKeyId
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -27934,6 +30120,10 @@ instance HsProtobuf.Message BakeMacaroonRequest where
                     @(HsProtobuf.NestedVec LndGrpc.MacaroonPermission)
                     bakeMacaroonRequestPermissions
                 )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 2)
+                bakeMacaroonRequestRootKeyId
             )
           ]
       )
@@ -27946,6 +30136,10 @@ instance HsProtobuf.Message BakeMacaroonRequest where
                   (HsProtobuf.FieldNumber 1)
               )
           )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 2)
+          )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 1)
@@ -27955,20 +30149,30 @@ instance HsProtobuf.Message BakeMacaroonRequest where
           (HsProtobuf.Single "permissions")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 2)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "root_key_id")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB BakeMacaroonRequest where
-  toJSONPB (BakeMacaroonRequest f1) =
-    (HsJSONPB.object ["permissions" .= f1])
-  toEncodingPB (BakeMacaroonRequest f1) =
-    (HsJSONPB.pairs ["permissions" .= f1])
+  toJSONPB (BakeMacaroonRequest f1 f2) =
+    (HsJSONPB.object ["permissions" .= f1, "root_key_id" .= f2])
+  toEncodingPB (BakeMacaroonRequest f1 f2) =
+    (HsJSONPB.pairs ["permissions" .= f1, "root_key_id" .= f2])
 
 instance HsJSONPB.FromJSONPB BakeMacaroonRequest where
   parseJSONPB =
     ( HsJSONPB.withObject
         "BakeMacaroonRequest"
-        (\obj -> (Hs.pure BakeMacaroonRequest) <*> obj .: "permissions")
+        ( \obj ->
+            (Hs.pure BakeMacaroonRequest) <*> obj .: "permissions"
+              <*> obj .: "root_key_id"
+        )
     )
 
 instance HsJSONPB.ToJSON BakeMacaroonRequest where
@@ -27983,9 +30187,12 @@ instance HsJSONPB.ToSchema BakeMacaroonRequest where
     do
       let declare_permissions = HsJSONPB.declareSchemaRef
       bakeMacaroonRequestPermissions <- declare_permissions Proxy.Proxy
+      let declare_root_key_id = HsJSONPB.declareSchemaRef
+      bakeMacaroonRequestRootKeyId <- declare_root_key_id Proxy.Proxy
       let _ =
             Hs.pure BakeMacaroonRequest
               <*> HsJSONPB.asProxy declare_permissions
+              <*> HsJSONPB.asProxy declare_root_key_id
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -28001,13 +30208,16 @@ instance HsJSONPB.ToSchema BakeMacaroonRequest where
                       HsJSONPB.insOrdFromList
                         [ ( "permissions",
                             bakeMacaroonRequestPermissions
+                          ),
+                          ( "root_key_id",
+                            bakeMacaroonRequestRootKeyId
                           )
                         ]
                   }
             }
         )
 
-data BakeMacaroonResponse
+newtype BakeMacaroonResponse
   = BakeMacaroonResponse
       { bakeMacaroonResponseMacaroon ::
           Hs.Text
@@ -28092,6 +30302,606 @@ instance HsJSONPB.ToSchema BakeMacaroonResponse where
                       HsJSONPB.insOrdFromList
                         [ ( "macaroon",
                             bakeMacaroonResponseMacaroon
+                          )
+                        ]
+                  }
+            }
+        )
+
+data ListMacaroonIDsRequest = ListMacaroonIDsRequest {}
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named ListMacaroonIDsRequest where
+  nameOf _ = (Hs.fromString "ListMacaroonIDsRequest")
+
+instance HsProtobuf.HasDefault ListMacaroonIDsRequest
+
+instance HsProtobuf.Message ListMacaroonIDsRequest where
+  encodeMessage _ ListMacaroonIDsRequest {} = (Hs.mconcat [])
+  decodeMessage _ = (Hs.pure ListMacaroonIDsRequest)
+  dotProto _ = []
+
+instance HsJSONPB.ToJSONPB ListMacaroonIDsRequest where
+  toJSONPB (ListMacaroonIDsRequest) = (HsJSONPB.object [])
+  toEncodingPB (ListMacaroonIDsRequest) = (HsJSONPB.pairs [])
+
+instance HsJSONPB.FromJSONPB ListMacaroonIDsRequest where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "ListMacaroonIDsRequest"
+        (\obj -> (Hs.pure ListMacaroonIDsRequest))
+    )
+
+instance HsJSONPB.ToJSON ListMacaroonIDsRequest where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON ListMacaroonIDsRequest where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema ListMacaroonIDsRequest where
+  declareNamedSchema _ =
+    do
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "ListMacaroonIDsRequest",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList []
+                  }
+            }
+        )
+
+newtype ListMacaroonIDsResponse
+  = ListMacaroonIDsResponse
+      { listMacaroonIDsResponseRootKeyIds ::
+          Hs.Vector
+            Hs.Word64
+      }
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named ListMacaroonIDsResponse where
+  nameOf _ = (Hs.fromString "ListMacaroonIDsResponse")
+
+instance HsProtobuf.HasDefault ListMacaroonIDsResponse
+
+instance HsProtobuf.Message ListMacaroonIDsResponse where
+  encodeMessage
+    _
+    ListMacaroonIDsResponse
+      { listMacaroonIDsResponseRootKeyIds =
+          listMacaroonIDsResponseRootKeyIds
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                ( Hs.coerce @(Hs.Vector Hs.Word64) @(HsProtobuf.PackedVec Hs.Word64)
+                    listMacaroonIDsResponseRootKeyIds
+                )
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure ListMacaroonIDsResponse)
+      <*> ( Hs.coerce @(_ (HsProtobuf.PackedVec Hs.Word64))
+              @(_ (Hs.Vector Hs.Word64))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 1)
+              )
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Repeated HsProtobuf.UInt64)
+          (HsProtobuf.Single "root_key_ids")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB ListMacaroonIDsResponse where
+  toJSONPB (ListMacaroonIDsResponse f1) =
+    (HsJSONPB.object ["root_key_ids" .= f1])
+  toEncodingPB (ListMacaroonIDsResponse f1) =
+    (HsJSONPB.pairs ["root_key_ids" .= f1])
+
+instance HsJSONPB.FromJSONPB ListMacaroonIDsResponse where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "ListMacaroonIDsResponse"
+        ( \obj ->
+            (Hs.pure ListMacaroonIDsResponse) <*> obj .: "root_key_ids"
+        )
+    )
+
+instance HsJSONPB.ToJSON ListMacaroonIDsResponse where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON ListMacaroonIDsResponse where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema ListMacaroonIDsResponse where
+  declareNamedSchema _ =
+    do
+      let declare_root_key_ids = HsJSONPB.declareSchemaRef
+      listMacaroonIDsResponseRootKeyIds <-
+        declare_root_key_ids
+          Proxy.Proxy
+      let _ =
+            Hs.pure ListMacaroonIDsResponse
+              <*> HsJSONPB.asProxy declare_root_key_ids
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "ListMacaroonIDsResponse",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [ ( "root_key_ids",
+                            listMacaroonIDsResponseRootKeyIds
+                          )
+                        ]
+                  }
+            }
+        )
+
+newtype DeleteMacaroonIDRequest
+  = DeleteMacaroonIDRequest
+      { deleteMacaroonIDRequestRootKeyId ::
+          Hs.Word64
+      }
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named DeleteMacaroonIDRequest where
+  nameOf _ = (Hs.fromString "DeleteMacaroonIDRequest")
+
+instance HsProtobuf.HasDefault DeleteMacaroonIDRequest
+
+instance HsProtobuf.Message DeleteMacaroonIDRequest where
+  encodeMessage
+    _
+    DeleteMacaroonIDRequest
+      { deleteMacaroonIDRequestRootKeyId =
+          deleteMacaroonIDRequestRootKeyId
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                deleteMacaroonIDRequestRootKeyId
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure DeleteMacaroonIDRequest)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "root_key_id")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB DeleteMacaroonIDRequest where
+  toJSONPB (DeleteMacaroonIDRequest f1) =
+    (HsJSONPB.object ["root_key_id" .= f1])
+  toEncodingPB (DeleteMacaroonIDRequest f1) =
+    (HsJSONPB.pairs ["root_key_id" .= f1])
+
+instance HsJSONPB.FromJSONPB DeleteMacaroonIDRequest where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "DeleteMacaroonIDRequest"
+        ( \obj ->
+            (Hs.pure DeleteMacaroonIDRequest) <*> obj .: "root_key_id"
+        )
+    )
+
+instance HsJSONPB.ToJSON DeleteMacaroonIDRequest where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON DeleteMacaroonIDRequest where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema DeleteMacaroonIDRequest where
+  declareNamedSchema _ =
+    do
+      let declare_root_key_id = HsJSONPB.declareSchemaRef
+      deleteMacaroonIDRequestRootKeyId <- declare_root_key_id Proxy.Proxy
+      let _ =
+            Hs.pure DeleteMacaroonIDRequest
+              <*> HsJSONPB.asProxy declare_root_key_id
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "DeleteMacaroonIDRequest",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [ ( "root_key_id",
+                            deleteMacaroonIDRequestRootKeyId
+                          )
+                        ]
+                  }
+            }
+        )
+
+newtype DeleteMacaroonIDResponse
+  = DeleteMacaroonIDResponse
+      { deleteMacaroonIDResponseDeleted ::
+          Hs.Bool
+      }
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named DeleteMacaroonIDResponse where
+  nameOf _ = (Hs.fromString "DeleteMacaroonIDResponse")
+
+instance HsProtobuf.HasDefault DeleteMacaroonIDResponse
+
+instance HsProtobuf.Message DeleteMacaroonIDResponse where
+  encodeMessage
+    _
+    DeleteMacaroonIDResponse
+      { deleteMacaroonIDResponseDeleted =
+          deleteMacaroonIDResponseDeleted
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                deleteMacaroonIDResponseDeleted
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure DeleteMacaroonIDResponse)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Prim HsProtobuf.Bool)
+          (HsProtobuf.Single "deleted")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB DeleteMacaroonIDResponse where
+  toJSONPB (DeleteMacaroonIDResponse f1) =
+    (HsJSONPB.object ["deleted" .= f1])
+  toEncodingPB (DeleteMacaroonIDResponse f1) =
+    (HsJSONPB.pairs ["deleted" .= f1])
+
+instance HsJSONPB.FromJSONPB DeleteMacaroonIDResponse where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "DeleteMacaroonIDResponse"
+        (\obj -> (Hs.pure DeleteMacaroonIDResponse) <*> obj .: "deleted")
+    )
+
+instance HsJSONPB.ToJSON DeleteMacaroonIDResponse where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON DeleteMacaroonIDResponse where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema DeleteMacaroonIDResponse where
+  declareNamedSchema _ =
+    do
+      let declare_deleted = HsJSONPB.declareSchemaRef
+      deleteMacaroonIDResponseDeleted <- declare_deleted Proxy.Proxy
+      let _ =
+            Hs.pure DeleteMacaroonIDResponse
+              <*> HsJSONPB.asProxy declare_deleted
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "DeleteMacaroonIDResponse",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [ ( "deleted",
+                            deleteMacaroonIDResponseDeleted
+                          )
+                        ]
+                  }
+            }
+        )
+
+newtype MacaroonPermissionList
+  = MacaroonPermissionList
+      { macaroonPermissionListPermissions ::
+          Hs.Vector
+            LndGrpc.MacaroonPermission
+      }
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named MacaroonPermissionList where
+  nameOf _ = (Hs.fromString "MacaroonPermissionList")
+
+instance HsProtobuf.HasDefault MacaroonPermissionList
+
+instance HsProtobuf.Message MacaroonPermissionList where
+  encodeMessage
+    _
+    MacaroonPermissionList
+      { macaroonPermissionListPermissions =
+          macaroonPermissionListPermissions
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                ( Hs.coerce @(Hs.Vector LndGrpc.MacaroonPermission)
+                    @(HsProtobuf.NestedVec LndGrpc.MacaroonPermission)
+                    macaroonPermissionListPermissions
+                )
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure MacaroonPermissionList)
+      <*> ( Hs.coerce @(_ (HsProtobuf.NestedVec LndGrpc.MacaroonPermission))
+              @(_ (Hs.Vector LndGrpc.MacaroonPermission))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 1)
+              )
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          ( HsProtobuf.Repeated
+              (HsProtobuf.Named (HsProtobuf.Single "MacaroonPermission"))
+          )
+          (HsProtobuf.Single "permissions")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB MacaroonPermissionList where
+  toJSONPB (MacaroonPermissionList f1) =
+    (HsJSONPB.object ["permissions" .= f1])
+  toEncodingPB (MacaroonPermissionList f1) =
+    (HsJSONPB.pairs ["permissions" .= f1])
+
+instance HsJSONPB.FromJSONPB MacaroonPermissionList where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "MacaroonPermissionList"
+        ( \obj ->
+            (Hs.pure MacaroonPermissionList) <*> obj .: "permissions"
+        )
+    )
+
+instance HsJSONPB.ToJSON MacaroonPermissionList where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON MacaroonPermissionList where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema MacaroonPermissionList where
+  declareNamedSchema _ =
+    do
+      let declare_permissions = HsJSONPB.declareSchemaRef
+      macaroonPermissionListPermissions <-
+        declare_permissions
+          Proxy.Proxy
+      let _ =
+            Hs.pure MacaroonPermissionList
+              <*> HsJSONPB.asProxy declare_permissions
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "MacaroonPermissionList",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [ ( "permissions",
+                            macaroonPermissionListPermissions
+                          )
+                        ]
+                  }
+            }
+        )
+
+data ListPermissionsRequest = ListPermissionsRequest {}
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named ListPermissionsRequest where
+  nameOf _ = (Hs.fromString "ListPermissionsRequest")
+
+instance HsProtobuf.HasDefault ListPermissionsRequest
+
+instance HsProtobuf.Message ListPermissionsRequest where
+  encodeMessage _ ListPermissionsRequest {} = (Hs.mconcat [])
+  decodeMessage _ = (Hs.pure ListPermissionsRequest)
+  dotProto _ = []
+
+instance HsJSONPB.ToJSONPB ListPermissionsRequest where
+  toJSONPB (ListPermissionsRequest) = (HsJSONPB.object [])
+  toEncodingPB (ListPermissionsRequest) = (HsJSONPB.pairs [])
+
+instance HsJSONPB.FromJSONPB ListPermissionsRequest where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "ListPermissionsRequest"
+        (\obj -> (Hs.pure ListPermissionsRequest))
+    )
+
+instance HsJSONPB.ToJSON ListPermissionsRequest where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON ListPermissionsRequest where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema ListPermissionsRequest where
+  declareNamedSchema _ =
+    do
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "ListPermissionsRequest",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList []
+                  }
+            }
+        )
+
+newtype ListPermissionsResponse
+  = ListPermissionsResponse
+      { listPermissionsResponseMethodPermissions ::
+          Hs.Map Hs.Text
+            ( Hs.Maybe
+                LndGrpc.MacaroonPermissionList
+            )
+      }
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named ListPermissionsResponse where
+  nameOf _ = (Hs.fromString "ListPermissionsResponse")
+
+instance HsProtobuf.HasDefault ListPermissionsResponse
+
+instance HsProtobuf.Message ListPermissionsResponse where
+  encodeMessage
+    _
+    ListPermissionsResponse
+      { listPermissionsResponseMethodPermissions =
+          listPermissionsResponseMethodPermissions
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                ( Hs.unsafeCoerce
+                    @(Hs.Map Hs.Text (Hs.Maybe LndGrpc.MacaroonPermissionList))
+                    @(Hs.Map Hs.Text (HsProtobuf.Nested LndGrpc.MacaroonPermissionList))
+                    listPermissionsResponseMethodPermissions
+                )
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure ListPermissionsResponse)
+      <*> ( Hs.unsafeCoerce
+              @(_ (Hs.Map Hs.Text (HsProtobuf.Nested LndGrpc.MacaroonPermissionList)))
+              @(_ (Hs.Map Hs.Text (Hs.Maybe LndGrpc.MacaroonPermissionList)))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 1)
+              )
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          ( HsProtobuf.Map
+              HsProtobuf.String
+              (HsProtobuf.Named (HsProtobuf.Single "MacaroonPermissionList"))
+          )
+          (HsProtobuf.Single "method_permissions")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB ListPermissionsResponse where
+  toJSONPB (ListPermissionsResponse f1) =
+    (HsJSONPB.object ["method_permissions" .= f1])
+  toEncodingPB (ListPermissionsResponse f1) =
+    (HsJSONPB.pairs ["method_permissions" .= f1])
+
+instance HsJSONPB.FromJSONPB ListPermissionsResponse where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "ListPermissionsResponse"
+        ( \obj ->
+            (Hs.pure ListPermissionsResponse) <*> obj .: "method_permissions"
+        )
+    )
+
+instance HsJSONPB.ToJSON ListPermissionsResponse where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON ListPermissionsResponse where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema ListPermissionsResponse where
+  declareNamedSchema _ =
+    do
+      let declare_method_permissions = HsJSONPB.declareSchemaRef
+      listPermissionsResponseMethodPermissions <-
+        declare_method_permissions
+          Proxy.Proxy
+      let _ =
+            Hs.pure ListPermissionsResponse
+              <*> HsJSONPB.asProxy declare_method_permissions
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "ListPermissionsResponse",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [ ( "method_permissions",
+                            listPermissionsResponseMethodPermissions
                           )
                         ]
                   }
@@ -28937,6 +31747,246 @@ instance HsJSONPB.ToSchema ChannelUpdate where
                           ( "extra_opaque_data",
                             channelUpdateExtraOpaqueData
                           )
+                        ]
+                  }
+            }
+        )
+
+data MacaroonId
+  = MacaroonId
+      { macaroonIdNonce :: Hs.ByteString,
+        macaroonIdStorageId :: Hs.ByteString,
+        macaroonIdOps :: Hs.Vector LndGrpc.Op
+      }
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named MacaroonId where
+  nameOf _ = (Hs.fromString "MacaroonId")
+
+instance HsProtobuf.HasDefault MacaroonId
+
+instance HsProtobuf.Message MacaroonId where
+  encodeMessage
+    _
+    MacaroonId
+      { macaroonIdNonce = macaroonIdNonce,
+        macaroonIdStorageId = macaroonIdStorageId,
+        macaroonIdOps = macaroonIdOps
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                macaroonIdNonce
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 2)
+                macaroonIdStorageId
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 3)
+                ( Hs.coerce @(Hs.Vector LndGrpc.Op)
+                    @(HsProtobuf.NestedVec LndGrpc.Op)
+                    macaroonIdOps
+                )
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure MacaroonId)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 2)
+          )
+      <*> ( Hs.coerce @(_ (HsProtobuf.NestedVec LndGrpc.Op))
+              @(_ (Hs.Vector LndGrpc.Op))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 3)
+              )
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "nonce")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 2)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "storageId")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 3)
+          (HsProtobuf.Repeated (HsProtobuf.Named (HsProtobuf.Single "Op")))
+          (HsProtobuf.Single "ops")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB MacaroonId where
+  toJSONPB (MacaroonId f1 f2 f3) =
+    (HsJSONPB.object ["nonce" .= f1, "storageId" .= f2, "ops" .= f3])
+  toEncodingPB (MacaroonId f1 f2 f3) =
+    (HsJSONPB.pairs ["nonce" .= f1, "storageId" .= f2, "ops" .= f3])
+
+instance HsJSONPB.FromJSONPB MacaroonId where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "MacaroonId"
+        ( \obj ->
+            (Hs.pure MacaroonId) <*> obj .: "nonce" <*> obj .: "storageId"
+              <*> obj
+              .: "ops"
+        )
+    )
+
+instance HsJSONPB.ToJSON MacaroonId where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON MacaroonId where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema MacaroonId where
+  declareNamedSchema _ =
+    do
+      let declare_nonce = HsJSONPB.declareSchemaRef
+      macaroonIdNonce <- declare_nonce Proxy.Proxy
+      let declare_storageId = HsJSONPB.declareSchemaRef
+      macaroonIdStorageId <- declare_storageId Proxy.Proxy
+      let declare_ops = HsJSONPB.declareSchemaRef
+      macaroonIdOps <- declare_ops Proxy.Proxy
+      let _ =
+            Hs.pure MacaroonId <*> HsJSONPB.asProxy declare_nonce
+              <*> HsJSONPB.asProxy declare_storageId
+              <*> HsJSONPB.asProxy declare_ops
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName =
+                Hs.Just "MacaroonId",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [ ("nonce", macaroonIdNonce),
+                          ("storageId", macaroonIdStorageId),
+                          ("ops", macaroonIdOps)
+                        ]
+                  }
+            }
+        )
+
+data Op = Op {opEntity :: Hs.Text, opActions :: Hs.Vector Hs.Text}
+  deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
+
+instance HsProtobuf.Named Op where
+  nameOf _ = (Hs.fromString "Op")
+
+instance HsProtobuf.HasDefault Op
+
+instance HsProtobuf.Message Op where
+  encodeMessage _ Op {opEntity = opEntity, opActions = opActions} =
+    ( Hs.mconcat
+        [ ( HsProtobuf.encodeMessageField
+              (HsProtobuf.FieldNumber 1)
+              opEntity
+          ),
+          ( HsProtobuf.encodeMessageField
+              (HsProtobuf.FieldNumber 2)
+              ( Hs.coerce @(Hs.Vector Hs.Text) @(HsProtobuf.UnpackedVec Hs.Text)
+                  opActions
+              )
+          )
+        ]
+    )
+  decodeMessage _ =
+    (Hs.pure Op)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+      <*> ( Hs.coerce @(_ (HsProtobuf.UnpackedVec Hs.Text))
+              @(_ (Hs.Vector Hs.Text))
+              ( HsProtobuf.at
+                  HsProtobuf.decodeMessageField
+                  (HsProtobuf.FieldNumber 2)
+              )
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Prim HsProtobuf.String)
+          (HsProtobuf.Single "entity")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 2)
+          (HsProtobuf.Repeated HsProtobuf.String)
+          (HsProtobuf.Single "actions")
+          []
+          ""
+      )
+    ]
+
+instance HsJSONPB.ToJSONPB Op where
+  toJSONPB (Op f1 f2) =
+    (HsJSONPB.object ["entity" .= f1, "actions" .= f2])
+  toEncodingPB (Op f1 f2) =
+    (HsJSONPB.pairs ["entity" .= f1, "actions" .= f2])
+
+instance HsJSONPB.FromJSONPB Op where
+  parseJSONPB =
+    ( HsJSONPB.withObject
+        "Op"
+        (\obj -> (Hs.pure Op) <*> obj .: "entity" <*> obj .: "actions")
+    )
+
+instance HsJSONPB.ToJSON Op where
+  toJSON = HsJSONPB.toAesonValue
+  toEncoding = HsJSONPB.toAesonEncoding
+
+instance HsJSONPB.FromJSON Op where
+  parseJSON = HsJSONPB.parseJSONPB
+
+instance HsJSONPB.ToSchema Op where
+  declareNamedSchema _ =
+    do
+      let declare_entity = HsJSONPB.declareSchemaRef
+      opEntity <- declare_entity Proxy.Proxy
+      let declare_actions = HsJSONPB.declareSchemaRef
+      opActions <- declare_actions Proxy.Proxy
+      let _ =
+            Hs.pure Op <*> HsJSONPB.asProxy declare_entity
+              <*> HsJSONPB.asProxy declare_actions
+      Hs.return
+        ( HsJSONPB.NamedSchema
+            { HsJSONPB._namedSchemaName = Hs.Just "Op",
+              HsJSONPB._namedSchemaSchema =
+                Hs.mempty
+                  { HsJSONPB._schemaParamSchema =
+                      Hs.mempty
+                        { HsJSONPB._paramSchemaType =
+                            HsJSONPB.SwaggerObject
+                        },
+                    HsJSONPB._schemaProperties =
+                      HsJSONPB.insOrdFromList
+                        [ ("entity", opEntity),
+                          ("actions", opActions)
                         ]
                   }
             }

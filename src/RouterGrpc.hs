@@ -29,7 +29,6 @@ import qualified Data.Word as Hs (Word16, Word32, Word64)
 import qualified GHC.Enum as Hs
 import qualified GHC.Generics as Hs
 import qualified LndGrpc
-import LndGrpc.Orphan
 import Network.GRPC.HighLevel.Client as HsGRPC
 import Network.GRPC.HighLevel.Generated as HsGRPC
 import Network.GRPC.HighLevel.Server as HsGRPC hiding (serverLoop)
@@ -154,6 +153,7 @@ routerServer
       initialMetadata
       sslConfig
       logger
+      serverMaxReceiveMessageLength
     ) =
     ( HsGRPC.serverLoop
         HsGRPC.defaultOptions
@@ -235,7 +235,8 @@ routerServer
             optUserAgentSuffix = userAgentSuffix,
             optInitialMetadata = initialMetadata,
             optSSLConfig = sslConfig,
-            optLogger = logger
+            optLogger = logger,
+            optMaxReceiveMessageLength = serverMaxReceiveMessageLength
           }
     )
 
@@ -331,6 +332,7 @@ data SendPaymentRequest
         sendPaymentRequestAmtMsat :: Hs.Int64,
         sendPaymentRequestPaymentHash :: Hs.ByteString,
         sendPaymentRequestFinalCltvDelta :: Hs.Int32,
+        sendPaymentRequestPaymentAddr :: Hs.ByteString,
         sendPaymentRequestPaymentRequest :: Hs.Text,
         sendPaymentRequestTimeoutSeconds :: Hs.Int32,
         sendPaymentRequestFeeLimitSat :: Hs.Int64,
@@ -371,6 +373,7 @@ instance HsProtobuf.Message SendPaymentRequest where
         sendPaymentRequestPaymentHash = sendPaymentRequestPaymentHash,
         sendPaymentRequestFinalCltvDelta =
           sendPaymentRequestFinalCltvDelta,
+        sendPaymentRequestPaymentAddr = sendPaymentRequestPaymentAddr,
         sendPaymentRequestPaymentRequest =
           sendPaymentRequestPaymentRequest,
         sendPaymentRequestTimeoutSeconds =
@@ -413,6 +416,10 @@ instance HsProtobuf.Message SendPaymentRequest where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 4)
                 sendPaymentRequestFinalCltvDelta
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 20)
+                sendPaymentRequestPaymentAddr
             ),
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 5)
@@ -501,6 +508,10 @@ instance HsProtobuf.Message SendPaymentRequest where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 4)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 20)
           )
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
@@ -605,6 +616,13 @@ instance HsProtobuf.Message SendPaymentRequest where
           ""
       ),
       ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 20)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "payment_addr")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 5)
           (HsProtobuf.Prim HsProtobuf.String)
           (HsProtobuf.Single "payment_request")
@@ -671,7 +689,9 @@ instance HsProtobuf.Message SendPaymentRequest where
       ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 10)
           ( HsProtobuf.Repeated
-              (HsProtobuf.Named (HsProtobuf.Single "RouteHint"))
+              ( HsProtobuf.Named
+                  (HsProtobuf.Dots (HsProtobuf.Path ("lnrpc" Hs.:| ["RouteHint"])))
+              )
           )
           (HsProtobuf.Single "route_hints")
           []
@@ -694,7 +714,11 @@ instance HsProtobuf.Message SendPaymentRequest where
       ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 16)
           ( HsProtobuf.Repeated
-              (HsProtobuf.Named (HsProtobuf.Single "FeatureBit"))
+              ( HsProtobuf.Named
+                  ( HsProtobuf.Dots
+                      (HsProtobuf.Path ("lnrpc" Hs.:| ["FeatureBit"]))
+                  )
+              )
           )
           (HsProtobuf.Single "dest_features")
           []
@@ -724,6 +748,7 @@ instance HsJSONPB.ToJSONPB SendPaymentRequest where
         f12
         f3
         f4
+        f20
         f5
         f6
         f7
@@ -745,6 +770,7 @@ instance HsJSONPB.ToJSONPB SendPaymentRequest where
             "amt_msat" .= f12,
             "payment_hash" .= f3,
             "final_cltv_delta" .= f4,
+            "payment_addr" .= f20,
             "payment_request" .= f5,
             "timeout_seconds" .= f6,
             "fee_limit_sat" .= f7,
@@ -768,6 +794,7 @@ instance HsJSONPB.ToJSONPB SendPaymentRequest where
         f12
         f3
         f4
+        f20
         f5
         f6
         f7
@@ -789,6 +816,7 @@ instance HsJSONPB.ToJSONPB SendPaymentRequest where
             "amt_msat" .= f12,
             "payment_hash" .= f3,
             "final_cltv_delta" .= f4,
+            "payment_addr" .= f20,
             "payment_request" .= f5,
             "timeout_seconds" .= f6,
             "fee_limit_sat" .= f7,
@@ -815,6 +843,7 @@ instance HsJSONPB.FromJSONPB SendPaymentRequest where
               <*> obj .: "amt_msat"
               <*> obj .: "payment_hash"
               <*> obj .: "final_cltv_delta"
+              <*> obj .: "payment_addr"
               <*> obj .: "payment_request"
               <*> obj .: "timeout_seconds"
               <*> obj .: "fee_limit_sat"
@@ -854,6 +883,8 @@ instance HsJSONPB.ToSchema SendPaymentRequest where
       sendPaymentRequestFinalCltvDelta <-
         declare_final_cltv_delta
           Proxy.Proxy
+      let declare_payment_addr = HsJSONPB.declareSchemaRef
+      sendPaymentRequestPaymentAddr <- declare_payment_addr Proxy.Proxy
       let declare_payment_request = HsJSONPB.declareSchemaRef
       sendPaymentRequestPaymentRequest <-
         declare_payment_request
@@ -907,6 +938,7 @@ instance HsJSONPB.ToSchema SendPaymentRequest where
               <*> HsJSONPB.asProxy declare_amt_msat
               <*> HsJSONPB.asProxy declare_payment_hash
               <*> HsJSONPB.asProxy declare_final_cltv_delta
+              <*> HsJSONPB.asProxy declare_payment_addr
               <*> HsJSONPB.asProxy declare_payment_request
               <*> HsJSONPB.asProxy declare_timeout_seconds
               <*> HsJSONPB.asProxy declare_fee_limit_sat
@@ -942,6 +974,9 @@ instance HsJSONPB.ToSchema SendPaymentRequest where
                           ),
                           ( "final_cltv_delta",
                             sendPaymentRequestFinalCltvDelta
+                          ),
+                          ( "payment_addr",
+                            sendPaymentRequestPaymentAddr
                           ),
                           ( "payment_request",
                             sendPaymentRequestPaymentRequest
@@ -1403,7 +1438,11 @@ instance HsProtobuf.Message SendToRouteRequest where
       ),
       ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 2)
-          (HsProtobuf.Prim (HsProtobuf.Named (HsProtobuf.Single "Route")))
+          ( HsProtobuf.Prim
+              ( HsProtobuf.Named
+                  (HsProtobuf.Dots (HsProtobuf.Path ("lnrpc" Hs.:| ["Route"])))
+              )
+          )
           (HsProtobuf.Single "route")
           []
           ""
@@ -1526,7 +1565,11 @@ instance HsProtobuf.Message SendToRouteResponse where
       ),
       ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 2)
-          (HsProtobuf.Prim (HsProtobuf.Named (HsProtobuf.Single "Failure")))
+          ( HsProtobuf.Prim
+              ( HsProtobuf.Named
+                  (HsProtobuf.Dots (HsProtobuf.Path ("lnrpc" Hs.:| ["Failure"])))
+              )
+          )
           (HsProtobuf.Single "failure")
           []
           ""
@@ -2478,7 +2521,8 @@ data BuildRouteRequest
           Hs.Int64,
         buildRouteRequestFinalCltvDelta :: Hs.Int32,
         buildRouteRequestOutgoingChanId :: Hs.Word64,
-        buildRouteRequestHopPubkeys :: Hs.Vector Hs.ByteString
+        buildRouteRequestHopPubkeys :: Hs.Vector Hs.ByteString,
+        buildRouteRequestPaymentAddr :: Hs.ByteString
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -2495,7 +2539,8 @@ instance HsProtobuf.Message BuildRouteRequest where
           buildRouteRequestAmtMsat,
         buildRouteRequestFinalCltvDelta = buildRouteRequestFinalCltvDelta,
         buildRouteRequestOutgoingChanId = buildRouteRequestOutgoingChanId,
-        buildRouteRequestHopPubkeys = buildRouteRequestHopPubkeys
+        buildRouteRequestHopPubkeys = buildRouteRequestHopPubkeys,
+        buildRouteRequestPaymentAddr = buildRouteRequestPaymentAddr
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -2516,6 +2561,10 @@ instance HsProtobuf.Message BuildRouteRequest where
                     @(HsProtobuf.UnpackedVec Hs.ByteString)
                     buildRouteRequestHopPubkeys
                 )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 5)
+                buildRouteRequestPaymentAddr
             )
           ]
       )
@@ -2539,6 +2588,10 @@ instance HsProtobuf.Message BuildRouteRequest where
                   HsProtobuf.decodeMessageField
                   (HsProtobuf.FieldNumber 4)
               )
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 5)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -2572,24 +2625,33 @@ instance HsProtobuf.Message BuildRouteRequest where
           (HsProtobuf.Single "hop_pubkeys")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 5)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "payment_addr")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB BuildRouteRequest where
-  toJSONPB (BuildRouteRequest f1 f2 f3 f4) =
+  toJSONPB (BuildRouteRequest f1 f2 f3 f4 f5) =
     ( HsJSONPB.object
         [ "amt_msat" .= f1,
           "final_cltv_delta" .= f2,
           "outgoing_chan_id" .= f3,
-          "hop_pubkeys" .= f4
+          "hop_pubkeys" .= f4,
+          "payment_addr" .= f5
         ]
     )
-  toEncodingPB (BuildRouteRequest f1 f2 f3 f4) =
+  toEncodingPB (BuildRouteRequest f1 f2 f3 f4 f5) =
     ( HsJSONPB.pairs
         [ "amt_msat" .= f1,
           "final_cltv_delta" .= f2,
           "outgoing_chan_id" .= f3,
-          "hop_pubkeys" .= f4
+          "hop_pubkeys" .= f4,
+          "payment_addr" .= f5
         ]
     )
 
@@ -2602,6 +2664,7 @@ instance HsJSONPB.FromJSONPB BuildRouteRequest where
               <*> obj .: "final_cltv_delta"
               <*> obj .: "outgoing_chan_id"
               <*> obj .: "hop_pubkeys"
+              <*> obj .: "payment_addr"
         )
     )
 
@@ -2627,12 +2690,15 @@ instance HsJSONPB.ToSchema BuildRouteRequest where
           Proxy.Proxy
       let declare_hop_pubkeys = HsJSONPB.declareSchemaRef
       buildRouteRequestHopPubkeys <- declare_hop_pubkeys Proxy.Proxy
+      let declare_payment_addr = HsJSONPB.declareSchemaRef
+      buildRouteRequestPaymentAddr <- declare_payment_addr Proxy.Proxy
       let _ =
             Hs.pure BuildRouteRequest
               <*> HsJSONPB.asProxy declare_amt_msat
               <*> HsJSONPB.asProxy declare_final_cltv_delta
               <*> HsJSONPB.asProxy declare_outgoing_chan_id
               <*> HsJSONPB.asProxy declare_hop_pubkeys
+              <*> HsJSONPB.asProxy declare_payment_addr
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -2655,6 +2721,9 @@ instance HsJSONPB.ToSchema BuildRouteRequest where
                           ),
                           ( "hop_pubkeys",
                             buildRouteRequestHopPubkeys
+                          ),
+                          ( "payment_addr",
+                            buildRouteRequestPaymentAddr
                           )
                         ]
                   }
@@ -2703,7 +2772,11 @@ instance HsProtobuf.Message BuildRouteResponse where
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 1)
-          (HsProtobuf.Prim (HsProtobuf.Named (HsProtobuf.Single "Route")))
+          ( HsProtobuf.Prim
+              ( HsProtobuf.Named
+                  (HsProtobuf.Dots (HsProtobuf.Path ("lnrpc" Hs.:| ["Route"])))
+              )
+          )
           (HsProtobuf.Single "route")
           []
           ""
@@ -3458,11 +3531,12 @@ instance HsJSONPB.ToSchema HtlcInfo where
             }
         )
 
-newtype ForwardEvent
+data ForwardEvent
   = ForwardEvent
       { forwardEventInfo ::
           Hs.Maybe
-            RouterGrpc.HtlcInfo
+            RouterGrpc.HtlcInfo,
+        forwardEventPreimageHash :: Hs.ByteString
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -3472,17 +3546,26 @@ instance HsProtobuf.Named ForwardEvent where
 instance HsProtobuf.HasDefault ForwardEvent
 
 instance HsProtobuf.Message ForwardEvent where
-  encodeMessage _ ForwardEvent {forwardEventInfo = forwardEventInfo} =
-    ( Hs.mconcat
-        [ ( HsProtobuf.encodeMessageField
-              (HsProtobuf.FieldNumber 1)
-              ( Hs.coerce @(Hs.Maybe RouterGrpc.HtlcInfo)
-                  @(HsProtobuf.Nested RouterGrpc.HtlcInfo)
-                  forwardEventInfo
-              )
-          )
-        ]
-    )
+  encodeMessage
+    _
+    ForwardEvent
+      { forwardEventInfo = forwardEventInfo,
+        forwardEventPreimageHash = forwardEventPreimageHash
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                ( Hs.coerce @(Hs.Maybe RouterGrpc.HtlcInfo)
+                    @(HsProtobuf.Nested RouterGrpc.HtlcInfo)
+                    forwardEventInfo
+                )
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 2)
+                forwardEventPreimageHash
+            )
+          ]
+      )
   decodeMessage _ =
     (Hs.pure ForwardEvent)
       <*> ( Hs.coerce @(_ (HsProtobuf.Nested RouterGrpc.HtlcInfo))
@@ -3492,6 +3575,10 @@ instance HsProtobuf.Message ForwardEvent where
                   (HsProtobuf.FieldNumber 1)
               )
           )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 2)
+          )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 1)
@@ -3499,18 +3586,30 @@ instance HsProtobuf.Message ForwardEvent where
           (HsProtobuf.Single "info")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 2)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "preimage_hash")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB ForwardEvent where
-  toJSONPB (ForwardEvent f1) = (HsJSONPB.object ["info" .= f1])
-  toEncodingPB (ForwardEvent f1) = (HsJSONPB.pairs ["info" .= f1])
+  toJSONPB (ForwardEvent f1 f2) =
+    (HsJSONPB.object ["info" .= f1, "preimage_hash" .= f2])
+  toEncodingPB (ForwardEvent f1 f2) =
+    (HsJSONPB.pairs ["info" .= f1, "preimage_hash" .= f2])
 
 instance HsJSONPB.FromJSONPB ForwardEvent where
   parseJSONPB =
     ( HsJSONPB.withObject
         "ForwardEvent"
-        (\obj -> (Hs.pure ForwardEvent) <*> obj .: "info")
+        ( \obj ->
+            (Hs.pure ForwardEvent) <*> obj .: "info"
+              <*> obj .: "preimage_hash"
+        )
     )
 
 instance HsJSONPB.ToJSON ForwardEvent where
@@ -3525,7 +3624,11 @@ instance HsJSONPB.ToSchema ForwardEvent where
     do
       let declare_info = HsJSONPB.declareSchemaRef
       forwardEventInfo <- declare_info Proxy.Proxy
-      let _ = Hs.pure ForwardEvent <*> HsJSONPB.asProxy declare_info
+      let declare_preimage_hash = HsJSONPB.declareSchemaRef
+      forwardEventPreimageHash <- declare_preimage_hash Proxy.Proxy
+      let _ =
+            Hs.pure ForwardEvent <*> HsJSONPB.asProxy declare_info
+              <*> HsJSONPB.asProxy declare_preimage_hash
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -3539,7 +3642,11 @@ instance HsJSONPB.ToSchema ForwardEvent where
                         },
                     HsJSONPB._schemaProperties =
                       HsJSONPB.insOrdFromList
-                        [("info", forwardEventInfo)]
+                        [ ("info", forwardEventInfo),
+                          ( "preimage_hash",
+                            forwardEventPreimageHash
+                          )
+                        ]
                   }
             }
         )
@@ -3595,7 +3702,12 @@ instance HsJSONPB.ToSchema ForwardFailEvent where
             }
         )
 
-data SettleEvent = SettleEvent {}
+data SettleEvent
+  = SettleEvent
+      { settleEventIncomingAmtMsat ::
+          Hs.Word64,
+        settleEventPreimageHash :: Hs.ByteString
+      }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
 instance HsProtobuf.Named SettleEvent where
@@ -3604,19 +3716,69 @@ instance HsProtobuf.Named SettleEvent where
 instance HsProtobuf.HasDefault SettleEvent
 
 instance HsProtobuf.Message SettleEvent where
-  encodeMessage _ SettleEvent {} = (Hs.mconcat [])
-  decodeMessage _ = (Hs.pure SettleEvent)
-  dotProto _ = []
+  encodeMessage
+    _
+    SettleEvent
+      { settleEventIncomingAmtMsat =
+          settleEventIncomingAmtMsat,
+        settleEventPreimageHash = settleEventPreimageHash
+      } =
+      ( Hs.mconcat
+          [ ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 1)
+                settleEventIncomingAmtMsat
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 2)
+                settleEventPreimageHash
+            )
+          ]
+      )
+  decodeMessage _ =
+    (Hs.pure SettleEvent)
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 1)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 2)
+          )
+  dotProto _ =
+    [ ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 1)
+          (HsProtobuf.Prim HsProtobuf.UInt64)
+          (HsProtobuf.Single "incoming_amt_msat")
+          []
+          ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 2)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "preimage_hash")
+          []
+          ""
+      )
+    ]
 
 instance HsJSONPB.ToJSONPB SettleEvent where
-  toJSONPB (SettleEvent) = (HsJSONPB.object [])
-  toEncodingPB (SettleEvent) = (HsJSONPB.pairs [])
+  toJSONPB (SettleEvent f1 f2) =
+    ( HsJSONPB.object
+        ["incoming_amt_msat" .= f1, "preimage_hash" .= f2]
+    )
+  toEncodingPB (SettleEvent f1 f2) =
+    ( HsJSONPB.pairs
+        ["incoming_amt_msat" .= f1, "preimage_hash" .= f2]
+    )
 
 instance HsJSONPB.FromJSONPB SettleEvent where
   parseJSONPB =
     ( HsJSONPB.withObject
         "SettleEvent"
-        (\obj -> (Hs.pure SettleEvent))
+        ( \obj ->
+            (Hs.pure SettleEvent) <*> obj .: "incoming_amt_msat"
+              <*> obj .: "preimage_hash"
+        )
     )
 
 instance HsJSONPB.ToJSON SettleEvent where
@@ -3629,6 +3791,14 @@ instance HsJSONPB.FromJSON SettleEvent where
 instance HsJSONPB.ToSchema SettleEvent where
   declareNamedSchema _ =
     do
+      let declare_incoming_amt_msat = HsJSONPB.declareSchemaRef
+      settleEventIncomingAmtMsat <- declare_incoming_amt_msat Proxy.Proxy
+      let declare_preimage_hash = HsJSONPB.declareSchemaRef
+      settleEventPreimageHash <- declare_preimage_hash Proxy.Proxy
+      let _ =
+            Hs.pure SettleEvent
+              <*> HsJSONPB.asProxy declare_incoming_amt_msat
+              <*> HsJSONPB.asProxy declare_preimage_hash
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -3641,7 +3811,14 @@ instance HsJSONPB.ToSchema SettleEvent where
                             HsJSONPB.SwaggerObject
                         },
                     HsJSONPB._schemaProperties =
-                      HsJSONPB.insOrdFromList []
+                      HsJSONPB.insOrdFromList
+                        [ ( "incoming_amt_msat",
+                            settleEventIncomingAmtMsat
+                          ),
+                          ( "preimage_hash",
+                            settleEventPreimageHash
+                          )
+                        ]
                   }
             }
         )
@@ -3731,7 +3908,7 @@ instance HsProtobuf.Message LinkFailEvent where
           ( HsProtobuf.Prim
               ( HsProtobuf.Named
                   ( HsProtobuf.Dots
-                      (HsProtobuf.Path ("Failure" Hs.:| ["FailureCode"]))
+                      (HsProtobuf.Path ("lnrpc" Hs.:| ["Failure", "FailureCode"]))
                   )
               )
           )
@@ -4138,7 +4315,11 @@ instance HsProtobuf.Message PaymentStatus where
       ( HsProtobuf.DotProtoField
           (HsProtobuf.FieldNumber 4)
           ( HsProtobuf.Repeated
-              (HsProtobuf.Named (HsProtobuf.Single "HTLCAttempt"))
+              ( HsProtobuf.Named
+                  ( HsProtobuf.Dots
+                      (HsProtobuf.Path ("lnrpc" Hs.:| ["HTLCAttempt"]))
+                  )
+              )
           )
           (HsProtobuf.Single "htlcs")
           []
@@ -4334,7 +4515,9 @@ data ForwardHtlcInterceptRequest
           Hs.Word32,
         forwardHtlcInterceptRequestCustomRecords ::
           Hs.Map Hs.Word64
-            Hs.ByteString
+            Hs.ByteString,
+        forwardHtlcInterceptRequestOnionBlob ::
+          Hs.ByteString
       }
   deriving (Hs.Show, Hs.Eq, Hs.Ord, Hs.Generic, Hs.NFData)
 
@@ -4362,7 +4545,9 @@ instance HsProtobuf.Message ForwardHtlcInterceptRequest where
         forwardHtlcInterceptRequestOutgoingExpiry =
           forwardHtlcInterceptRequestOutgoingExpiry,
         forwardHtlcInterceptRequestCustomRecords =
-          forwardHtlcInterceptRequestCustomRecords
+          forwardHtlcInterceptRequestCustomRecords,
+        forwardHtlcInterceptRequestOnionBlob =
+          forwardHtlcInterceptRequestOnionBlob
       } =
       ( Hs.mconcat
           [ ( HsProtobuf.encodeMessageField
@@ -4399,6 +4584,10 @@ instance HsProtobuf.Message ForwardHtlcInterceptRequest where
             ( HsProtobuf.encodeMessageField
                 (HsProtobuf.FieldNumber 8)
                 forwardHtlcInterceptRequestCustomRecords
+            ),
+            ( HsProtobuf.encodeMessageField
+                (HsProtobuf.FieldNumber 9)
+                forwardHtlcInterceptRequestOnionBlob
             )
           ]
       )
@@ -4438,6 +4627,10 @@ instance HsProtobuf.Message ForwardHtlcInterceptRequest where
       <*> ( HsProtobuf.at
               HsProtobuf.decodeMessageField
               (HsProtobuf.FieldNumber 8)
+          )
+      <*> ( HsProtobuf.at
+              HsProtobuf.decodeMessageField
+              (HsProtobuf.FieldNumber 9)
           )
   dotProto _ =
     [ ( HsProtobuf.DotProtoField
@@ -4497,11 +4690,18 @@ instance HsProtobuf.Message ForwardHtlcInterceptRequest where
           (HsProtobuf.Single "custom_records")
           []
           ""
+      ),
+      ( HsProtobuf.DotProtoField
+          (HsProtobuf.FieldNumber 9)
+          (HsProtobuf.Prim HsProtobuf.Bytes)
+          (HsProtobuf.Single "onion_blob")
+          []
+          ""
       )
     ]
 
 instance HsJSONPB.ToJSONPB ForwardHtlcInterceptRequest where
-  toJSONPB (ForwardHtlcInterceptRequest f1 f5 f6 f2 f7 f3 f4 f8) =
+  toJSONPB (ForwardHtlcInterceptRequest f1 f5 f6 f2 f7 f3 f4 f8 f9) =
     ( HsJSONPB.object
         [ "incoming_circuit_key" .= f1,
           "incoming_amount_msat" .= f5,
@@ -4510,10 +4710,11 @@ instance HsJSONPB.ToJSONPB ForwardHtlcInterceptRequest where
           "outgoing_requested_chan_id" .= f7,
           "outgoing_amount_msat" .= f3,
           "outgoing_expiry" .= f4,
-          "custom_records" .= f8
+          "custom_records" .= f8,
+          "onion_blob" .= f9
         ]
     )
-  toEncodingPB (ForwardHtlcInterceptRequest f1 f5 f6 f2 f7 f3 f4 f8) =
+  toEncodingPB (ForwardHtlcInterceptRequest f1 f5 f6 f2 f7 f3 f4 f8 f9) =
     ( HsJSONPB.pairs
         [ "incoming_circuit_key" .= f1,
           "incoming_amount_msat" .= f5,
@@ -4522,7 +4723,8 @@ instance HsJSONPB.ToJSONPB ForwardHtlcInterceptRequest where
           "outgoing_requested_chan_id" .= f7,
           "outgoing_amount_msat" .= f3,
           "outgoing_expiry" .= f4,
-          "custom_records" .= f8
+          "custom_records" .= f8,
+          "onion_blob" .= f9
         ]
     )
 
@@ -4540,6 +4742,7 @@ instance HsJSONPB.FromJSONPB ForwardHtlcInterceptRequest where
               <*> obj .: "outgoing_amount_msat"
               <*> obj .: "outgoing_expiry"
               <*> obj .: "custom_records"
+              <*> obj .: "onion_blob"
         )
     )
 
@@ -4585,6 +4788,10 @@ instance HsJSONPB.ToSchema ForwardHtlcInterceptRequest where
       forwardHtlcInterceptRequestCustomRecords <-
         declare_custom_records
           Proxy.Proxy
+      let declare_onion_blob = HsJSONPB.declareSchemaRef
+      forwardHtlcInterceptRequestOnionBlob <-
+        declare_onion_blob
+          Proxy.Proxy
       let _ =
             Hs.pure ForwardHtlcInterceptRequest
               <*> HsJSONPB.asProxy declare_incoming_circuit_key
@@ -4595,6 +4802,7 @@ instance HsJSONPB.ToSchema ForwardHtlcInterceptRequest where
               <*> HsJSONPB.asProxy declare_outgoing_amount_msat
               <*> HsJSONPB.asProxy declare_outgoing_expiry
               <*> HsJSONPB.asProxy declare_custom_records
+              <*> HsJSONPB.asProxy declare_onion_blob
       Hs.return
         ( HsJSONPB.NamedSchema
             { HsJSONPB._namedSchemaName =
@@ -4631,6 +4839,9 @@ instance HsJSONPB.ToSchema ForwardHtlcInterceptRequest where
                           ),
                           ( "custom_records",
                             forwardHtlcInterceptRequestCustomRecords
+                          ),
+                          ( "onion_blob",
+                            forwardHtlcInterceptRequestOnionBlob
                           )
                         ]
                   }

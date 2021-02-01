@@ -8,8 +8,8 @@ mkDerivation {
   version = "1.2.0";
   src = fetchgit {
     url = "https://github.com/coingaming/proto3-wire";
-    sha256 = "1d2ir9ds4vawrn6lkxqgyw9zg8h2l4d6m8ihhy6znjllh12fmjyp";
-    rev = "5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53";
+    sha256 = "0ip7r1c84c4af70cm26p046cd9zik0mq1y0qa2x56plv1r39w3nw";
+    rev = "3672ded8b16baa9a9fdf4e4fa5109e2a6cf8a809";
     fetchSubmodules = true;
   };
   libraryHaskellDepends = [

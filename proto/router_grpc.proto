@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-import "google/api/annotations.proto";
 import "lnd_grpc.proto";
 
 package routerrpc;
@@ -15,13 +14,13 @@ service Router {
     PaymentRequest to the final destination. The call returns a stream of
     payment updates.
     */
-    rpc SendPaymentV2 (SendPaymentRequest) returns (stream Payment);
+    rpc SendPaymentV2 (SendPaymentRequest) returns (stream lnrpc.Payment);
 
     /*
     TrackPaymentV2 returns an update stream for the payment identified by the
     payment hash.
     */
-    rpc TrackPaymentV2 (TrackPaymentRequest) returns (stream Payment);
+    rpc TrackPaymentV2 (TrackPaymentRequest) returns (stream lnrpc.Payment);
 
     /*
     EstimateRouteFee allows callers to obtain a lower bound w.r.t how much it
@@ -46,7 +45,7 @@ service Router {
     route manually. This can be used for things like rebalancing, and atomic
     swaps.
     */
-    rpc SendToRouteV2 (SendToRouteRequest) returns (HTLCAttempt);
+    rpc SendToRouteV2 (SendToRouteRequest) returns (lnrpc.HTLCAttempt);
 
     /*
     ResetMissionControl clears all mission control state and starts with a clean
@@ -138,6 +137,9 @@ message SendPaymentRequest {
     */
     int32 final_cltv_delta = 4;
 
+    // An optional payment addr to be included within the last hop of the route.
+    bytes payment_addr = 20;
+
     /*
     A bare-bones invoice for a payment within the Lightning Network.  With the
     details of the invoice, the sender has all the data necessary to send a
@@ -204,7 +206,7 @@ message SendPaymentRequest {
     /*
     Optional route hints to reach the destination through private channels.
     */
-    repeated RouteHint route_hints = 10;
+    repeated lnrpc.RouteHint route_hints = 10;
 
     /*
     An optional field that can be used to pass an arbitrary set of TLV records
@@ -225,7 +227,7 @@ message SendPaymentRequest {
     the router will try to load destination features from the graph as a
     fallback.
     */
-    repeated FeatureBit dest_features = 16;
+    repeated lnrpc.FeatureBit dest_features = 16;
 
     /*
     The maximum number of partial payments that may be use to complete the full
@@ -283,7 +285,7 @@ message SendToRouteRequest {
     bytes payment_hash = 1;
 
     // Route that should be used to attempt to complete the payment.
-    Route route = 2;
+    lnrpc.Route route = 2;
 }
 
 message SendToRouteResponse {
@@ -291,7 +293,7 @@ message SendToRouteResponse {
     bytes preimage = 1;
 
     // The failure message in case the payment failed.
-    Failure failure = 2;
+    lnrpc.Failure failure = 2;
 }
 
 message ResetMissionControlRequest {
@@ -395,13 +397,16 @@ message BuildRouteRequest {
     pubkey.
     */
     repeated bytes hop_pubkeys = 4;
+
+    // An optional payment addr to be included within the last hop of the route.
+    bytes payment_addr = 5;
 }
 
 message BuildRouteResponse {
     /*
     Fully specified route that can be used to execute the payment.
     */
-    Route route = 1;
+    lnrpc.Route route = 1;
 }
 
 message SubscribeHtlcEventsRequest {
@@ -483,12 +488,15 @@ message HtlcInfo {
 message ForwardEvent {
     // Info contains details about the htlc that was forwarded.
     HtlcInfo info = 1;
+    bytes preimage_hash = 2;
 }
 
 message ForwardFailEvent {
 }
 
 message SettleEvent {
+    uint64 incoming_amt_msat = 1;
+    bytes preimage_hash = 2;
 }
 
 message LinkFailEvent {
@@ -496,7 +504,7 @@ message LinkFailEvent {
     HtlcInfo info = 1;
 
     // FailureCode is the BOLT error code for the failure.
-    Failure.FailureCode wire_failure = 2;
+    lnrpc.Failure.FailureCode wire_failure = 2;
 
     /*
     FailureDetail provides additional information about the reason for the
@@ -588,7 +596,7 @@ message PaymentStatus {
     /*
     The HTLCs made in attempt to settle the payment [EXPERIMENTAL].
     */
-    repeated HTLCAttempt htlcs = 4;
+    repeated lnrpc.HTLCAttempt htlcs = 4;
 }
 
 message CircuitKey {
@@ -632,6 +640,9 @@ message ForwardHtlcInterceptRequest {
 
     // Any custom records that were present in the payload.
     map<uint64, bytes> custom_records = 8;
+
+    // The onion blob for the next hop
+    bytes onion_blob = 9;
 }
 
 /**

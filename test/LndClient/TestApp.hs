@@ -12,16 +12,12 @@
 
 module LndClient.TestApp
   ( Env (..),
-    runApp,
-    runApp_,
     liftLndResult,
     customerNodeLocation,
     merchantNodeLocation,
     syncWallets,
     mine6,
-    newEnv,
     withEnv,
-    deleteEnv,
     setupOneChannel,
     liftMaybe,
     receiveInvoice,
@@ -58,7 +54,7 @@ import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
 import LndClient.Import
-import LndClient.RPC.Silent
+import LndClient.RPC.Katip
 import qualified LndGrpc as GRPC
 import Network.Bitcoin as BTC (Client, getClient)
 import Network.Bitcoin.BlockChain (getBlockCount)
@@ -157,66 +153,81 @@ readEnv = do
         envMerchantIQ = miq
       }
 
-newEnv :: IO Env
-newEnv = do
+withEnv :: (Env -> AppM IO ()) -> IO ()
+withEnv f = do
   env <- readEnv
   let merchantEnv = envLndMerchant env
   let customerEnv = envLndCustomer env
   let merchantCQ = envMerchantCQ env
   let customerCQ = envCustomerCQ env
-  runApp env $ do
-    --
-    -- Init wallets
-    --
-    void $ liftLndResult =<< lazyInitWallet merchantEnv
-    void $ liftLndResult =<< lazyInitWallet customerEnv
-    lazyMineInitialCoins env
-    --
-    -- Connect Customer to Merchant
-    --
-    GetInfoResponse merchantPubKey _ _ <-
-      liftLndResult =<< getInfo merchantEnv
-    let connectPeerRequest =
-          ConnectPeerRequest
-            { addr =
-                LightningAddress
-                  { pubkey = merchantPubKey,
-                    host = merchantNodeLocation
-                  },
-              perm = False
-            }
-    void $
-      liftLndResult
-        =<< lazyConnectPeer customerEnv connectPeerRequest
-    --
-    -- Subscribe to events
-    --
-    void . spawnLink $
-      liftLndResult
-        =<< subscribeChannelEventsChan (pure merchantCQ) merchantEnv
-    void . spawnLink $
-      liftLndResult
-        =<< subscribeChannelEventsChan (pure customerCQ) customerEnv
-    void . spawnLink $
-      liftLndResult
-        =<< subscribeInvoicesChan
-          (pure $ envMerchantIQ env)
-          merchantEnv
-          --
-          -- TODO : this is related to LND bug
-          -- https://github.com/lightningnetwork/lnd/issues/2469
-          --
-          (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
-    pure env
-
-deleteEnv :: Env -> IO ()
-deleteEnv = void . closeScribes . envKatipLE
-
-withEnv :: (Env -> AppM IO ()) -> IO ()
-withEnv f = do
-  env <- newEnv
-  runApp env $ f env
-  deleteEnv env
+  runApp env $
+    do
+      --
+      -- Init wallets
+      --
+      void $ liftLndResult =<< lazyInitWallet merchantEnv
+      void $ liftLndResult =<< lazyInitWallet customerEnv
+      lazyMineInitialCoins env
+      --
+      -- Connect Customer to Merchant
+      --
+      GetInfoResponse merchantPubKey _ _ <-
+        liftLndResult =<< getInfo merchantEnv
+      let connectPeerRequest =
+            ConnectPeerRequest
+              { addr =
+                  LightningAddress
+                    { pubkey = merchantPubKey,
+                      host = merchantNodeLocation
+                    },
+                perm = False
+              }
+      void $
+        liftLndResult
+          =<< lazyConnectPeer customerEnv connectPeerRequest
+      --
+      -- Subscribe to events
+      --
+      _ <- spawnLink $ do
+        liftLndResult
+          =<< subscribeChannelEventsChan (pure merchantCQ) merchantEnv
+      _ <- spawnLink $ do
+        liftLndResult
+          =<< subscribeChannelEventsChan (pure customerCQ) customerEnv
+      _ <-
+        spawnLink $ do
+          $(logTM) InfoS "HELLO_FROM_SPAWN"
+          liftLndResult
+            =<< subscribeInvoicesChan
+              (pure $ envMerchantIQ env)
+              merchantEnv
+              --
+              -- TODO : this is related to LND bug
+              -- https://github.com/lightningnetwork/lnd/issues/2469
+              --
+              (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
+      f env
+  --
+  -- TODO : we can't really use async `cance` or `withAsync`
+  -- before this is fixed somehow
+  -- https://github.com/awakesecurity/gRPC-haskell/issues/104#issuecomment-769408503
+  --
+  --withSpawnLink
+  --  ( liftLndResult
+  --      =<< subscribeInvoicesChan
+  --        (pure $ envMerchantIQ env)
+  --        merchantEnv
+  --        --
+  --        -- TODO : this is related to LND bug
+  --        -- https://github.com/lightningnetwork/lnd/issues/2469
+  --        --
+  --        (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
+  --  )
+  --  ( const $ do
+  --      f env
+  --      $(logTM) InfoS "GONNA_TO_TERMINATE_SUBSCRIPTION"
+  --  )
+  void . closeScribes $ envKatipLE env
 
 newBtcClient :: IO BTC.Client
 newBtcClient =
@@ -257,27 +268,26 @@ setupOneChannel env = do
         customerEnv
         (ListChannelsRequest True False False False Nothing)
   let cps = Channel.channelPoint <$> cs
-  liftIO $
-    mapM_
-      ( \cp ->
-          spawnLink $ runApp env $
-            closeChannel
-              --
-              -- TODO : investigate why it throws empty gRPC
-              -- response error and as consequence
-              -- probably it's how subscription terminates
-              -- when channel is completely closed
-              --
-              -- but bad thing is that callback sometimes
-              -- is never called, that's why it's not used there
-              -- we are getting TChan events instead from
-              -- previous opened subscription
-              --
-              (const $ return ())
-              (envLndMerchant env)
-              (CloseChannelRequest cp False Nothing Nothing Nothing)
-      )
-      cps
+  mapM_
+    ( \cp ->
+        spawnLink $
+          closeChannel
+            --
+            -- TODO : investigate why it throws empty gRPC
+            -- response error and as consequence
+            -- probably it's how subscription terminates
+            -- when channel is completely closed
+            --
+            -- but bad thing is that callback sometimes
+            -- is never called, that's why it's not used there
+            -- we are getting TChan events instead from
+            -- previous opened subscription
+            --
+            (const $ return ())
+            (envLndMerchant env)
+            (CloseChannelRequest cp False Nothing Nothing Nothing)
+    )
+    cps
   liftLndResult =<< receiveClosedChannels env cps mq
   liftLndResult =<< receiveClosedChannels env cps cq
   --
@@ -359,13 +369,10 @@ instance (MonadIO m) => KatipContext (AppM m) where
 runApp :: Env -> AppM m a -> m a
 runApp env app = runReaderT (unAppM app) env
 
-runApp_ :: (Functor m) => Env -> AppM m a -> m ()
-runApp_ env app = void $ runApp env app
-
 liftMaybe :: MonadIO m => String -> Maybe a -> m a
 liftMaybe msg mx =
   case mx of
-    Just x -> return x
+    Just x -> pure x
     Nothing -> liftIO $ fail msg
 
 receiveActiveChannel ::

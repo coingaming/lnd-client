@@ -9,10 +9,12 @@ import Chronos as Import
 import Control.Concurrent.Async as Import
   ( Async,
     async,
+    asyncThreadId,
     cancel,
     link,
     wait,
     waitAnySTM,
+    withAsync,
   )
 import Control.Concurrent.STM as Import (check)
 import Control.Concurrent.STM.TChan as Import

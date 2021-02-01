@@ -1,4 +1,4 @@
-{-# LANGUAGE StrictData #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TupleSections #-}
 
 -- | Generic async worker to automate LND gRPC subscriptions.
@@ -15,18 +15,22 @@ module LndClient.Watcher
     watchUnit,
     unWatch,
     unWatchUnit,
+    delete,
   )
 where
 
-import Data.Map as Map
+import qualified Data.Map as Map
 import LndClient.Import hiding (spawnLink)
 
 --
 -- TODO : maybe pass OnSub | OnExit callbacks?
 --
 
-newtype Watcher a b
-  = Watcher (TChan (Cmd a))
+data Watcher a b
+  = Watcher
+      { watcherChan :: TChan (Cmd a),
+        watcherProc :: Async ()
+      }
 
 data Cmd a
   = Watch a
@@ -54,40 +58,54 @@ data LndResult a
 -- Spawn watcher where subscription accepts argument
 -- for example `subscribeInvoicesChan`
 spawnLink ::
-  (Ord a, MonadUnliftIO m) =>
+  (Ord a, MonadUnliftIO m, KatipContext m) =>
   LndEnv ->
   (Maybe (TChan (a, b)) -> LndEnv -> a -> m (Either LndError ())) ->
   (Watcher a b -> a -> LndResult b -> m ()) ->
-  m (Async (), Watcher a b)
-spawnLink env sub handler =
-  withRunInIO $ \run -> do
+  m (Watcher a b)
+spawnLink env sub handler = do
+  w <- withRunInIO $ \run -> do
     (cw, lw, cr, lr) <- atomically $ do
       cw <- newBroadcastTChan
       lw <- newBroadcastTChan
       cr <- dupTChan cw
       lr <- dupTChan lw
       return (cw, lw, cr, lr)
-    let w = Watcher cw
-    t <-
-      async . run . loop $
-        WatcherState
-          { watcherChanCmd = cr,
-            watcherChanLnd = lr,
-            watcherSub = sub (Just lw) env,
-            watcherHandler = handler w,
-            watcherTasks = mempty
-          }
-    link t
-    return (t, w)
+    let w =
+          Watcher
+            { watcherChan = cw,
+              watcherProc = error "PARTIAL_WATCHER"
+            }
+    varProc <- newEmptyMVar
+    proc <-
+      async . run $ do
+        proc <- takeMVar varProc
+        loop $
+          WatcherState
+            { watcherChanCmd = cr,
+              watcherChanLnd = lr,
+              watcherSub = sub (Just lw) env,
+              watcherHandler = handler $ w {watcherProc = proc},
+              watcherTasks = mempty
+            }
+    liftIO $ putMVar varProc proc
+    pure $ w {watcherProc = proc}
+  let proc = watcherProc w
+  liftIO $ link proc
+  $(logTM) InfoS
+    $ logStr
+    $ ("Watcher spawned as " :: Text)
+      <> show (asyncThreadId proc)
+  pure w
 
 -- Spawn watcher where subscription don't accept argument
 -- for example `subscribeChannelEventsChan`
 spawnLinkUnit ::
-  (MonadUnliftIO m) =>
+  (MonadUnliftIO m, KatipContext m) =>
   LndEnv ->
   (Maybe (TChan ((), b)) -> LndEnv -> m (Either LndError ())) ->
   (Watcher () b -> LndResult b -> m ()) ->
-  m (Async (), Watcher () b)
+  m (Watcher () b)
 spawnLinkUnit env0 sub handler =
   spawnLink
     env0
@@ -95,22 +113,32 @@ spawnLinkUnit env0 sub handler =
     (\chan _ x -> handler chan x)
 
 watch :: (MonadUnliftIO m) => Watcher a b -> a -> m ()
-watch (Watcher cw) = atomically . writeTChan cw . Watch
+watch (Watcher cw _) = atomically . writeTChan cw . Watch
 
 watchUnit :: (MonadUnliftIO m) => Watcher () b -> m ()
 watchUnit cw = watch cw ()
 
 unWatch :: (MonadUnliftIO m) => Watcher a b -> a -> m ()
-unWatch (Watcher cw) = atomically . writeTChan cw . UnWatch
+unWatch (Watcher cw _) = atomically . writeTChan cw . UnWatch
 
 unWatchUnit :: (MonadUnliftIO m) => Watcher () b -> m ()
 unWatchUnit cw = unWatch cw ()
 
-loop :: (Ord a, MonadUnliftIO m) => WatcherState a b m -> m ()
+--
+-- TODO : atomically cancel all linked processes
+--
+delete :: (MonadUnliftIO m) => Watcher a b -> m ()
+delete (Watcher _ proc) = liftIO $ cancel proc
+
+loop ::
+  (Ord a, MonadUnliftIO m, KatipContext m) =>
+  WatcherState a b m ->
+  m ()
 loop w = do
   -- Here is the trick. Async watcher task can be already
   -- terminated, and runtime detects that there are no any references
-  -- to watcherChanLnd anymore. This may cause `BlockedIndefinitelyOnSTM`
+  -- to watcherChanLnd anymore.
+  -- This may cause `BlockedIndefinitelyOnSTM`
   -- async exception, because all alternative <|> expressions are
   -- evaluated independently. In this case we need to retry
   -- alternative computation but without reading from watcherChanLnd.
@@ -127,9 +155,14 @@ loop w = do
     lnd = EventLnd <$> readTChan (watcherChanLnd w)
     task = EventTask . snd <$> waitAnySTM (Map.elems $ watcherTasks w)
 
-applyCmd :: (Ord a, MonadUnliftIO m) => WatcherState a b m -> Cmd a -> m ()
+applyCmd ::
+  (Ord a, MonadUnliftIO m, KatipContext m) =>
+  WatcherState a b m ->
+  Cmd a ->
+  m ()
 applyCmd w = \case
-  Watch x ->
+  Watch x -> do
+    $(logTM) InfoS "Watcher - applying Cmd Watch"
     if isJust $ Map.lookup x ts
       then loop w
       else do
@@ -139,7 +172,8 @@ applyCmd w = \case
             link t
             return t
         loop w {watcherTasks = Map.insert x t ts}
-  UnWatch x ->
+  UnWatch x -> do
+    $(logTM) InfoS "Watcher - applying Cmd UnWatch"
     case Map.lookup x ts of
       Nothing -> loop w
       Just t -> do
@@ -148,15 +182,23 @@ applyCmd w = \case
   where
     ts = watcherTasks w
 
-applyLnd :: (Ord a, MonadUnliftIO m) => WatcherState a b m -> (a, LndResult b) -> m ()
-applyLnd w (x0, x1) = watcherHandler w x0 x1 >> loop w
+applyLnd ::
+  (Ord a, MonadUnliftIO m, KatipContext m) =>
+  WatcherState a b m ->
+  (a, LndResult b) ->
+  m ()
+applyLnd w (x0, x1) = do
+  $(logTM) InfoS "Watcher - applying Lnd"
+  watcherHandler w x0 x1
+  loop w
 
 applyTask ::
-  (Ord a, MonadUnliftIO m) =>
+  (Ord a, MonadUnliftIO m, KatipContext m) =>
   WatcherState a b m ->
   (a, Either LndError ()) ->
   m ()
-applyTask w0 (x, res) =
+applyTask w0 (x, res) = do
+  $(logTM) InfoS "Watcher - applying Task"
   case Map.lookup x ts of
     Nothing -> loop w0
     Just t -> do

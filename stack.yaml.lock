@@ -89,51 +89,51 @@ packages:
   original:
     hackage: swagger2-2.3.1.1
 - completed:
-    size: 110235
+    size: 109675
     subdir: core
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e39371d308e6f0ff155dc988f7b6adf1519d7d8.tar.gz
+    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
     name: grpc-haskell-core
     version: 0.0.0.0
-    sha256: bd333f7ca34f901e1f655e4c59639323bc6d1950a16e0f1b1847a1b0aeed8425
+    sha256: 0a56b54cbffbb3d81bd631183bcd68207b1edf899fa573556cf313476232360b
     pantry-tree:
       size: 2543
-      sha256: ff65a4ab9b80d055d5d4946489de967a3eb186eb3400ef02c1dd3953af2f15a6
+      sha256: d967256967b693a9ca31a62d4d6e22024f536170d9b48886a9a1af1b1fc35813
   original:
     subdir: core
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e39371d308e6f0ff155dc988f7b6adf1519d7d8.tar.gz
+    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
 - completed:
-    size: 110235
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e39371d308e6f0ff155dc988f7b6adf1519d7d8.tar.gz
+    size: 109675
+    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
     name: grpc-haskell
-    version: 0.0.1.0
-    sha256: bd333f7ca34f901e1f655e4c59639323bc6d1950a16e0f1b1847a1b0aeed8425
+    version: 0.0.2.0
+    sha256: 0a56b54cbffbb3d81bd631183bcd68207b1edf899fa573556cf313476232360b
     pantry-tree:
-      size: 7299
-      sha256: 7824d4fa7a573d81e8ce9d3024c93c25a47e89bdc1b3094efe069f3e8fb73fc5
+      size: 7414
+      sha256: f42884e753d0feef8381b23ccf57f5fce19df844c8699a9c35d48880af6a4772
   original:
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e39371d308e6f0ff155dc988f7b6adf1519d7d8.tar.gz
+    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
 - completed:
-    size: 91575
-    url: https://github.com/coingaming/proto3-suite/archive/45950a3860cbcb3f3177e9725dbdf460d6da9d45.tar.gz
+    size: 91728
+    url: https://github.com/coingaming/proto3-suite/archive/19d83b67f90a7be67bc1d062828d84ae68f3efe0.tar.gz
     name: proto3-suite
-    version: 0.4.0.2
-    sha256: 5e17daa85b6882935a9a500af5021dcc461d76f53c81b7d62838ee829c260f77
+    version: 0.4.2.0
+    sha256: d763f2f9eef1778806a96e1760826a594698cdfdc812fd96d981c4ac59373cb9
     pantry-tree:
       size: 7180
-      sha256: 5cfd7cb7c20e9ff29a113b66e35042eb955a507ddb33ef909e9a7e67ab70307b
+      sha256: d36fc7ed3ee8e42e85d0c0ee643e8f9e95eeff911b691e56de75f206c7802181
   original:
-    url: https://github.com/coingaming/proto3-suite/archive/45950a3860cbcb3f3177e9725dbdf460d6da9d45.tar.gz
+    url: https://github.com/coingaming/proto3-suite/archive/19d83b67f90a7be67bc1d062828d84ae68f3efe0.tar.gz
 - completed:
-    size: 47444
-    url: https://github.com/coingaming/proto3-wire/archive/5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53.tar.gz
+    size: 47562
+    url: https://github.com/coingaming/proto3-wire/archive/3672ded8b16baa9a9fdf4e4fa5109e2a6cf8a809.tar.gz
     name: proto3-wire
     version: 1.2.0
-    sha256: 54ecc8d2b56e407eaa5d9e953234a0f1f886b28b0ac287c155ed9326df65b118
+    sha256: 2853a4221e3b8c2835857c3e6ce5263e5e08a2647ade6d415621bf5b9d83b887
     pantry-tree:
-      size: 1759
-      sha256: 2d3e47cf4d109a5184c8a5919f12e692fc43197b3cd011aabe8e11dacb6f9946
+      size: 1811
+      sha256: c8a3e11f57e013f488a2f4495adb40eea1abb06cbb8af8dcc69b2a9715916919
   original:
-    url: https://github.com/coingaming/proto3-wire/archive/5df56fe1ad26a18b1dfbb2a5b8d35b4c1ad63f53.tar.gz
+    url: https://github.com/coingaming/proto3-wire/archive/3672ded8b16baa9a9fdf4e4fa5109e2a6cf8a809.tar.gz
 snapshots:
 - completed:
     size: 524996
