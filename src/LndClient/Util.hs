@@ -68,7 +68,7 @@ spawnLink x =
   withRunInIO $ \run -> do
     pid <- async $ run x
     link pid
-    return pid
+    pure pid
 
 withSpawnLink :: (MonadUnliftIO m) => m a -> (Async a -> m b) -> m b
 withSpawnLink action inner =
@@ -93,7 +93,7 @@ maybeDeadlock x =
   withRunInIO $ \run ->
     (Just <$> run x)
       `catches` [ Handler $
-                    \BlockedIndefinitelyOnSTM -> return Nothing
+                    \BlockedIndefinitelyOnSTM -> pure Nothing
                 ]
 
 fini :: TVar Bool -> STM ()

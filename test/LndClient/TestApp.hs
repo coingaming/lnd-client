@@ -54,7 +54,7 @@ import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
 import LndClient.Import
-import LndClient.RPC.Silent
+import LndClient.RPC.Katip
 import qualified LndGrpc as GRPC
 import Network.Bitcoin as BTC (Client, getClient)
 import Network.Bitcoin.BlockChain (getBlockCount)
@@ -160,69 +160,73 @@ withEnv f = do
   let customerEnv = envLndCustomer env
   let merchantCQ = envMerchantCQ env
   let customerCQ = envCustomerCQ env
-  runApp env $ do
-    --
-    -- Init wallets
-    --
-    void $ liftLndResult =<< lazyInitWallet merchantEnv
-    void $ liftLndResult =<< lazyInitWallet customerEnv
-    lazyMineInitialCoins env
-    --
-    -- Connect Customer to Merchant
-    --
-    GetInfoResponse merchantPubKey _ _ <-
-      liftLndResult =<< getInfo merchantEnv
-    let connectPeerRequest =
-          ConnectPeerRequest
-            { addr =
-                LightningAddress
-                  { pubkey = merchantPubKey,
-                    host = merchantNodeLocation
-                  },
-              perm = False
-            }
-    void $
-      liftLndResult
-        =<< lazyConnectPeer customerEnv connectPeerRequest
-    --
-    -- Subscribe to events
-    --
-    void . spawnLink $
-      liftLndResult
-        =<< subscribeChannelEventsChan (pure merchantCQ) merchantEnv
-    void . spawnLink $
-      liftLndResult
-        =<< subscribeChannelEventsChan (pure customerCQ) customerEnv
-    pid <-
-      spawnLink $
+  runApp env $
+    do
+      --
+      -- Init wallets
+      --
+      void $ liftLndResult =<< lazyInitWallet merchantEnv
+      void $ liftLndResult =<< lazyInitWallet customerEnv
+      lazyMineInitialCoins env
+      --
+      -- Connect Customer to Merchant
+      --
+      GetInfoResponse merchantPubKey _ _ <-
+        liftLndResult =<< getInfo merchantEnv
+      let connectPeerRequest =
+            ConnectPeerRequest
+              { addr =
+                  LightningAddress
+                    { pubkey = merchantPubKey,
+                      host = merchantNodeLocation
+                    },
+                perm = False
+              }
+      void $
         liftLndResult
-          =<< subscribeInvoicesChan
-            (pure $ envMerchantIQ env)
-            merchantEnv
-            --
-            -- TODO : this is related to LND bug
-            -- https://github.com/lightningnetwork/lnd/issues/2469
-            --
-            (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
-    f env
-    $(logTM) InfoS "GONNA_TO_CANCEL_SUBSCRIPTION"
-    liftIO $ cancel pid
-    --withSpawnLink
-    --  ( liftLndResult
-    --      =<< subscribeInvoicesChan
-    --        (pure $ envMerchantIQ env)
-    --        merchantEnv
-    --        --
-    --        -- TODO : this is related to LND bug
-    --        -- https://github.com/lightningnetwork/lnd/issues/2469
-    --        --
-    --        (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
-    --  )
-    --  ( const $ do
-    --      f env
-    --      $(logTM) InfoS "GONNA_TO_TERMINATE_SUBSCRIPTION"
-    --  )
-    $(logTM) InfoS "BOOOOOOOMMMMMMMMMMMMMMMM"
+          =<< lazyConnectPeer customerEnv connectPeerRequest
+      --
+      -- Subscribe to events
+      --
+      _ <- spawnLink $ do
+        liftLndResult
+          =<< subscribeChannelEventsChan (pure merchantCQ) merchantEnv
+      _ <- spawnLink $ do
+        liftLndResult
+          =<< subscribeChannelEventsChan (pure customerCQ) customerEnv
+      _ <-
+        spawnLink $ do
+          $(logTM) InfoS "HELLO_FROM_SPAWN"
+          liftLndResult
+            =<< subscribeInvoicesChan
+              (pure $ envMerchantIQ env)
+              merchantEnv
+              --
+              -- TODO : this is related to LND bug
+              -- https://github.com/lightningnetwork/lnd/issues/2469
+              --
+              (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
+      f env
+  --
+  -- TODO : we can't really use async `cance` or `withAsync`
+  -- before this is fixed somehow
+  -- https://github.com/awakesecurity/gRPC-haskell/issues/104#issuecomment-769408503
+  --
+  --withSpawnLink
+  --  ( liftLndResult
+  --      =<< subscribeInvoicesChan
+  --        (pure $ envMerchantIQ env)
+  --        merchantEnv
+  --        --
+  --        -- TODO : this is related to LND bug
+  --        -- https://github.com/lightningnetwork/lnd/issues/2469
+  --        --
+  --        (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
+  --  )
+  --  ( const $ do
+  --      f env
+  --      $(logTM) InfoS "GONNA_TO_TERMINATE_SUBSCRIPTION"
+  --  )
   void . closeScribes $ envKatipLE env
 
 newBtcClient :: IO BTC.Client
