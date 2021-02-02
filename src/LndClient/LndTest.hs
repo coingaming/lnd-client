@@ -16,10 +16,14 @@ module LndClient.LndTest
     mine1,
     liftLndResult,
     syncWallets,
+    spawnLinkChannelWatcher,
+    spawnLinkInvoiceWatcher,
+    watchDefaults,
   )
 where
 
 import qualified LndClient.Data.GetInfo as LND (GetInfoResponse (..))
+import LndClient.Data.Invoice as LND (Invoice (..))
 import qualified LndClient.Data.NewAddress as LND
   ( NewAddressResponse (..),
   )
@@ -27,8 +31,13 @@ import LndClient.Data.Peer
   ( ConnectPeerRequest (..),
     LightningAddress (..),
   )
+import LndClient.Data.SubscribeChannelEvents
+import LndClient.Data.SubscribeInvoices
+  ( SubscribeInvoicesRequest (..),
+  )
 import LndClient.Import
 import qualified LndClient.RPC.Katip as LND
+import LndClient.Watcher as Watcher
 import qualified LndGrpc as GRPC
 import qualified Network.Bitcoin as BTC (Client, getClient)
 import qualified Network.Bitcoin.BlockChain as BTC (getBlockCount)
@@ -59,8 +68,14 @@ class (KatipContext m, MonadUnliftIO m) => LndTest m where
   btcClient :: m BTC.Client
   aliceLndEnv :: m LndEnv
   aliceNodeLocation :: m NodeLocation
+  aliceChannelWatcher :: m (Watcher () ChannelEventUpdate)
+  aliceInvoiceWatcher ::
+    m (Watcher SubscribeInvoicesRequest Invoice)
   bobLndEnv :: m LndEnv
   bobNodeLocation :: m NodeLocation
+  bobChannelWatcher :: m (Watcher () ChannelEventUpdate)
+  bobInvoiceWatcher ::
+    m (Watcher SubscribeInvoicesRequest Invoice)
 
 walletAddress :: LndTest m => m LndEnv -> m Text
 walletAddress env = do
@@ -86,8 +101,8 @@ lazyMineInitialCoins = do
   h <- liftIO $ BTC.getBlockCount bc
   -- reward coins are spendable only after 100 blocks
   when (h < 102) $ do
-    mineAlice 1
-    mineBob 101
+    mineBob 1
+    mineAlice 101
 
 lazyConnectNodes :: LndTest m => m ()
 lazyConnectNodes = do
@@ -105,6 +120,24 @@ lazyConnectNodes = do
             perm = False
           }
   liftLndResult =<< LND.lazyConnectPeer bobLndEnv' req
+
+watchDefaults :: LndTest m => m ()
+watchDefaults = do
+  aliceCW <- aliceChannelWatcher
+  Watcher.watchUnit aliceCW
+  aliceIW <- aliceInvoiceWatcher
+  Watcher.watch aliceIW iReq
+  bobCW <- bobChannelWatcher
+  Watcher.watchUnit bobCW
+  bobIW <- bobInvoiceWatcher
+  Watcher.watch bobIW iReq
+  where
+    iReq =
+      --
+      -- TODO : this is related to LND bug
+      -- https://github.com/lightningnetwork/lnd/issues/2469
+      --
+      SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
 
 mine :: LndTest m => Int -> Text -> m ()
 mine blocks btcAddr = do
@@ -132,7 +165,7 @@ mineBob blocks = do
   mine blocks btcAddr
 
 mine1 :: LndTest m => m ()
-mine1 = mineBob 1
+mine1 = mineAlice 1
 
 liftLndResult :: (MonadIO m) => Either LndError a -> m a
 liftLndResult (Right x) =
@@ -146,15 +179,35 @@ syncWallets = this 0
     this 30 = do
       let msg = "SyncWallets attempt limit exceeded"
       $(logTM) ErrorS $ logStr msg
-      return . Left $ LndError msg
-    this (x :: Int) = do
+      pure . Left $ LndError msg
+    this (attempt :: Int) = do
       $(logTM) InfoS "SyncWallets is running"
       resAlice <- LND.getInfo =<< aliceLndEnv
       resBob <- LND.getInfo =<< bobLndEnv
       case (,) <$> resAlice <*> resBob of
         Left _ ->
-          liftIO (delay 1000000) >> this (x + 1)
-        Right (mr, cr) ->
-          if LND.syncedToChain mr && LND.syncedToChain cr
-            then return $ Right ()
-            else liftIO (delay 1000000) >> this (x + 1)
+          liftIO (delay 1000000) >> this (attempt + 1)
+        Right (x0, x1) ->
+          if LND.syncedToChain x0 && LND.syncedToChain x1
+            then pure $ Right ()
+            else liftIO (delay 1000000) >> this (attempt + 1)
+
+spawnLinkChannelWatcher ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  m (Watcher () ChannelEventUpdate)
+spawnLinkChannelWatcher lnd =
+  Watcher.spawnLinkUnit
+    lnd
+    LND.subscribeChannelEventsChan
+    $ \_ _ -> pure ()
+
+spawnLinkInvoiceWatcher ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  m (Watcher SubscribeInvoicesRequest Invoice)
+spawnLinkInvoiceWatcher lnd =
+  Watcher.spawnLink
+    lnd
+    LND.subscribeInvoicesChan
+    $ \_ _ _ -> pure ()

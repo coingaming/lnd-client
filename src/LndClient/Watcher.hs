@@ -15,7 +15,7 @@ module LndClient.Watcher
     watchUnit,
     unWatch,
     unWatchUnit,
-    dupLndChan,
+    dupLndTChan,
     delete,
   )
 where
@@ -131,8 +131,8 @@ unWatch w = atomically . writeTChan (watcherCmdChan w) . UnWatch
 unWatchUnit :: (MonadUnliftIO m) => Watcher () b -> m ()
 unWatchUnit w = unWatch w ()
 
-dupLndChan :: (MonadIO m) => Watcher a b -> m (TChan (a, b))
-dupLndChan = atomically . dupTChan . watcherLndChan
+dupLndTChan :: (MonadIO m) => Watcher a b -> m (TChan (a, b))
+dupLndTChan = atomically . dupTChan . watcherLndChan
 
 --
 -- TODO : atomically cancel all linked processes

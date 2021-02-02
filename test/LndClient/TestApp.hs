@@ -37,10 +37,6 @@ import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
 import LndClient.Data.LndEnv
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
-import LndClient.Data.Peer
-  ( ConnectPeerRequest (..),
-    LightningAddress (..),
-  )
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeChannelEvents
   ( ChannelEventUpdate (..),
@@ -52,25 +48,31 @@ import LndClient.Data.SubscribeInvoices
 import LndClient.Import
 import LndClient.LndTest
 import LndClient.RPC.Katip
+import LndClient.Watcher as Watcher (Watcher, dupLndTChan)
 import qualified LndGrpc as GRPC
 import qualified Network.Bitcoin as BTC (Client)
 import Network.GRPC.HighLevel.Generated
 
 data Env
   = Env
-      { envLndMerchant :: LndEnv,
-        envLndCustomer :: LndEnv,
+      { envLndAlice :: LndEnv,
+        envLndBob :: LndEnv,
         envBtcClient :: BTC.Client,
         envKatipNS :: Namespace,
         envKatipCTX :: LogContexts,
         envKatipLE :: LogEnv,
-        envMerchantCQ :: TChan ((), ChannelEventUpdate),
-        envCustomerCQ :: TChan ((), ChannelEventUpdate),
-        envMerchantIQ :: TChan (SubscribeInvoicesRequest, Invoice)
+        envAliceChannelWatcher :: Watcher () ChannelEventUpdate,
+        envAliceInvoiceWatcher ::
+          Watcher SubscribeInvoicesRequest
+            Invoice,
+        envBobChannelWatcher :: Watcher () ChannelEventUpdate,
+        envBobInvoiceWatcher ::
+          Watcher SubscribeInvoicesRequest
+            Invoice
       }
 
-custEnv :: LndEnv -> LndEnv
-custEnv x =
+newBobEnv :: LndEnv -> LndEnv
+newBobEnv x =
   x
     { envLndGrpcConfig =
         (envLndGrpcConfig x)
@@ -118,55 +120,35 @@ readEnv = do
   le <-
     registerScribe "stdout" handleScribe defaultScribeSettings
       =<< initLogEnv "LndClient" "test"
-  lndEnv <- liftIO readLndEnv
-  bc <- liftIO $ newBtcClient btcEnv
-  mcq <- atomically newBroadcastTChan
-  ccq <- atomically newBroadcastTChan
-  miq <- atomically newBroadcastTChan
-  return
-    Env
-      { envLndMerchant = lndEnv,
-        envLndCustomer = custEnv lndEnv,
-        envBtcClient = bc,
-        envKatipLE = le,
-        envKatipCTX = mempty,
-        envKatipNS = mempty,
-        envMerchantCQ = mcq,
-        envCustomerCQ = ccq,
-        envMerchantIQ = miq
-      }
+  bc <- newBtcClient btcEnv
+  alice <- liftIO readLndEnv
+  let bob = newBobEnv alice
+  runKatipContextT le (mempty :: LogContexts) mempty $ do
+    aliceCW <- spawnLinkChannelWatcher alice
+    aliceIW <- spawnLinkInvoiceWatcher alice
+    bobCW <- spawnLinkChannelWatcher bob
+    bobIW <- spawnLinkInvoiceWatcher bob
+    pure
+      Env
+        { envLndAlice = alice,
+          envLndBob = bob,
+          envBtcClient = bc,
+          envKatipLE = le,
+          envKatipCTX = mempty,
+          envKatipNS = mempty,
+          envAliceChannelWatcher = aliceCW,
+          envAliceInvoiceWatcher = aliceIW,
+          envBobChannelWatcher = bobCW,
+          envBobInvoiceWatcher = bobIW
+        }
 
 withEnv :: (Env -> AppM IO ()) -> IO ()
 withEnv f = do
   env <- readEnv
-  let merchantEnv = envLndMerchant env
-  let customerEnv = envLndCustomer env
-  let merchantCQ = envMerchantCQ env
-  let customerCQ = envCustomerCQ env
   runApp env $ do
     lazyMineInitialCoins
     lazyConnectNodes
-    --
-    -- Subscribe to events
-    --
-    _ <- spawnLink $ do
-      liftLndResult
-        =<< subscribeChannelEventsChan (pure merchantCQ) merchantEnv
-    _ <- spawnLink $ do
-      liftLndResult
-        =<< subscribeChannelEventsChan (pure customerCQ) customerEnv
-    _ <-
-      spawnLink $ do
-        $(logTM) InfoS "HELLO_FROM_SPAWN"
-        liftLndResult
-          =<< subscribeInvoicesChan
-            (pure $ envMerchantIQ env)
-            merchantEnv
-            --
-            -- TODO : this is related to LND bug
-            -- https://github.com/lightningnetwork/lnd/issues/2469
-            --
-            (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
+    watchDefaults
     closeAllChannels env
     f env
   --
@@ -201,13 +183,13 @@ btcEnv =
 
 closeAllChannels :: (LndTest m) => Env -> m ()
 closeAllChannels env = do
-  mq <- atomically . dupTChan $ envMerchantCQ env
-  cq <- atomically . dupTChan $ envCustomerCQ env
+  cq <- Watcher.dupLndTChan =<< aliceChannelWatcher
+  mq <- Watcher.dupLndTChan =<< bobChannelWatcher
   $(logTM) InfoS "CloseAllChannels - closing channels ..."
   cs <-
     liftLndResult
       =<< listChannels
-        (envLndCustomer env)
+        (envLndBob env)
         (ListChannelsRequest True False False False Nothing)
   let cps = Channel.channelPoint <$> cs
   mapM_
@@ -226,7 +208,7 @@ closeAllChannels env = do
             -- previous opened subscription
             --
             (const $ return ())
-            (envLndMerchant env)
+            (envLndAlice env)
             (CloseChannelRequest cp False Nothing Nothing Nothing)
     )
     cps
@@ -235,14 +217,14 @@ closeAllChannels env = do
 
 setupOneChannel :: (LndTest m) => Env -> m ()
 setupOneChannel env = do
-  mq <- atomically . dupTChan $ envMerchantCQ env
-  cq <- atomically . dupTChan $ envCustomerCQ env
+  mq <- Watcher.dupLndTChan =<< bobChannelWatcher
+  cq <- Watcher.dupLndTChan =<< aliceChannelWatcher
   --
   -- Open channel from Customer to Merchant
   --
   $(logTM) InfoS "SetupOneChannel - opening channel ..."
   GetInfoResponse merchantPubKey _ _ <-
-    liftLndResult =<< getInfo merchantEnv
+    liftLndResult =<< getInfo bob
   let openChannelRequest =
         OpenChannelRequest
           { nodePubkey = merchantPubKey,
@@ -259,7 +241,7 @@ setupOneChannel env = do
           }
   cp <-
     liftLndResult
-      =<< openChannelSync (envLndCustomer env) openChannelRequest
+      =<< openChannelSync alice openChannelRequest
   liftLndResult =<< receiveActiveChannel cp mq
   liftLndResult =<< receiveActiveChannel cp cq
   --
@@ -276,18 +258,18 @@ setupOneChannel env = do
             expiry = Just $ Seconds 1000
           }
   invoice <-
-    liftLndResult =<< addInvoice merchantEnv addInvoiceRequest
+    liftLndResult =<< addInvoice bob addInvoiceRequest
   let sendPaymentRequest =
         SendPaymentRequest
           { paymentRequest = AddInvoice.paymentRequest invoice,
             amt = MoneyAmount 1000
           }
   void $
-    liftLndResult =<< sendPayment customerEnv sendPaymentRequest
+    liftLndResult =<< sendPayment alice sendPaymentRequest
   $(logTM) InfoS "SetupOneChannel - finished"
   where
-    merchantEnv = envLndMerchant env
-    customerEnv = envLndCustomer env
+    alice = envLndAlice env
+    bob = envLndBob env
 
 newtype AppM m a
   = AppM
@@ -315,10 +297,14 @@ instance (MonadIO m) => KatipContext (AppM m) where
 
 instance (MonadUnliftIO m) => LndTest (AppM m) where
   btcClient = asks envBtcClient
-  aliceLndEnv = asks envLndMerchant
+  aliceLndEnv = asks envLndAlice
   aliceNodeLocation = pure $ NodeLocation "localhost:9735"
-  bobLndEnv = asks envLndCustomer
+  aliceChannelWatcher = asks envAliceChannelWatcher
+  aliceInvoiceWatcher = asks envAliceInvoiceWatcher
+  bobLndEnv = asks envLndBob
   bobNodeLocation = pure $ NodeLocation "localhost:9734"
+  bobChannelWatcher = asks envBobChannelWatcher
+  bobInvoiceWatcher = asks envBobInvoiceWatcher
 
 runApp :: Env -> AppM m a -> m a
 runApp env app = runReaderT (unAppM app) env
