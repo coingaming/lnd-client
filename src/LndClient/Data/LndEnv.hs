@@ -165,7 +165,10 @@ readLndEnv :: IO LndEnv
 readLndEnv =
   parse
     (header "LndEnv")
-    $ var (parser <=< nonempty) "LND_CLIENT_ENV_DATA" (keep <> help "")
+    $ var
+      (parser <=< nonempty)
+      "LND_CLIENT_ENV_DATA"
+      (keep <> help "")
   where
     parser :: String -> Either Error LndEnv
     parser x =
@@ -191,7 +194,9 @@ newLndEnv pwd cert mac host port seed aezeed =
       envLndAsyncGrpcTimeout = Nothing,
       envLndGrpcConfig =
         ClientConfig
-          { clientServerHost = Host $ encodeUtf8 (coerce host :: Text),
+          { clientServerHost =
+              Host $
+                encodeUtf8 (coerce host :: Text),
             clientServerPort = Port $ coerce port,
             clientArgs = [],
             clientSSLConfig =

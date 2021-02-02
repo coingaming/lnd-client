@@ -30,6 +30,7 @@ import LndClient.Data.SubscribeInvoices
   )
 import LndClient.Data.TrackPayment (TrackPaymentRequest (..))
 import LndClient.Import
+import LndClient.LndTest
 import LndClient.QRCode
 import LndClient.RPC.Katip
 import LndClient.TestApp
@@ -170,7 +171,7 @@ spec = do
         =<< openChannelSync
           (envLndCustomer env)
           openChannelRequest
-    res <- receiveActiveChannel env cp chan
+    res <- receiveActiveChannel cp chan
     Watcher.delete w
     liftIO $ res `shouldSatisfy` isRight
   it "unWatch" $ withEnv $ \env -> do
@@ -281,7 +282,7 @@ spec = do
           (CloseChannelRequest cp True Nothing Nothing Nothing)
       )
       ( const $ do
-          liftLndResult =<< receiveClosedChannels env [cp] chan
+          liftLndResult =<< receiveClosedChannels [cp] chan
           cs1 <- liftLndResult =<< listChannels lnd listReq
           liftIO $ (length cs0 - length cs1) `shouldBe` 1
       )

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0a1a02310cd011e446770aac7f55d3e32be33d2628000950935f9b718c544646
+-- hash: 6d03e02664191924a72ca8150cabc38cc256a8427ecb742110f1a40c02d941c9
 
 name:           lnd-client
 version:        0.1.0.0
@@ -61,6 +61,7 @@ library
       LndClient.Data.WaitingCloseChannel
       LndClient.Import
       LndClient.Import.External
+      LndClient.LndTest
       LndClient.QRCode
       LndClient.RPC.Generic
       LndClient.RPC.Katip
