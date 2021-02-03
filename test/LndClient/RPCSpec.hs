@@ -91,8 +91,8 @@ spec = do
         GRPC.Invoice_InvoiceStateOPEN
         queue
     liftIO $ res `shouldSatisfy` isRight
-  it "settleNormalInvoice" $ withEnv $ \env -> do
-    setupOneChannel env
+  it "settleNormalInvoice" $ withEnv $ \_ -> do
+    setupOneChannel
     q <- dupInvoiceTChan Bob
     bob <- getLndEnv Bob
     inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
@@ -201,8 +201,8 @@ spec = do
     bob <- getLndEnv Bob
     res <- ensureHodlInvoice bob req
     liftIO $ res `shouldSatisfy` isRight
-  it "cancelInvoice" $ withEnv $ \env -> do
-    setupOneChannel env
+  it "cancelInvoice" $ withEnv $ \_ -> do
+    setupOneChannel
     r <- newRPreimage
     let rh = newRHash r
     let hipr =
@@ -235,8 +235,8 @@ spec = do
             =<< receiveInvoice rh GRPC.Invoice_InvoiceStateCANCELED q
           liftIO $ res `shouldSatisfy` isRight
       )
-  it "settleInvoice" $ withEnv $ \env -> do
-    setupOneChannel env
+  it "settleInvoice" $ withEnv $ \_ -> do
+    setupOneChannel
     r <- newRPreimage
     let rh = newRHash r
     let hipr =
@@ -263,8 +263,8 @@ spec = do
             =<< receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
           liftIO $ res `shouldSatisfy` isRight
       )
-  it "listChannelAndClose" $ withEnv $ \env -> do
-    setupOneChannel env
+  it "listChannelAndClose" $ withEnv $ \_ -> do
+    setupOneChannel
     chan <- dupChannelTChan Bob
     lnd <- getLndEnv Bob
     let listReq = ListChannelsRequest False False False False Nothing
@@ -283,8 +283,8 @@ spec = do
           cs1 <- liftLndResult =<< listChannels lnd listReq
           liftIO $ (length cs0 - length cs1) `shouldBe` 1
       )
-  it "trackPaymentV2" $ withEnv $ \env -> do
-    setupOneChannel env
+  it "trackPaymentV2" $ withEnv $ \_ -> do
+    setupOneChannel
     (cw, cr) <- atomically $ do
       cw <- newBroadcastTChan
       (cw,) <$> dupTChan cw

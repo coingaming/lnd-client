@@ -14,41 +14,13 @@ module LndClient.TestApp
   ( Env (..),
     syncWallets,
     withEnv,
-    setupOneChannel,
     liftMaybe,
-    receiveInvoice,
-    receiveActiveChannel,
-    receiveClosedChannels,
   )
 where
 
-import LndClient.Data.AddInvoice as AddInvoice
-  ( AddInvoiceRequest (..),
-    AddInvoiceResponse (..),
-  )
-import LndClient.Data.Channel as Channel (Channel (..))
-import LndClient.Data.ChannelPoint as ChannelPoint (ChannelPoint (..))
-import LndClient.Data.CloseChannel
-  ( ChannelCloseSummary (..),
-    CloseChannelRequest (..),
-  )
-import LndClient.Data.GetInfo (GetInfoResponse (..))
-import LndClient.Data.Invoice as Invoice (Invoice (..))
-import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
 import LndClient.Data.LndEnv
-import LndClient.Data.OpenChannel (OpenChannelRequest (..))
-import LndClient.Data.SendPayment (SendPaymentRequest (..))
-import LndClient.Data.SubscribeChannelEvents
-  ( ChannelEventUpdate (..),
-    ChannelEventUpdateChannel (..),
-  )
-import LndClient.Data.SubscribeInvoices
-  ( SubscribeInvoicesRequest (..),
-  )
 import LndClient.Import
 import LndClient.LndTest
-import LndClient.RPC.Katip
-import qualified LndGrpc as GRPC
 import qualified Network.Bitcoin as BTC (Client)
 import Network.GRPC.HighLevel.Generated
 
@@ -171,97 +143,6 @@ btcEnv =
       btcPassword = BtcPassword "developer"
     }
 
-closeAllChannels :: (LndTest m) => m ()
-closeAllChannels = do
-  cq <- dupChannelTChan Alice
-  mq <- dupChannelTChan Bob
-  $(logTM) InfoS "CloseAllChannels - closing channels ..."
-  alice <- getLndEnv Alice
-  cs <-
-    liftLndResult
-      =<< listChannels
-        alice
-        (ListChannelsRequest True False False False Nothing)
-  let cps = Channel.channelPoint <$> cs
-  mapM_
-    ( \cp ->
-        spawnLink $
-          closeChannel
-            --
-            -- TODO : investigate why it throws empty gRPC
-            -- response error and as consequence
-            -- probably it's how subscription terminates
-            -- when channel is completely closed
-            --
-            -- but bad thing is that callback sometimes
-            -- is never called, that's why it's not used there
-            -- we are getting TChan events instead from
-            -- previous opened subscription
-            --
-            (const $ return ())
-            alice
-            (CloseChannelRequest cp False Nothing Nothing Nothing)
-    )
-    cps
-  liftLndResult =<< receiveClosedChannels cps mq
-  liftLndResult =<< receiveClosedChannels cps cq
-
-setupOneChannel :: (LndTest m) => Env -> m ()
-setupOneChannel env = do
-  mq <- dupChannelTChan Bob
-  cq <- dupChannelTChan Alice
-  --
-  -- Open channel from Customer to Merchant
-  --
-  $(logTM) InfoS "SetupOneChannel - opening channel ..."
-  GetInfoResponse merchantPubKey _ _ <-
-    liftLndResult =<< getInfo bob
-  let openChannelRequest =
-        OpenChannelRequest
-          { nodePubkey = merchantPubKey,
-            localFundingAmount = MoneyAmount 20000,
-            pushSat = Just $ MoneyAmount 1000,
-            targetConf = Nothing,
-            satPerByte = Nothing,
-            private = Nothing,
-            minHtlcMsat = Nothing,
-            remoteCsvDelay = Nothing,
-            minConfs = Nothing,
-            spendUnconfirmed = Nothing,
-            closeAddress = Nothing
-          }
-  cp <-
-    liftLndResult
-      =<< openChannelSync alice openChannelRequest
-  liftLndResult =<< receiveActiveChannel cp mq
-  liftLndResult =<< receiveActiveChannel cp cq
-  --
-  -- TODO : this invoice is added and settled to
-  -- raise invoice index to 1 to be able to receive
-  -- notifications about all next invoices
-  -- remove when LND bug will be fixed
-  -- https://github.com/lightningnetwork/lnd/issues/2469
-  --
-  let addInvoiceRequest =
-        AddInvoiceRequest
-          { memo = Just "HELLO",
-            value = MoneyAmount 1000,
-            expiry = Just $ Seconds 1000
-          }
-  invoice <-
-    liftLndResult =<< addInvoice bob addInvoiceRequest
-  let sendPaymentRequest =
-        SendPaymentRequest
-          { paymentRequest = AddInvoice.paymentRequest invoice,
-            amt = MoneyAmount 1000
-          }
-  void $
-    liftLndResult =<< sendPayment alice sendPaymentRequest
-  $(logTM) InfoS "SetupOneChannel - finished"
-  where
-    alice = testLndEnv $ envAlice env
-    bob = testLndEnv $ envBob env
-
 newtype AppM m a
   = AppM
       { unAppM :: ReaderT Env m a
@@ -304,67 +185,3 @@ liftMaybe msg mx =
   case mx of
     Just x -> pure x
     Nothing -> liftIO $ fail msg
-
-receiveActiveChannel ::
-  (LndTest m) =>
-  ChannelPoint ->
-  TChan ((), ChannelEventUpdate) ->
-  m (Either LndError ())
-receiveActiveChannel = this 0
-  where
-    this (attempt :: Integer) cp cq =
-      if attempt > 30
-        then pure $ Left $ LndError "receiveActiveChannel - exceeded"
-        else do
-          x <- readTChanTimeout (MicroSecondsDelay 1000000) cq
-          case channelEvent . snd <$> x of
-            Just (ChannelEventUpdateChannelActiveChannel gcp) ->
-              if cp == gcp
-                then pure $ Right ()
-                else mine1 >> this (attempt + 1) cp cq
-            _ ->
-              mine1 >> this (attempt + 1) cp cq
-
-receiveClosedChannels ::
-  (LndTest m) =>
-  [ChannelPoint] ->
-  TChan ((), ChannelEventUpdate) ->
-  m (Either LndError ())
-receiveClosedChannels = this 0
-  where
-    this _ [] _ =
-      pure $ Right ()
-    this 30 _ _ =
-      pure
-        $ Left
-        $ LndError "receiveClosedChannels - exceeded"
-    this (attempt :: Integer) cps0 cq = do
-      x0 <- readTChanTimeout (MicroSecondsDelay 1000000) cq
-      let x = channelEvent . snd <$> x0
-      $(logTM) InfoS $ logStr $
-        "receiveClosedChannels - got " <> (show x :: Text)
-      case x of
-        Just (ChannelEventUpdateChannelClosedChannel res) ->
-          case filter (/= chPoint res) cps0 of
-            [] -> pure $ Right ()
-            cps -> mine1 >> this (attempt + 1) cps cq
-        _ ->
-          mine1 >> this (attempt + 1) cps0 cq
-
-receiveInvoice ::
-  ( MonadUnliftIO m,
-    KatipContext m
-  ) =>
-  RHash ->
-  GRPC.Invoice_InvoiceState ->
-  TChan (SubscribeInvoicesRequest, Invoice) ->
-  m (Either LndError ())
-receiveInvoice rh s q = do
-  mx0 <- readTChanTimeout (MicroSecondsDelay 30000000) q
-  let mx = snd <$> mx0
-  $(logTM) InfoS $ logStr $
-    "receiveInvoice - " <> (show mx :: Text)
-  case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
-    Just True -> return $ Right ()
-    Just False -> receiveInvoice rh s q
-    Nothing -> return . Left $ TChanTimeout "receiveInvoice"
