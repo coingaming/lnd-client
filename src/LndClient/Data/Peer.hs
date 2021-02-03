@@ -28,7 +28,7 @@ data LightningAddress
       { pubkey :: NodePubKey,
         host :: NodeLocation
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance ToGrpc LightningAddress GRPC.LightningAddress where
   toGrpc x =
@@ -47,7 +47,7 @@ data ConnectPeerRequest
       { addr :: LightningAddress,
         perm :: Bool
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance ToGrpc ConnectPeerRequest GRPC.ConnectPeerRequest where
   toGrpc x =

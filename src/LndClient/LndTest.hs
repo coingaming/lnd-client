@@ -15,6 +15,7 @@ module LndClient.LndTest
     mine,
     mine1,
     liftLndResult,
+    liftMaybe,
     syncWallets,
     spawnLinkChannelWatcher,
     spawnLinkInvoiceWatcher,
@@ -24,6 +25,9 @@ module LndClient.LndTest
     receiveInvoice,
     closeAllChannels,
     setupOneChannel,
+    purgeChan,
+    ignore2,
+    ignore3,
   )
 where
 
@@ -392,6 +396,23 @@ receiveInvoice rh s q = do
     Just True -> return $ Right ()
     Just False -> receiveInvoice rh s q
     Nothing -> return . Left $ TChanTimeout "receiveInvoice"
+
+liftMaybe :: MonadIO m => String -> Maybe a -> m a
+liftMaybe msg mx =
+  case mx of
+    Just x -> pure x
+    Nothing -> liftIO $ fail msg
+
+purgeChan :: MonadUnliftIO m => TChan a -> m ()
+purgeChan chan = do
+  x <- readTChanTimeout (MicroSecondsDelay 500000) chan
+  when (isJust x) $ purgeChan chan
+
+ignore2 :: Monad m => a -> b -> m ()
+ignore2 _ _ = pure ()
+
+ignore3 :: Monad m => a -> b -> c -> m ()
+ignore3 _ _ _ = pure ()
 
 spawnLinkChannelWatcher ::
   (KatipContext m, MonadUnliftIO m) =>

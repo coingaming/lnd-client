@@ -6,15 +6,10 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module LndClient.TestApp
-  ( Env (..),
-    syncWallets,
-    withEnv,
-    liftMaybe,
+  ( withEnv,
   )
 where
 
@@ -104,35 +99,15 @@ readEnv = do
           envKatipNS = mempty
         }
 
-withEnv :: (Env -> AppM IO ()) -> IO ()
-withEnv f = do
+withEnv :: AppM IO () -> IO ()
+withEnv this = do
   env <- readEnv
   runApp env $ do
     lazyMineInitialCoins
     lazyConnectNodes
     watchDefaults
     closeAllChannels
-    f env
-  --
-  -- TODO : we can't really use async `cance` or `withAsync`
-  -- before this is fixed somehow
-  -- https://github.com/awakesecurity/gRPC-haskell/issues/104#issuecomment-769408503
-  --
-  --withSpawnLink
-  --  ( liftLndResult
-  --      =<< subscribeInvoicesChan
-  --        (pure $ envMerchantIQ env)
-  --        merchantEnv
-  --        --
-  --        -- TODO : this is related to LND bug
-  --        -- https://github.com/lightningnetwork/lnd/issues/2469
-  --        --
-  --        (SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing)
-  --  )
-  --  ( const $ do
-  --      f env
-  --      $(logTM) InfoS "GONNA_TO_TERMINATE_SUBSCRIPTION"
-  --  )
+    this
   void . closeScribes $ envKatipLE env
 
 btcEnv :: BtcEnv
@@ -179,9 +154,3 @@ instance (MonadUnliftIO m) => LndTest (AppM m) where
 
 runApp :: Env -> AppM m a -> m a
 runApp env app = runReaderT (unAppM app) env
-
-liftMaybe :: MonadIO m => String -> Maybe a -> m a
-liftMaybe msg mx =
-  case mx of
-    Just x -> pure x
-    Nothing -> liftIO $ fail msg

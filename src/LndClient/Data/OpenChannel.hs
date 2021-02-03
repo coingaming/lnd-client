@@ -20,7 +20,7 @@ data OpenChannelRequest
         spendUnconfirmed :: Maybe Bool,
         closeAddress :: Maybe Text
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance ToGrpc OpenChannelRequest GRPC.OpenChannelRequest where
   toGrpc x =
