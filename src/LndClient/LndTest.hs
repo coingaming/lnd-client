@@ -5,14 +5,14 @@ module LndClient.LndTest
     BtcLogin (..),
     BtcPassword (..),
     BtcEnv (..),
+    Owner (..),
     LndTest (..),
+    TestEnv (..),
     newBtcClient,
-    aliceWalletAddress,
-    bobWalletAddress,
+    newTestEnv,
     lazyMineInitialCoins,
     lazyConnectNodes,
-    mineAlice,
-    mineBob,
+    mine,
     mine1,
     liftLndResult,
     syncWallets,
@@ -56,6 +56,18 @@ data BtcEnv
         btcPassword :: BtcPassword
       }
 
+data Owner = Alice | Bob deriving (Eq, Ord, Show)
+
+data TestEnv
+  = TestEnv
+      { testLndEnv :: LndEnv,
+        testNodeLocation :: NodeLocation,
+        testChannelWatcher :: Watcher () ChannelEventUpdate,
+        testInvoiceWatcher ::
+          Watcher SubscribeInvoicesRequest
+            Invoice
+      }
+
 newBtcClient :: MonadIO m => BtcEnv -> m BTC.Client
 newBtcClient x =
   liftIO $
@@ -64,22 +76,46 @@ newBtcClient x =
       (coerce $ btcLogin x)
       (coerce $ btcPassword x)
 
+newTestEnv ::
+  ( KatipContext m,
+    MonadUnliftIO m
+  ) =>
+  LndEnv ->
+  NodeLocation ->
+  m TestEnv
+newTestEnv lnd loc = do
+  cw <- spawnLinkChannelWatcher lnd
+  iw <- spawnLinkInvoiceWatcher lnd
+  pure $
+    TestEnv
+      { testLndEnv = lnd,
+        testNodeLocation = loc,
+        testChannelWatcher = cw,
+        testInvoiceWatcher = iw
+      }
+
 class (KatipContext m, MonadUnliftIO m) => LndTest m where
   btcClient :: m BTC.Client
-  aliceLndEnv :: m LndEnv
-  aliceNodeLocation :: m NodeLocation
-  aliceChannelWatcher :: m (Watcher () ChannelEventUpdate)
-  aliceInvoiceWatcher ::
-    m (Watcher SubscribeInvoicesRequest Invoice)
-  bobLndEnv :: m LndEnv
-  bobNodeLocation :: m NodeLocation
-  bobChannelWatcher :: m (Watcher () ChannelEventUpdate)
-  bobInvoiceWatcher ::
-    m (Watcher SubscribeInvoicesRequest Invoice)
+  getTestEnv :: Owner -> m TestEnv
+  getLndEnv :: Owner -> m LndEnv
+  getLndEnv = (testLndEnv <$>) . getTestEnv
+  getNodeLocation :: Owner -> m NodeLocation
+  getNodeLocation = (testNodeLocation <$>) . getTestEnv
+  dupChannelTChan :: Owner -> m (TChan ((), ChannelEventUpdate))
+  dupChannelTChan =
+    (Watcher.dupLndTChan =<<)
+      . (testChannelWatcher <$>)
+      . getTestEnv
+  dupInvoiceTChan ::
+    Owner -> m (TChan (SubscribeInvoicesRequest, Invoice))
+  dupInvoiceTChan =
+    (Watcher.dupLndTChan =<<)
+      . (testInvoiceWatcher <$>)
+      . getTestEnv
 
-walletAddress :: LndTest m => m LndEnv -> m Text
-walletAddress env = do
-  lnd <- env
+walletAddress :: LndTest m => Owner -> m Text
+walletAddress owner = do
+  lnd <- getLndEnv owner
   LND.NewAddressResponse x <-
     liftLndResult
       =<< LND.newAddress
@@ -87,50 +123,42 @@ walletAddress env = do
         GRPC.AddressTypeWITNESS_PUBKEY_HASH
   pure x
 
-aliceWalletAddress :: LndTest m => m Text
-aliceWalletAddress = walletAddress aliceLndEnv
-
-bobWalletAddress :: LndTest m => m Text
-bobWalletAddress = walletAddress bobLndEnv
-
 lazyMineInitialCoins :: LndTest m => m ()
 lazyMineInitialCoins = do
-  liftLndResult =<< LND.lazyInitWallet =<< aliceLndEnv
-  liftLndResult =<< LND.lazyInitWallet =<< bobLndEnv
+  liftLndResult =<< LND.lazyInitWallet =<< getLndEnv Alice
+  liftLndResult =<< LND.lazyInitWallet =<< getLndEnv Bob
   bc <- btcClient
   h <- liftIO $ BTC.getBlockCount bc
   -- reward coins are spendable only after 100 blocks
   when (h < 102) $ do
-    mineBob 1
-    mineAlice 101
+    mine 1 Bob
+    mine 101 Alice
 
 lazyConnectNodes :: LndTest m => m ()
 lazyConnectNodes = do
-  aliceNodeLocation' <- aliceNodeLocation
-  bobLndEnv' <- bobLndEnv
+  aliceTestEnv <- getTestEnv Alice
   LND.GetInfoResponse alicePubKey _ _ <-
-    liftLndResult =<< LND.getInfo =<< aliceLndEnv
+    liftLndResult =<< LND.getInfo (testLndEnv aliceTestEnv)
   let req =
         ConnectPeerRequest
           { addr =
               LightningAddress
                 { pubkey = alicePubKey,
-                  host = aliceNodeLocation'
+                  host = testNodeLocation aliceTestEnv
                 },
             perm = False
           }
-  liftLndResult =<< LND.lazyConnectPeer bobLndEnv' req
+  bobLndEnv <- getLndEnv Bob
+  liftLndResult =<< LND.lazyConnectPeer bobLndEnv req
 
 watchDefaults :: LndTest m => m ()
 watchDefaults = do
-  aliceCW <- aliceChannelWatcher
-  Watcher.watchUnit aliceCW
-  aliceIW <- aliceInvoiceWatcher
-  Watcher.watch aliceIW iReq
-  bobCW <- bobChannelWatcher
-  Watcher.watchUnit bobCW
-  bobIW <- bobInvoiceWatcher
-  Watcher.watch bobIW iReq
+  aliceTestEnv <- getTestEnv Alice
+  Watcher.watchUnit $ testChannelWatcher aliceTestEnv
+  Watcher.watch (testInvoiceWatcher aliceTestEnv) iReq
+  bobTestEnv <- getTestEnv Bob
+  Watcher.watchUnit $ testChannelWatcher bobTestEnv
+  Watcher.watch (testInvoiceWatcher bobTestEnv) iReq
   where
     iReq =
       --
@@ -139,9 +167,16 @@ watchDefaults = do
       --
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
 
-mine :: LndTest m => Int -> Text -> m ()
-mine blocks btcAddr = do
+mine :: LndTest m => Int -> Owner -> m ()
+mine blocks owner = do
+  btcAddr <- walletAddress owner
   bc <- btcClient
+  $(logTM) InfoS $ logStr $
+    ("Mining " :: Text)
+      <> show blocks
+      <> " blocks to "
+      <> show owner
+      <> " wallet"
   void . liftIO $
     BTC.generateToAddress
       bc
@@ -150,22 +185,8 @@ mine blocks btcAddr = do
       Nothing
   liftLndResult =<< syncWallets
 
-mineAlice :: LndTest m => Int -> m ()
-mineAlice blocks = do
-  btcAddr <- aliceWalletAddress
-  $(logTM) InfoS $ logStr $
-    "Mining " <> show blocks <> (" blocks to Alice wallet" :: Text)
-  mine blocks btcAddr
-
-mineBob :: LndTest m => Int -> m ()
-mineBob blocks = do
-  btcAddr <- bobWalletAddress
-  $(logTM) InfoS $ logStr $
-    "Mining " <> show blocks <> (" blocks to Bob wallet" :: Text)
-  mine blocks btcAddr
-
 mine1 :: LndTest m => m ()
-mine1 = mineAlice 1
+mine1 = mine 1 Alice
 
 liftLndResult :: (MonadIO m) => Either LndError a -> m a
 liftLndResult (Right x) =
@@ -182,8 +203,8 @@ syncWallets = this 0
       pure . Left $ LndError msg
     this (attempt :: Int) = do
       $(logTM) InfoS "SyncWallets is running"
-      resAlice <- LND.getInfo =<< aliceLndEnv
-      resBob <- LND.getInfo =<< bobLndEnv
+      resAlice <- LND.getInfo =<< getLndEnv Alice
+      resBob <- LND.getInfo =<< getLndEnv Bob
       case (,) <$> resAlice <*> resBob of
         Left _ ->
           liftIO (delay 1000000) >> this (attempt + 1)

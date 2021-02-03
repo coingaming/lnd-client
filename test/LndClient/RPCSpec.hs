@@ -44,11 +44,9 @@ spec = do
     x <- readLndEnv
     envLndSyncGrpcTimeout x `shouldBe` newGrpcTimeout 59
     envLndAsyncGrpcTimeout x `shouldBe` Nothing
-  it "decodePayReq" $ withEnv $ \env -> do
-    let lnd = envLndBob env
-    x0 <-
-      liftLndResult
-        =<< addInvoice lnd addInvoiceRequest
+  it "decodePayReq" $ withEnv $ \_ -> do
+    lnd <- getLndEnv Bob
+    x0 <- liftLndResult =<< addInvoice lnd addInvoiceRequest
     x1 <-
       liftLndResult
         =<< decodePayReq lnd (AddInvoice.paymentRequest x0)
@@ -59,8 +57,8 @@ spec = do
         `shouldBe` AddInvoice.value addInvoiceRequest
       Just (PayReq.expiry x1)
         `shouldBe` AddInvoice.expiry addInvoiceRequest
-  it "lookupInvoice" $ withEnv $ \env -> do
-    let lnd = envLndBob env
+  it "lookupInvoice" $ withEnv $ \_ -> do
+    lnd <- getLndEnv Bob
     x0 <- liftLndResult =<< addInvoice lnd addInvoiceRequest
     x1 <- liftLndResult =<< lookupInvoice lnd (AddInvoice.rHash x0)
     liftIO $ do
@@ -74,20 +72,19 @@ spec = do
         `shouldBe` AddInvoice.memo addInvoiceRequest
       Invoice.value x1
         `shouldBe` AddInvoice.value addInvoiceRequest
-  it "addInvoice" $ withEnv $ \env -> do
-    res <- addInvoice (envLndBob env) addInvoiceRequest
+  it "addInvoice" $ withEnv $ \_ -> do
+    bob <- getLndEnv Bob
+    res <- addInvoice bob addInvoiceRequest
     liftIO $ res `shouldSatisfy` isRight
-  it "addInvoiceQrCode" $ withEnv $ \env -> do
-    res <-
-      liftLndResult
-        =<< addInvoice (envLndBob env) addInvoiceRequest
+  it "addInvoiceQrCode" $ withEnv $ \_ -> do
+    bob <- getLndEnv Bob
+    res <- liftLndResult =<< addInvoice bob addInvoiceRequest
     let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
     liftIO $ qr `shouldSatisfy` isJust
-  it "addNormalInvoice" $ withEnv $ \env -> do
-    queue <- Watcher.dupLndTChan =<< bobInvoiceWatcher
-    inv <-
-      liftLndResult
-        =<< addInvoice (envLndBob env) addInvoiceRequest
+  it "addNormalInvoice" $ withEnv $ \_ -> do
+    queue <- dupInvoiceTChan Bob
+    bob <- getLndEnv Bob
+    inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
     res <-
       receiveInvoice
         (AddInvoice.rHash inv)
@@ -96,21 +93,21 @@ spec = do
     liftIO $ res `shouldSatisfy` isRight
   it "settleNormalInvoice" $ withEnv $ \env -> do
     setupOneChannel env
-    q <- Watcher.dupLndTChan =<< bobInvoiceWatcher
-    inv <-
-      liftLndResult
-        =<< addInvoice (envLndBob env) addInvoiceRequest
+    q <- dupInvoiceTChan Bob
+    bob <- getLndEnv Bob
+    inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
     let rh = AddInvoice.rHash inv
     let pr = AddInvoice.paymentRequest inv
     let spr = SendPaymentRequest pr $ MoneyAmount 1000
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
+    alice <- getLndEnv Alice
     void $
-      liftLndResult =<< sendPayment (envLndAlice env) spr
+      liftLndResult =<< sendPayment alice spr
     res <- receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
     liftIO $ res `shouldSatisfy` isRight
-  it "addHodlInvoice" $ withEnv $ \env -> do
-    let lnd = envLndBob env
+  it "addHodlInvoice" $ withEnv $ \_ -> do
+    lnd <- getLndEnv Bob
     r <- newRPreimage
     let req =
           AddHodlInvoiceRequest
@@ -124,8 +121,8 @@ spec = do
     liftIO $ do
       x0 `shouldSatisfy` isRight
       x0 `shouldBe` AddInvoice.paymentRequest <$> x1
-  it "watchNormal" $ withEnv $ \env -> do
-    let merEnv = envLndBob env
+  it "watchNormal" $ withEnv $ \_ -> do
+    merEnv <- getLndEnv Bob
     w <-
       Watcher.spawnLink
         merEnv
@@ -141,8 +138,8 @@ spec = do
         chan
     Watcher.delete w
     liftIO $ res `shouldSatisfy` isRight
-  it "watchUnit" $ withEnv $ \env -> do
-    let merEnv = envLndBob env
+  it "watchUnit" $ withEnv $ \_ -> do
+    merEnv <- getLndEnv Bob
     w <-
       Watcher.spawnLinkUnit
         merEnv
@@ -166,16 +163,13 @@ spec = do
               spendUnconfirmed = Nothing,
               closeAddress = Nothing
             }
-    cp <-
-      liftLndResult
-        =<< openChannelSync
-          (envLndAlice env)
-          openChannelRequest
+    alice <- getLndEnv Alice
+    cp <- liftLndResult =<< openChannelSync alice openChannelRequest
     res <- receiveActiveChannel cp chan
     Watcher.delete w
     liftIO $ res `shouldSatisfy` isRight
-  it "unWatch" $ withEnv $ \env -> do
-    let merEnv = envLndBob env
+  it "unWatch" $ withEnv $ \_ -> do
+    merEnv <- getLndEnv Bob
     w <-
       Watcher.spawnLink
         merEnv
@@ -195,7 +189,7 @@ spec = do
     res <- readTChanTimeout (MicroSecondsDelay 500000) chan
     Watcher.delete w
     liftIO $ res `shouldBe` Nothing
-  it "ensureHodlInvoice" $ withEnv $ \env -> do
+  it "ensureHodlInvoice" $ withEnv $ \_ -> do
     r <- newRPreimage
     let req =
           AddHodlInvoiceRequest
@@ -204,7 +198,8 @@ spec = do
               value = MoneyAmount 1000,
               expiry = Just $ Seconds 1000
             }
-    res <- ensureHodlInvoice (envLndBob env) req
+    bob <- getLndEnv Bob
+    res <- ensureHodlInvoice bob req
     liftIO $ res `shouldSatisfy` isRight
   it "cancelInvoice" $ withEnv $ \env -> do
     setupOneChannel env
@@ -216,16 +211,17 @@ spec = do
             rh
             (MoneyAmount 1000)
             Nothing
-    let merchantEnv = envLndBob env
-    q <- Watcher.dupLndTChan =<< bobInvoiceWatcher
+    merchantEnv <- getLndEnv Bob
+    q <- dupInvoiceTChan Bob
     pr <-
       liftLndResult
         =<< addHodlInvoice merchantEnv hipr
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
     let spr = SendPaymentRequest pr $ MoneyAmount 1000
+    alice <- getLndEnv Alice
     withSpawnLink
-      (liftLndResult =<< sendPayment (envLndAlice env) spr)
+      (liftLndResult =<< sendPayment alice spr)
       ( const $ do
           --
           -- NOTE : this is working only in coingaming LND fork
@@ -245,14 +241,15 @@ spec = do
     let rh = newRHash r
     let hipr =
           AddHodlInvoiceRequest Nothing rh (MoneyAmount 1000) Nothing
-    let merchantEnv = envLndBob env
-    q <- Watcher.dupLndTChan =<< bobInvoiceWatcher
+    merchantEnv <- getLndEnv Bob
+    q <- dupInvoiceTChan Bob
     pr <- liftLndResult =<< addHodlInvoice merchantEnv hipr
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
     let spr = SendPaymentRequest pr $ MoneyAmount 1000
+    alice <- getLndEnv Alice
     withSpawnLink
-      (liftLndResult =<< sendPayment (envLndAlice env) spr)
+      (liftLndResult =<< sendPayment alice spr)
       ( const $ do
           --
           -- NOTE : this is working only in coingaming LND fork
@@ -268,8 +265,8 @@ spec = do
       )
   it "listChannelAndClose" $ withEnv $ \env -> do
     setupOneChannel env
-    chan <- Watcher.dupLndTChan =<< bobChannelWatcher
-    let lnd = envLndBob env
+    chan <- dupChannelTChan Bob
+    lnd <- getLndEnv Bob
     let listReq = ListChannelsRequest False False False False Nothing
     cs0 <- liftLndResult =<< listChannels lnd listReq
     cp <-
@@ -294,13 +291,12 @@ spec = do
     --
     -- prepare invoice and subscription
     --
-    inv <-
-      liftLndResult
-        =<< addInvoice (envLndBob env) addInvoiceRequest
+    bob <- getLndEnv Bob
+    inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
     let rh = AddInvoice.rHash inv
     let pr = AddInvoice.paymentRequest inv
     let spr = SendPaymentRequest pr $ MoneyAmount 1000
-    let cusEnv = envLndAlice env
+    cusEnv <- getLndEnv Alice
     let sub = TrackPaymentRequest rh False
     --
     -- spawn payment watcher and settle invoice

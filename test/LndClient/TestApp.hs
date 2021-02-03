@@ -48,27 +48,18 @@ import LndClient.Data.SubscribeInvoices
 import LndClient.Import
 import LndClient.LndTest
 import LndClient.RPC.Katip
-import LndClient.Watcher as Watcher (Watcher, dupLndTChan)
 import qualified LndGrpc as GRPC
 import qualified Network.Bitcoin as BTC (Client)
 import Network.GRPC.HighLevel.Generated
 
 data Env
   = Env
-      { envLndAlice :: LndEnv,
-        envLndBob :: LndEnv,
+      { envAlice :: TestEnv,
+        envBob :: TestEnv,
         envBtcClient :: BTC.Client,
         envKatipNS :: Namespace,
         envKatipCTX :: LogContexts,
-        envKatipLE :: LogEnv,
-        envAliceChannelWatcher :: Watcher () ChannelEventUpdate,
-        envAliceInvoiceWatcher ::
-          Watcher SubscribeInvoicesRequest
-            Invoice,
-        envBobChannelWatcher :: Watcher () ChannelEventUpdate,
-        envBobInvoiceWatcher ::
-          Watcher SubscribeInvoicesRequest
-            Invoice
+        envKatipLE :: LogEnv
       }
 
 newBobEnv :: LndEnv -> LndEnv
@@ -121,25 +112,24 @@ readEnv = do
     registerScribe "stdout" handleScribe defaultScribeSettings
       =<< initLogEnv "LndClient" "test"
   bc <- newBtcClient btcEnv
-  alice <- liftIO readLndEnv
-  let bob = newBobEnv alice
+  aliceLndEnv <- liftIO readLndEnv
   runKatipContextT le (mempty :: LogContexts) mempty $ do
-    aliceCW <- spawnLinkChannelWatcher alice
-    aliceIW <- spawnLinkInvoiceWatcher alice
-    bobCW <- spawnLinkChannelWatcher bob
-    bobIW <- spawnLinkInvoiceWatcher bob
+    alice <-
+      newTestEnv
+        aliceLndEnv
+        $ NodeLocation "localhost:9735"
+    bob <-
+      newTestEnv
+        (newBobEnv aliceLndEnv)
+        $ NodeLocation "localhost:9734"
     pure
       Env
-        { envLndAlice = alice,
-          envLndBob = bob,
+        { envAlice = alice,
+          envBob = bob,
           envBtcClient = bc,
           envKatipLE = le,
           envKatipCTX = mempty,
-          envKatipNS = mempty,
-          envAliceChannelWatcher = aliceCW,
-          envAliceInvoiceWatcher = aliceIW,
-          envBobChannelWatcher = bobCW,
-          envBobInvoiceWatcher = bobIW
+          envKatipNS = mempty
         }
 
 withEnv :: (Env -> AppM IO ()) -> IO ()
@@ -149,7 +139,7 @@ withEnv f = do
     lazyMineInitialCoins
     lazyConnectNodes
     watchDefaults
-    closeAllChannels env
+    closeAllChannels
     f env
   --
   -- TODO : we can't really use async `cance` or `withAsync`
@@ -181,15 +171,16 @@ btcEnv =
       btcPassword = BtcPassword "developer"
     }
 
-closeAllChannels :: (LndTest m) => Env -> m ()
-closeAllChannels env = do
-  cq <- Watcher.dupLndTChan =<< aliceChannelWatcher
-  mq <- Watcher.dupLndTChan =<< bobChannelWatcher
+closeAllChannels :: (LndTest m) => m ()
+closeAllChannels = do
+  cq <- dupChannelTChan Alice
+  mq <- dupChannelTChan Bob
   $(logTM) InfoS "CloseAllChannels - closing channels ..."
+  alice <- getLndEnv Alice
   cs <-
     liftLndResult
       =<< listChannels
-        (envLndBob env)
+        alice
         (ListChannelsRequest True False False False Nothing)
   let cps = Channel.channelPoint <$> cs
   mapM_
@@ -208,7 +199,7 @@ closeAllChannels env = do
             -- previous opened subscription
             --
             (const $ return ())
-            (envLndAlice env)
+            alice
             (CloseChannelRequest cp False Nothing Nothing Nothing)
     )
     cps
@@ -217,8 +208,8 @@ closeAllChannels env = do
 
 setupOneChannel :: (LndTest m) => Env -> m ()
 setupOneChannel env = do
-  mq <- Watcher.dupLndTChan =<< bobChannelWatcher
-  cq <- Watcher.dupLndTChan =<< aliceChannelWatcher
+  mq <- dupChannelTChan Bob
+  cq <- dupChannelTChan Alice
   --
   -- Open channel from Customer to Merchant
   --
@@ -268,8 +259,8 @@ setupOneChannel env = do
     liftLndResult =<< sendPayment alice sendPaymentRequest
   $(logTM) InfoS "SetupOneChannel - finished"
   where
-    alice = envLndAlice env
-    bob = envLndBob env
+    alice = testLndEnv $ envAlice env
+    bob = testLndEnv $ envBob env
 
 newtype AppM m a
   = AppM
@@ -278,9 +269,13 @@ newtype AppM m a
   deriving (Functor, Applicative, Monad, MonadIO, MonadReader Env)
 
 instance (MonadUnliftIO m) => MonadUnliftIO (AppM m) where
+  withRunInIO run = AppM (withRunInIO (\k -> run (k . unAppM)))
   askUnliftIO =
-    AppM (fmap (\(UnliftIO run) -> UnliftIO (run . unAppM)) askUnliftIO)
-  withRunInIO go = AppM (withRunInIO (\k -> go (k . unAppM)))
+    AppM
+      ( fmap
+          (\(UnliftIO run) -> UnliftIO (run . unAppM))
+          askUnliftIO
+      )
 
 instance (MonadIO m) => Katip (AppM m) where
   getLogEnv = asks envKatipLE
@@ -297,14 +292,9 @@ instance (MonadIO m) => KatipContext (AppM m) where
 
 instance (MonadUnliftIO m) => LndTest (AppM m) where
   btcClient = asks envBtcClient
-  aliceLndEnv = asks envLndAlice
-  aliceNodeLocation = pure $ NodeLocation "localhost:9735"
-  aliceChannelWatcher = asks envAliceChannelWatcher
-  aliceInvoiceWatcher = asks envAliceInvoiceWatcher
-  bobLndEnv = asks envLndBob
-  bobNodeLocation = pure $ NodeLocation "localhost:9734"
-  bobChannelWatcher = asks envBobChannelWatcher
-  bobInvoiceWatcher = asks envBobInvoiceWatcher
+  getTestEnv = \case
+    Alice -> asks envAlice
+    Bob -> asks envBob
 
 runApp :: Env -> AppM m a -> m a
 runApp env app = runReaderT (unAppM app) env
