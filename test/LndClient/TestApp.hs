@@ -23,7 +23,7 @@ data Env
   = Env
       { envAlice :: TestEnv,
         envBob :: TestEnv,
-        envBtcClient :: BTC.Client,
+        envBtc :: BTC.Client,
         envKatipNS :: Namespace,
         envKatipCTX :: LogContexts,
         envKatipLE :: LogEnv
@@ -93,7 +93,7 @@ readEnv = do
       Env
         { envAlice = alice,
           envBob = bob,
-          envBtcClient = bc,
+          envBtc = bc,
           envKatipLE = le,
           envKatipCTX = mempty,
           envKatipNS = mempty
@@ -102,12 +102,7 @@ readEnv = do
 withEnv :: AppM IO () -> IO ()
 withEnv this = do
   env <- readEnv
-  runApp env $ do
-    lazyMineInitialCoins
-    lazyConnectNodes
-    watchDefaults
-    closeAllChannels
-    this
+  runApp env $ setupZeroChannels >> this
   void . closeScribes $ envKatipLE env
 
 btcEnv :: BtcEnv
@@ -147,7 +142,7 @@ instance (MonadIO m) => KatipContext (AppM m) where
     AppM (local (\s -> s {envKatipNS = f (envKatipNS s)}) m)
 
 instance (MonadUnliftIO m) => LndTest (AppM m) where
-  btcClient = asks envBtcClient
+  getBtcClient = asks envBtc
   getTestEnv = \case
     Alice -> asks envAlice
     Bob -> asks envBob

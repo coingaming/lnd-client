@@ -82,7 +82,7 @@ spec = do
     let qr = qrPngDataUrl qrDefOpts (AddInvoice.paymentRequest res)
     liftIO $ qr `shouldSatisfy` isJust
   it "addNormalInvoice" $ withEnv $ do
-    queue <- dupInvoiceTChan Bob
+    queue <- getInvoiceTChan Bob
     lnd <- getLndEnv Bob
     inv <- liftLndResult =<< addInvoice lnd addInvoiceRequest
     res <-
@@ -93,7 +93,7 @@ spec = do
     liftIO $ res `shouldSatisfy` isRight
   it "settleNormalInvoice" $ withEnv $ do
     setupOneChannel
-    chan <- dupInvoiceTChan Bob
+    chan <- getInvoiceTChan Bob
     bob <- getLndEnv Bob
     inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
     let rh = AddInvoice.rHash inv
@@ -199,7 +199,7 @@ spec = do
             (MoneyAmount 1000)
             Nothing
     bob <- getLndEnv Bob
-    q <- dupInvoiceTChan Bob
+    q <- getInvoiceTChan Bob
     pr <-
       liftLndResult
         =<< addHodlInvoice bob hipr
@@ -229,7 +229,7 @@ spec = do
     let hipr =
           AddHodlInvoiceRequest Nothing rh (MoneyAmount 1000) Nothing
     bob <- getLndEnv Bob
-    q <- dupInvoiceTChan Bob
+    q <- getInvoiceTChan Bob
     pr <- liftLndResult =<< addHodlInvoice bob hipr
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
@@ -252,7 +252,7 @@ spec = do
       )
   it "listChannelAndClose" $ withEnv $ do
     setupOneChannel
-    chan <- dupChannelTChan Bob
+    chan <- getChannelTChan Bob
     lnd <- getLndEnv Bob
     let listReq = ListChannelsRequest False False False False Nothing
     cs0 <- liftLndResult =<< listChannels lnd listReq

@@ -1,30 +1,44 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module LndClient.LndTest
-  ( BtcUrl (..),
+  ( -- * BTC
+    BtcUrl (..),
     BtcLogin (..),
     BtcPassword (..),
     BtcEnv (..),
-    Owner (..),
-    LndTest (..),
-    TestEnv (..),
     newBtcClient,
+
+    -- * TestEnv
+    Owner (..),
+    TestEnv,
     newTestEnv,
-    lazyMineInitialCoins,
-    lazyConnectNodes,
-    mine,
-    mine1,
-    liftLndResult,
-    liftMaybe,
-    syncWallets,
     spawnLinkChannelWatcher,
     spawnLinkInvoiceWatcher,
-    watchDefaults,
+
+    -- * Class
+    LndTest (..),
+
+    -- * TestUtils
+    mine,
+    mine1,
+    syncWallets,
     receiveClosedChannels,
     receiveActiveChannel,
     receiveInvoice,
+
+    -- * LowLevel setup
+    lazyMineInitialCoins,
+    lazyConnectNodes,
+    watchDefaults,
     closeAllChannels,
+
+    -- * HighLevel setip
+    setupZeroChannels,
     setupOneChannel,
+
+    -- * Misc
+    liftLndResult,
+    liftMaybe,
     purgeChan,
     ignore2,
     ignore3,
@@ -84,6 +98,11 @@ data BtcEnv
         btcPassword :: BtcPassword
       }
 
+--
+-- TODO : Accept abstract owner as parameter
+-- in all functions. Might be useful for complex
+-- > 2 node test setups.
+--
 data Owner = Alice | Bob deriving (Eq, Ord, Show)
 
 data TestEnv
@@ -123,20 +142,20 @@ newTestEnv lnd loc = do
       }
 
 class (KatipContext m, MonadUnliftIO m) => LndTest m where
-  btcClient :: m BTC.Client
+  getBtcClient :: m BTC.Client
   getTestEnv :: Owner -> m TestEnv
   getLndEnv :: Owner -> m LndEnv
   getLndEnv = (testLndEnv <$>) . getTestEnv
   getNodeLocation :: Owner -> m NodeLocation
   getNodeLocation = (testNodeLocation <$>) . getTestEnv
-  dupChannelTChan :: Owner -> m (TChan ((), ChannelEventUpdate))
-  dupChannelTChan =
+  getChannelTChan :: Owner -> m (TChan ((), ChannelEventUpdate))
+  getChannelTChan =
     (Watcher.dupLndTChan =<<)
       . (testChannelWatcher <$>)
       . getTestEnv
-  dupInvoiceTChan ::
+  getInvoiceTChan ::
     Owner -> m (TChan (SubscribeInvoicesRequest, Invoice))
-  dupInvoiceTChan =
+  getInvoiceTChan =
     (Watcher.dupLndTChan =<<)
       . (testInvoiceWatcher <$>)
       . getTestEnv
@@ -155,7 +174,7 @@ lazyMineInitialCoins :: LndTest m => m ()
 lazyMineInitialCoins = do
   liftLndResult =<< LND.lazyInitWallet =<< getLndEnv Alice
   liftLndResult =<< LND.lazyInitWallet =<< getLndEnv Bob
-  bc <- btcClient
+  bc <- getBtcClient
   h <- liftIO $ BTC.getBlockCount bc
   -- reward coins are spendable only after 100 blocks
   when (h < 102) $ do
@@ -176,8 +195,8 @@ lazyConnectNodes = do
                 },
             perm = False
           }
-  bobLndEnv <- getLndEnv Bob
-  liftLndResult =<< LND.lazyConnectPeer bobLndEnv req
+  bob <- getLndEnv Bob
+  liftLndResult =<< LND.lazyConnectPeer bob req
 
 watchDefaults :: LndTest m => m ()
 watchDefaults = do
@@ -198,7 +217,7 @@ watchDefaults = do
 mine :: LndTest m => Int -> Owner -> m ()
 mine blocks owner = do
   btcAddr <- walletAddress owner
-  bc <- btcClient
+  bc <- getBtcClient
   $(logTM) InfoS $ logStr $
     ("Mining " :: Text)
       <> show blocks
@@ -269,9 +288,7 @@ receiveClosedChannels = this 0
 
 closeAllChannels :: (LndTest m) => m ()
 closeAllChannels = do
-  cq <- dupChannelTChan Alice
-  mq <- dupChannelTChan Bob
-  $(logTM) InfoS "CloseAllChannels - closing channels ..."
+  $(logTM) InfoS "CloseAllChannels - closing channels"
   alice <- getLndEnv Alice
   cs <-
     liftLndResult
@@ -299,8 +316,10 @@ closeAllChannels = do
             (CloseChannelRequest cp False Nothing Nothing Nothing)
     )
     cps
-  liftLndResult =<< receiveClosedChannels cps mq
-  liftLndResult =<< receiveClosedChannels cps cq
+  aliceChan <- getChannelTChan Alice
+  bobChan <- getChannelTChan Bob
+  liftLndResult =<< receiveClosedChannels cps aliceChan
+  liftLndResult =<< receiveClosedChannels cps bobChan
 
 receiveActiveChannel ::
   (LndTest m) =>
@@ -322,16 +341,23 @@ receiveActiveChannel = this 0
             _ ->
               mine1 >> this (attempt + 1) cp cq
 
+setupZeroChannels :: LndTest m => m ()
+setupZeroChannels = do
+  lazyMineInitialCoins
+  lazyConnectNodes
+  watchDefaults
+  closeAllChannels
+
 setupOneChannel :: (LndTest m) => m ()
 setupOneChannel = do
   alice <- getLndEnv Alice
   bob <- getLndEnv Bob
-  mq <- dupChannelTChan Bob
-  cq <- dupChannelTChan Alice
+  mq <- getChannelTChan Bob
+  cq <- getChannelTChan Alice
   --
   -- Open channel from Customer to Merchant
   --
-  $(logTM) InfoS "SetupOneChannel - opening channel ..."
+  $(logTM) InfoS "SetupOneChannel - opening channel"
   GetInfoResponse merchantPubKey _ _ <-
     liftLndResult =<< LND.getInfo bob
   let openChannelRequest =
