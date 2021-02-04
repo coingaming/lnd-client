@@ -105,7 +105,9 @@ grpcSyncKatip ::
   ( MonadIO m,
     KatipContext m,
     ToGrpc a gA,
-    FromGrpc b gB
+    FromGrpc b gB,
+    Show a,
+    Show b
   ) =>
   RpcName ->
   (Client -> IO client) ->
@@ -117,27 +119,29 @@ grpcSyncKatip ::
   a ->
   m (Either LndError b)
 grpcSyncKatip rpcName service method env req =
-  katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
-    $(logTM)
-      (newSeverity env InfoS Nothing Nothing)
-      "RPC is running..."
-    (ts, res) <-
-      liftIO $ stopwatch $
-        grpcSyncSilent rpcName service method env req
-    --
-    -- TODO : better logs?
-    --
-    katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $ do
-      case res of
-        Left e -> do
-          $(logTM)
-            (newSeverity env ErrorS (Just ts) (Just e))
-            $ logStr ("RPC exited with message " <> show e :: Text)
-        Right _ ->
-          $(logTM)
-            (newSeverity env InfoS (Just ts) Nothing)
-            "RPC succeded"
-      return res
+  katipAddContext (sl "RpcName" rpcName)
+    $ katipAddContext (sl "RpcRequest" (show req :: Text))
+    $ katipAddLndContext env
+    $ do
+      $(logTM)
+        (newSeverity env InfoS Nothing Nothing)
+        "RPC is running"
+      (ts, res) <-
+        liftIO $ stopwatch $
+          grpcSyncSilent rpcName service method env req
+      katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $
+        case res of
+          Left e ->
+            katipAddContext (sl "RpcResponse" (show e :: Text)) $
+              $(logTM)
+                (newSeverity env ErrorS (Just ts) (Just e))
+                "RPC failed"
+          Right x ->
+            katipAddContext (sl "RpcResponse" (show x :: Text)) $
+              $(logTM)
+                (newSeverity env InfoS (Just ts) Nothing)
+                "RPC succeded"
+      pure res
 
 grpcSubscribeSilent ::
   ( MonadIO m,
@@ -192,6 +196,7 @@ grpcSubscribeSilent _ service method handler env req =
 grpcSubscribeKatip ::
   ( MonadIO m,
     KatipContext m,
+    Show a,
     ToGrpc a gA,
     FromGrpc b gB
   ) =>
@@ -206,23 +211,29 @@ grpcSubscribeKatip ::
   a ->
   m (Either LndError ())
 grpcSubscribeKatip rpcName service method handler env req =
-  katipAddContext (sl "RpcName" rpcName) $ katipAddLndContext env $ do
-    $(logTM) (newSeverity env InfoS Nothing Nothing) "RPC is running..."
-    (ts, res) <-
-      liftIO $ stopwatch $
-        grpcSubscribeSilent rpcName service method handler env req
-    --
-    -- TODO : better logs?
-    --
-    katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $ do
-      case res of
-        Left e -> do
-          let logMsg =
-                logStr ("RPC exited with message " <> show e :: Text)
-          $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) logMsg
-        Right _ ->
-          $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
-      return res
+  katipAddContext (sl "RpcName" rpcName)
+    $ katipAddContext (sl "RpcRequest" (show req :: Text))
+    $ katipAddLndContext env
+    $ do
+      $(logTM)
+        (newSeverity env InfoS Nothing Nothing)
+        "RPC is running"
+      (ts, res) <-
+        liftIO $ stopwatch $
+          grpcSubscribeSilent rpcName service method handler env req
+      katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $
+        case res of
+          Left e ->
+            katipAddContext (sl "RpcResponse" (show e :: Text)) $
+              $(logTM)
+                (newSeverity env ErrorS (Just ts) (Just e))
+                "RPC failed"
+          Right x ->
+            katipAddContext (sl "RpcResponse" (show x :: Text)) $
+              $(logTM)
+                (newSeverity env InfoS (Just ts) Nothing)
+                "RPC succeded"
+      pure res
 
 genStreamHandler ::
   (FromGrpc a b) =>

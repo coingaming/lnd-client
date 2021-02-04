@@ -12,7 +12,7 @@ data SendPaymentRequest
       { paymentRequest :: PaymentRequest,
         amt :: MoneyAmount
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 data SendPaymentResponse
   = SendPaymentResponse
@@ -20,7 +20,7 @@ data SendPaymentResponse
         paymentPreimage :: RPreimage,
         paymentHash :: RHash
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance ToGrpc SendPaymentRequest GRPC.SendRequest where
   toGrpc x =

@@ -12,7 +12,7 @@ data PayReq
         numSatoshis :: MoneyAmount,
         expiry :: Seconds
       }
-  deriving (Eq)
+  deriving (Eq, Show)
 
 instance FromGrpc PayReq GRPC.PayReq where
   fromGrpc x =

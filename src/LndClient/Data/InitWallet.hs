@@ -5,6 +5,7 @@ where
 
 import LndClient.Import
 import qualified WalletUnlockerGrpc as GRPC
+import Prelude (Show (..))
 
 data InitWalletRequest
   = InitWalletRequest
@@ -13,6 +14,9 @@ data InitWalletRequest
         aezeedPassphrase :: Maybe AezeedPassphrase
       }
   deriving (Eq)
+
+instance Show InitWalletRequest where
+  show = const "SECRET"
 
 instance ToGrpc InitWalletRequest GRPC.InitWalletRequest where
   toGrpc x =
@@ -23,7 +27,10 @@ instance ToGrpc InitWalletRequest GRPC.InitWalletRequest where
     where
       msg gWalletPassword gCipherSeedMnemonic gAezeedPassphrase =
         def
-          { GRPC.initWalletRequestWalletPassword = gWalletPassword,
-            GRPC.initWalletRequestCipherSeedMnemonic = gCipherSeedMnemonic,
-            GRPC.initWalletRequestAezeedPassphrase = gAezeedPassphrase
+          { GRPC.initWalletRequestWalletPassword =
+              gWalletPassword,
+            GRPC.initWalletRequestCipherSeedMnemonic =
+              gCipherSeedMnemonic,
+            GRPC.initWalletRequestAezeedPassphrase =
+              gAezeedPassphrase
           }

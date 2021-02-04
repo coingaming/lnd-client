@@ -66,11 +66,11 @@ extra-deps:
     commit: 3672ded8b16baa9a9fdf4e4fa5109e2a6cf8a809
 
 # Override default flag values for local packages and extra-deps
-flags:
-  grpc-haskell:
-    debug: true
-  grpc-haskell-core:
-    debug: true
+#flags:
+#  grpc-haskell:
+#    debug: true
+#  grpc-haskell-core:
+#    debug: true
 
 # Extra package databases containing global packages
 # extra-package-dbs: []

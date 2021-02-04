@@ -5,6 +5,7 @@ where
 
 import LndClient.Import
 import qualified WalletUnlockerGrpc as GRPC
+import Prelude (Show (..))
 
 data UnlockWalletRequest
   = UnlockWalletRequest
@@ -15,6 +16,9 @@ data UnlockWalletRequest
         --
       }
   deriving (Eq)
+
+instance Show UnlockWalletRequest where
+  show = const "SECRET"
 
 instance ToGrpc UnlockWalletRequest GRPC.UnlockWalletRequest where
   toGrpc x =
