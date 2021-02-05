@@ -22,6 +22,7 @@ module LndClient.LndTest
     mine,
     mine1,
     syncWallets,
+    sendTestPayment,
     receiveClosedChannels,
     receiveActiveChannel,
     receiveInvoice,
@@ -363,8 +364,8 @@ setupOneChannel = do
   let openChannelRequest =
         OpenChannel.OpenChannelRequest
           { OpenChannel.nodePubkey = merchantPubKey,
-            OpenChannel.localFundingAmount = MoneyAmount 20000,
-            OpenChannel.pushSat = Just $ MoneyAmount 1000,
+            OpenChannel.localFundingAmount = MoneyAmount 200000,
+            OpenChannel.pushSat = Just $ MoneyAmount 100000,
             OpenChannel.targetConf = Nothing,
             OpenChannel.satPerByte = Nothing,
             OpenChannel.private = Nothing,
@@ -380,30 +381,40 @@ setupOneChannel = do
   liftLndResult =<< receiveActiveChannel cp mq
   liftLndResult =<< receiveActiveChannel cp cq
   --
-  -- TODO : this invoice is added and settled to
+  -- TODO : these invoices are added and settled to
   -- raise invoice index to 1 to be able to receive
   -- notifications about all next invoices
   -- remove when LND bug will be fixed
   -- https://github.com/lightningnetwork/lnd/issues/2469
   --
+  sendTestPayment (MoneyAmount 1000) Alice Bob
+  sendTestPayment (MoneyAmount 1000) Bob Alice
+  $(logTM) InfoS "SetupOneChannel - finished"
+
+sendTestPayment ::
+  (LndTest m) =>
+  MoneyAmount ->
+  Owner ->
+  Owner ->
+  m ()
+sendTestPayment amt0 sender0 recepient0 = do
+  sender <- getLndEnv sender0
+  recepient <- getLndEnv recepient0
   let addInvoiceRequest =
         AddInvoice.AddInvoiceRequest
           { AddInvoice.memo = Just "HELLO",
-            AddInvoice.value = MoneyAmount 1000,
+            AddInvoice.value = amt0,
             AddInvoice.expiry = Just $ Seconds 1000
           }
   invoice <-
-    liftLndResult =<< LND.addInvoice bob addInvoiceRequest
-  let sendPaymentRequest =
+    liftLndResult =<< LND.addInvoice recepient addInvoiceRequest
+  let payReq =
         SendPayment.SendPaymentRequest
           { SendPayment.paymentRequest =
               AddInvoice.paymentRequest invoice,
-            SendPayment.amt =
-              MoneyAmount 1000
+            SendPayment.amt = amt0
           }
-  void $
-    liftLndResult =<< LND.sendPayment alice sendPaymentRequest
-  $(logTM) InfoS "SetupOneChannel - finished"
+  void . liftLndResult =<< LND.sendPayment sender payReq
 
 receiveInvoice ::
   ( MonadUnliftIO m,
