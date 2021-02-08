@@ -22,6 +22,9 @@ module LndClient.LndTest
     mine,
     mine1,
     syncWallets,
+    syncPendingChannels,
+    syncPendingChannelsFor,
+    sendTestPayment,
     receiveClosedChannels,
     receiveActiveChannel,
     receiveInvoice,
@@ -69,6 +72,7 @@ import LndClient.Data.Peer
   ( ConnectPeerRequest (..),
     LightningAddress (..),
   )
+import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment as SendPayment
   ( SendPaymentRequest (..),
   )
@@ -260,6 +264,38 @@ syncWallets = this 0
             then pure $ Right ()
             else liftIO (delay 1000000) >> this (attempt + 1)
 
+syncPendingChannels :: (LndTest m) => m ()
+syncPendingChannels = do
+  liftLndResult =<< syncPendingChannelsFor Alice
+  liftLndResult =<< syncPendingChannelsFor Bob
+
+syncPendingChannelsFor ::
+  (LndTest m) => Owner -> m (Either LndError ())
+syncPendingChannelsFor owner = this 0
+  where
+    this 30 = do
+      let msg =
+            "SyncPendingChannelsFor "
+              <> show owner
+              <> " attempt limit exceeded"
+      $(logTM) ErrorS $ logStr msg
+      pure . Left $ LndError msg
+    this (attempt :: Int) = do
+      $(logTM) InfoS $ logStr $
+        "SyncPendingChannelsFor "
+          <> (show owner :: Text)
+          <> " is running"
+      res <- LND.pendingChannels =<< getLndEnv owner
+      case res of
+        Left _ -> this (attempt + 1)
+        Right (PendingChannelsResponse _ x0 x1 x2 x3) ->
+          if null x0
+            && null x1
+            && null x2
+            && null x3
+            then pure $ Right ()
+            else mine1 >> this (attempt + 1)
+
 receiveClosedChannels ::
   (LndTest m) =>
   [ChannelPoint] ->
@@ -347,6 +383,7 @@ setupZeroChannels = do
   lazyConnectNodes
   watchDefaults
   closeAllChannels
+  syncPendingChannels
 
 setupOneChannel :: (LndTest m) => m ()
 setupOneChannel = do
@@ -363,8 +400,8 @@ setupOneChannel = do
   let openChannelRequest =
         OpenChannel.OpenChannelRequest
           { OpenChannel.nodePubkey = merchantPubKey,
-            OpenChannel.localFundingAmount = MoneyAmount 20000,
-            OpenChannel.pushSat = Just $ MoneyAmount 1000,
+            OpenChannel.localFundingAmount = MoneyAmount 200000,
+            OpenChannel.pushSat = Just $ MoneyAmount 100000,
             OpenChannel.targetConf = Nothing,
             OpenChannel.satPerByte = Nothing,
             OpenChannel.private = Nothing,
@@ -380,30 +417,40 @@ setupOneChannel = do
   liftLndResult =<< receiveActiveChannel cp mq
   liftLndResult =<< receiveActiveChannel cp cq
   --
-  -- TODO : this invoice is added and settled to
+  -- TODO : these invoices are added and settled to
   -- raise invoice index to 1 to be able to receive
   -- notifications about all next invoices
   -- remove when LND bug will be fixed
   -- https://github.com/lightningnetwork/lnd/issues/2469
   --
+  sendTestPayment (MoneyAmount 1000) Alice Bob
+  sendTestPayment (MoneyAmount 1000) Bob Alice
+  $(logTM) InfoS "SetupOneChannel - finished"
+
+sendTestPayment ::
+  (LndTest m) =>
+  MoneyAmount ->
+  Owner ->
+  Owner ->
+  m ()
+sendTestPayment amt0 sender0 recepient0 = do
+  sender <- getLndEnv sender0
+  recepient <- getLndEnv recepient0
   let addInvoiceRequest =
         AddInvoice.AddInvoiceRequest
           { AddInvoice.memo = Just "HELLO",
-            AddInvoice.value = MoneyAmount 1000,
+            AddInvoice.value = amt0,
             AddInvoice.expiry = Just $ Seconds 1000
           }
   invoice <-
-    liftLndResult =<< LND.addInvoice bob addInvoiceRequest
-  let sendPaymentRequest =
+    liftLndResult =<< LND.addInvoice recepient addInvoiceRequest
+  let payReq =
         SendPayment.SendPaymentRequest
           { SendPayment.paymentRequest =
               AddInvoice.paymentRequest invoice,
-            SendPayment.amt =
-              MoneyAmount 1000
+            SendPayment.amt = amt0
           }
-  void $
-    liftLndResult =<< LND.sendPayment alice sendPaymentRequest
-  $(logTM) InfoS "SetupOneChannel - finished"
+  void . liftLndResult =<< LND.sendPayment sender payReq
 
 receiveInvoice ::
   ( MonadUnliftIO m,
