@@ -263,7 +263,7 @@ spec = do
       ( closeChannel
           (const $ return ())
           lnd
-          (CloseChannelRequest cp True Nothing Nothing Nothing)
+          (CloseChannelRequest cp False Nothing Nothing Nothing)
       )
       ( const $ do
           liftLndResult =<< receiveClosedChannels [cp] chan

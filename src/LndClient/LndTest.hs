@@ -22,6 +22,8 @@ module LndClient.LndTest
     mine,
     mine1,
     syncWallets,
+    syncPendingChannels,
+    syncPendingChannelsFor,
     sendTestPayment,
     receiveClosedChannels,
     receiveActiveChannel,
@@ -70,6 +72,7 @@ import LndClient.Data.Peer
   ( ConnectPeerRequest (..),
     LightningAddress (..),
   )
+import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment as SendPayment
   ( SendPaymentRequest (..),
   )
@@ -261,6 +264,38 @@ syncWallets = this 0
             then pure $ Right ()
             else liftIO (delay 1000000) >> this (attempt + 1)
 
+syncPendingChannels :: (LndTest m) => m ()
+syncPendingChannels = do
+  liftLndResult =<< syncPendingChannelsFor Alice
+  liftLndResult =<< syncPendingChannelsFor Bob
+
+syncPendingChannelsFor ::
+  (LndTest m) => Owner -> m (Either LndError ())
+syncPendingChannelsFor owner = this 0
+  where
+    this 30 = do
+      let msg =
+            "SyncPendingChannelsFor "
+              <> show owner
+              <> " attempt limit exceeded"
+      $(logTM) ErrorS $ logStr msg
+      pure . Left $ LndError msg
+    this (attempt :: Int) = do
+      $(logTM) InfoS $ logStr $
+        "SyncPendingChannelsFor "
+          <> (show owner :: Text)
+          <> " is running"
+      res <- LND.pendingChannels =<< getLndEnv owner
+      case res of
+        Left _ -> this (attempt + 1)
+        Right (PendingChannelsResponse _ x0 x1 x2 x3) ->
+          if null x0
+            && null x1
+            && null x2
+            && null x3
+            then pure $ Right ()
+            else mine1 >> this (attempt + 1)
+
 receiveClosedChannels ::
   (LndTest m) =>
   [ChannelPoint] ->
@@ -348,6 +383,7 @@ setupZeroChannels = do
   lazyConnectNodes
   watchDefaults
   closeAllChannels
+  syncPendingChannels
 
 setupOneChannel :: (LndTest m) => m ()
 setupOneChannel = do
