@@ -1,3 +1,4 @@
+{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
@@ -20,6 +21,9 @@ module LndClient.Data.Newtype
     unGrpcTimeout,
     defaultSyncGrpcTimeout,
     defaultAsyncGrpcTimeout,
+    ChannelFundingTxId (..),
+    ChannelFundingOutputIndex (..),
+    ChannelClosingTxId (..),
   )
 where
 
@@ -39,11 +43,20 @@ import LndClient.Util
 import qualified LndGrpc as GRPC
 import Prelude (Show (..))
 
+newtype ChannelFundingTxId = ChannelFundingTxId ByteString
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
+
+newtype ChannelFundingOutputIndex = ChannelFundingOutputIndex Word32
+  deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
+
+newtype ChannelClosingTxId = ChannelClosingTxId ByteString
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
+
 newtype NodePubKey = NodePubKey ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Show)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
 
 newtype NodeLocation = NodeLocation Text
-  deriving (Eq, Show)
+  deriving (Eq, Ord, Show)
 
 newtype AddIndex = AddIndex Word64
   deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
@@ -100,6 +113,19 @@ instance ToGrpc NodeLocation Text where
 -- TODO : smart constructors for NodePubKey and NodeLocation ???
 --
 
+instance FromGrpc ChannelFundingTxId ByteString where
+  fromGrpc = Right . ChannelFundingTxId
+
+instance FromGrpc ChannelFundingOutputIndex Word32 where
+  fromGrpc = Right . ChannelFundingOutputIndex
+
+instance FromGrpc ChannelFundingTxId GRPC.ChannelPointFundingTxid where
+  fromGrpc = \case
+    GRPC.ChannelPointFundingTxidFundingTxidBytes x ->
+      fromGrpc x
+    GRPC.ChannelPointFundingTxidFundingTxidStr _ ->
+      Left $ FromGrpcError "UNSUPPORTED_TXID_STR"
+
 instance FromGrpc NodePubKey ByteString where
   fromGrpc = Right . NodePubKey
 
@@ -111,6 +137,12 @@ instance FromGrpc NodePubKey Text where
 
 instance FromGrpc NodeLocation Text where
   fromGrpc = Right . NodeLocation
+
+instance ToGrpc ChannelFundingTxId ByteString where
+  toGrpc = Right . coerce
+
+instance ToGrpc ChannelFundingOutputIndex Word32 where
+  toGrpc = Right . coerce
 
 instance ToGrpc AddIndex Word64 where
   toGrpc = Right . coerce

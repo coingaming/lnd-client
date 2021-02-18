@@ -9,6 +9,7 @@ where
 import Data.Vector (fromList)
 import LndClient.Data.Type
 import LndClient.Import.External
+import LndGrpc.Orphan ()
 
 class HasDefault b => ToGrpc a b where
   toGrpc :: a -> Either LndError b
