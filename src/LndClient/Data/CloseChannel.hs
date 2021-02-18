@@ -36,7 +36,7 @@ data PendingUpdate
 
 data ChannelCloseUpdate
   = ChannelCloseUpdate
-      { closingTxid :: ByteString,
+      { closingTxid :: ChannelClosingTxId,
         success :: Bool
       }
   deriving (Eq, Show)

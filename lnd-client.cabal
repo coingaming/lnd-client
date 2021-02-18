@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6d03e02664191924a72ca8150cabc38cc256a8427ecb742110f1a40c02d941c9
+-- hash: 100ddf20088fcdd1e848b1e231df967a983c5d59c5bf729988b8e46c22cddd9a
 
 name:           lnd-client
 version:        0.1.0.0
@@ -70,7 +70,7 @@ library
       LndClient.Util
       LndClient.Watcher
       LndGrpc
-      LndGrpc.Orphan2
+      LndGrpc.Orphan
       RouterGrpc
       WalletUnlockerGrpc
   other-modules:
