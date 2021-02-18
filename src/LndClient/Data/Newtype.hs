@@ -116,6 +116,15 @@ instance ToGrpc NodeLocation Text where
 instance FromGrpc ChannelFundingTxId ByteString where
   fromGrpc = Right . ChannelFundingTxId
 
+instance FromGrpc ChannelFundingTxId Text where
+  fromGrpc = (ChannelFundingTxId <$>) . txIdParser
+
+instance FromGrpc ChannelClosingTxId ByteString where
+  fromGrpc = Right . ChannelClosingTxId
+
+instance FromGrpc ChannelClosingTxId Text where
+  fromGrpc = (ChannelClosingTxId <$>) . txIdParser
+
 instance FromGrpc ChannelFundingOutputIndex Word32 where
   fromGrpc = Right . ChannelFundingOutputIndex
 
