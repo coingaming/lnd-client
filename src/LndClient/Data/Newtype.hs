@@ -21,9 +21,8 @@ module LndClient.Data.Newtype
     unGrpcTimeout,
     defaultSyncGrpcTimeout,
     defaultAsyncGrpcTimeout,
-    ChannelFundingTxId (..),
-    ChannelFundingOutputIndex (..),
-    ChannelClosingTxId (..),
+    TxId (..),
+    Vout (..),
   )
 where
 
@@ -37,19 +36,17 @@ import Data.Text.Lazy as TL
 import Data.Vector (fromList)
 import qualified InvoiceGrpc as GRPC
 import LndClient.Class
+import LndClient.Data.Kind
 import LndClient.Data.Type
 import LndClient.Import.External
 import LndClient.Util
 import qualified LndGrpc as GRPC
 import Prelude (Show (..))
 
-newtype ChannelFundingTxId = ChannelFundingTxId ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
-
-newtype ChannelFundingOutputIndex = ChannelFundingOutputIndex Word32
+newtype Vout (a :: TxKind) = Vout Word32
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
 
-newtype ChannelClosingTxId = ChannelClosingTxId ByteString
+newtype TxId (a :: TxKind) = TxId ByteString
   deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
 
 newtype NodePubKey = NodePubKey ByteString
@@ -113,22 +110,16 @@ instance ToGrpc NodeLocation Text where
 -- TODO : smart constructors for NodePubKey and NodeLocation ???
 --
 
-instance FromGrpc ChannelFundingTxId ByteString where
-  fromGrpc = Right . ChannelFundingTxId
+instance FromGrpc (TxId a) ByteString where
+  fromGrpc = Right . TxId
 
-instance FromGrpc ChannelFundingTxId Text where
-  fromGrpc = (ChannelFundingTxId <$>) . txIdParser
+instance FromGrpc (TxId a) Text where
+  fromGrpc = (TxId <$>) . txIdParser
 
-instance FromGrpc ChannelClosingTxId ByteString where
-  fromGrpc = Right . ChannelClosingTxId
+instance FromGrpc (Vout a) Word32 where
+  fromGrpc = Right . Vout
 
-instance FromGrpc ChannelClosingTxId Text where
-  fromGrpc = (ChannelClosingTxId <$>) . txIdParser
-
-instance FromGrpc ChannelFundingOutputIndex Word32 where
-  fromGrpc = Right . ChannelFundingOutputIndex
-
-instance FromGrpc ChannelFundingTxId GRPC.ChannelPointFundingTxid where
+instance FromGrpc (TxId a) GRPC.ChannelPointFundingTxid where
   fromGrpc = \case
     GRPC.ChannelPointFundingTxidFundingTxidBytes x ->
       fromGrpc x
@@ -147,10 +138,10 @@ instance FromGrpc NodePubKey Text where
 instance FromGrpc NodeLocation Text where
   fromGrpc = Right . NodeLocation
 
-instance ToGrpc ChannelFundingTxId ByteString where
+instance ToGrpc (TxId a) ByteString where
   toGrpc = Right . coerce
 
-instance ToGrpc ChannelFundingOutputIndex Word32 where
+instance ToGrpc (Vout a) Word32 where
   toGrpc = Right . coerce
 
 instance ToGrpc AddIndex Word64 where

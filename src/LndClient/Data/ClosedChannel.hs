@@ -10,7 +10,7 @@ import qualified LndGrpc as GRPC
 data ClosedChannel
   = ClosedChannel
       { channel :: PendingChannel,
-        closingTxid :: ChannelClosingTxId
+        closingTxid :: TxId 'Closing
       }
   deriving (Eq, Show)
 

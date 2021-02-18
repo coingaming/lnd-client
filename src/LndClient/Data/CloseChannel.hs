@@ -29,14 +29,14 @@ data CloseStatusUpdate
 
 data PendingUpdate
   = PendingUpdate
-      { txid :: ByteString,
-        outputIndex :: Word32
+      { txid :: TxId 'Closing,
+        outputIndex :: Vout 'Closing
       }
   deriving (Eq, Show)
 
 data ChannelCloseUpdate
   = ChannelCloseUpdate
-      { closingTxid :: ChannelClosingTxId,
+      { closingTxid :: TxId 'Closing,
         success :: Bool
       }
   deriving (Eq, Show)

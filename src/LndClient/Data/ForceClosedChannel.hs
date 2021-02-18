@@ -10,7 +10,7 @@ import qualified LndGrpc as GRPC
 data ForceClosedChannel
   = ForceClosedChannel
       { channel :: PendingChannel,
-        closingTxid :: ChannelClosingTxId,
+        closingTxid :: TxId 'Closing,
         limboBalance :: MoneyAmount,
         maturityHeight :: Word32,
         blocksTilMaturity :: Int32,

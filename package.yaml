@@ -78,6 +78,8 @@ library:
   - LambdaCase
   - OverloadedStrings
   - ScopedTypeVariables
+  - DataKinds
+  - KindSignatures
   ghc-options:
   # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
   # Enable all warnings with -Weverything, then disable the ones we don’t care about
@@ -107,6 +109,8 @@ tests:
     - LambdaCase
     - OverloadedStrings
     - ScopedTypeVariables
+    - DataKinds
+    - KindSignatures
     ghc-options:
     # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
     # Enable all warnings with -Weverything, then disable the ones we don’t care about
