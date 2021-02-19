@@ -2,6 +2,7 @@
 
 module LndClient.Data.Channel
   ( Channel (..),
+    PendingUpdate (..),
   )
 where
 
@@ -22,7 +23,14 @@ data Channel
         commitFee :: MoneyAmount,
         active :: Bool
       }
-  deriving (Eq, Show)
+  deriving (Eq, Ord, Show)
+
+data PendingUpdate (a :: TxKind)
+  = PendingUpdate
+      { txid :: TxId a,
+        outputIndex :: Vout a
+      }
+  deriving (Eq, Ord, Show)
 
 instance FromGrpc Channel GRPC.Channel where
   fromGrpc x =
@@ -37,3 +45,9 @@ instance FromGrpc Channel GRPC.Channel where
 
 instance FromGrpc [Channel] GRPC.ListChannelsResponse where
   fromGrpc = fromGrpc . GRPC.listChannelsResponseChannels
+
+instance FromGrpc (PendingUpdate a) GRPC.PendingUpdate where
+  fromGrpc x =
+    PendingUpdate
+      <$> fromGrpc (GRPC.pendingUpdateTxid x)
+      <*> fromGrpc (GRPC.pendingUpdateOutputIndex x)

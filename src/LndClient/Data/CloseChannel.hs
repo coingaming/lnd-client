@@ -1,13 +1,13 @@
 module LndClient.Data.CloseChannel
   ( CloseChannelRequest (..),
     CloseStatusUpdate (..),
-    PendingUpdate (..),
     ChannelCloseUpdate (..),
     ChannelCloseSummary (..),
   )
 where
 
-import LndClient.Data.ChannelPoint hiding (outputIndex)
+import LndClient.Data.Channel (PendingUpdate)
+import LndClient.Data.ChannelPoint
 import LndClient.Import
 import qualified LndGrpc as GRPC
 
@@ -19,27 +19,20 @@ data CloseChannelRequest
         satPerByte :: Maybe Int64,
         deliveryAddress :: Maybe Text
       }
-  deriving (Eq, Show)
+  deriving (Eq, Ord, Show)
 
 data CloseStatusUpdate
-  = Pending PendingUpdate
+  = Pending (PendingUpdate 'Closing)
   | Close ChannelCloseUpdate
   | NothingUpdate
-  deriving (Eq, Show)
-
-data PendingUpdate
-  = PendingUpdate
-      { txid :: TxId 'Closing,
-        outputIndex :: Vout 'Closing
-      }
-  deriving (Eq, Show)
+  deriving (Eq, Ord, Show)
 
 data ChannelCloseUpdate
   = ChannelCloseUpdate
       { closingTxid :: TxId 'Closing,
         success :: Bool
       }
-  deriving (Eq, Show)
+  deriving (Eq, Ord, Show)
 
 data ChannelCloseSummary
   = ChannelCloseSummary
@@ -47,7 +40,7 @@ data ChannelCloseSummary
         chPoint :: ChannelPoint,
         settledBalance :: MoneyAmount
       }
-  deriving (Eq, Show)
+  deriving (Eq, Ord, Show)
 
 instance FromGrpc ChannelCloseSummary GRPC.ChannelCloseSummary where
   fromGrpc x =
@@ -59,11 +52,11 @@ instance FromGrpc ChannelCloseSummary GRPC.ChannelCloseSummary where
 instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
   toGrpc x =
     msg
-      <$> (toGrpc $ channelPoint x)
-      <*> (toGrpc $ LndClient.Data.CloseChannel.force x)
-      <*> (toGrpc $ targetConf x)
-      <*> (toGrpc $ satPerByte x)
-      <*> (toGrpc $ deliveryAddress x)
+      <$> toGrpc (channelPoint x)
+      <*> toGrpc (LndClient.Data.CloseChannel.force x)
+      <*> toGrpc (targetConf x)
+      <*> toGrpc (satPerByte x)
+      <*> toGrpc (deliveryAddress x)
     where
       msg gChannelPoint gForce gTargetConf gSatPerByte gDeliveryAddress =
         def
@@ -79,21 +72,15 @@ instance FromGrpc CloseStatusUpdate GRPC.CloseStatusUpdate where
     case x of
       GRPC.CloseStatusUpdate
         (Just (GRPC.CloseStatusUpdateUpdateChanClose a)) ->
-          Close <$> (fromGrpc a)
+          Close <$> fromGrpc a
       GRPC.CloseStatusUpdate
         (Just (GRPC.CloseStatusUpdateUpdateClosePending a)) ->
-          Pending <$> (fromGrpc a)
+          Pending <$> fromGrpc a
       GRPC.CloseStatusUpdate Nothing ->
         Right NothingUpdate
-
-instance FromGrpc PendingUpdate GRPC.PendingUpdate where
-  fromGrpc x =
-    PendingUpdate
-      <$> (fromGrpc $ GRPC.pendingUpdateTxid x)
-      <*> (fromGrpc $ GRPC.pendingUpdateOutputIndex x)
 
 instance FromGrpc ChannelCloseUpdate GRPC.ChannelCloseUpdate where
   fromGrpc x =
     ChannelCloseUpdate
-      <$> (fromGrpc $ GRPC.channelCloseUpdateClosingTxid x)
-      <*> (fromGrpc $ GRPC.channelCloseUpdateSuccess x)
+      <$> fromGrpc (GRPC.channelCloseUpdateClosingTxid x)
+      <*> fromGrpc (GRPC.channelCloseUpdateSuccess x)

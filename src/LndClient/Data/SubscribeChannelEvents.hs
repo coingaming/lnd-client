@@ -19,26 +19,35 @@ data ChannelEventUpdate
       { channelEvent :: ChannelEventUpdateChannel,
         eventType :: Enumerated GRPC.ChannelEventUpdate_UpdateType
       }
-  deriving (Eq, Show)
+  deriving (Eq, Ord, Show)
 
 data ChannelEventUpdateChannel
   = ChannelEventUpdateChannelOpenChannel Channel
   | ChannelEventUpdateChannelClosedChannel ChannelCloseSummary
   | ChannelEventUpdateChannelActiveChannel ChannelPoint
   | ChannelEventUpdateChannelInactiveChannel ChannelPoint
-  | ChannelEventUpdateChannelPendingOpenChannel PendingUpdate
-  deriving (Eq, Show)
+  | ChannelEventUpdateChannelPendingOpenChannel (PendingUpdate 'Funding)
+  deriving (Eq, Ord, Show)
 
 instance FromGrpc ChannelEventUpdate GRPC.ChannelEventUpdate where
   fromGrpc x =
     ChannelEventUpdate
-      <$> join (maybeToEither (FromGrpcError "Empty channelUpdate") (fromGrpc <$> GRPC.channelEventUpdateChannel x))
+      <$> join
+        ( maybeToEither
+            (FromGrpcError "Empty channelUpdate")
+            (fromGrpc <$> GRPC.channelEventUpdateChannel x)
+        )
         <*> fromGrpc (GRPC.channelEventUpdateType x)
 
 instance FromGrpc ChannelEventUpdateChannel GRPC.ChannelEventUpdateChannel where
   fromGrpc x = case x of
-    GRPC.ChannelEventUpdateChannelOpenChannel c -> ChannelEventUpdateChannelOpenChannel <$> fromGrpc c
-    GRPC.ChannelEventUpdateChannelActiveChannel cp -> ChannelEventUpdateChannelActiveChannel <$> fromGrpc cp
-    GRPC.ChannelEventUpdateChannelInactiveChannel cp -> ChannelEventUpdateChannelInactiveChannel <$> fromGrpc cp
-    GRPC.ChannelEventUpdateChannelPendingOpenChannel pa -> ChannelEventUpdateChannelPendingOpenChannel <$> fromGrpc pa
-    GRPC.ChannelEventUpdateChannelClosedChannel cc -> ChannelEventUpdateChannelClosedChannel <$> fromGrpc cc
+    GRPC.ChannelEventUpdateChannelOpenChannel c ->
+      ChannelEventUpdateChannelOpenChannel <$> fromGrpc c
+    GRPC.ChannelEventUpdateChannelActiveChannel cp ->
+      ChannelEventUpdateChannelActiveChannel <$> fromGrpc cp
+    GRPC.ChannelEventUpdateChannelInactiveChannel cp ->
+      ChannelEventUpdateChannelInactiveChannel <$> fromGrpc cp
+    GRPC.ChannelEventUpdateChannelPendingOpenChannel pa ->
+      ChannelEventUpdateChannelPendingOpenChannel <$> fromGrpc pa
+    GRPC.ChannelEventUpdateChannelClosedChannel cc ->
+      ChannelEventUpdateChannelClosedChannel <$> fromGrpc cc

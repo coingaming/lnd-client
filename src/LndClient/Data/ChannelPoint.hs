@@ -16,7 +16,7 @@ data ChannelPoint
       { fundingTxId :: TxId 'Funding,
         outputIndex :: Vout 'Funding
       }
-  deriving (Eq, Show)
+  deriving (Eq, Ord, Show)
 
 instance FromGrpc ChannelPoint GRPC.ChannelPoint where
   fromGrpc x =
