@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 100ddf20088fcdd1e848b1e231df967a983c5d59c5bf729988b8e46c22cddd9a
+-- hash: f942046ac174c15fa57f88bb8bd5d8828fc69ea0efee8ee100bee23b05550010
 
 name:           lnd-client
 version:        0.1.0.0
@@ -41,6 +41,7 @@ library
       LndClient.Data.HtlcEvent
       LndClient.Data.InitWallet
       LndClient.Data.Invoice
+      LndClient.Data.Kind
       LndClient.Data.ListChannels
       LndClient.Data.LndEnv
       LndClient.Data.NewAddress
@@ -77,7 +78,7 @@ library
       Paths_lnd_client
   hs-source-dirs:
       src
-  default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables
+  default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables DataKinds KindSignatures
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
   build-depends:
       JuicyPixels
@@ -127,7 +128,7 @@ test-suite lnd-client-test
       Paths_lnd_client
   hs-source-dirs:
       test
-  default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables
+  default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables DataKinds KindSignatures
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N -O0
   build-depends:
       JuicyPixels
