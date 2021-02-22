@@ -385,7 +385,7 @@ setupZeroChannels = do
   closeAllChannels
   syncPendingChannels
 
-setupOneChannel :: (LndTest m) => m ()
+setupOneChannel :: (LndTest m) => m ChannelPoint
 setupOneChannel = do
   alice <- getLndEnv Alice
   bob <- getLndEnv Bob
@@ -426,6 +426,7 @@ setupOneChannel = do
   sendTestPayment (MoneyAmount 1000) Alice Bob
   sendTestPayment (MoneyAmount 1000) Bob Alice
   $(logTM) InfoS "SetupOneChannel - finished"
+  pure cp
 
 sendTestPayment ::
   (LndTest m) =>

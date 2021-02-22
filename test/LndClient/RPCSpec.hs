@@ -92,7 +92,7 @@ spec = do
         queue
     liftIO $ res `shouldSatisfy` isRight
   it "settleNormalInvoice" $ withEnv $ do
-    setupOneChannel
+    void setupOneChannel
     chan <- getInvoiceTChan Bob
     bob <- getLndEnv Bob
     inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
@@ -189,7 +189,7 @@ spec = do
     res <- ensureHodlInvoice bob req
     liftIO $ res `shouldSatisfy` isRight
   it "cancelInvoice" $ withEnv $ do
-    setupOneChannel
+    void setupOneChannel
     r <- newRPreimage
     let rh = newRHash r
     let hipr =
@@ -223,7 +223,7 @@ spec = do
           liftIO $ res `shouldSatisfy` isRight
       )
   it "settleInvoice" $ withEnv $ do
-    setupOneChannel
+    void setupOneChannel
     r <- newRPreimage
     let rh = newRHash r
     let hipr =
@@ -251,7 +251,7 @@ spec = do
           liftIO $ res `shouldSatisfy` isRight
       )
   it "listChannelAndClose" $ withEnv $ do
-    setupOneChannel
+    void setupOneChannel
     chan <- getChannelTChan Bob
     lnd <- getLndEnv Bob
     let listReq = ListChannelsRequest False False False False Nothing
