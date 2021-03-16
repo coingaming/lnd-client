@@ -37,10 +37,10 @@ instance FromGrpc Channel GRPC.Channel where
     Channel
       <$> fromGrpc (GRPC.channelRemotePubkey x)
       <*> channelPointParser (GRPC.channelChannelPoint x)
-      <*> fromGrpc (1000 * GRPC.channelCapacity x)
-      <*> fromGrpc (1000 * GRPC.channelLocalBalance x)
-      <*> fromGrpc (1000 * GRPC.channelRemoteBalance x)
-      <*> fromGrpc (1000 * GRPC.channelCommitFee x)
+      <*> (toMSat <$> fromGrpc (GRPC.channelCapacity x))
+      <*> (toMSat <$> fromGrpc (GRPC.channelLocalBalance x))
+      <*> (toMSat <$> fromGrpc (GRPC.channelRemoteBalance x))
+      <*> (toMSat <$> fromGrpc (GRPC.channelCommitFee x))
       <*> fromGrpc (GRPC.channelActive x)
 
 instance FromGrpc [Channel] GRPC.ListChannelsResponse where
