@@ -10,7 +10,7 @@ import qualified LndGrpc as GRPC
 data SendPaymentRequest
   = SendPaymentRequest
       { paymentRequest :: PaymentRequest,
-        amt :: MoneyAmount
+        amt :: MSat
       }
   deriving (Eq, Show)
 
@@ -30,7 +30,7 @@ instance ToGrpc SendPaymentRequest GRPC.SendRequest where
     where
       msg gAmt gPaymentRequest =
         def
-          { GRPC.sendRequestAmt = gAmt,
+          { GRPC.sendRequestAmtMsat = gAmt,
             GRPC.sendRequestPaymentRequest = gPaymentRequest
           }
 

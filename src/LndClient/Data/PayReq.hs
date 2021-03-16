@@ -9,7 +9,7 @@ import qualified LndGrpc as GRPC
 data PayReq
   = PayReq
       { paymentHash :: RHash,
-        numSatoshis :: MoneyAmount,
+        numMsat :: MSat,
         expiry :: Seconds
       }
   deriving (Eq, Show)
@@ -18,5 +18,5 @@ instance FromGrpc PayReq GRPC.PayReq where
   fromGrpc x =
     PayReq
       <$> fromGrpc (GRPC.payReqPaymentHash x)
-      <*> fromGrpc (GRPC.payReqNumSatoshis x)
+      <*> fromGrpc (GRPC.payReqNumMsat x)
       <*> fromGrpc (GRPC.payReqExpiry x)

@@ -400,8 +400,8 @@ setupOneChannel = do
   let openChannelRequest =
         OpenChannel.OpenChannelRequest
           { OpenChannel.nodePubkey = merchantPubKey,
-            OpenChannel.localFundingAmount = MoneyAmount 200000,
-            OpenChannel.pushSat = Just $ MoneyAmount 100000,
+            OpenChannel.localFundingAmount = MSat 200000000,
+            OpenChannel.pushSat = Just $ MSat 10000000,
             OpenChannel.targetConf = Nothing,
             OpenChannel.satPerByte = Nothing,
             OpenChannel.private = Nothing,
@@ -423,14 +423,14 @@ setupOneChannel = do
   -- remove when LND bug will be fixed
   -- https://github.com/lightningnetwork/lnd/issues/2469
   --
-  sendTestPayment (MoneyAmount 1000) Alice Bob
-  sendTestPayment (MoneyAmount 1000) Bob Alice
+  sendTestPayment (MSat 1000000) Alice Bob
+  sendTestPayment (MSat 1000000) Bob Alice
   $(logTM) InfoS "SetupOneChannel - finished"
   pure cp
 
 sendTestPayment ::
   (LndTest m) =>
-  MoneyAmount ->
+  MSat ->
   Owner ->
   Owner ->
   m ()
@@ -440,7 +440,7 @@ sendTestPayment amt0 sender0 recepient0 = do
   let addInvoiceRequest =
         AddInvoice.AddInvoiceRequest
           { AddInvoice.memo = Just "HELLO",
-            AddInvoice.value = amt0,
+            AddInvoice.valueMsat = amt0,
             AddInvoice.expiry = Just $ Seconds 1000
           }
   invoice <-

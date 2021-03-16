@@ -9,7 +9,7 @@ import qualified LndGrpc as GRPC
 
 data AddInvoiceRequest
   = AddInvoiceRequest
-      { value :: MoneyAmount,
+      { valueMsat :: MSat,
         memo :: Maybe Text,
         expiry :: Maybe Seconds
       }
@@ -27,13 +27,13 @@ instance ToGrpc AddInvoiceRequest GRPC.Invoice where
   toGrpc x =
     msg
       <$> toGrpc (memo x)
-      <*> toGrpc (value x)
+      <*> toGrpc (valueMsat x)
       <*> toGrpc (expiry x)
     where
       msg gMemo gValue gExp =
         def
           { GRPC.invoiceMemo = gMemo,
-            GRPC.invoiceValue = gValue,
+            GRPC.invoiceValueMsat = gValue,
             GRPC.invoiceExpiry = gExp
           }
 

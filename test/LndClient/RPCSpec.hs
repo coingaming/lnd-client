@@ -53,8 +53,8 @@ spec = do
     liftIO $ do
       PayReq.paymentHash x1
         `shouldBe` AddInvoice.rHash x0
-      PayReq.numSatoshis x1
-        `shouldBe` AddInvoice.value addInvoiceRequest
+      PayReq.numMsat x1
+        `shouldBe` AddInvoice.valueMsat addInvoiceRequest
       Just (PayReq.expiry x1)
         `shouldBe` AddInvoice.expiry addInvoiceRequest
   it "lookupInvoice" $ withEnv $ do
@@ -70,8 +70,8 @@ spec = do
         `shouldBe` AddInvoice.addIndex x0
       Just (Invoice.memo x1)
         `shouldBe` AddInvoice.memo addInvoiceRequest
-      Invoice.value x1
-        `shouldBe` AddInvoice.value addInvoiceRequest
+      Invoice.valueMsat x1
+        `shouldBe` AddInvoice.valueMsat addInvoiceRequest
   it "addInvoice" $ withEnv $ do
     lnd <- getLndEnv Bob
     res <- addInvoice lnd addInvoiceRequest
@@ -101,7 +101,7 @@ spec = do
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN chan
     alice <- getLndEnv Alice
     let pr = AddInvoice.paymentRequest inv
-    let spr = SendPaymentRequest pr $ MoneyAmount 1000
+    let spr = SendPaymentRequest pr $ MSat 1000000
     void $ liftLndResult =<< sendPayment alice spr
     res <- receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED chan
     liftIO $ res `shouldSatisfy` isRight
@@ -112,7 +112,7 @@ spec = do
           AddHodlInvoiceRequest
             { memo = Just "HELLO",
               hash = newRHash r,
-              value = MoneyAmount 1000,
+              valueMsat = MSat 1000000,
               expiry = Just $ Seconds 1000
             }
     x0 <- addHodlInvoice lnd req
@@ -142,8 +142,8 @@ spec = do
     let openChannelRequest =
           OpenChannelRequest
             { nodePubkey = bobPubKey,
-              localFundingAmount = MoneyAmount 20000,
-              pushSat = Just $ MoneyAmount 1000,
+              localFundingAmount = MSat 20000000,
+              pushSat = Just $ MSat 1000000,
               targetConf = Nothing,
               satPerByte = Nothing,
               private = Nothing,
@@ -182,7 +182,7 @@ spec = do
           AddHodlInvoiceRequest
             { memo = Just "HELLO",
               hash = newRHash r,
-              value = MoneyAmount 1000,
+              valueMsat = MSat 1000000,
               expiry = Just $ Seconds 1000
             }
     bob <- getLndEnv Bob
@@ -196,7 +196,7 @@ spec = do
           AddHodlInvoiceRequest
             Nothing
             rh
-            (MoneyAmount 1000)
+            (MSat 1000000)
             Nothing
     bob <- getLndEnv Bob
     q <- getInvoiceTChan Bob
@@ -205,7 +205,7 @@ spec = do
         =<< addHodlInvoice bob hipr
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
-    let spr = SendPaymentRequest pr $ MoneyAmount 1000
+    let spr = SendPaymentRequest pr $ MSat 1000000
     alice <- getLndEnv Alice
     withSpawnLink
       (liftLndResult =<< sendPayment alice spr)
@@ -227,13 +227,13 @@ spec = do
     r <- newRPreimage
     let rh = newRHash r
     let hipr =
-          AddHodlInvoiceRequest Nothing rh (MoneyAmount 1000) Nothing
+          AddHodlInvoiceRequest Nothing rh (MSat 1000000) Nothing
     bob <- getLndEnv Bob
     q <- getInvoiceTChan Bob
     pr <- liftLndResult =<< addHodlInvoice bob hipr
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
-    let spr = SendPaymentRequest pr $ MoneyAmount 1000
+    let spr = SendPaymentRequest pr $ MSat 1000000
     alice <- getLndEnv Alice
     withSpawnLink
       (liftLndResult =<< sendPayment alice spr)
@@ -256,6 +256,7 @@ spec = do
     lnd <- getLndEnv Bob
     let listReq = ListChannelsRequest False False False False Nothing
     cs0 <- liftLndResult =<< listChannels lnd listReq
+    lazyConnectNodes
     cp <-
       liftMaybe "ChannelPoint is required" $
         Channel.channelPoint <$> safeHead cs0
@@ -284,7 +285,7 @@ spec = do
     --  inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
     --  let rh = AddInvoice.rHash inv
     --  let pr = AddInvoice.paymentRequest inv
-    --  let spr = SendPaymentRequest pr $ MoneyAmount 1000
+    --  let spr = SendPaymentRequest pr $ MSat 1000
     --  --
     --  -- spawn payment watcher and settle invoice
     --  --
@@ -301,6 +302,6 @@ spec = do
     addInvoiceRequest =
       AddInvoiceRequest
         { memo = Just "HELLO",
-          value = MoneyAmount 1000,
+          valueMsat = MSat 1000000,
           expiry = Just $ Seconds 1000
         }

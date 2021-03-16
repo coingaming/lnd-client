@@ -10,7 +10,7 @@ data AddHodlInvoiceRequest
   = AddHodlInvoiceRequest
       { memo :: Maybe Text,
         hash :: RHash,
-        value :: MoneyAmount,
+        valueMsat :: MSat,
         expiry :: Maybe Seconds
       }
   deriving (Eq, Show)
@@ -20,13 +20,13 @@ instance ToGrpc AddHodlInvoiceRequest GRPC.AddHoldInvoiceRequest where
     msg
       <$> toGrpc (memo x)
       <*> toGrpc (hash x)
-      <*> toGrpc (value x)
+      <*> toGrpc (valueMsat x)
       <*> toGrpc (expiry x)
     where
       msg gMemo gHash gValue gExp =
         def
           { GRPC.addHoldInvoiceRequestMemo = gMemo,
             GRPC.addHoldInvoiceRequestHash = gHash,
-            GRPC.addHoldInvoiceRequestValue = gValue,
+            GRPC.addHoldInvoiceRequestValueMsat = gValue,
             GRPC.addHoldInvoiceRequestExpiry = gExp
           }

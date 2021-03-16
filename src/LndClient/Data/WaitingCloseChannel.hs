@@ -10,7 +10,7 @@ import qualified LndGrpc as GRPC
 data WaitingCloseChannel
   = WaitingCloseChannel
       { channel :: PendingChannel,
-        limboBalance :: MoneyAmount
+        limboBalance :: MSat
       }
   deriving (Eq, Show)
 
@@ -27,8 +27,10 @@ instance
               Just this ->
                 fromGrpc this
           )
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_WaitingCloseChannelLimboBalance x)
+      <*> ( toMSat
+              <$> fromGrpc
+                (GRPC.pendingChannelsResponse_WaitingCloseChannelLimboBalance x)
+          )
     where
       pendingChannel =
         GRPC.pendingChannelsResponse_WaitingCloseChannelChannel x
