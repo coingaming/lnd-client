@@ -44,7 +44,7 @@ import LndClient.Data.Type
 import LndClient.Import.External
 import LndClient.Util
 import qualified LndGrpc as GRPC
-import Prelude (Show (..))
+import Prelude (Show)
 
 newtype Vout (a :: TxKind) = Vout Word32
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
@@ -172,13 +172,13 @@ instance FromGrpc MSat Int64 where
 instance ToGrpc Sat Int64 where
   toGrpc x =
     maybeToRight
-      (ToGrpcError "MSat overflow")
+      (ToGrpcError "Sat overflow")
       $ safeFromIntegral (coerce x :: Word64)
 
 instance FromGrpc Sat Int64 where
   fromGrpc x =
     maybeToRight
-      (ToGrpcError "MSat overflow")
+      (ToGrpcError "Sat overflow")
       $ Sat <$> safeFromIntegral x
 
 instance FromGrpc RHash ByteString where
@@ -276,7 +276,7 @@ toSat mSat = do
   let mVal :: Word64 = coerce mSat
   case divMod mVal 1000 of
     (val, 0) -> Right $ Sat val
-    _ -> Left $ ToGrpcError "Cannot convert MSat to Sat"
+    _ -> Left $ ToGrpcError ("Cannot convert " <> show mVal <> " to Sat")
 
 toMSat :: Sat -> MSat
 toMSat sat = MSat $ 1000 * coerce sat
