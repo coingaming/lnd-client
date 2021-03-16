@@ -48,7 +48,7 @@ instance FromGrpc ChannelCloseSummary GRPC.ChannelCloseSummary where
     ChannelCloseSummary
       <$> fromGrpc (GRPC.channelCloseSummaryRemotePubkey x)
       <*> channelPointParser (GRPC.channelCloseSummaryChannelPoint x)
-      <*> fromGrpc (1000 * GRPC.channelCloseSummarySettledBalance x)
+      <*> (toMSat <$> fromGrpc (GRPC.channelCloseSummarySettledBalance x))
       <*> fromGrpc (GRPC.channelCloseSummaryClosingTxHash x)
 
 instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where

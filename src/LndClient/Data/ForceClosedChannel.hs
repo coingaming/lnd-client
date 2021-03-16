@@ -33,14 +33,18 @@ instance
           )
       <*> fromGrpc
         (GRPC.pendingChannelsResponse_ForceClosedChannelClosingTxid x)
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_ForceClosedChannelLimboBalance x * 1000)
+      <*> ( toMSat
+              <$> fromGrpc
+                (GRPC.pendingChannelsResponse_ForceClosedChannelLimboBalance x)
+          )
       <*> fromGrpc
         (GRPC.pendingChannelsResponse_ForceClosedChannelMaturityHeight x)
       <*> fromGrpc
         (GRPC.pendingChannelsResponse_ForceClosedChannelBlocksTilMaturity x)
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_ForceClosedChannelRecoveredBalance x * 1000)
+      <*> ( toMSat
+              <$> fromGrpc
+                (GRPC.pendingChannelsResponse_ForceClosedChannelRecoveredBalance x)
+          )
     where
       pendingChannel =
         GRPC.pendingChannelsResponse_ForceClosedChannelChannel x
