@@ -11,10 +11,10 @@ data ForceClosedChannel
   = ForceClosedChannel
       { channel :: PendingChannel,
         closingTxid :: TxId 'Closing,
-        limboBalance :: MoneyAmount,
+        limboBalance :: MSat,
         maturityHeight :: Word32,
         blocksTilMaturity :: Int32,
-        recoveredBalance :: MoneyAmount
+        recoveredBalance :: MSat
       }
   deriving (Eq, Show)
 
@@ -33,14 +33,18 @@ instance
           )
       <*> fromGrpc
         (GRPC.pendingChannelsResponse_ForceClosedChannelClosingTxid x)
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_ForceClosedChannelLimboBalance x)
+      <*> ( toMSat
+              <$> fromGrpc
+                (GRPC.pendingChannelsResponse_ForceClosedChannelLimboBalance x)
+          )
       <*> fromGrpc
         (GRPC.pendingChannelsResponse_ForceClosedChannelMaturityHeight x)
       <*> fromGrpc
         (GRPC.pendingChannelsResponse_ForceClosedChannelBlocksTilMaturity x)
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_ForceClosedChannelRecoveredBalance x)
+      <*> ( toMSat
+              <$> fromGrpc
+                (GRPC.pendingChannelsResponse_ForceClosedChannelRecoveredBalance x)
+          )
     where
       pendingChannel =
         GRPC.pendingChannelsResponse_ForceClosedChannelChannel x

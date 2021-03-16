@@ -11,9 +11,9 @@ data PendingOpenChannel
   = PendingOpenChannel
       { channel :: PendingChannel,
         confirmationHeight :: Word32,
-        commitFee :: MoneyAmount,
+        commitFee :: MSat,
         commitWeight :: Int64,
-        feePerKw :: MoneyAmount
+        feePerKw :: MSat
       }
   deriving (Eq, Show)
 
@@ -28,9 +28,13 @@ instance
         (G.pendingChannelsResponse_PendingOpenChannelChannel x)
       <*> fromGrpc
         (G.pendingChannelsResponse_PendingOpenChannelConfirmationHeight x)
-      <*> fromGrpc
-        (G.pendingChannelsResponse_PendingOpenChannelCommitFee x)
+      <*> ( toMSat
+              <$> fromGrpc
+                (G.pendingChannelsResponse_PendingOpenChannelCommitFee x)
+          )
       <*> fromGrpc
         (G.pendingChannelsResponse_PendingOpenChannelCommitWeight x)
-      <*> fromGrpc
-        (G.pendingChannelsResponse_PendingOpenChannelFeePerKw x)
+      <*> ( toMSat
+              <$> fromGrpc
+                (G.pendingChannelsResponse_PendingOpenChannelFeePerKw x)
+          )

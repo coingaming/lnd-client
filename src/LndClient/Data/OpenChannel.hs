@@ -9,12 +9,12 @@ import qualified LndGrpc as GRPC
 data OpenChannelRequest
   = OpenChannelRequest
       { nodePubkey :: NodePubKey,
-        localFundingAmount :: MoneyAmount,
-        pushSat :: Maybe MoneyAmount,
+        localFundingAmount :: MSat,
+        pushSat :: Maybe MSat,
         targetConf :: Maybe Int32,
-        satPerByte :: Maybe MoneyAmount,
+        satPerByte :: Maybe MSat,
         private :: Maybe Bool,
-        minHtlcMsat :: Maybe MoneyAmount,
+        minHtlcMsat :: Maybe MSat,
         remoteCsvDelay :: Maybe Word32,
         minConfs :: Maybe Int32,
         spendUnconfirmed :: Maybe Bool,
@@ -26,10 +26,10 @@ instance ToGrpc OpenChannelRequest GRPC.OpenChannelRequest where
   toGrpc x =
     msg
       <$> toGrpc (nodePubkey x)
-      <*> toGrpc (localFundingAmount x)
-      <*> toGrpc (pushSat x)
+      <*> (toGrpc =<< toSat (localFundingAmount x))
+      <*> maybe (Right def) (toGrpc <=< toSat) (pushSat x)
       <*> toGrpc (targetConf x)
-      <*> toGrpc (satPerByte x)
+      <*> maybe (Right def) (toGrpc <=< toSat) (satPerByte x)
       <*> toGrpc (private x)
       <*> toGrpc (minHtlcMsat x)
       <*> toGrpc (remoteCsvDelay x)

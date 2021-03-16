@@ -11,11 +11,11 @@ data PendingChannel
   = PendingChannel
       { remoteNodePub :: Text,
         channelPoint :: ChannelPoint,
-        capacity :: MoneyAmount,
-        localBalance :: MoneyAmount,
-        remoteBalance :: MoneyAmount,
-        localChanReserveSat :: MoneyAmount,
-        remoteChanReserveSat :: MoneyAmount
+        capacity :: MSat,
+        localBalance :: MSat,
+        remoteBalance :: MSat,
+        localChanReserveSat :: MSat,
+        remoteChanReserveSat :: MSat
       }
   deriving (Eq, Show)
 
@@ -30,13 +30,20 @@ instance
         (GRPC.pendingChannelsResponse_PendingChannelRemoteNodePub x)
       <*> channelPointParser
         (GRPC.pendingChannelsResponse_PendingChannelChannelPoint x)
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_PendingChannelCapacity x)
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_PendingChannelLocalBalance x)
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_PendingChannelRemoteBalance x)
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_PendingChannelLocalChanReserveSat x)
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_PendingChannelRemoteChanReserveSat x)
+      <*> (toMSat <$> fromGrpc (GRPC.pendingChannelsResponse_PendingChannelCapacity x))
+      <*> ( toMSat
+              <$> fromGrpc
+                (GRPC.pendingChannelsResponse_PendingChannelLocalBalance x)
+          )
+      <*> ( toMSat
+              <$> fromGrpc
+                (GRPC.pendingChannelsResponse_PendingChannelRemoteBalance x)
+          )
+      <*> ( toMSat
+              <$> fromGrpc
+                (GRPC.pendingChannelsResponse_PendingChannelLocalChanReserveSat x)
+          )
+      <*> ( toMSat
+              <$> fromGrpc
+                (GRPC.pendingChannelsResponse_PendingChannelRemoteChanReserveSat x)
+          )

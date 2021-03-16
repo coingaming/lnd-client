@@ -38,7 +38,7 @@ data ChannelCloseSummary
   = ChannelCloseSummary
       { remotePubkey :: NodePubKey,
         chPoint :: ChannelPoint,
-        settledBalance :: MoneyAmount,
+        settledBalance :: MSat,
         closingTxId :: TxId 'Closing
       }
   deriving (Eq, Ord, Show)
@@ -48,7 +48,7 @@ instance FromGrpc ChannelCloseSummary GRPC.ChannelCloseSummary where
     ChannelCloseSummary
       <$> fromGrpc (GRPC.channelCloseSummaryRemotePubkey x)
       <*> channelPointParser (GRPC.channelCloseSummaryChannelPoint x)
-      <*> fromGrpc (GRPC.channelCloseSummarySettledBalance x)
+      <*> (toMSat <$> fromGrpc (GRPC.channelCloseSummarySettledBalance x))
       <*> fromGrpc (GRPC.channelCloseSummaryClosingTxHash x)
 
 instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where

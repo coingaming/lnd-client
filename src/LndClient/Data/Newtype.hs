@@ -8,7 +8,10 @@ module LndClient.Data.Newtype
     PaymentRequest (..),
     RHash (..),
     RPreimage (..),
-    MoneyAmount (..),
+    MSat (..),
+    Sat (..),
+    toSat,
+    toMSat,
     CipherSeedMnemonic (..),
     AezeedPassphrase (..),
     Seconds (..),
@@ -41,7 +44,7 @@ import LndClient.Data.Type
 import LndClient.Import.External
 import LndClient.Util
 import qualified LndGrpc as GRPC
-import Prelude (Show (..))
+import Prelude (Show)
 
 newtype Vout (a :: TxKind) = Vout Word32
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
@@ -70,7 +73,7 @@ newtype RHash = RHash ByteString
 newtype RPreimage = RPreimage ByteString
   deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
 
-newtype MoneyAmount = MoneyAmount Word64
+newtype MSat = MSat Word64
   deriving
     ( PersistField,
       PersistFieldSql,
@@ -80,6 +83,10 @@ newtype MoneyAmount = MoneyAmount Word64
       FromJSON,
       Show
     )
+
+newtype Sat = Sat Word64
+  deriving
+    (Eq, Num, Ord, FromJSON, Show)
 
 newtype CipherSeedMnemonic = CipherSeedMnemonic [Text]
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, Show)
@@ -150,17 +157,29 @@ instance ToGrpc AddIndex Word64 where
 instance ToGrpc SettleIndex Word64 where
   toGrpc = Right . coerce
 
-instance ToGrpc MoneyAmount Int64 where
+instance ToGrpc MSat Int64 where
   toGrpc x =
     maybeToRight
-      (ToGrpcError "MoneyAmount overflow")
+      (ToGrpcError "MSat overflow")
       $ safeFromIntegral (coerce x :: Word64)
 
-instance FromGrpc MoneyAmount Int64 where
+instance FromGrpc MSat Int64 where
   fromGrpc x =
     maybeToRight
-      (ToGrpcError "MoneyAmount overflow")
-      $ MoneyAmount <$> safeFromIntegral x
+      (ToGrpcError "MSat overflow")
+      $ MSat <$> safeFromIntegral x
+
+instance ToGrpc Sat Int64 where
+  toGrpc x =
+    maybeToRight
+      (ToGrpcError "Sat overflow")
+      $ safeFromIntegral (coerce x :: Word64)
+
+instance FromGrpc Sat Int64 where
+  fromGrpc x =
+    maybeToRight
+      (ToGrpcError "Sat overflow")
+      $ Sat <$> safeFromIntegral x
 
 instance FromGrpc RHash ByteString where
   fromGrpc = Right . RHash
@@ -251,3 +270,13 @@ defaultSyncGrpcTimeout = GrpcTimeoutSeconds 60
 
 defaultAsyncGrpcTimeout :: GrpcTimeoutSeconds
 defaultAsyncGrpcTimeout = GrpcTimeoutSeconds 3600
+
+toSat :: MSat -> Either LndError Sat
+toSat mSat = do
+  let mVal :: Word64 = coerce mSat
+  case divMod mVal 1000 of
+    (val, 0) -> Right $ Sat val
+    _ -> Left $ ToGrpcError ("Cannot convert " <> show mVal <> " to Sat")
+
+toMSat :: Sat -> MSat
+toMSat sat = MSat $ 1000 * coerce sat

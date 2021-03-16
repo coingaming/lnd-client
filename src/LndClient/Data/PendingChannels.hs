@@ -14,7 +14,7 @@ import qualified LndGrpc as GRPC
 
 data PendingChannelsResponse
   = PendingChannelsResponse
-      { totalLimboBalance :: MoneyAmount,
+      { totalLimboBalance :: MSat,
         pendingOpenChannels :: [PendingOpenChannel],
         pendingClosingChannels :: [ClosedChannel],
         pendingForceClosingChannels :: [ForceClosedChannel],
@@ -29,8 +29,10 @@ instance
   where
   fromGrpc x =
     PendingChannelsResponse
-      <$> fromGrpc
-        (GRPC.pendingChannelsResponseTotalLimboBalance x)
+      <$> ( toMSat
+              <$> fromGrpc
+                (GRPC.pendingChannelsResponseTotalLimboBalance x)
+          )
       <*> fromGrpc
         (GRPC.pendingChannelsResponsePendingOpenChannels x)
       <*> fromGrpc

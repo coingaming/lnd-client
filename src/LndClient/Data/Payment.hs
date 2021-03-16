@@ -10,7 +10,7 @@ data Payment
   = Payment
       { paymentHash :: RHash,
         paymentPreimage :: RPreimage,
-        valueSat :: MoneyAmount,
+        valueMsat :: MSat,
         state :: GRPC.Payment_PaymentStatus
       }
   deriving (Eq, Show)
@@ -20,7 +20,7 @@ instance FromGrpc Payment GRPC.Payment where
     Payment
       <$> fromGrpc (GRPC.paymentPaymentHash x)
       <*> fromGrpc (GRPC.paymentPaymentPreimage x)
-      <*> fromGrpc (GRPC.paymentValueSat x)
+      <*> fromGrpc (GRPC.paymentValueMsat x)
       <*> first
         (\e -> FromGrpcError $ "Invalid Payment State" <> show e)
         (enumerated $ GRPC.paymentStatus x)

@@ -9,8 +9,8 @@ import qualified LndGrpc as GRPC
 data Invoice
   = Invoice
       { rHash :: RHash,
-        amtPaidSat :: MoneyAmount,
-        value :: MoneyAmount,
+        amtPaidMsat :: MSat,
+        valueMsat :: MSat,
         settled :: Bool,
         settleIndex :: Maybe SettleIndex,
         memo :: Text,
@@ -25,8 +25,8 @@ instance FromGrpc Invoice GRPC.Invoice where
   fromGrpc x =
     Invoice
       <$> fromGrpc (GRPC.invoiceRHash x)
-      <*> fromGrpc (GRPC.invoiceAmtPaidSat x)
-      <*> fromGrpc (GRPC.invoiceValue x)
+      <*> fromGrpc (GRPC.invoiceAmtPaidMsat x)
+      <*> fromGrpc (GRPC.invoiceValueMsat x)
       <*> fromGrpc (GRPC.invoiceSettled x)
       <*> fromGrpc (GRPC.invoiceSettleIndex x)
       <*> fromGrpc (GRPC.invoiceMemo x)
