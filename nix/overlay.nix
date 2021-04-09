@@ -17,13 +17,30 @@ self: super:
         self': super': {
           parameterized = dontCheck super'.parameterized;
           universum = dontCheck super'.universum;
-          x509 = callPackage ./overlay/x509.nix {
-            stdenv = self.stdenv;
-          };
           cryptonite = callPackage ./overlay/cryptonite.nix {
             stdenv = self.stdenv;
           };
-          swagger2 = callPackage ./swagger2.nix {
+          swagger2 = callPackage ./overlay/swagger2.nix {
+            stdenv = self.stdenv;
+          };
+          base16-bytestring = callPackage ./overlay/base16-bytestring.nix {
+            stdenv = self.stdenv;
+          };
+          cryptohash-md5 = dontCheck (callPackage ./overlay/cryptohash-md5.nix {
+            stdenv = self.stdenv;
+          });
+          cryptohash-sha1 = dontCheck (callPackage ./overlay/cryptohash-sha1.nix {
+            stdenv = self.stdenv;
+          });
+          secp256k1-haskell = dontCheck (callPackage ./overlay/secp256k1-haskell.nix {
+            stdenv = self.stdenv;
+            libsecp256k1 = self.secp256k1;
+          });
+          asn1-encoding = callPackage ./overlay/asn1-encoding.nix {
+            stdenv = self.stdenv;
+            fetchgit = self.fetchgit;
+          };
+          x509 = callPackage ./overlay/x509.nix {
             stdenv = self.stdenv;
           };
           grpc-haskell-core = callPackage ./overlay/grpc-haskell-core.nix {
@@ -40,10 +57,6 @@ self: super:
             fetchgit = self.fetchgit;
           }));
           proto3-wire = callPackage ./overlay/proto3-wire.nix {
-            stdenv = self.stdenv;
-            fetchgit = self.fetchgit;
-          };
-          asn1-encoding = callPackage ./asn1-encoding.nix {
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
           };
