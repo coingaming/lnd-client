@@ -44,7 +44,7 @@ channelPointParser x =
   case C8.split ':' str of
     [txid, idxBS] ->
       case B16.decode txid of
-        (txidHex, "") -> do
+        Right txidHex -> do
           idxTS <-
             first
               ( const $
@@ -56,7 +56,7 @@ channelPointParser x =
             <*> maybeToRight
               (FromGrpcError "Invalid ChannelPoint outputIndex")
               (readMaybe $ TS.unpack idxTS)
-        _ ->
+        Left {} ->
           Left $ FromGrpcError "Invalid ChannelPoint fundingTxidBytes"
     _ ->
       Left $ FromGrpcError "Invalid ChannelPoint text"

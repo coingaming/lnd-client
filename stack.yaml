@@ -42,6 +42,7 @@ packages:
 # extra-deps: []
 allow-newer: true
 extra-deps:
+  - base16-bytestring-1.0.1.0
   - esqueleto-3.4.0.1
   - persistent-2.11.0.2
   - persistent-postgresql-2.11.0.1

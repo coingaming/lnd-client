@@ -139,8 +139,8 @@ instance FromGrpc NodePubKey ByteString where
 instance FromGrpc NodePubKey Text where
   fromGrpc x =
     case B16.decode $ encodeUtf8 x of
-      (y, "") -> Right $ NodePubKey y
-      _ -> Left $ ToGrpcError "NodePubKey hex decoding error"
+      Right y -> Right $ NodePubKey y
+      Left {} -> Left $ ToGrpcError "NodePubKey hex decoding error"
 
 instance FromGrpc NodeLocation Text where
   fromGrpc = Right . NodeLocation
@@ -208,14 +208,14 @@ instance FromGrpc Seconds Int64 where
 instance FromGrpc RHash Text where
   fromGrpc x0 =
     case B16.decode $ encodeUtf8 x0 of
-      (x1, "") -> Right $ RHash x1
-      _ -> Left $ FromGrpcError "NON_HEX_RHASH"
+      Right x1 -> Right $ RHash x1
+      Left {} -> Left $ FromGrpcError "NON_HEX_RHASH"
 
 instance FromGrpc RPreimage Text where
   fromGrpc x0 =
     case B16.decode $ encodeUtf8 x0 of
-      (x1, "") -> Right $ RPreimage x1
-      _ -> Left $ FromGrpcError "NON_HEX_RPREIMAGE"
+      Right x1 -> Right $ RPreimage x1
+      Left {} -> Left $ FromGrpcError "NON_HEX_RPREIMAGE"
 
 instance ToGrpc PaymentRequest Text where
   toGrpc x = Right (coerce x :: Text)

@@ -5,6 +5,13 @@
 
 packages:
 - completed:
+    hackage: base16-bytestring-1.0.1.0@sha256:33b9d57afa334d06485033e930c6b13fc760baf88fd8f715ae2f9a4b46e19a54,2641
+    pantry-tree:
+      size: 595
+      sha256: 24661ef9b1089d468227300f8ceb89194b5cce68b9f6ed8109b01f63c07f54e3
+  original:
+    hackage: base16-bytestring-1.0.1.0
+- completed:
     hackage: esqueleto-3.4.0.1@sha256:85077c6b11e06e0ac4a5cb07fb6b71448dcd2dc1e9831ea8115cb9090c342500,5869
     pantry-tree:
       size: 1542

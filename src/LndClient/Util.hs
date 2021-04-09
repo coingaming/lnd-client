@@ -24,8 +24,8 @@ newtype MicroSecondsDelay = MicroSecondsDelay Int
 txIdParser :: Text -> Either LndError ByteString
 txIdParser xr =
   case B16.decode $ encodeUtf8 xr of
-    (x, "") -> Right $ BS.reverse x
-    (_, _) -> Left $ FromGrpcError "TX_ID_NON_HEX_BYTES"
+    Right x -> Right $ BS.reverse x
+    Left {} -> Left $ FromGrpcError "TX_ID_NON_HEX_BYTES"
 
 retrySilent ::
   MonadIO m => m (Either LndError a) -> m (Either LndError a)
