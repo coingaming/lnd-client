@@ -17,6 +17,9 @@ self: super:
         self': super': {
           parameterized = dontCheck super'.parameterized;
           universum = dontCheck super'.universum;
+          x509 = callPackage ./overlay/x509.nix {
+            stdenv = self.stdenv;
+          };
           swagger2 = callPackage ./swagger2.nix {
             stdenv = self.stdenv;
           };
@@ -47,9 +50,11 @@ self: super:
           persistent = callPackage ./overlay/persistent.nix {
             stdenv = self.stdenv;
           };
-          persistent-postgresql = dontCheck (callPackage ./overlay/persistent-postgresql.nix {
-            stdenv = self.stdenv;
-          });
+          persistent-postgresql = dontCheck (
+            callPackage ./overlay/persistent-postgresql.nix {
+              stdenv = self.stdenv;
+            }
+          );
           persistent-mysql = dontCheck (callPackage ./overlay/persistent-mysql.nix {
             stdenv = self.stdenv;
           });
@@ -63,10 +68,12 @@ self: super:
           persistent-template = callPackage ./overlay/persistent-template.nix {
             stdenv = self.stdenv;
           };
-          persistent-migration = dontCheck (callPackage ./overlay/persistent-migration.nix {
+          persistent-migration = dontCheck (
+            callPackage ./overlay/persistent-migration.nix {
               stdenv = self.stdenv;
               fetchgit = self.fetchgit;
-          });
+            }
+          );
         }
       );
     }
