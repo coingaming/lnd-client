@@ -20,6 +20,9 @@ self: super:
           x509 = callPackage ./overlay/x509.nix {
             stdenv = self.stdenv;
           };
+          cryptonite = callPackage ./overlay/cryptonite.nix {
+            stdenv = self.stdenv;
+          };
           swagger2 = callPackage ./swagger2.nix {
             stdenv = self.stdenv;
           };
