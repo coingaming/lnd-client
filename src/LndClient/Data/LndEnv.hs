@@ -67,7 +67,7 @@ data RawConfig
         rawConfigLndHexMacaroon :: LndHexMacaroon,
         rawConfigLndHost :: LndHost,
         rawConfigLndPort :: LndPort,
-        rawConfigLndCipherSeedMnemonic :: CipherSeedMnemonic,
+        rawConfigLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
         rawConfigLndAezeedPassphrase :: Maybe AezeedPassphrase
       }
   deriving (Eq, Generic)
@@ -78,7 +78,7 @@ data LndEnv
         envLndHexMacaroon :: LndHexMacaroon,
         envLndGrpcConfig :: ClientConfig,
         envLndLogStrategy :: LoggingStrategy,
-        envLndCipherSeedMnemonic :: CipherSeedMnemonic,
+        envLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
         envLndAezeedPassphrase :: Maybe AezeedPassphrase,
         envLndSyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
         envLndAsyncGrpcTimeout :: Maybe GrpcTimeoutSeconds
@@ -180,7 +180,7 @@ newLndEnv ::
   LndHexMacaroon ->
   LndHost ->
   LndPort ->
-  CipherSeedMnemonic ->
+  Maybe CipherSeedMnemonic ->
   Maybe AezeedPassphrase ->
   LndEnv
 newLndEnv pwd cert mac host port seed aezeed =
