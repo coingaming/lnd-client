@@ -64,25 +64,28 @@ mkRpc k = do
       ($(tcc) m) =>
       LndEnv ->
       m (Either LndError ())
-    initWallet env = do
-      res <-
-        $(grpcRetry) $
-          $(grpcSync)
-            InitWallet
-            GRPC.walletUnlockerClient
-            GRPC.walletUnlockerInitWallet
-            env
-            InitWalletRequest
-              { walletPassword =
-                  coerce $ envLndWalletPassword env,
-                cipherSeedMnemonic =
-                  coerce $ envLndCipherSeedMnemonic env,
-                aezeedPassphrase =
-                  coerce $ envLndAezeedPassphrase env
-              }
-      if isRight res
-        then waitForGrpc env
-        else return res
+    initWallet env =
+      case envLndCipherSeedMnemonic env of
+        Nothing -> pure . Left $ LndEnvError "CipherSeed is required for initWallet"
+        Just seed -> do
+          res <-
+            $(grpcRetry) $
+              $(grpcSync)
+                InitWallet
+                GRPC.walletUnlockerClient
+                GRPC.walletUnlockerInitWallet
+                env
+                InitWalletRequest
+                  { walletPassword =
+                      coerce $ envLndWalletPassword env,
+                    cipherSeedMnemonic =
+                      coerce seed,
+                    aezeedPassphrase =
+                      coerce $ envLndAezeedPassphrase env
+                  }
+          if isRight res
+            then waitForGrpc env
+            else return res
 
     unlockWallet ::
       ($(tcc) m) =>
