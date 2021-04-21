@@ -19,6 +19,8 @@ import LndClient.Data.AddInvoice as AddInvoice
   )
 import LndClient.Data.Channel as Channel (Channel (..))
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
+import qualified LndClient.Data.CloseChannel as CloseChannel
+import qualified LndClient.Data.ClosedChannels as ClosedChannels
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
@@ -28,7 +30,6 @@ import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
---import LndClient.Data.TrackPayment (TrackPaymentRequest (..))
 import LndClient.Import
 import LndClient.LndTest
 import LndClient.QRCode
@@ -271,6 +272,17 @@ spec = do
           cs1 <- liftLndResult =<< listChannels lnd listReq
           liftIO $ (length cs0 - length cs1) `shouldBe` 1
       )
+  it "closedChannels" $ withEnv $ do
+    cp <- setupOneChannel
+    closeAllChannels
+    lnd <- getLndEnv Bob
+    res <- closedChannels lnd ClosedChannels.defReq
+    liftIO $
+      res
+        `shouldSatisfy` ( \case
+                            Left {} -> False
+                            Right xs -> any ((cp ==) . CloseChannel.chPoint) xs
+                        )
   where
     --
     -- TODO : fix this, it's not really working for some reason

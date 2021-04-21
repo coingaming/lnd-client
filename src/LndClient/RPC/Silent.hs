@@ -31,6 +31,7 @@ module LndClient.RPC.Silent
     trackPaymentV2,
     trackPaymentV2Chan,
     pendingChannels,
+    closedChannels,
   )
 where
 

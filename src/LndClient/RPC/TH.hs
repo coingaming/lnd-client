@@ -13,7 +13,12 @@ import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.Channel (Channel (..))
 import LndClient.Data.ChannelPoint (ChannelPoint (..))
-import LndClient.Data.CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
+import LndClient.Data.CloseChannel
+  ( ChannelCloseSummary (..),
+    CloseChannelRequest (..),
+    CloseStatusUpdate (..),
+  )
+import LndClient.Data.ClosedChannels (ClosedChannelsRequest (..))
 import LndClient.Data.GetInfo
 import LndClient.Data.HtlcEvent (HtlcEvent (..))
 import LndClient.Data.InitWallet (InitWalletRequest (..))
@@ -262,6 +267,19 @@ mkRpc k = do
           ListChannels
           GRPC.lightningClient
           GRPC.lightningListChannels
+          env
+
+    closedChannels ::
+      ($(tcc) m) =>
+      LndEnv ->
+      ClosedChannelsRequest ->
+      m (Either LndError [ChannelCloseSummary])
+    closedChannels env =
+      $(grpcRetry)
+        . $(grpcSync)
+          ClosedChannels
+          GRPC.lightningClient
+          GRPC.lightningClosedChannels
           env
 
     closeChannel ::

@@ -49,6 +49,7 @@ data RpcName
   | EnsureHodlInvoice
   | TrackPaymentV2
   | PendingChannels
+  | ClosedChannels
   deriving (Generic)
 
 instance ToJSON RpcName
