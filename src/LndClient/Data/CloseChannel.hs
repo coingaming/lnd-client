@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module LndClient.Data.CloseChannel
   ( CloseChannelRequest (..),
     CloseStatusUpdate (..),
@@ -50,6 +52,9 @@ instance FromGrpc ChannelCloseSummary GRPC.ChannelCloseSummary where
       <*> channelPointParser (GRPC.channelCloseSummaryChannelPoint x)
       <*> (toMSat <$> fromGrpc (GRPC.channelCloseSummarySettledBalance x))
       <*> fromGrpc (GRPC.channelCloseSummaryClosingTxHash x)
+
+instance FromGrpc [ChannelCloseSummary] GRPC.ClosedChannelsResponse where
+  fromGrpc = fromGrpc . GRPC.closedChannelsResponseChannels
 
 instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
   toGrpc x =

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f942046ac174c15fa57f88bb8bd5d8828fc69ea0efee8ee100bee23b05550010
+-- hash: b70b103675aa89dd4beb98981513ac8e7a72c6eb37037512e3451d04ac896191
 
 name:           lnd-client
 version:        0.1.0.0
@@ -36,6 +36,7 @@ library
       LndClient.Data.ChannelPoint
       LndClient.Data.CloseChannel
       LndClient.Data.ClosedChannel
+      LndClient.Data.ClosedChannels
       LndClient.Data.ForceClosedChannel
       LndClient.Data.GetInfo
       LndClient.Data.HtlcEvent
