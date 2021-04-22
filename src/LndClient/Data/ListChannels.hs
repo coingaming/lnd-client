@@ -15,7 +15,7 @@ data ListChannelsRequest
         inactiveOnly :: Bool,
         publicOnly :: Bool,
         privateOnly :: Bool,
-        peer :: Maybe ByteString
+        peer :: Maybe NodePubKey
       }
   deriving (Generic, Show)
 
