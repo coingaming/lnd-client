@@ -9,7 +9,7 @@ import qualified LndGrpc as GRPC
 
 data PendingChannel
   = PendingChannel
-      { remoteNodePub :: Text,
+      { remoteNodePub :: NodePubKey,
         channelPoint :: ChannelPoint,
         capacity :: MSat,
         localBalance :: MSat,
