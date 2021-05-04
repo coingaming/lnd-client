@@ -11,7 +11,6 @@ module LndClient.LndTest
     newBtcClient,
 
     -- * TestEnv
-    Owner (..),
     TestEnv,
     newTestEnv,
     spawnLinkChannelWatcher,
@@ -104,13 +103,6 @@ data BtcEnv
         btcPassword :: BtcPassword
       }
 
---
--- TODO : Accept abstract owner as parameter
--- in all functions. Might be useful for complex
--- > 2 node test setups.
---
-data Owner = Alice | Bob deriving (Eq, Ord, Show)
-
 data TestEnv
   = TestEnv
       { testLndEnv :: LndEnv,
@@ -121,7 +113,7 @@ data TestEnv
             Invoice
       }
 
-uniquePairs :: (Enum a, Bounded a) => [(a, a)]
+uniquePairs :: (Ord a, Enum a, Bounded a) => [(a, a)]
 uniquePairs = [(x0, x1) | x0 <- enumerate, x1 <- enumerate, x0 < x1]
 
 newBtcClient :: MonadIO m => BtcEnv -> m BTC.Client
@@ -153,6 +145,7 @@ newTestEnv lnd loc = do
 class
   ( KatipContext m,
     MonadUnliftIO m,
+    Ord owner,
     Enum owner,
     Bounded owner,
     Show owner
@@ -185,36 +178,42 @@ walletAddress owner = do
         GRPC.AddressTypeWITNESS_PUBKEY_HASH
   pure x
 
-lazyMineInitialCoins :: LndTest m owner => Proxy owner -> m ()
+lazyMineInitialCoins :: forall m owner. LndTest m owner => Proxy owner -> m ()
 lazyMineInitialCoins = const $ do
-  let numOwners = length enumerate
-  mapM_ (liftLndResult <=< Lnd.lazyInitWallet <=< getLndEnv) enumerate
-  bc <- getBtcClient Proxy
+  mapM_ (liftLndResult <=< Lnd.lazyInitWallet <=< getLndEnv) xs
+  bc <- getBtcClient someone
   h <- liftIO $ BTC.getBlockCount bc
   -- reward coins are spendable only after 100 blocks
   when (h < 101 + numOwners) $ do
-    mapM_ (mine 1) enumerate
-    mine 101 minBound
+    mapM_ (mine 1) xs
+    mine 101 someone
+  where
+    xs = enumerate :: [owner]
+    someone = minBound :: owner
+    numOwners = fromIntegral $ length xs
 
-lazyConnectNodes :: LndTest m owner => Proxy owner -> m ()
-lazyConnectNodes = do
-  aliceTestEnv <- getTestEnv Alice
-  Lnd.GetInfoResponse alicePubKey _ _ <-
-    liftLndResult =<< Lnd.getInfo (testLndEnv aliceTestEnv)
-  let req =
-        ConnectPeerRequest
-          { addr =
-              LightningAddress
-                { pubkey = alicePubKey,
-                  host = testNodeLocation aliceTestEnv
-                },
-            perm = False
-          }
-  bob <- getLndEnv Bob
-  liftLndResult =<< Lnd.lazyConnectPeer bob req
+lazyConnectNodes :: forall m owner. LndTest m owner => Proxy owner -> m ()
+lazyConnectNodes = const $ mapM_ this uniquePairs
+  where
+    this :: (owner, owner) -> m ()
+    this (owner0, owner1) = do
+      testEnvOwner0 <- getTestEnv owner0
+      Lnd.GetInfoResponse alicePubKey _ _ <-
+        liftLndResult =<< Lnd.getInfo (testLndEnv testEnvOwner0)
+      let req =
+            ConnectPeerRequest
+              { addr =
+                  LightningAddress
+                    { pubkey = alicePubKey,
+                      host = testNodeLocation testEnvOwner0
+                    },
+                perm = False
+              }
+      lndEnvOwner1 <- getLndEnv owner1
+      liftLndResult =<< Lnd.lazyConnectPeer lndEnvOwner1 req
 
-watchDefaults :: LndTest m owner => Proxy owner -> m ()
-watchDefaults = const $ mapM_ this enumerate
+watchDefaults :: forall m owner. LndTest m owner => Proxy owner -> m ()
+watchDefaults = const $ mapM_ this (enumerate :: [owner])
   where
     this owner = do
       testEnv <- getTestEnv owner
@@ -245,10 +244,10 @@ mine blocks owner = do
       Nothing
   liftLndResult =<< syncWallets (Proxy :: Proxy owner)
 
-mine1 :: LndTest m owner => Proxy owner -> m ()
-mine1 = mine 1 minBound
+mine1 :: forall m owner. LndTest m owner => Proxy owner -> m ()
+mine1 = const $ mine 1 (minBound :: owner)
 
-liftLndResult :: (MonadIO m) => Either LndError a -> m a
+liftLndResult :: MonadIO m => Either LndError a -> m a
 liftLndResult (Right x) =
   pure x
 liftLndResult (Left x) =

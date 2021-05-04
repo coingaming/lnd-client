@@ -10,6 +10,8 @@
 
 module LndClient.TestApp
   ( withEnv,
+    Owner (..),
+    proxyOwner,
   )
 where
 
@@ -28,6 +30,12 @@ data Env
         envKatipCTX :: LogContexts,
         envKatipLE :: LogEnv
       }
+
+data Owner = Alice | Bob
+  deriving (Eq, Ord, Show, Bounded, Enum)
+
+proxyOwner :: Proxy Owner
+proxyOwner = Proxy
 
 newBobEnv :: LndEnv -> LndEnv
 newBobEnv x =
@@ -103,7 +111,7 @@ readEnv = do
 withEnv :: AppM IO () -> IO ()
 withEnv this = do
   env <- readEnv
-  runApp env $ setupZeroChannels >> this
+  runApp env $ setupZeroChannels proxyOwner >> this
   void . closeScribes $ envKatipLE env
 
 btcEnv :: BtcEnv
@@ -142,8 +150,8 @@ instance (MonadIO m) => KatipContext (AppM m) where
   localKatipNamespace f (AppM m) =
     AppM (local (\s -> s {envKatipNS = f (envKatipNS s)}) m)
 
-instance (MonadUnliftIO m) => LndTest (AppM m) where
-  getBtcClient = asks envBtc
+instance (MonadUnliftIO m) => LndTest (AppM m) Owner where
+  getBtcClient = const $ asks envBtc
   getTestEnv = \case
     Alice -> asks envAlice
     Bob -> asks envBob
