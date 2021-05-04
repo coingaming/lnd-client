@@ -34,6 +34,7 @@ module LndClient.LndTest
     lazyMineInitialCoins,
     lazyConnectNodes,
     watchDefaults,
+    cancelAllInvoices,
     closeAllChannels,
 
     -- * HighLevel setip
@@ -335,8 +336,17 @@ receiveClosedChannels po = this 0
         _ ->
           mine1 po >> this (attempt + 1) cps0 cq
 
+cancelAllInvoices :: forall m owner. LndTest m owner => Proxy owner -> m ()
+cancelAllInvoices = const $ mapM_ this (enumerate :: [owner])
+  where
+    --
+    -- TODO : implement!!!!!!!!!!
+    --
+    this = const $ pure ()
+
 closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
-closeAllChannels po =
+closeAllChannels po = do
+  cancelAllInvoices po
   mapM_ this uniquePairs
   where
     this :: (owner, owner) -> m ()

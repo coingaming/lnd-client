@@ -50,6 +50,7 @@ data RpcName
   | TrackPaymentV2
   | PendingChannels
   | ClosedChannels
+  | ListInvoices
   deriving (Generic)
 
 instance ToJSON RpcName
