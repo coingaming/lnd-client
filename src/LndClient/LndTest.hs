@@ -64,6 +64,7 @@ import LndClient.Data.GetInfo (GetInfoResponse (..))
 import qualified LndClient.Data.GetInfo as Lnd (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
+import qualified LndClient.Data.ListInvoices as ListInvoices
 import qualified LndClient.Data.NewAddress as Lnd
   ( NewAddressResponse (..),
   )
@@ -336,13 +337,36 @@ receiveClosedChannels po = this 0
         _ ->
           mine1 po >> this (attempt + 1) cps0 cq
 
-cancelAllInvoices :: forall m owner. LndTest m owner => Proxy owner -> m ()
-cancelAllInvoices = const $ mapM_ this (enumerate :: [owner])
+cancelAllInvoices ::
+  forall m owner.
+  LndTest m owner =>
+  Proxy owner ->
+  m ()
+cancelAllInvoices =
+  const $ mapM_ this (enumerate :: [owner])
   where
-    --
-    -- TODO : implement!!!!!!!!!!
-    --
-    this = const $ pure ()
+    listReq =
+      ListInvoices.ListInvoiceRequest
+        { ListInvoices.pendingOnly = False,
+          ListInvoices.indexOffset = AddIndex 0,
+          ListInvoices.numMaxInvoices = 0,
+          ListInvoices.reversed = False
+        }
+    this owner = do
+      lnd <- getLndEnv owner
+      xs0 <-
+        ListInvoices.invoices
+          <$> (liftLndResult =<< Lnd.listInvoices lnd listReq)
+      let xs =
+            filter
+              ( \x ->
+                  Invoice.state x
+                    `elem` [ GRPC.Invoice_InvoiceStateOPEN,
+                             GRPC.Invoice_InvoiceStateACCEPTED
+                           ]
+              )
+              xs0
+      mapM_ (Lnd.cancelInvoice lnd) (Invoice.rHash <$> xs)
 
 closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
 closeAllChannels po = do

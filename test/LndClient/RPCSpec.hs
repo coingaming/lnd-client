@@ -24,6 +24,10 @@ import qualified LndClient.Data.ClosedChannels as ClosedChannels
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
+import LndClient.Data.ListInvoices as ListInvoices
+  ( ListInvoiceRequest (..),
+    ListInvoiceResponse (..),
+  )
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
@@ -251,6 +255,22 @@ spec = do
             =<< receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
           liftIO $ res `shouldSatisfy` isRight
       )
+  it "listInvoices" $ withEnv $ do
+    lnd <- getLndEnv Bob
+    rh <-
+      AddInvoice.rHash
+        <$> (liftLndResult =<< addInvoice lnd addInvoiceRequest)
+    let listReq =
+          ListInvoiceRequest
+            { pendingOnly = False,
+              indexOffset = AddIndex 0,
+              numMaxInvoices = 0,
+              reversed = False
+            }
+    xs <-
+      ListInvoices.invoices
+        <$> (liftLndResult =<< listInvoices lnd listReq)
+    liftIO $ xs `shouldSatisfy` any ((rh ==) . Invoice.rHash)
   it "listChannelAndClose" $ withEnv $ do
     void $ setupOneChannel Alice Bob
     chan <- getChannelTChan Bob
