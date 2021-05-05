@@ -383,6 +383,8 @@ closeAllChannels po = do
             lnd0
             (ListChannelsRequest True False False False Nothing)
       let cps = Channel.channelPoint <$> cs
+      chan0 <- getChannelTChan owner0
+      chan1 <- getChannelTChan owner1
       mapM_
         ( \cp ->
             Util.spawnLink $
@@ -403,8 +405,6 @@ closeAllChannels po = do
                 (CloseChannelRequest cp False Nothing Nothing Nothing)
         )
         cps
-      chan0 <- getChannelTChan owner0
-      chan1 <- getChannelTChan owner1
       liftLndResult =<< receiveClosedChannels po cps chan0
       liftLndResult =<< receiveClosedChannels po cps chan1
 
