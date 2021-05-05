@@ -200,13 +200,13 @@ lazyConnectNodes = const $ mapM_ this uniquePairs
     this :: (owner, owner) -> m ()
     this (owner0, owner1) = do
       testEnvOwner0 <- getTestEnv owner0
-      Lnd.GetInfoResponse alicePubKey _ _ <-
+      Lnd.GetInfoResponse pubKeyOwner0 _ _ <-
         liftLndResult =<< Lnd.getInfo (testLndEnv testEnvOwner0)
       let req =
             ConnectPeerRequest
               { addr =
                   LightningAddress
-                    { pubkey = alicePubKey,
+                    { pubkey = pubKeyOwner0,
                       host = testNodeLocation testEnvOwner0
                     },
                 perm = False
