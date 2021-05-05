@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module LndClient.LndTest
@@ -9,7 +11,6 @@ module LndClient.LndTest
     newBtcClient,
 
     -- * TestEnv
-    Owner (..),
     TestEnv,
     newTestEnv,
     spawnLinkChannelWatcher,
@@ -33,6 +34,7 @@ module LndClient.LndTest
     lazyMineInitialCoins,
     lazyConnectNodes,
     watchDefaults,
+    cancelAllInvoices,
     closeAllChannels,
 
     -- * HighLevel setip
@@ -59,10 +61,11 @@ import LndClient.Data.CloseChannel
     CloseChannelRequest (..),
   )
 import LndClient.Data.GetInfo (GetInfoResponse (..))
-import qualified LndClient.Data.GetInfo as LND (GetInfoResponse (..))
+import qualified LndClient.Data.GetInfo as Lnd (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
-import qualified LndClient.Data.NewAddress as LND
+import qualified LndClient.Data.ListInvoices as ListInvoices
+import qualified LndClient.Data.NewAddress as Lnd
   ( NewAddressResponse (..),
   )
 import LndClient.Data.OpenChannel as OpenChannel
@@ -81,7 +84,7 @@ import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
 import LndClient.Import
-import qualified LndClient.RPC.Katip as LND
+import qualified LndClient.RPC.Katip as Lnd
 import LndClient.Util as Util
 import LndClient.Watcher as Watcher
 import qualified LndGrpc as GRPC
@@ -102,13 +105,6 @@ data BtcEnv
         btcPassword :: BtcPassword
       }
 
---
--- TODO : Accept abstract owner as parameter
--- in all functions. Might be useful for complex
--- > 2 node test setups.
---
-data Owner = Alice | Bob deriving (Eq, Ord, Show)
-
 data TestEnv
   = TestEnv
       { testLndEnv :: LndEnv,
@@ -118,6 +114,9 @@ data TestEnv
           Watcher SubscribeInvoicesRequest
             Invoice
       }
+
+uniquePairs :: (Ord a, Enum a, Bounded a) => [(a, a)]
+uniquePairs = [(x0, x1) | x0 <- enumerate, x1 <- enumerate, x0 < x1]
 
 newBtcClient :: MonadIO m => BtcEnv -> m BTC.Client
 newBtcClient x =
@@ -145,72 +144,83 @@ newTestEnv lnd loc = do
         testInvoiceWatcher = iw
       }
 
-class (KatipContext m, MonadUnliftIO m) => LndTest m where
-  getBtcClient :: m BTC.Client
-  getTestEnv :: Owner -> m TestEnv
-  getLndEnv :: Owner -> m LndEnv
+class
+  ( KatipContext m,
+    MonadUnliftIO m,
+    Ord owner,
+    Enum owner,
+    Bounded owner,
+    Show owner
+  ) =>
+  LndTest m owner where
+  getBtcClient :: owner -> m BTC.Client
+  getTestEnv :: owner -> m TestEnv
+  getLndEnv :: owner -> m LndEnv
   getLndEnv = (testLndEnv <$>) . getTestEnv
-  getNodeLocation :: Owner -> m NodeLocation
+  getNodeLocation :: owner -> m NodeLocation
   getNodeLocation = (testNodeLocation <$>) . getTestEnv
-  getChannelTChan :: Owner -> m (TChan ((), ChannelEventUpdate))
+  getChannelTChan :: owner -> m (TChan ((), ChannelEventUpdate))
   getChannelTChan =
     (Watcher.dupLndTChan =<<)
       . (testChannelWatcher <$>)
       . getTestEnv
-  getInvoiceTChan ::
-    Owner -> m (TChan (SubscribeInvoicesRequest, Invoice))
+  getInvoiceTChan :: owner -> m (TChan (SubscribeInvoicesRequest, Invoice))
   getInvoiceTChan =
     (Watcher.dupLndTChan =<<)
       . (testInvoiceWatcher <$>)
       . getTestEnv
 
-walletAddress :: LndTest m => Owner -> m Text
+walletAddress :: LndTest m owner => owner -> m Text
 walletAddress owner = do
   lnd <- getLndEnv owner
-  LND.NewAddressResponse x <-
+  Lnd.NewAddressResponse x <-
     liftLndResult
-      =<< LND.newAddress
+      =<< Lnd.newAddress
         lnd
         GRPC.AddressTypeWITNESS_PUBKEY_HASH
   pure x
 
-lazyMineInitialCoins :: LndTest m => m ()
-lazyMineInitialCoins = do
-  liftLndResult =<< LND.lazyInitWallet =<< getLndEnv Alice
-  liftLndResult =<< LND.lazyInitWallet =<< getLndEnv Bob
-  bc <- getBtcClient
+lazyMineInitialCoins :: forall m owner. LndTest m owner => Proxy owner -> m ()
+lazyMineInitialCoins = const $ do
+  mapM_ (liftLndResult <=< Lnd.lazyInitWallet <=< getLndEnv) xs
+  bc <- getBtcClient someone
   h <- liftIO $ BTC.getBlockCount bc
   -- reward coins are spendable only after 100 blocks
-  when (h < 102) $ do
-    mine 1 Bob
-    mine 101 Alice
-
-lazyConnectNodes :: LndTest m => m ()
-lazyConnectNodes = do
-  aliceTestEnv <- getTestEnv Alice
-  LND.GetInfoResponse alicePubKey _ _ <-
-    liftLndResult =<< LND.getInfo (testLndEnv aliceTestEnv)
-  let req =
-        ConnectPeerRequest
-          { addr =
-              LightningAddress
-                { pubkey = alicePubKey,
-                  host = testNodeLocation aliceTestEnv
-                },
-            perm = False
-          }
-  bob <- getLndEnv Bob
-  liftLndResult =<< LND.lazyConnectPeer bob req
-
-watchDefaults :: LndTest m => m ()
-watchDefaults = do
-  aliceTestEnv <- getTestEnv Alice
-  Watcher.watchUnit $ testChannelWatcher aliceTestEnv
-  Watcher.watch (testInvoiceWatcher aliceTestEnv) iReq
-  bobTestEnv <- getTestEnv Bob
-  Watcher.watchUnit $ testChannelWatcher bobTestEnv
-  Watcher.watch (testInvoiceWatcher bobTestEnv) iReq
+  when (h < 101 + numOwners) $ do
+    mapM_ (mine 1) xs
+    mine 101 someone
   where
+    xs = enumerate :: [owner]
+    someone = minBound :: owner
+    numOwners = fromIntegral $ length xs
+
+lazyConnectNodes :: forall m owner. LndTest m owner => Proxy owner -> m ()
+lazyConnectNodes = const $ mapM_ this uniquePairs
+  where
+    this :: (owner, owner) -> m ()
+    this (owner0, owner1) = do
+      testEnvOwner0 <- getTestEnv owner0
+      Lnd.GetInfoResponse pubKeyOwner0 _ _ <-
+        liftLndResult =<< Lnd.getInfo (testLndEnv testEnvOwner0)
+      let req =
+            ConnectPeerRequest
+              { addr =
+                  LightningAddress
+                    { pubkey = pubKeyOwner0,
+                      host = testNodeLocation testEnvOwner0
+                    },
+                perm = False
+              }
+      lndEnvOwner1 <- getLndEnv owner1
+      liftLndResult =<< Lnd.lazyConnectPeer lndEnvOwner1 req
+
+watchDefaults :: forall m owner. LndTest m owner => Proxy owner -> m ()
+watchDefaults = const $ mapM_ this (enumerate :: [owner])
+  where
+    this owner = do
+      testEnv <- getTestEnv owner
+      Watcher.watchUnit $ testChannelWatcher testEnv
+      Watcher.watch (testInvoiceWatcher testEnv) iReq
     iReq =
       --
       -- TODO : this is related to LND bug
@@ -218,10 +228,10 @@ watchDefaults = do
       --
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
 
-mine :: LndTest m => Int -> Owner -> m ()
+mine :: forall m owner. LndTest m owner => Int -> owner -> m ()
 mine blocks owner = do
   btcAddr <- walletAddress owner
-  bc <- getBtcClient
+  bc <- getBtcClient owner
   $(logTM) InfoS $ logStr $
     ("Mining " :: Text)
       <> show blocks
@@ -234,19 +244,23 @@ mine blocks owner = do
       blocks
       (toStrict btcAddr)
       Nothing
-  liftLndResult =<< syncWallets
+  liftLndResult =<< syncWallets (Proxy :: Proxy owner)
 
-mine1 :: LndTest m => m ()
-mine1 = mine 1 Alice
+mine1 :: forall m owner. LndTest m owner => Proxy owner -> m ()
+mine1 = const $ mine 1 (minBound :: owner)
 
-liftLndResult :: (MonadIO m) => Either LndError a -> m a
+liftLndResult :: MonadIO m => Either LndError a -> m a
 liftLndResult (Right x) =
   pure x
 liftLndResult (Left x) =
   liftIO $ fail $ "LiftLndResult failed " <> show x
 
-syncWallets :: (LndTest m) => m (Either LndError ())
-syncWallets = this 0
+syncWallets ::
+  forall m owner.
+  LndTest m owner =>
+  Proxy owner ->
+  m (Either LndError ())
+syncWallets = const $ this 0
   where
     this 30 = do
       let msg = "SyncWallets attempt limit exceeded"
@@ -254,23 +268,23 @@ syncWallets = this 0
       pure . Left $ LndError msg
     this (attempt :: Int) = do
       $(logTM) InfoS "SyncWallets is running"
-      resAlice <- LND.getInfo =<< getLndEnv Alice
-      resBob <- LND.getInfo =<< getLndEnv Bob
-      case (,) <$> resAlice <*> resBob of
-        Left _ ->
-          liftIO (delay 1000000) >> this (attempt + 1)
-        Right (x0, x1) ->
-          if LND.syncedToChain x0 && LND.syncedToChain x1
-            then pure $ Right ()
-            else liftIO (delay 1000000) >> this (attempt + 1)
+      rs <- mapM (Lnd.getInfo <=< getLndEnv) (enumerate :: [owner])
+      if all isInSync rs
+        then pure $ Right ()
+        else liftIO (delay 1000000) >> this (attempt + 1)
+    isInSync = \case
+      Left {} -> False
+      Right x -> Lnd.syncedToChain x
 
-syncPendingChannels :: (LndTest m) => m ()
-syncPendingChannels = do
-  liftLndResult =<< syncPendingChannelsFor Alice
-  liftLndResult =<< syncPendingChannelsFor Bob
+syncPendingChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
+syncPendingChannels =
+  const $ mapM_ (liftLndResult <=< syncPendingChannelsFor) (enumerate :: [owner])
 
 syncPendingChannelsFor ::
-  (LndTest m) => Owner -> m (Either LndError ())
+  forall m owner.
+  LndTest m owner =>
+  owner ->
+  m (Either LndError ())
 syncPendingChannelsFor owner = this 0
   where
     this 30 = do
@@ -285,23 +299,24 @@ syncPendingChannelsFor owner = this 0
         "SyncPendingChannelsFor "
           <> (show owner :: Text)
           <> " is running"
-      res <- LND.pendingChannels =<< getLndEnv owner
+      res <- Lnd.pendingChannels =<< getLndEnv owner
       case res of
-        Left _ -> this (attempt + 1)
+        Left {} -> this (attempt + 1)
         Right (PendingChannelsResponse _ x0 x1 x2 x3) ->
           if null x0
             && null x1
             && null x2
             && null x3
             then pure $ Right ()
-            else mine1 >> this (attempt + 1)
+            else mine1 (Proxy :: Proxy owner) >> this (attempt + 1)
 
 receiveClosedChannels ::
-  (LndTest m) =>
+  LndTest m owner =>
+  Proxy owner ->
   [ChannelPoint] ->
   TChan ((), ChannelEventUpdate) ->
   m (Either LndError ())
-receiveClosedChannels = this 0
+receiveClosedChannels po = this 0
   where
     this _ [] _ =
       pure $ Right ()
@@ -318,51 +333,88 @@ receiveClosedChannels = this 0
         Just (ChannelEventUpdateChannelClosedChannel res) ->
           case filter (/= chPoint res) cps0 of
             [] -> pure $ Right ()
-            cps -> mine1 >> this (attempt + 1) cps cq
+            cps -> mine1 po >> this (attempt + 1) cps cq
         _ ->
-          mine1 >> this (attempt + 1) cps0 cq
+          mine1 po >> this (attempt + 1) cps0 cq
 
-closeAllChannels :: (LndTest m) => m ()
-closeAllChannels = do
-  $(logTM) InfoS "CloseAllChannels - closing channels"
-  alice <- getLndEnv Alice
-  cs <-
-    liftLndResult
-      =<< LND.listChannels
-        alice
-        (ListChannelsRequest True False False False Nothing)
-  let cps = Channel.channelPoint <$> cs
-  mapM_
-    ( \cp ->
-        Util.spawnLink $
-          LND.closeChannel
-            --
-            -- TODO : investigate why it throws empty gRPC
-            -- response error and as consequence
-            -- probably it's how subscription terminates
-            -- when channel is completely closed
-            --
-            -- but bad thing is that callback sometimes
-            -- is never called, that's why it's not used there
-            -- we are getting TChan events instead from
-            -- previous opened subscription
-            --
-            (const $ return ())
-            alice
-            (CloseChannelRequest cp False Nothing Nothing Nothing)
-    )
-    cps
-  aliceChan <- getChannelTChan Alice
-  bobChan <- getChannelTChan Bob
-  liftLndResult =<< receiveClosedChannels cps aliceChan
-  liftLndResult =<< receiveClosedChannels cps bobChan
+cancelAllInvoices ::
+  forall m owner.
+  LndTest m owner =>
+  Proxy owner ->
+  m ()
+cancelAllInvoices =
+  const $ mapM_ this (enumerate :: [owner])
+  where
+    listReq =
+      ListInvoices.ListInvoiceRequest
+        { ListInvoices.pendingOnly = False,
+          ListInvoices.indexOffset = AddIndex 0,
+          ListInvoices.numMaxInvoices = 0,
+          ListInvoices.reversed = False
+        }
+    this owner = do
+      lnd <- getLndEnv owner
+      xs0 <-
+        ListInvoices.invoices
+          <$> (liftLndResult =<< Lnd.listInvoices lnd listReq)
+      let xs =
+            filter
+              ( \x ->
+                  Invoice.state x
+                    `elem` [ GRPC.Invoice_InvoiceStateOPEN,
+                             GRPC.Invoice_InvoiceStateACCEPTED
+                           ]
+              )
+              xs0
+      mapM_ (Lnd.cancelInvoice lnd) (Invoice.rHash <$> xs)
+
+closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
+closeAllChannels po = do
+  cancelAllInvoices po
+  mapM_ this uniquePairs
+  where
+    this :: (owner, owner) -> m ()
+    this (owner0, owner1) = do
+      $(logTM) InfoS "CloseAllChannels - closing channels"
+      lnd0 <- getLndEnv owner0
+      cs <-
+        liftLndResult
+          =<< Lnd.listChannels
+            lnd0
+            (ListChannelsRequest True False False False Nothing)
+      let cps = Channel.channelPoint <$> cs
+      mapM_
+        ( \cp ->
+            Util.spawnLink $
+              Lnd.closeChannel
+                --
+                -- TODO : investigate why it throws empty gRPC
+                -- response error and as consequence
+                -- probably it's how subscription terminates
+                -- when channel is completely closed
+                --
+                -- but bad thing is that callback sometimes
+                -- is never called, that's why it's not used there
+                -- we are getting TChan events instead from
+                -- previous opened subscription
+                --
+                (const $ return ())
+                lnd0
+                (CloseChannelRequest cp False Nothing Nothing Nothing)
+        )
+        cps
+      chan0 <- getChannelTChan owner0
+      chan1 <- getChannelTChan owner1
+      liftLndResult =<< receiveClosedChannels po cps chan0
+      liftLndResult =<< receiveClosedChannels po cps chan1
 
 receiveActiveChannel ::
-  (LndTest m) =>
+  LndTest m owner =>
+  Proxy owner ->
   ChannelPoint ->
   TChan ((), ChannelEventUpdate) ->
   m (Either LndError ())
-receiveActiveChannel = this 0
+receiveActiveChannel po = this 0
   where
     this (attempt :: Integer) cp cq =
       if attempt > 30
@@ -373,30 +425,35 @@ receiveActiveChannel = this 0
             Just (ChannelEventUpdateChannelActiveChannel gcp) ->
               if cp == gcp
                 then pure $ Right ()
-                else mine1 >> this (attempt + 1) cp cq
+                else mine1 po >> this (attempt + 1) cp cq
             _ ->
-              mine1 >> this (attempt + 1) cp cq
+              mine1 po >> this (attempt + 1) cp cq
 
-setupZeroChannels :: LndTest m => m ()
-setupZeroChannels = do
-  lazyMineInitialCoins
-  lazyConnectNodes
-  watchDefaults
-  closeAllChannels
-  syncPendingChannels
+setupZeroChannels :: LndTest m owner => Proxy owner -> m ()
+setupZeroChannels x = do
+  lazyMineInitialCoins x
+  lazyConnectNodes x
+  watchDefaults x
+  closeAllChannels x
+  syncPendingChannels x
 
-setupOneChannel :: (LndTest m) => m ChannelPoint
-setupOneChannel = do
-  alice <- getLndEnv Alice
-  bob <- getLndEnv Bob
-  mq <- getChannelTChan Bob
-  cq <- getChannelTChan Alice
+setupOneChannel ::
+  forall m owner.
+  LndTest m owner =>
+  owner ->
+  owner ->
+  m ChannelPoint
+setupOneChannel ownerFrom ownerTo = do
+  lndFrom <- getLndEnv ownerFrom
+  lndTo <- getLndEnv ownerTo
+  mq <- getChannelTChan ownerTo
+  cq <- getChannelTChan ownerFrom
   --
   -- Open channel from Customer to Merchant
   --
   $(logTM) InfoS "SetupOneChannel - opening channel"
   GetInfoResponse merchantPubKey _ _ <-
-    liftLndResult =<< LND.getInfo bob
+    liftLndResult =<< Lnd.getInfo lndTo
   let openChannelRequest =
         OpenChannel.OpenChannelRequest
           { OpenChannel.nodePubkey = merchantPubKey,
@@ -413,9 +470,10 @@ setupOneChannel = do
           }
   cp <-
     liftLndResult
-      =<< LND.openChannelSync alice openChannelRequest
-  liftLndResult =<< receiveActiveChannel cp mq
-  liftLndResult =<< receiveActiveChannel cp cq
+      =<< Lnd.openChannelSync lndFrom openChannelRequest
+  let po = Proxy :: Proxy owner
+  liftLndResult =<< receiveActiveChannel po cp mq
+  liftLndResult =<< receiveActiveChannel po cp cq
   --
   -- TODO : these invoices are added and settled to
   -- raise invoice index to 1 to be able to receive
@@ -423,17 +481,12 @@ setupOneChannel = do
   -- remove when LND bug will be fixed
   -- https://github.com/lightningnetwork/lnd/issues/2469
   --
-  sendTestPayment (MSat 1000000) Alice Bob
-  sendTestPayment (MSat 1000000) Bob Alice
+  sendTestPayment (MSat 1000000) ownerFrom ownerTo
+  sendTestPayment (MSat 1000000) ownerTo ownerFrom
   $(logTM) InfoS "SetupOneChannel - finished"
   pure cp
 
-sendTestPayment ::
-  (LndTest m) =>
-  MSat ->
-  Owner ->
-  Owner ->
-  m ()
+sendTestPayment :: LndTest m owner => MSat -> owner -> owner -> m ()
 sendTestPayment amt0 sender0 recepient0 = do
   sender <- getLndEnv sender0
   recepient <- getLndEnv recepient0
@@ -444,14 +497,14 @@ sendTestPayment amt0 sender0 recepient0 = do
             AddInvoice.expiry = Just $ Seconds 1000
           }
   invoice <-
-    liftLndResult =<< LND.addInvoice recepient addInvoiceRequest
+    liftLndResult =<< Lnd.addInvoice recepient addInvoiceRequest
   let payReq =
         SendPayment.SendPaymentRequest
           { SendPayment.paymentRequest =
               AddInvoice.paymentRequest invoice,
             SendPayment.amt = amt0
           }
-  void . liftLndResult =<< LND.sendPayment sender payReq
+  void . liftLndResult =<< Lnd.sendPayment sender payReq
 
 receiveInvoice ::
   ( MonadUnliftIO m,
@@ -495,7 +548,7 @@ spawnLinkChannelWatcher ::
 spawnLinkChannelWatcher lnd =
   Watcher.spawnLinkUnit
     lnd
-    LND.subscribeChannelEventsChan
+    Lnd.subscribeChannelEventsChan
     $ \_ _ -> pure ()
 
 spawnLinkInvoiceWatcher ::
@@ -505,5 +558,5 @@ spawnLinkInvoiceWatcher ::
 spawnLinkInvoiceWatcher lnd =
   Watcher.spawnLink
     lnd
-    LND.subscribeInvoicesChan
+    Lnd.subscribeInvoicesChan
     $ \_ _ _ -> pure ()

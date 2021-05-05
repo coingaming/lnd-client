@@ -32,6 +32,7 @@ module LndClient.RPC.Katip
     trackPaymentV2Chan,
     pendingChannels,
     closedChannels,
+    listInvoices,
   )
 where
 

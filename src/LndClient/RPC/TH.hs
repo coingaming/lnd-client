@@ -24,6 +24,7 @@ import LndClient.Data.HtlcEvent (HtlcEvent (..))
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (ListChannelsRequest (..))
+import LndClient.Data.ListInvoices (ListInvoiceRequest (..), ListInvoiceResponse (..))
 import LndClient.Data.NewAddress (NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq (PayReq (..))
@@ -267,6 +268,19 @@ mkRpc k = do
           ListChannels
           GRPC.lightningClient
           GRPC.lightningListChannels
+          env
+
+    listInvoices ::
+      ($(tcc) m) =>
+      LndEnv ->
+      ListInvoiceRequest ->
+      m (Either LndError ListInvoiceResponse)
+    listInvoices env =
+      $(grpcRetry)
+        . $(grpcSync)
+          ListInvoices
+          GRPC.lightningClient
+          GRPC.lightningListInvoices
           env
 
     closedChannels ::

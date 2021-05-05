@@ -24,6 +24,10 @@ import qualified LndClient.Data.ClosedChannels as ClosedChannels
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
+import LndClient.Data.ListInvoices as ListInvoices
+  ( ListInvoiceRequest (..),
+    ListInvoiceResponse (..),
+  )
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
@@ -93,7 +97,7 @@ spec = do
         queue
     liftIO $ res `shouldSatisfy` isRight
   it "settleNormalInvoice" $ withEnv $ do
-    void setupOneChannel
+    void $ setupOneChannel Alice Bob
     chan <- getInvoiceTChan Bob
     bob <- getLndEnv Bob
     inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
@@ -156,7 +160,7 @@ spec = do
             }
     alice <- getLndEnv Alice
     cp <- liftLndResult =<< openChannelSync alice openChannelRequest
-    res <- receiveActiveChannel cp chan
+    res <- receiveActiveChannel proxyOwner cp chan
     Watcher.delete w
     liftIO $ res `shouldSatisfy` isRight
   it "unWatch" $ withEnv $ do
@@ -190,7 +194,7 @@ spec = do
     res <- ensureHodlInvoice bob req
     liftIO $ res `shouldSatisfy` isRight
   it "cancelInvoice" $ withEnv $ do
-    void setupOneChannel
+    void $ setupOneChannel Alice Bob
     r <- newRPreimage
     let rh = newRHash r
     let hipr =
@@ -224,7 +228,7 @@ spec = do
           liftIO $ res `shouldSatisfy` isRight
       )
   it "settleInvoice" $ withEnv $ do
-    void setupOneChannel
+    void $ setupOneChannel Alice Bob
     r <- newRPreimage
     let rh = newRHash r
     let hipr =
@@ -251,13 +255,29 @@ spec = do
             =<< receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
           liftIO $ res `shouldSatisfy` isRight
       )
+  it "listInvoices" $ withEnv $ do
+    lnd <- getLndEnv Bob
+    rh <-
+      AddInvoice.rHash
+        <$> (liftLndResult =<< addInvoice lnd addInvoiceRequest)
+    let listReq =
+          ListInvoiceRequest
+            { pendingOnly = False,
+              indexOffset = AddIndex 0,
+              numMaxInvoices = 0,
+              reversed = False
+            }
+    xs <-
+      ListInvoices.invoices
+        <$> (liftLndResult =<< listInvoices lnd listReq)
+    liftIO $ xs `shouldSatisfy` any ((rh ==) . Invoice.rHash)
   it "listChannelAndClose" $ withEnv $ do
-    void setupOneChannel
+    void $ setupOneChannel Alice Bob
     chan <- getChannelTChan Bob
     lnd <- getLndEnv Bob
     let listReq = ListChannelsRequest False False False False Nothing
     cs0 <- liftLndResult =<< listChannels lnd listReq
-    lazyConnectNodes
+    lazyConnectNodes proxyOwner
     cp <-
       liftMaybe "ChannelPoint is required" $
         Channel.channelPoint <$> safeHead cs0
@@ -268,13 +288,13 @@ spec = do
           (CloseChannelRequest cp False Nothing Nothing Nothing)
       )
       ( const $ do
-          liftLndResult =<< receiveClosedChannels [cp] chan
+          liftLndResult =<< receiveClosedChannels proxyOwner [cp] chan
           cs1 <- liftLndResult =<< listChannels lnd listReq
           liftIO $ (length cs0 - length cs1) `shouldBe` 1
       )
   it "closedChannels" $ withEnv $ do
-    cp <- setupOneChannel
-    closeAllChannels
+    cp <- setupOneChannel Alice Bob
+    closeAllChannels proxyOwner
     lnd <- getLndEnv Bob
     res <- closedChannels lnd ClosedChannels.defReq
     liftIO $
