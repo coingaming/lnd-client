@@ -60,6 +60,7 @@ import LndClient.Data.CloseChannel
   ( ChannelCloseSummary (..),
     CloseChannelRequest (..),
   )
+import LndClient.Data.ClosedChannels as ClosedChannels
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import qualified LndClient.Data.GetInfo as Lnd (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
@@ -311,31 +312,30 @@ syncPendingChannelsFor owner = this 0
             else mine1 (Proxy :: Proxy owner) >> this (attempt + 1)
 
 receiveClosedChannels ::
+  forall m owner.
   LndTest m owner =>
   Proxy owner ->
   [ChannelPoint] ->
-  TChan ((), ChannelEventUpdate) ->
   m (Either LndError ())
 receiveClosedChannels po = this 0
   where
-    this _ [] _ =
+    this _ [] =
       pure $ Right ()
-    this 30 _ _ =
+    this 30 _ =
       pure
         $ Left
         $ LndError "receiveClosedChannels - exceeded"
-    this (attempt :: Integer) cps0 cq = do
-      x0 <- readTChanTimeout (MicroSecondsDelay 1000000) cq
-      let x = channelEvent . snd <$> x0
-      $(logTM) InfoS $ logStr $
-        "receiveClosedChannels - got " <> (show x :: Text)
-      case x of
-        Just (ChannelEventUpdateChannelClosedChannel res) ->
-          case filter (/= chPoint res) cps0 of
-            [] -> pure $ Right ()
-            cps -> mine1 po >> this (attempt + 1) cps cq
-        _ ->
-          mine1 po >> this (attempt + 1) cps0 cq
+    this (attempt :: Integer) cps = do
+      let owners = enumerate :: [owner]
+      xsM <- mapM getOwnersCloseCPs owners
+      if all (\x -> x `elem` concat (rights xsM)) cps
+        then pure $ Right ()
+        else mine1 po >> liftIO (delay 10000000) >> this (attempt + 1) cps
+    getOwnersCloseCPs :: owner -> m (Either LndError [ChannelPoint])
+    getOwnersCloseCPs o = do
+      lnd <- getLndEnv o
+      ccs <- liftLndResult =<< Lnd.closedChannels lnd ClosedChannels.defReq
+      pure $ Right $ chPoint <$> ccs
 
 cancelAllInvoices ::
   forall m owner.
@@ -374,7 +374,7 @@ closeAllChannels po = do
   mapM_ this uniquePairs
   where
     this :: (owner, owner) -> m ()
-    this (owner0, owner1) = do
+    this (owner0, _owner1) = do
       $(logTM) InfoS "CloseAllChannels - closing channels"
       lnd0 <- getLndEnv owner0
       cs <-
@@ -383,8 +383,6 @@ closeAllChannels po = do
             lnd0
             (ListChannelsRequest True False False False Nothing)
       let cps = Channel.channelPoint <$> cs
-      chan0 <- getChannelTChan owner0
-      chan1 <- getChannelTChan owner1
       mapM_
         ( \cp ->
             Util.spawnLink $
@@ -405,8 +403,8 @@ closeAllChannels po = do
                 (CloseChannelRequest cp False Nothing Nothing Nothing)
         )
         cps
-      liftLndResult =<< receiveClosedChannels po cps chan0
-      liftLndResult =<< receiveClosedChannels po cps chan1
+      liftLndResult =<< receiveClosedChannels po cps
+      liftLndResult =<< receiveClosedChannels po cps
 
 receiveActiveChannel ::
   LndTest m owner =>

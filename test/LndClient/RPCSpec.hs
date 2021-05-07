@@ -273,7 +273,6 @@ spec = do
     liftIO $ xs `shouldSatisfy` any ((rh ==) . Invoice.rHash)
   it "listChannelAndClose" $ withEnv $ do
     void $ setupOneChannel Alice Bob
-    chan <- getChannelTChan Bob
     lnd <- getLndEnv Bob
     let listReq = ListChannelsRequest False False False False Nothing
     cs0 <- liftLndResult =<< listChannels lnd listReq
@@ -288,7 +287,7 @@ spec = do
           (CloseChannelRequest cp False Nothing Nothing Nothing)
       )
       ( const $ do
-          liftLndResult =<< receiveClosedChannels proxyOwner [cp] chan
+          liftLndResult =<< receiveClosedChannels proxyOwner [cp]
           cs1 <- liftLndResult =<< listChannels lnd listReq
           liftIO $ (length cs0 - length cs1) `shouldBe` 1
       )
