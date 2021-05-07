@@ -371,10 +371,10 @@ cancelAllInvoices =
 closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
 closeAllChannels po = do
   cancelAllInvoices po
-  mapM_ this uniquePairs
+  mapM_ this enumerate
   where
-    this :: (owner, owner) -> m ()
-    this (owner0, _owner1) = do
+    this :: owner -> m ()
+    this owner0 = do
       $(logTM) InfoS "CloseAllChannels - closing channels"
       lnd0 <- getLndEnv owner0
       cs <-
@@ -403,7 +403,6 @@ closeAllChannels po = do
                 (CloseChannelRequest cp False Nothing Nothing Nothing)
         )
         cps
-      liftLndResult =<< receiveClosedChannels po cps
       liftLndResult =<< receiveClosedChannels po cps
 
 receiveActiveChannel ::
