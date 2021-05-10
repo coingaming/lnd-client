@@ -327,10 +327,13 @@ receiveClosedChannels po = this 0
         $ LndError "receiveClosedChannels - exceeded"
     this (attempt :: Integer) cps = do
       let owners = enumerate :: [owner]
-      xsM <- mapM getOwnersCloseCPs owners
-      if all (\x -> x `elem` concat (rights xsM)) cps
+      xs <- rights <$> mapM getOwnersCloseCPs owners
+      let filteredCps = filter (checkTwiceCP $ concat xs) cps
+      if null filteredCps
         then pure $ Right ()
-        else mine1 po >> liftIO (delay 10000000) >> this (attempt + 1) cps
+        else mine1 po >> liftIO (delay 1000000) >> this (attempt + 1) filteredCps
+    checkTwiceCP :: [ChannelPoint] -> ChannelPoint -> Bool
+    checkTwiceCP cps cp = length (filter (cp ==) cps) < 2
     getOwnersCloseCPs :: owner -> m (Either LndError [ChannelPoint])
     getOwnersCloseCPs o = do
       lnd <- getLndEnv o
