@@ -41,10 +41,9 @@ instance FromGrpc SendPaymentResponse GRPC.SendResponse where
         <$> fromGrpc (GRPC.sendResponsePaymentError x)
         <*> fromGrpc (GRPC.sendResponsePaymentPreimage x)
         <*> fromGrpc (GRPC.sendResponsePaymentHash x)
-    Right res
---  if newRHash (paymentPreimage res) == paymentHash res
---    then Right res
---    else
---      Left . LndError $
---        "paymentPreimage doesn't match paymentHash, error: "
---          <> paymentError res
+    if newRHash (paymentPreimage res) == paymentHash res
+      then Right res
+      else
+        Left . LndError $
+          "paymentPreimage doesn't match paymentHash, error: "
+            <> show res
