@@ -481,8 +481,8 @@ setupOneChannel ownerFrom ownerTo = do
   -- remove when LND bug will be fixed
   -- https://github.com/lightningnetwork/lnd/issues/2469
   --
-  sendTestPayment (MSat 1000000) ownerFrom ownerTo
-  sendTestPayment (MSat 1000000) ownerTo ownerFrom
+  () <- sendTestPayment (MSat 1000000) ownerFrom ownerTo
+  () <- sendTestPayment (MSat 1000000) ownerTo ownerFrom
   $(logTM) InfoS "SetupOneChannel - finished"
   pure cp
 
