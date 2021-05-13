@@ -373,6 +373,7 @@ cancelAllInvoices =
 
 closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
 closeAllChannels po = do
+  liftIO $ delay 500000
   cancelAllInvoices po
   mapM_ this enumerate
   where
