@@ -394,22 +394,6 @@ closeAllChannels po = do
         cps
       liftLndResult =<< receiveClosedChannels po cps
 
---closeChannelRecursive :: (KatipContext m, MonadUnliftIO m) => LndEnv -> CloseChannelRequest -> Int -> m (Either LndError ())
---closeChannelRecursive _ _ 0 = return $ Left $ LndError "Cannot close channel"
---closeChannelRecursive env req n = do
---  mVar <- newEmptyMVar
---  _ <-
---    Util.spawnLink $
---      Lnd.closeChannel
---        (void . tryPutMVar mVar)
---        env
---        req
---  liftIO $ delay 1000000
---  upd <- tryTakeMVar mVar
---  case upd of
---    Just _ -> return $ Right ()
---    Nothing -> closeChannelRecursive env req (n -1)
-
 receiveActiveChannel ::
   LndTest m owner =>
   Proxy owner ->
