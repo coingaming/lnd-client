@@ -32,15 +32,18 @@ module LndClient.RPC.Silent
     trackPaymentV2Chan,
     pendingChannels,
     closedChannels,
+    closeChannelSync,
     listInvoices,
   )
 where
 
 import LndClient.Data.AddHodlInvoice as AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice (AddInvoiceResponse (..))
+import LndClient.Data.CloseChannel as CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Import
 import LndClient.RPC.TH
+import LndClient.Util as Util
 
 $(mkRpc RpcSilent)
 
@@ -99,3 +102,25 @@ ensureHodlInvoice env req = do
             AddInvoice.paymentRequest = Invoice.paymentRequest x,
             AddInvoice.addIndex = Invoice.addIndex x
           }
+
+closeChannelSync ::
+  (MonadUnliftIO m) =>
+  LndEnv ->
+  CloseChannelRequest ->
+  m (Either LndError ())
+closeChannelSync = closeChannelRecursive 10
+  where
+    closeChannelRecursive (0 :: Int) _ _ = return $ Left $ LndError "Cannot close channel"
+    closeChannelRecursive n env req = do
+      mVar <- newEmptyMVar
+      _ <-
+        Util.spawnLink $
+          closeChannel
+            (void . tryPutMVar mVar)
+            env
+            req
+      liftIO $ delay 1000000
+      upd <- tryTakeMVar mVar
+      case upd of
+        Just _ -> return $ Right ()
+        Nothing -> closeChannelRecursive (n -1) env req

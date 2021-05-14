@@ -36,7 +36,6 @@ module LndClient.LndTest
     watchDefaults,
     cancelAllInvoices,
     closeAllChannels,
-    closeChannelRecursive,
 
     -- * HighLevel setip
     setupZeroChannels,
@@ -87,7 +86,6 @@ import LndClient.Data.SubscribeInvoices
   )
 import LndClient.Import
 import qualified LndClient.RPC.Katip as Lnd
-import LndClient.Util as Util
 import LndClient.Watcher as Watcher
 import qualified LndGrpc as GRPC
 import qualified Network.Bitcoin as BTC (Client, getClient)
@@ -389,30 +387,28 @@ closeAllChannels po = do
       let cps = Channel.channelPoint <$> cs
       mapM_
         ( \cp ->
-            closeChannelRecursive
+            Lnd.closeChannelSync
               lnd0
               (CloseChannelRequest cp False Nothing Nothing Nothing)
-              5
         )
         cps
       liftLndResult =<< receiveClosedChannels po cps
 
-closeChannelRecursive :: (KatipContext m, MonadUnliftIO m) => LndEnv -> CloseChannelRequest -> Int -> m (Either LndError ())
-closeChannelRecursive _ _ 0 = return $ Left $ LndError "Cannot close channel"
-closeChannelRecursive env req n = do
-  mVar <- newEmptyMVar
-  _ <-
-    Util.spawnLink $
-      Lnd.closeChannel
-        (void . tryPutMVar mVar)
-        --(const $ return ())
-        env
-        req
-  liftIO $ delay 1000000
-  upd <- tryTakeMVar mVar
-  case upd of
-    Just _ -> return $ Right ()
-    Nothing -> closeChannelRecursive env req (n -1)
+--closeChannelRecursive :: (KatipContext m, MonadUnliftIO m) => LndEnv -> CloseChannelRequest -> Int -> m (Either LndError ())
+--closeChannelRecursive _ _ 0 = return $ Left $ LndError "Cannot close channel"
+--closeChannelRecursive env req n = do
+--  mVar <- newEmptyMVar
+--  _ <-
+--    Util.spawnLink $
+--      Lnd.closeChannel
+--        (void . tryPutMVar mVar)
+--        env
+--        req
+--  liftIO $ delay 1000000
+--  upd <- tryTakeMVar mVar
+--  case upd of
+--    Just _ -> return $ Right ()
+--    Nothing -> closeChannelRecursive env req (n -1)
 
 receiveActiveChannel ::
   LndTest m owner =>
