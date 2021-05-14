@@ -36,6 +36,7 @@ module LndClient.LndTest
     watchDefaults,
     cancelAllInvoices,
     closeAllChannels,
+    closeChannelRecursive,
 
     -- * HighLevel setip
     setupZeroChannels,
@@ -373,7 +374,6 @@ cancelAllInvoices =
 
 closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
 closeAllChannels po = do
-  liftIO $ delay 500000
   cancelAllInvoices po
   mapM_ this enumerate
   where
@@ -389,25 +389,30 @@ closeAllChannels po = do
       let cps = Channel.channelPoint <$> cs
       mapM_
         ( \cp ->
-            Util.spawnLink $
-              Lnd.closeChannel
-                --
-                -- TODO : investigate why it throws empty gRPC
-                -- response error and as consequence
-                -- probably it's how subscription terminates
-                -- when channel is completely closed
-                --
-                -- but bad thing is that callback sometimes
-                -- is never called, that's why it's not used there
-                -- we are getting TChan events instead from
-                -- previous opened subscription
-                --
-                (const $ return ())
-                lnd0
-                (CloseChannelRequest cp False Nothing Nothing Nothing)
+            closeChannelRecursive
+              lnd0
+              (CloseChannelRequest cp False Nothing Nothing Nothing)
+              5
         )
         cps
       liftLndResult =<< receiveClosedChannels po cps
+
+closeChannelRecursive :: (KatipContext m, MonadUnliftIO m) => LndEnv -> CloseChannelRequest -> Int -> m (Either LndError ())
+closeChannelRecursive _ _ 0 = return $ Left $ LndError "Cannot close channel"
+closeChannelRecursive env req n = do
+  mVar <- newEmptyMVar
+  _ <-
+    Util.spawnLink $
+      Lnd.closeChannel
+        (void . tryPutMVar mVar)
+        --(const $ return ())
+        env
+        req
+  liftIO $ delay 1000000
+  upd <- tryTakeMVar mVar
+  case upd of
+    Just _ -> return $ Right ()
+    Nothing -> closeChannelRecursive env req (n -1)
 
 receiveActiveChannel ::
   LndTest m owner =>
