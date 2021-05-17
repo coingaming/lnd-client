@@ -136,23 +136,24 @@ closeChannelSync ::
   LndEnv ->
   CloseChannelRequest ->
   m (Either LndError ())
-closeChannelSync = closeChannelRecursive 10
+closeChannelSync env req = do
+  mVar <- newEmptyMVar
+  closeChannelRecursive mVar 10
   where
-    closeChannelRecursive (0 :: Int) env _ = do
+    closeChannelRecursive _ (0 :: Int) = do
       $(logTM)
         (newSeverity env ErrorS Nothing Nothing)
         "Channel couldn't be closed."
       return $ Left $ LndError "Cannot close channel"
-    closeChannelRecursive n env req = do
-      mVar <- newEmptyMVar
+    closeChannelRecursive mVar0 n = do
       _ <-
         Util.spawnLink $
           closeChannel
-            (void . tryPutMVar mVar)
+            (void . tryPutMVar mVar0)
             env
             req
       liftIO $ delay 1000000
-      upd <- tryTakeMVar mVar
+      upd <- tryTakeMVar mVar0
       case upd of
         Just _ -> return $ Right ()
-        Nothing -> closeChannelRecursive (n -1) env req
+        Nothing -> closeChannelRecursive mVar0 (n -1)
