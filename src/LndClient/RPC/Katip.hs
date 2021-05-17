@@ -39,8 +39,10 @@ where
 
 import LndClient.Data.AddHodlInvoice as AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice (AddInvoiceResponse (..))
+import qualified LndClient.Data.Channel as Channel
 import LndClient.Data.CloseChannel as CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
+import LndClient.Data.ListChannels as ListChannels (ListChannelsRequest (..))
 import LndClient.Import
 import LndClient.RPC.Generic
 import LndClient.RPC.TH
@@ -137,8 +139,19 @@ closeChannelSync ::
   CloseChannelRequest ->
   m (Either LndError ())
 closeChannelSync env req = do
-  mVar <- newEmptyMVar
-  closeChannelRecursive mVar 10
+  cs0 <- listChannels env (ListChannels.ListChannelsRequest False False False False Nothing)
+  case cs0 of
+    Left err -> pure $ Left err
+    Right x ->
+      case filter (\ch -> channelPoint req == Channel.channelPoint ch) x of
+        [] -> do
+          $(logTM)
+            (newSeverity env ErrorS Nothing Nothing)
+            "Cannot close channel that is not active"
+          return $ Left $ LndError "Cannot close channel that is not active"
+        _ -> do
+          mVar <- newEmptyMVar
+          closeChannelRecursive mVar 10
   where
     closeChannelRecursive _ (0 :: Int) = do
       $(logTM)
