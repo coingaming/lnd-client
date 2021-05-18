@@ -146,9 +146,9 @@ closeChannelSync env req = do
       case filter (\ch -> channelPoint req == Channel.channelPoint ch) x of
         [] -> do
           $(logTM)
-            (newSeverity env ErrorS Nothing Nothing)
+            (newSeverity env WarningS Nothing Nothing)
             "Cannot close channel that is not active"
-          return $ Left $ LndError "Cannot close channel that is not active"
+          return $ Right ()
         _ -> do
           mVar <- newEmptyMVar
           closeChannelRecursive mVar 10

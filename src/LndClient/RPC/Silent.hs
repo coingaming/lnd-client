@@ -116,7 +116,7 @@ closeChannelSync env req = do
     Left err -> pure $ Left err
     Right x ->
       case filter (\ch -> channelPoint req == Channel.channelPoint ch) x of
-        [] -> return $ Left $ LndError "Cannot close channel that is not active"
+        [] -> return $ Right ()
         _ -> do
           mVar <- newEmptyMVar
           closeChannelRecursive mVar 10
