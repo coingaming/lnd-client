@@ -129,7 +129,8 @@ closeChannelSync env req = do
             (void . tryPutMVar mVar0)
             env
             req
-      upd <- liftIO $ Just <$> takeMVar mVar0 <|> Nothing <$ delay 1000000
+      liftIO $ delay 1000000
+      upd <- tryTakeMVar mVar0
       case upd of
         Just _ -> return $ Right ()
         Nothing -> closeChannelRecursive mVar0 (n -1)
