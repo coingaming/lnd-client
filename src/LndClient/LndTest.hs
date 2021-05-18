@@ -60,6 +60,7 @@ import LndClient.Data.CloseChannel
   ( ChannelCloseSummary (..),
     CloseChannelRequest (..),
   )
+import LndClient.Data.ClosedChannels as ClosedChannels
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import qualified LndClient.Data.GetInfo as Lnd (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
@@ -85,7 +86,6 @@ import LndClient.Data.SubscribeInvoices
   )
 import LndClient.Import
 import qualified LndClient.RPC.Katip as Lnd
-import LndClient.Util as Util
 import LndClient.Watcher as Watcher
 import qualified LndGrpc as GRPC
 import qualified Network.Bitcoin as BTC (Client, getClient)
@@ -311,31 +311,33 @@ syncPendingChannelsFor owner = this 0
             else mine1 (Proxy :: Proxy owner) >> this (attempt + 1)
 
 receiveClosedChannels ::
+  forall m owner.
   LndTest m owner =>
   Proxy owner ->
   [ChannelPoint] ->
-  TChan ((), ChannelEventUpdate) ->
   m (Either LndError ())
 receiveClosedChannels po = this 0
   where
-    this _ [] _ =
+    this _ [] =
       pure $ Right ()
-    this 30 _ _ =
+    this 30 _ =
       pure
         $ Left
         $ LndError "receiveClosedChannels - exceeded"
-    this (attempt :: Integer) cps0 cq = do
-      x0 <- readTChanTimeout (MicroSecondsDelay 1000000) cq
-      let x = channelEvent . snd <$> x0
-      $(logTM) InfoS $ logStr $
-        "receiveClosedChannels - got " <> (show x :: Text)
-      case x of
-        Just (ChannelEventUpdateChannelClosedChannel res) ->
-          case filter (/= chPoint res) cps0 of
-            [] -> pure $ Right ()
-            cps -> mine1 po >> this (attempt + 1) cps cq
-        _ ->
-          mine1 po >> this (attempt + 1) cps0 cq
+    this (attempt :: Integer) cps = do
+      let owners = enumerate :: [owner]
+      xs <- rights <$> mapM getOwnersCloseCPs owners
+      let filteredCps = filter (checkTwiceCP $ concat xs) cps
+      if null filteredCps
+        then pure $ Right ()
+        else mine1 po >> liftIO (delay 1000000) >> this (attempt + 1) filteredCps
+    checkTwiceCP :: [ChannelPoint] -> ChannelPoint -> Bool
+    checkTwiceCP cps cp = length (filter (cp ==) cps) < 2
+    getOwnersCloseCPs :: owner -> m (Either LndError [ChannelPoint])
+    getOwnersCloseCPs o = do
+      lnd <- getLndEnv o
+      ccs <- liftLndResult =<< Lnd.closedChannels lnd ClosedChannels.defReq
+      pure $ Right $ chPoint <$> ccs
 
 cancelAllInvoices ::
   forall m owner.
@@ -371,10 +373,10 @@ cancelAllInvoices =
 closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
 closeAllChannels po = do
   cancelAllInvoices po
-  mapM_ this uniquePairs
+  mapM_ this enumerate
   where
-    this :: (owner, owner) -> m ()
-    this (owner0, owner1) = do
+    this :: owner -> m ()
+    this owner0 = do
       $(logTM) InfoS "CloseAllChannels - closing channels"
       lnd0 <- getLndEnv owner0
       cs <-
@@ -383,30 +385,14 @@ closeAllChannels po = do
             lnd0
             (ListChannelsRequest True False False False Nothing)
       let cps = Channel.channelPoint <$> cs
-      chan0 <- getChannelTChan owner0
-      chan1 <- getChannelTChan owner1
       mapM_
         ( \cp ->
-            Util.spawnLink $
-              Lnd.closeChannel
-                --
-                -- TODO : investigate why it throws empty gRPC
-                -- response error and as consequence
-                -- probably it's how subscription terminates
-                -- when channel is completely closed
-                --
-                -- but bad thing is that callback sometimes
-                -- is never called, that's why it's not used there
-                -- we are getting TChan events instead from
-                -- previous opened subscription
-                --
-                (const $ return ())
-                lnd0
-                (CloseChannelRequest cp False Nothing Nothing Nothing)
+            Lnd.closeChannelSync
+              lnd0
+              (CloseChannelRequest cp False Nothing Nothing Nothing)
         )
         cps
-      liftLndResult =<< receiveClosedChannels po cps chan0
-      liftLndResult =<< receiveClosedChannels po cps chan1
+      liftLndResult =<< receiveClosedChannels po cps
 
 receiveActiveChannel ::
   LndTest m owner =>
@@ -481,8 +467,8 @@ setupOneChannel ownerFrom ownerTo = do
   -- remove when LND bug will be fixed
   -- https://github.com/lightningnetwork/lnd/issues/2469
   --
-  sendTestPayment (MSat 1000000) ownerFrom ownerTo
-  sendTestPayment (MSat 1000000) ownerTo ownerFrom
+  () <- sendTestPayment (MSat 1000000) ownerFrom ownerTo
+  () <- sendTestPayment (MSat 1000000) ownerTo ownerFrom
   $(logTM) InfoS "SetupOneChannel - finished"
   pure cp
 
