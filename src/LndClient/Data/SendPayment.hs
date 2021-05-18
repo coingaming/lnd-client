@@ -46,4 +46,4 @@ instance FromGrpc SendPaymentResponse GRPC.SendResponse where
       else
         Left . LndError $
           "paymentPreimage doesn't match paymentHash, error: "
-            <> show res
+            <> paymentError res
