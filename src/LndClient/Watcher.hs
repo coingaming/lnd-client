@@ -8,7 +8,7 @@
 -- `unWatchUnit` function.
 module LndClient.Watcher
   ( Watcher,
-    LndResult (..),
+    LndResult,
     spawnLink,
     spawnLinkUnit,
     watch,
@@ -52,10 +52,7 @@ data WatcherState a b m
         watcherStateTasks :: Map a (Async (a, Either LndError ()))
       }
 
-data LndResult a
-  = Ok a
-  | Error LndError
-  deriving (Eq, Show)
+type LndResult a = Either LndError a
 
 -- Spawn watcher where subscription accepts argument
 -- for example `subscribeInvoicesChan`
@@ -159,7 +156,7 @@ loop w = do
     Just x -> return x
   case event of
     EventCmd x -> applyCmd w x
-    EventLnd x -> applyLnd w (second Ok x)
+    EventLnd x -> applyLnd w (second Right x)
     EventTask x -> applyTask w x
   where
     cmd = EventCmd <$> readTChan (watcherStateCmdChan w)
@@ -216,7 +213,7 @@ applyTask w0 (x, res) = do
     Nothing -> loop w0
     Just t -> do
       case res of
-        Left (e :: LndError) -> watcherStateHandler w0 x $ Error e
+        Left (e :: LndError) -> watcherStateHandler w0 x $ Left e
         Right () -> liftIO $ cancel t
       loop w1
   where
