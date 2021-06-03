@@ -8,7 +8,6 @@
 -- `unWatchUnit` function.
 module LndClient.Watcher
   ( Watcher,
-    LndResult,
     spawnLink,
     spawnLinkUnit,
     watch,
@@ -48,11 +47,9 @@ data WatcherState a b m
       { watcherStateCmdChan :: TChan (Cmd a),
         watcherStateLndChan :: TChan (a, b),
         watcherStateSub :: a -> m (Either LndError ()),
-        watcherStateHandler :: a -> LndResult b -> m (),
+        watcherStateHandler :: a -> Either LndError b -> m (),
         watcherStateTasks :: Map a (Async (a, Either LndError ()))
       }
-
-type LndResult a = Either LndError a
 
 -- Spawn watcher where subscription accepts argument
 -- for example `subscribeInvoicesChan`
@@ -60,7 +57,7 @@ spawnLink ::
   (Ord a, MonadUnliftIO m, KatipContext m) =>
   LndEnv ->
   (Maybe (TChan (a, b)) -> LndEnv -> a -> m (Either LndError ())) ->
-  (Watcher a b -> a -> LndResult b -> m ()) ->
+  (Watcher a b -> a -> Either LndError b -> m ()) ->
   m (Watcher a b)
 spawnLink env sub handler = do
   w <- withRunInIO $ \run -> do
@@ -108,7 +105,7 @@ spawnLinkUnit ::
   (MonadUnliftIO m, KatipContext m) =>
   LndEnv ->
   (Maybe (TChan ((), b)) -> LndEnv -> m (Either LndError ())) ->
-  (Watcher () b -> LndResult b -> m ()) ->
+  (Watcher () b -> Either LndError b -> m ()) ->
   m (Watcher () b)
 spawnLinkUnit env0 sub handler =
   spawnLink
@@ -195,7 +192,7 @@ applyCmd w = \case
 applyLnd ::
   (Ord a, MonadUnliftIO m, KatipContext m) =>
   WatcherState a b m ->
-  (a, LndResult b) ->
+  (a, Either LndError b) ->
   m ()
 applyLnd w (x0, x1) = do
   $(logTM) InfoS "Watcher - applying Lnd"
