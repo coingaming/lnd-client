@@ -53,10 +53,10 @@ newtype TxId (a :: TxKind) = TxId ByteString
   deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
 
 newtype NodePubKey = NodePubKey ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
 
 newtype NodeLocation = NodeLocation Text
-  deriving (Eq, Ord, Show)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
 
 newtype AddIndex = AddIndex Word64
   deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
