@@ -62,14 +62,14 @@ waitForGrpc env0 =
     this (x :: Int) env =
       if x > 0
         then do
-          $(logTM) InfoS "Waiting for GRPC..."
+          $(logTM) (newSev env InfoS) "Waiting for GRPC..."
           res <- getInfo env
           if isRight res
             then return $ Right ()
             else liftIO (delay 1000000) >> this (x - 1) env
         else do
           let msg = "waitForGrpc attempt limit exceeded"
-          $(logTM) ErrorS $ logStr msg
+          $(logTM) (newSev env ErrorS) $ logStr msg
           return . Left $ LndError msg
 
 lazyUnlockWallet ::
@@ -78,15 +78,11 @@ lazyUnlockWallet ::
   m (Either LndError ())
 lazyUnlockWallet env =
   katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
-    $(logTM)
-      (newSeverity env InfoS Nothing Nothing)
-      "RPC is running..."
+    $(logTM) (newSev env InfoS) "RPC is running..."
     unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logMaskErrors})
     if unlocked
       then do
-        $(logTM)
-          (newSeverity env InfoS Nothing Nothing)
-          "Wallet is already unlocked, doing nothing"
+        $(logTM) (newSev env InfoS) "Wallet is already unlocked, doing nothing"
         return $ Right ()
       else unlockWallet env
 
@@ -96,17 +92,13 @@ lazyInitWallet ::
   m (Either LndError ())
 lazyInitWallet env =
   katipAddContext (sl "RpcName" LazyInitWallet) $ do
-    $(logTM)
-      (newSeverity env InfoS Nothing Nothing)
-      "RPC is running..."
+    $(logTM) (newSev env InfoS) "RPC is running..."
     unlockRes <-
       lazyUnlockWallet $
         env {envLndLogStrategy = logMaskErrors}
     if isRight unlockRes
       then do
-        $(logTM)
-          (newSeverity env InfoS Nothing Nothing)
-          "Wallet is already initialized, doing nothing"
+        $(logTM) (newSev env InfoS) "Wallet is already initialized, doing nothing"
         return unlockRes
       else initWallet env
 
@@ -117,9 +109,7 @@ ensureHodlInvoice ::
   m (Either LndError AddInvoiceResponse)
 ensureHodlInvoice env req =
   katipAddContext (sl "RpcName" EnsureHodlInvoice) $ do
-    $(logTM)
-      (newSeverity env InfoS Nothing Nothing)
-      "RPC is running..."
+    $(logTM) (newSev env InfoS) "RPC is running..."
     let rh = AddHodlInvoice.hash req
     _ <- addHodlInvoice (env {envLndLogStrategy = logMaskErrors}) req
     res <- lookupInvoice env rh
@@ -145,18 +135,14 @@ closeChannelSync env req = do
     Right x ->
       case filter (\ch -> channelPoint req == Channel.channelPoint ch) x of
         [] -> do
-          $(logTM)
-            (newSeverity env WarningS Nothing Nothing)
-            "Cannot close channel that is not active"
+          $(logTM) (newSev env WarningS) "Cannot close channel that is not active"
           return $ Right ()
         _ -> do
           mVar <- newEmptyMVar
           closeChannelRecursive mVar 10
   where
     closeChannelRecursive _ (0 :: Int) = do
-      $(logTM)
-        (newSeverity env ErrorS Nothing Nothing)
-        "Channel couldn't be closed."
+      $(logTM) (newSev env ErrorS) "Channel couldn't be closed."
       return $ Left $ LndError "Cannot close channel"
     closeChannelRecursive mVar0 n = do
       _ <-

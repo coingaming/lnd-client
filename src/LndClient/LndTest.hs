@@ -269,10 +269,12 @@ syncWallets = const $ this 0
   where
     this 30 = do
       let msg = "SyncWallets attempt limit exceeded"
-      $(logTM) ErrorS $ logStr msg
+      sev <- getSev (minBound :: owner) ErrorS
+      $(logTM) sev $ logStr msg
       pure . Left $ LndError msg
     this (attempt :: Int) = do
-      $(logTM) InfoS "SyncWallets is running"
+      sev <- getSev (minBound :: owner) InfoS
+      $(logTM) sev "SyncWallets is running"
       rs <- mapM (Lnd.getInfo <=< getLndEnv) (enumerate :: [owner])
       if all isInSync rs
         then pure $ Right ()
@@ -512,7 +514,7 @@ receiveInvoice ::
 receiveInvoice rh s q = do
   mx0 <- readTChanTimeout (MicroSecondsDelay 30000000) q
   let mx = snd <$> mx0
-  $(logTM) InfoS $ logStr $
+  $(logTM) DebugS $ logStr $
     "receiveInvoice - " <> (show mx :: Text)
   case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
     Just True -> return $ Right ()
