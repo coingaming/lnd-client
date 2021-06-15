@@ -54,19 +54,17 @@ waitForGrpc ::
   (KatipContext m) =>
   LndEnv ->
   m (Either LndError ())
-waitForGrpc env0 =
-  katipAddContext (sl "RpcName" WaitForGrpc)
-    $ this 30
-    $ env0 {envLndLogStrategy = logMaskErrors}
+waitForGrpc env =
+  katipAddContext (sl "RpcName" WaitForGrpc) $ this 30
   where
-    this (x :: Int) env =
+    this (x :: Int) =
       if x > 0
         then do
           $(logTM) (newSev env InfoS) "Waiting for GRPC..."
-          res <- getInfo env
+          res <- getInfo $ env {envLndLogStrategy = logDebug}
           if isRight res
             then return $ Right ()
-            else liftIO (delay 1000000) >> this (x - 1) env
+            else liftIO (delay 1000000) >> this (x - 1)
         else do
           let msg = "waitForGrpc attempt limit exceeded"
           $(logTM) (newSev env ErrorS) $ logStr msg
@@ -79,7 +77,7 @@ lazyUnlockWallet ::
 lazyUnlockWallet env =
   katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
     $(logTM) (newSev env InfoS) "RPC is running..."
-    unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logMaskErrors})
+    unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logDebug})
     if unlocked
       then do
         $(logTM) (newSev env InfoS) "Wallet is already unlocked, doing nothing"
@@ -95,7 +93,7 @@ lazyInitWallet env =
     $(logTM) (newSev env InfoS) "RPC is running..."
     unlockRes <-
       lazyUnlockWallet $
-        env {envLndLogStrategy = logMaskErrors}
+        env {envLndLogStrategy = logDebug}
     if isRight unlockRes
       then do
         $(logTM) (newSev env InfoS) "Wallet is already initialized, doing nothing"
@@ -111,7 +109,7 @@ ensureHodlInvoice env req =
   katipAddContext (sl "RpcName" EnsureHodlInvoice) $ do
     $(logTM) (newSev env InfoS) "RPC is running..."
     let rh = AddHodlInvoice.hash req
-    _ <- addHodlInvoice (env {envLndLogStrategy = logMaskErrors}) req
+    _ <- addHodlInvoice (env {envLndLogStrategy = logDebug}) req
     res <- lookupInvoice env rh
     return $ case res of
       Left x -> Left x

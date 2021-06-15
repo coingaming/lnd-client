@@ -53,15 +53,15 @@ waitForGrpc ::
   (MonadIO m) =>
   LndEnv ->
   m (Either LndError ())
-waitForGrpc env0 = this 30 $ env0 {envLndLogStrategy = logMaskErrors}
+waitForGrpc env = this 30
   where
-    this (x :: Int) env =
+    this (x :: Int) =
       if x > 0
         then do
-          res <- getInfo env
+          res <- getInfo $ env {envLndLogStrategy = logDebug}
           if isRight res
             then return $ Right ()
-            else liftIO (delay 1000000) >> this (x - 1) env
+            else liftIO (delay 1000000) >> this (x - 1)
         else do
           let msg = "waitForGrpc attempt limit exceeded"
           return . Left $ LndError msg
@@ -71,7 +71,7 @@ lazyUnlockWallet ::
   LndEnv ->
   m (Either LndError ())
 lazyUnlockWallet env = do
-  unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logMaskErrors})
+  unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logDebug})
   if unlocked
     then return $ Right ()
     else unlockWallet env
@@ -81,7 +81,7 @@ lazyInitWallet ::
   LndEnv ->
   m (Either LndError ())
 lazyInitWallet env = do
-  unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = logMaskErrors}
+  unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = logDebug}
   if isRight unlockRes
     then return unlockRes
     else initWallet env
