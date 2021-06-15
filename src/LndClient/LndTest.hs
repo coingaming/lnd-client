@@ -157,6 +157,10 @@ class
   getTestEnv :: owner -> m TestEnv
   getLndEnv :: owner -> m LndEnv
   getLndEnv = (testLndEnv <$>) . getTestEnv
+  getSev :: owner -> Severity -> m Severity
+  getSev owner sev = do
+    env <- testLndEnv <$> getTestEnv owner
+    pure $ newSev env sev
   getNodeLocation :: owner -> m NodeLocation
   getNodeLocation = (testNodeLocation <$>) . getTestEnv
   getChannelTChan :: owner -> m (TChan ((), ChannelEventUpdate))
@@ -232,7 +236,8 @@ mine :: forall m owner. LndTest m owner => Int -> owner -> m ()
 mine blocks owner = do
   btcAddr <- walletAddress owner
   bc <- getBtcClient owner
-  $(logTM) InfoS $ logStr $
+  sev <- getSev owner InfoS
+  $(logTM) sev $ logStr $
     ("Mining " :: Text)
       <> show blocks
       <> " blocks to "
@@ -292,10 +297,12 @@ syncPendingChannelsFor owner = this 0
             "SyncPendingChannelsFor "
               <> show owner
               <> " attempt limit exceeded"
-      $(logTM) ErrorS $ logStr msg
+      sev <- getSev owner ErrorS
+      $(logTM) sev $ logStr msg
       pure . Left $ LndError msg
     this (attempt :: Int) = do
-      $(logTM) InfoS $ logStr $
+      sev <- getSev owner InfoS
+      $(logTM) sev $ logStr $
         "SyncPendingChannelsFor "
           <> (show owner :: Text)
           <> " is running"
@@ -377,7 +384,8 @@ closeAllChannels po = do
   where
     this :: owner -> m ()
     this owner0 = do
-      $(logTM) InfoS "CloseAllChannels - closing channels"
+      sev <- getSev owner0 InfoS
+      $(logTM) sev "CloseAllChannels - closing channels"
       lnd0 <- getLndEnv owner0
       cs <-
         liftLndResult
@@ -437,7 +445,8 @@ setupOneChannel ownerFrom ownerTo = do
   --
   -- Open channel from Customer to Merchant
   --
-  $(logTM) InfoS "SetupOneChannel - opening channel"
+  sev <- getSev ownerFrom InfoS
+  $(logTM) sev "SetupOneChannel - opening channel"
   GetInfoResponse merchantPubKey _ _ <-
     liftLndResult =<< Lnd.getInfo lndTo
   let openChannelRequest =
@@ -469,7 +478,7 @@ setupOneChannel ownerFrom ownerTo = do
   --
   () <- sendTestPayment (MSat 1000000) ownerFrom ownerTo
   () <- sendTestPayment (MSat 1000000) ownerTo ownerFrom
-  $(logTM) InfoS "SetupOneChannel - finished"
+  $(logTM) sev "SetupOneChannel - finished"
   pure cp
 
 sendTestPayment :: LndTest m owner => MSat -> owner -> owner -> m ()
