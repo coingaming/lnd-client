@@ -389,20 +389,28 @@ closeAllChannels po = do
       sev <- getSev owner0 InfoS
       $(logTM) sev "CloseAllChannels - closing channels"
       lnd0 <- getLndEnv owner0
-      cs <-
-        liftLndResult
-          =<< Lnd.listChannels
-            lnd0
-            (ListChannelsRequest True False False False Nothing)
-      let cps = Channel.channelPoint <$> cs
       mapM_
-        ( \cp ->
-            Lnd.closeChannelSync
-              lnd0
-              (CloseChannelRequest cp False Nothing Nothing Nothing)
+        ( \(peerOwner :: owner) -> do
+            peerLocation <- getNodeLocation peerOwner
+            GetInfoResponse peerPubKey _ _ <-
+              liftLndResult =<< Lnd.getInfo =<< getLndEnv peerOwner
+            cs <-
+              liftLndResult
+                =<< Lnd.listChannels
+                  lnd0
+                  (ListChannelsRequest False False False False (Just peerPubKey))
+            let cps = Channel.channelPoint <$> cs
+            mapM_
+              ( \cp ->
+                  Lnd.closeChannelSync
+                    lnd0
+                    (ConnectPeerRequest (LightningAddress peerPubKey peerLocation) False)
+                    (CloseChannelRequest cp False Nothing Nothing Nothing)
+              )
+              cps
+            liftLndResult =<< receiveClosedChannels po cps
         )
-        cps
-      liftLndResult =<< receiveClosedChannels po cps
+        enumerate
 
 receiveActiveChannel ::
   LndTest m owner =>
