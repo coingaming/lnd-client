@@ -51,6 +51,7 @@ data RpcName
   | PendingChannels
   | ClosedChannels
   | ListInvoices
+  | SubscribeSingleInvoice
   deriving (Generic)
 
 instance ToJSON RpcName

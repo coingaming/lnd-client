@@ -34,6 +34,10 @@ data Watcher a b
         watcherProc :: Async ()
       }
 
+--
+-- TODO : introduce UnWatchAll
+-- and use it in withEnv etc
+--
 data Cmd a
   = Watch a
   | UnWatch a

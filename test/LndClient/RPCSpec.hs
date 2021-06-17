@@ -205,9 +205,11 @@ spec = do
             Nothing
     bob <- getLndEnv Bob
     q <- getInvoiceTChan Bob
+    qq <- getSingleInvoiceTChan Bob
     pr <-
       liftLndResult
         =<< addHodlInvoice bob hipr
+    watchSingleInvoice Bob rh
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
     let spr = SendPaymentRequest pr $ MSat 1000000
@@ -221,10 +223,10 @@ spec = do
           -- https://github.com/lightningnetwork/lnd/issues/4544
           --
           liftLndResult
-            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
+            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED qq
           res <- cancelInvoice bob rh
           liftLndResult
-            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateCANCELED q
+            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateCANCELED qq
           liftIO $ res `shouldSatisfy` isRight
       )
   it "settleInvoice" $ withEnv $ do
@@ -235,7 +237,9 @@ spec = do
           AddHodlInvoiceRequest Nothing rh (MSat 1000000) Nothing
     bob <- getLndEnv Bob
     q <- getInvoiceTChan Bob
+    qq <- getSingleInvoiceTChan Bob
     pr <- liftLndResult =<< addHodlInvoice bob hipr
+    watchSingleInvoice Bob rh
     liftLndResult
       =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
     let spr = SendPaymentRequest pr $ MSat 1000000
@@ -249,10 +253,10 @@ spec = do
           -- https://github.com/lightningnetwork/lnd/issues/4544
           --
           liftLndResult
-            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED q
+            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED qq
           res <- settleInvoice bob r
           liftLndResult
-            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED q
+            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED qq
           liftIO $ res `shouldSatisfy` isRight
       )
   it "listInvoices" $ withEnv $ do

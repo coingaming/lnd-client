@@ -34,6 +34,8 @@ module LndClient.RPC.Katip
     closedChannels,
     closeChannelSync,
     listInvoices,
+    subscribeSingleInvoice,
+    subscribeSingleInvoiceChan,
   )
 where
 

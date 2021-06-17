@@ -15,6 +15,7 @@ module LndClient.LndTest
     newTestEnv,
     spawnLinkChannelWatcher,
     spawnLinkInvoiceWatcher,
+    spawnLinkSingleInvoiceWatcher,
 
     -- * Class
     LndTest (..),
@@ -110,9 +111,8 @@ data TestEnv
       { testLndEnv :: LndEnv,
         testNodeLocation :: NodeLocation,
         testChannelWatcher :: Watcher () ChannelEventUpdate,
-        testInvoiceWatcher ::
-          Watcher SubscribeInvoicesRequest
-            Invoice
+        testInvoiceWatcher :: Watcher SubscribeInvoicesRequest Invoice,
+        testSingleInvoiceWatcher :: Watcher RHash Invoice
       }
 
 uniquePairs :: (Ord a, Enum a, Bounded a) => [(a, a)]
@@ -136,12 +136,14 @@ newTestEnv ::
 newTestEnv lnd loc = do
   cw <- spawnLinkChannelWatcher lnd
   iw <- spawnLinkInvoiceWatcher lnd
+  siw <- spawnLinkSingleInvoiceWatcher lnd
   pure $
     TestEnv
       { testLndEnv = lnd,
         testNodeLocation = loc,
         testChannelWatcher = cw,
-        testInvoiceWatcher = iw
+        testInvoiceWatcher = iw,
+        testSingleInvoiceWatcher = siw
       }
 
 class
@@ -173,6 +175,20 @@ class
     (Watcher.dupLndTChan =<<)
       . (testInvoiceWatcher <$>)
       . getTestEnv
+  getSingleInvoiceTChan :: owner -> m (TChan (RHash, Invoice))
+  getSingleInvoiceTChan =
+    (Watcher.dupLndTChan =<<)
+      . (testSingleInvoiceWatcher <$>)
+      . getTestEnv
+
+  --
+  -- TODO : embed getSingleInvoiceTChan here
+  -- because it's really not used separately
+  --
+  watchSingleInvoice :: owner -> RHash -> m ()
+  watchSingleInvoice owner rh = do
+    env <- getTestEnv owner
+    Watcher.watch (testSingleInvoiceWatcher env) rh
 
 walletAddress :: LndTest m owner => owner -> m Text
 walletAddress owner = do
@@ -517,7 +533,7 @@ receiveInvoice ::
   ) =>
   RHash ->
   GRPC.Invoice_InvoiceState ->
-  TChan (SubscribeInvoicesRequest, Invoice) ->
+  TChan (a, Invoice) ->
   m (Either LndError ())
 receiveInvoice rh s q = do
   mx0 <- readTChanTimeout (MicroSecondsDelay 30000000) q
@@ -554,7 +570,7 @@ spawnLinkChannelWatcher lnd =
   Watcher.spawnLinkUnit
     lnd
     Lnd.subscribeChannelEventsChan
-    $ \_ _ -> pure ()
+    ignore2
 
 spawnLinkInvoiceWatcher ::
   (KatipContext m, MonadUnliftIO m) =>
@@ -564,4 +580,14 @@ spawnLinkInvoiceWatcher lnd =
   Watcher.spawnLink
     lnd
     Lnd.subscribeInvoicesChan
-    $ \_ _ _ -> pure ()
+    ignore3
+
+spawnLinkSingleInvoiceWatcher ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  m (Watcher RHash Invoice)
+spawnLinkSingleInvoiceWatcher lnd =
+  Watcher.spawnLink
+    lnd
+    Lnd.subscribeSingleInvoiceChan
+    ignore3

@@ -250,6 +250,9 @@ instance ToGrpc PaymentRequest GRPC.PayReqString where
 instance ToGrpc RHash GRPC.PaymentHash where
   toGrpc = Right . GRPC.PaymentHash mempty . coerce
 
+instance ToGrpc RHash GRPC.SubscribeSingleInvoiceRequest where
+  toGrpc = Right . GRPC.SubscribeSingleInvoiceRequest . coerce
+
 newRHash :: RPreimage -> RHash
 newRHash = RHash . SHA256.hash . coerce
 

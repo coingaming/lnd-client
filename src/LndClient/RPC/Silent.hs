@@ -34,6 +34,8 @@ module LndClient.RPC.Silent
     closedChannels,
     closeChannelSync,
     listInvoices,
+    subscribeSingleInvoice,
+    subscribeSingleInvoiceChan,
   )
 where
 
