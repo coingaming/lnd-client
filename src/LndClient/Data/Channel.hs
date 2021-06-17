@@ -10,6 +10,7 @@ import LndClient.Data.ChannelPoint
   ( ChannelPoint (..),
     channelPointParser,
   )
+import LndClient.Data.Newtype
 import LndClient.Import
 import qualified LndGrpc as GRPC
 

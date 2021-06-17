@@ -10,12 +10,14 @@ where
 import Chronos (Timespan)
 import Control.Exception (Exception)
 import LndClient.Import.External
-import Network.GRPC.HighLevel.Generated
+import Network.GRPC.HighLevel.Generated as G
+import Network.HTTP2.Client.Exceptions as E
 
 data LndError
   = ToGrpcError Text
   | FromGrpcError Text
-  | GrpcError ClientError
+  | GrpcError G.ClientError
+  | LndGrpcError E.ClientError
   | GrpcUnexpectedResult Text
   | GrpcEmptyResult
   | LndError Text

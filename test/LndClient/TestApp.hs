@@ -44,6 +44,10 @@ newBobEnv x =
         (envLndGrpcConfig x)
           { clientServerPort = 11009
           },
+      envLndConfig =
+        (envLndConfig x)
+          { lndConfigPort = 11009
+          },
       envLndCipherSeedMnemonic =
         Just $
           CipherSeedMnemonic

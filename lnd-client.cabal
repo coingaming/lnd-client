@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2ccdf595656b748c1aa5fe9db6247f78d6e39e23263f79d4e0bff4f7146b8007
+-- hash: d70a129500236cd4b2100aad5883b3b9c2d3dde67a21855116f4e8dd3d85ecf6
 
 name:           lnd-client
 version:        0.1.0.0
@@ -73,7 +73,22 @@ library
       LndClient.Util
       LndClient.Watcher
       LndGrpc
+      LndGrpc.Client
       LndGrpc.Orphan
+      Proto.Google.Api.Annotations
+      Proto.Google.Api.Annotations_Fields
+      Proto.Google.Api.Http
+      Proto.Google.Api.Http_Fields
+      Proto.Google.Protobuf.Descriptor
+      Proto.Google.Protobuf.Descriptor_Fields
+      Proto.InvoiceGrpc
+      Proto.InvoiceGrpc_Fields
+      Proto.LndGrpc
+      Proto.LndGrpc_Fields
+      Proto.RouterGrpc
+      Proto.RouterGrpc_Fields
+      Proto.WalletUnlockerGrpc
+      Proto.WalletUnlockerGrpc_Fields
       RouterGrpc
       WalletUnlockerGrpc
   other-modules:
@@ -81,7 +96,7 @@ library
   hs-source-dirs:
       src
   default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables DataKinds KindSignatures
-  ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
+  ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
   build-depends:
       JuicyPixels
     , aeson
@@ -96,16 +111,31 @@ library
     , containers
     , cryptohash-sha256
     , cryptonite
+    , data-default-class
     , deepseq
     , envparse
     , extra
     , grpc-haskell
     , grpc-haskell-core
     , hspec
+    , http2
+    , http2-client
+    , http2-client-grpc
+    , http2-grpc-proto-lens
+    , http2-grpc-proto3-wire
+    , http2-grpc-types
     , katip
+    , lens
+    , lifted-async
+    , lifted-base
+    , microlens >=0.4.10 && <0.5
+    , network
     , network-bitcoin
     , pem >=0.2.4 && <0.3
     , persistent
+    , process-extras
+    , proto-lens >=0.7.0 && <0.8
+    , proto-lens-runtime >=0.7.0 && <0.8
     , proto3-suite
     , proto3-wire
     , qrcode-core
@@ -114,10 +144,13 @@ library
     , stm
     , template-haskell
     , text
+    , tls
     , unbounded-delays
     , universum
     , unliftio
     , vector
+    , warp-grpc
+    , warp-tls
     , x509
   default-language: Haskell2010
 
@@ -146,17 +179,32 @@ test-suite lnd-client-test
     , containers
     , cryptohash-sha256
     , cryptonite
+    , data-default-class
     , deepseq
     , envparse
     , extra
     , grpc-haskell
     , grpc-haskell-core
     , hspec
+    , http2
+    , http2-client
+    , http2-client-grpc
+    , http2-grpc-proto-lens
+    , http2-grpc-proto3-wire
+    , http2-grpc-types
     , katip
+    , lens
+    , lifted-async
+    , lifted-base
     , lnd-client
+    , microlens >=0.4.10 && <0.5
+    , network
     , network-bitcoin
     , pem >=0.2.4 && <0.3
     , persistent
+    , process-extras
+    , proto-lens >=0.7.0 && <0.8
+    , proto-lens-runtime >=0.7.0 && <0.8
     , proto3-suite
     , proto3-wire
     , qrcode-core
@@ -165,9 +213,12 @@ test-suite lnd-client-test
     , stm
     , template-haskell
     , text
+    , tls
     , unbounded-delays
     , universum
     , unliftio
     , vector
+    , warp-grpc
+    , warp-tls
     , x509
   default-language: Haskell2010

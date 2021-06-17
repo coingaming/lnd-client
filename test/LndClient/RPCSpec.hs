@@ -41,6 +41,7 @@ import LndClient.RPC.Katip
 import LndClient.TestApp
 import qualified LndClient.Watcher as Watcher
 import qualified LndGrpc as GRPC
+import qualified LndGrpc.Client as Client
 import Test.Hspec
 
 spec :: Spec
@@ -140,10 +141,11 @@ spec = do
     liftIO $ res `shouldSatisfy` isRight
   it "watchUnit" $ withEnv $ do
     bob <- getLndEnv Bob
+    alice <- getLndEnv Alice
     w <- Watcher.spawnLinkUnit bob subscribeChannelEventsChan ignore2
     chan <- Watcher.dupLndTChan w
     Watcher.watchUnit w
-    GetInfoResponse bobPubKey _ _ <- liftLndResult =<< getInfo bob
+    GetInfoResponse bobPubKey _ _ <- liftLndResult =<< Client.getInfo bob
     let openChannelRequest =
           OpenChannelRequest
             { nodePubkey = bobPubKey,
@@ -158,7 +160,6 @@ spec = do
               spendUnconfirmed = Nothing,
               closeAddress = Nothing
             }
-    alice <- getLndEnv Alice
     cp <- liftLndResult =<< openChannelSync alice openChannelRequest
     res <- receiveActiveChannel proxyOwner cp chan
     Watcher.delete w

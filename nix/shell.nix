@@ -38,6 +38,7 @@ stdenv.mkDerivation {
     protobuf
     cacert
     xxd
+    gzip
   ];
 
   TERM="xterm-256color";

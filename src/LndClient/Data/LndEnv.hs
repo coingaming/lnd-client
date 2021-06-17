@@ -10,6 +10,7 @@ module LndClient.Data.LndEnv
     LndHexMacaroon (..),
     LndHost (..),
     LndPort,
+    LndConfig (..),
     newLndEnv,
     readLndEnv,
     createLndTlsCert,
@@ -44,6 +45,10 @@ import LndClient.Import.External as Ex
 import LndClient.Util as U
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel.Client
+import Network.HTTP2.Client
+
+--import Network.Socket
+--import Network.Socket.Types
 
 newtype LndWalletPassword = LndWalletPassword Text
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
@@ -59,6 +64,15 @@ newtype LndHost = LndHost Text
 
 newtype LndPort = LndPort Int
   deriving (PersistField, PersistFieldSql, Eq)
+
+data LndConfig
+  = LndConfig
+      { lndConfigHost :: HostName,
+        lndConfigPort :: PortNumber,
+        lndConfigTlsEnabled :: Bool,
+        lndConfigCompression :: Bool
+      }
+  deriving (Show)
 
 data RawConfig
   = RawConfig
@@ -81,7 +95,8 @@ data LndEnv
         envLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
         envLndAezeedPassphrase :: Maybe AezeedPassphrase,
         envLndSyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
-        envLndAsyncGrpcTimeout :: Maybe GrpcTimeoutSeconds
+        envLndAsyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
+        envLndConfig :: LndConfig
       }
 
 instance ToGrpc LndWalletPassword ByteString where
@@ -207,6 +222,13 @@ newLndEnv pwd cert mac host port seed aezeed =
                     clientMetadataPlugin = Nothing
                   },
             clientAuthority = Nothing
+          },
+      envLndConfig =
+        LndConfig
+          { lndConfigHost = LT.unpack $ coerce host,
+            lndConfigPort = fromInteger (toInteger (coerce port :: Int)),
+            lndConfigTlsEnabled = True,
+            lndConfigCompression = False
           }
     }
 
