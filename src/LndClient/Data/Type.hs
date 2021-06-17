@@ -2,8 +2,7 @@ module LndClient.Data.Type
   ( LndError (..),
     LoggingStrategy (..),
     logDefault,
-    logMaskErrors,
-    logOmitInfo,
+    logDebug,
   )
 where
 
@@ -33,12 +32,8 @@ logDefault :: LoggingStrategy
 logDefault =
   LoggingStrategy $ \x _ _ -> x
 
-logMaskErrors :: LoggingStrategy
-logMaskErrors =
-  LoggingStrategy $ \x _ _ -> if x >= InfoS then InfoS else x
-
-logOmitInfo :: LoggingStrategy
-logOmitInfo =
-  LoggingStrategy $ \x _ _ -> if x <= InfoS then DebugS else x
+logDebug :: LoggingStrategy
+logDebug =
+  LoggingStrategy $ \_ _ _ -> DebugS
 
 instance Exception LndError

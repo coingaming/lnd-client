@@ -18,6 +18,7 @@ module LndClient.Data.LndEnv
     createLndPort,
     katipAddLndContext,
     newSeverity,
+    newSev,
   )
 where
 
@@ -245,3 +246,6 @@ katipAddLndContext env =
 
 newSeverity :: LndEnv -> Severity -> Maybe Timespan -> Maybe LndError -> Severity
 newSeverity = coerce . envLndLogStrategy
+
+newSev :: LndEnv -> Severity -> Severity
+newSev env sev = newSeverity env sev Nothing Nothing
