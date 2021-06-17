@@ -162,10 +162,14 @@ loop w = do
   -- evaluated independently. In this case we need to retry
   -- alternative computation but without reading from
   -- watcherStateLndChan.
+  $(logTM) (newSev w InfoS) "Watcher - cmd <|> lnd <|> task"
   me <- maybeDeadlock . atomically $ cmd <|> lnd <|> task
   event <- case me of
-    Nothing -> atomically $ cmd <|> task
+    Nothing -> do
+      $(logTM) (newSev w InfoS) "Watcher - cmd <|> task"
+      atomically $ cmd <|> task
     Just x -> return x
+  $(logTM) (newSev w InfoS) "Watcher - applying event"
   case event of
     EventCmd x -> applyCmd w x
     EventLnd x -> applyLnd w (second Ok x)
