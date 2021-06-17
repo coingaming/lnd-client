@@ -34,6 +34,8 @@ module LndClient.RPC.Katip
     closedChannels,
     closeChannelSync,
     listInvoices,
+    subscribeSingleInvoice,
+    subscribeSingleInvoiceChan,
   )
 where
 
@@ -43,6 +45,7 @@ import qualified LndClient.Data.Channel as Channel
 import LndClient.Data.CloseChannel as CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as ListChannels (ListChannelsRequest (..))
+import LndClient.Data.Peer (ConnectPeerRequest (..))
 import LndClient.Import
 import LndClient.RPC.Generic
 import LndClient.RPC.TH
@@ -124,9 +127,10 @@ ensureHodlInvoice env req =
 closeChannelSync ::
   (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
+  ConnectPeerRequest ->
   CloseChannelRequest ->
   m (Either LndError ())
-closeChannelSync env req = do
+closeChannelSync env conn req = do
   cs0 <- listChannels env (ListChannels.ListChannelsRequest False False False False Nothing)
   case cs0 of
     Left err -> pure $ Left err
@@ -143,12 +147,12 @@ closeChannelSync env req = do
       $(logTM) (newSev env ErrorS) "Channel couldn't be closed."
       return $ Left $ LndError "Cannot close channel"
     closeChannelRecursive mVar0 n = do
-      _ <-
-        Util.spawnLink $
-          closeChannel
-            (void . tryPutMVar mVar0)
-            env
-            req
+      void $ lazyConnectPeer env conn
+      void $ Util.spawnLink $
+        closeChannel
+          (void . tryPutMVar mVar0)
+          env
+          req
       liftIO $ delay 1000000
       upd <- tryTakeMVar mVar0
       case upd of
