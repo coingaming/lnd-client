@@ -34,6 +34,8 @@ module LndClient.RPC.Silent
     closedChannels,
     closeChannelSync,
     listInvoices,
+    subscribeSingleInvoice,
+    subscribeSingleInvoiceChan,
   )
 where
 
@@ -43,6 +45,7 @@ import qualified LndClient.Data.Channel as Channel
 import LndClient.Data.CloseChannel as CloseChannel (CloseChannelRequest (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as ListChannels (ListChannelsRequest (..))
+import LndClient.Data.Peer (ConnectPeerRequest (..))
 import LndClient.Import
 import LndClient.RPC.TH
 import LndClient.Util as Util
@@ -53,15 +56,15 @@ waitForGrpc ::
   (MonadIO m) =>
   LndEnv ->
   m (Either LndError ())
-waitForGrpc env0 = this 30 $ env0 {envLndLogStrategy = logMaskErrors}
+waitForGrpc env = this 30
   where
-    this (x :: Int) env =
+    this (x :: Int) =
       if x > 0
         then do
-          res <- getInfo env
+          res <- getInfo $ env {envLndLogStrategy = logDebug}
           if isRight res
             then return $ Right ()
-            else liftIO (delay 1000000) >> this (x - 1) env
+            else liftIO (delay 1000000) >> this (x - 1)
         else do
           let msg = "waitForGrpc attempt limit exceeded"
           return . Left $ LndError msg
@@ -71,7 +74,7 @@ lazyUnlockWallet ::
   LndEnv ->
   m (Either LndError ())
 lazyUnlockWallet env = do
-  unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logMaskErrors})
+  unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logDebug})
   if unlocked
     then return $ Right ()
     else unlockWallet env
@@ -81,7 +84,7 @@ lazyInitWallet ::
   LndEnv ->
   m (Either LndError ())
 lazyInitWallet env = do
-  unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = logMaskErrors}
+  unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = logDebug}
   if isRight unlockRes
     then return unlockRes
     else initWallet env
@@ -108,9 +111,10 @@ ensureHodlInvoice env req = do
 closeChannelSync ::
   (MonadUnliftIO m) =>
   LndEnv ->
+  ConnectPeerRequest ->
   CloseChannelRequest ->
   m (Either LndError ())
-closeChannelSync env req = do
+closeChannelSync env conn req = do
   cs0 <- listChannels env (ListChannels.ListChannelsRequest False False False False Nothing)
   case cs0 of
     Left err -> pure $ Left err
@@ -123,12 +127,12 @@ closeChannelSync env req = do
   where
     closeChannelRecursive _ (0 :: Int) = return $ Left $ LndError "Cannot close channel"
     closeChannelRecursive mVar0 n = do
-      _ <-
-        Util.spawnLink $
-          closeChannel
-            (void . tryPutMVar mVar0)
-            env
-            req
+      void $ lazyConnectPeer env conn
+      void $ Util.spawnLink $
+        closeChannel
+          (void . tryPutMVar mVar0)
+          env
+          req
       liftIO $ delay 1000000
       upd <- tryTakeMVar mVar0
       case upd of

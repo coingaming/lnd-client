@@ -184,6 +184,31 @@ mkRpc k = do
           GRPC.invoicesSettleInvoice
           env
 
+    subscribeSingleInvoice ::
+      ($(tcc) m) =>
+      (Invoice -> IO ()) ->
+      LndEnv ->
+      RHash ->
+      m (Either LndError ())
+    subscribeSingleInvoice =
+      $(grpcSubscribe)
+        SubscribeSingleInvoice
+        GRPC.invoicesClient
+        GRPC.invoicesSubscribeSingleInvoice
+
+    subscribeSingleInvoiceChan ::
+      ($(tcc) m) =>
+      Maybe (TChan (RHash, Invoice)) ->
+      LndEnv ->
+      RHash ->
+      m (Either LndError ())
+    subscribeSingleInvoiceChan mq env req = do
+      q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
+      subscribeSingleInvoice
+        (\x -> atomically $ writeTChan q (req, x))
+        env
+        req
+
     subscribeInvoices ::
       ($(tcc) m) =>
       (Invoice -> IO ()) ->

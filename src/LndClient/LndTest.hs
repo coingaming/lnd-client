@@ -15,6 +15,7 @@ module LndClient.LndTest
     newTestEnv,
     spawnLinkChannelWatcher,
     spawnLinkInvoiceWatcher,
+    spawnLinkSingleInvoiceWatcher,
 
     -- * Class
     LndTest (..),
@@ -110,9 +111,8 @@ data TestEnv
       { testLndEnv :: LndEnv,
         testNodeLocation :: NodeLocation,
         testChannelWatcher :: Watcher () ChannelEventUpdate,
-        testInvoiceWatcher ::
-          Watcher SubscribeInvoicesRequest
-            Invoice
+        testInvoiceWatcher :: Watcher SubscribeInvoicesRequest Invoice,
+        testSingleInvoiceWatcher :: Watcher RHash Invoice
       }
 
 uniquePairs :: (Ord a, Enum a, Bounded a) => [(a, a)]
@@ -136,12 +136,14 @@ newTestEnv ::
 newTestEnv lnd loc = do
   cw <- spawnLinkChannelWatcher lnd
   iw <- spawnLinkInvoiceWatcher lnd
+  siw <- spawnLinkSingleInvoiceWatcher lnd
   pure $
     TestEnv
       { testLndEnv = lnd,
         testNodeLocation = loc,
         testChannelWatcher = cw,
-        testInvoiceWatcher = iw
+        testInvoiceWatcher = iw,
+        testSingleInvoiceWatcher = siw
       }
 
 class
@@ -157,6 +159,10 @@ class
   getTestEnv :: owner -> m TestEnv
   getLndEnv :: owner -> m LndEnv
   getLndEnv = (testLndEnv <$>) . getTestEnv
+  getSev :: owner -> Severity -> m Severity
+  getSev owner sev = do
+    env <- testLndEnv <$> getTestEnv owner
+    pure $ newSev env sev
   getNodeLocation :: owner -> m NodeLocation
   getNodeLocation = (testNodeLocation <$>) . getTestEnv
   getChannelTChan :: owner -> m (TChan ((), ChannelEventUpdate))
@@ -169,6 +175,20 @@ class
     (Watcher.dupLndTChan =<<)
       . (testInvoiceWatcher <$>)
       . getTestEnv
+  getSingleInvoiceTChan :: owner -> m (TChan (RHash, Invoice))
+  getSingleInvoiceTChan =
+    (Watcher.dupLndTChan =<<)
+      . (testSingleInvoiceWatcher <$>)
+      . getTestEnv
+
+  --
+  -- TODO : embed getSingleInvoiceTChan here
+  -- because it's really not used separately
+  --
+  watchSingleInvoice :: owner -> RHash -> m ()
+  watchSingleInvoice owner rh = do
+    env <- getTestEnv owner
+    Watcher.watch (testSingleInvoiceWatcher env) rh
 
 walletAddress :: LndTest m owner => owner -> m Text
 walletAddress owner = do
@@ -232,7 +252,8 @@ mine :: forall m owner. LndTest m owner => Int -> owner -> m ()
 mine blocks owner = do
   btcAddr <- walletAddress owner
   bc <- getBtcClient owner
-  $(logTM) InfoS $ logStr $
+  sev <- getSev owner InfoS
+  $(logTM) sev $ logStr $
     ("Mining " :: Text)
       <> show blocks
       <> " blocks to "
@@ -264,10 +285,12 @@ syncWallets = const $ this 0
   where
     this 30 = do
       let msg = "SyncWallets attempt limit exceeded"
-      $(logTM) ErrorS $ logStr msg
+      sev <- getSev (minBound :: owner) ErrorS
+      $(logTM) sev $ logStr msg
       pure . Left $ LndError msg
     this (attempt :: Int) = do
-      $(logTM) InfoS "SyncWallets is running"
+      sev <- getSev (minBound :: owner) InfoS
+      $(logTM) sev "SyncWallets is running"
       rs <- mapM (Lnd.getInfo <=< getLndEnv) (enumerate :: [owner])
       if all isInSync rs
         then pure $ Right ()
@@ -292,10 +315,12 @@ syncPendingChannelsFor owner = this 0
             "SyncPendingChannelsFor "
               <> show owner
               <> " attempt limit exceeded"
-      $(logTM) ErrorS $ logStr msg
+      sev <- getSev owner ErrorS
+      $(logTM) sev $ logStr msg
       pure . Left $ LndError msg
     this (attempt :: Int) = do
-      $(logTM) InfoS $ logStr $
+      sev <- getSev owner InfoS
+      $(logTM) sev $ logStr $
         "SyncPendingChannelsFor "
           <> (show owner :: Text)
           <> " is running"
@@ -345,7 +370,7 @@ cancelAllInvoices ::
   Proxy owner ->
   m ()
 cancelAllInvoices =
-  const $ mapM_ this (enumerate :: [owner])
+  const $ mapM_ (this 0) (enumerate :: [owner])
   where
     listReq =
       ListInvoices.ListInvoiceRequest
@@ -354,12 +379,12 @@ cancelAllInvoices =
           ListInvoices.numMaxInvoices = 0,
           ListInvoices.reversed = False
         }
-    this owner = do
+    this :: Int -> owner -> m ()
+    this 30 owner =
+      error $ "CancelAllInvoices attempt limit exceeded for " <> show owner
+    this attempt owner = do
       lnd <- getLndEnv owner
-      xs0 <-
-        ListInvoices.invoices
-          <$> (liftLndResult =<< Lnd.listInvoices lnd listReq)
-      let xs =
+      let getInvoices =
             filter
               ( \x ->
                   Invoice.state x
@@ -367,32 +392,50 @@ cancelAllInvoices =
                              GRPC.Invoice_InvoiceStateACCEPTED
                            ]
               )
-              xs0
-      mapM_ (Lnd.cancelInvoice lnd) (Invoice.rHash <$> xs)
+              . ListInvoices.invoices
+              <$> (liftLndResult =<< Lnd.listInvoices lnd listReq)
+      is0 <- getInvoices
+      res <- mapM (Lnd.cancelInvoice lnd) (Invoice.rHash <$> is0)
+      is1 <- getInvoices
+      if all isRight res && null is1
+        then pure ()
+        else liftIO (delay 1000000) >> this (attempt + 1) owner
 
 closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
 closeAllChannels po = do
   cancelAllInvoices po
-  mapM_ this enumerate
+  mapM_ (this 0) uniquePairs
   where
-    this :: owner -> m ()
-    this owner0 = do
-      $(logTM) InfoS "CloseAllChannels - closing channels"
+    this :: Int -> (owner, owner) -> m ()
+    this 30 owners =
+      error $ "CloseAllChannels - limit exceeded for " <> show owners
+    this attempt (owner0, owner1) = do
+      sev <- getSev owner0 InfoS
+      $(logTM) sev "CloseAllChannels - closing channels"
       lnd0 <- getLndEnv owner0
-      cs <-
-        liftLndResult
-          =<< Lnd.listChannels
-            lnd0
-            (ListChannelsRequest True False False False Nothing)
-      let cps = Channel.channelPoint <$> cs
-      mapM_
-        ( \cp ->
-            Lnd.closeChannelSync
-              lnd0
-              (CloseChannelRequest cp False Nothing Nothing Nothing)
-        )
-        cps
-      liftLndResult =<< receiveClosedChannels po cps
+      peerLocation <- getNodeLocation owner1
+      GetInfoResponse peerPubKey _ _ <-
+        liftLndResult =<< Lnd.getInfo =<< getLndEnv owner1
+      let getChannels =
+            liftLndResult
+              =<< Lnd.listChannels
+                lnd0
+                (ListChannelsRequest False False False False (Just peerPubKey))
+      cs0 <- getChannels
+      let cps = Channel.channelPoint <$> cs0
+      res <-
+        mapM
+          ( \cp ->
+              Lnd.closeChannelSync
+                lnd0
+                (ConnectPeerRequest (LightningAddress peerPubKey peerLocation) False)
+                (CloseChannelRequest cp False Nothing Nothing Nothing)
+          )
+          cps
+      cs1 <- getChannels
+      if all isRight res && null cs1
+        then liftLndResult =<< receiveClosedChannels po cps
+        else liftIO (delay 1000000) >> this (attempt + 1) (owner0, owner1)
 
 receiveActiveChannel ::
   LndTest m owner =>
@@ -437,7 +480,8 @@ setupOneChannel ownerFrom ownerTo = do
   --
   -- Open channel from Customer to Merchant
   --
-  $(logTM) InfoS "SetupOneChannel - opening channel"
+  sev <- getSev ownerFrom InfoS
+  $(logTM) sev "SetupOneChannel - opening channel"
   GetInfoResponse merchantPubKey _ _ <-
     liftLndResult =<< Lnd.getInfo lndTo
   let openChannelRequest =
@@ -469,7 +513,7 @@ setupOneChannel ownerFrom ownerTo = do
   --
   () <- sendTestPayment (MSat 1000000) ownerFrom ownerTo
   () <- sendTestPayment (MSat 1000000) ownerTo ownerFrom
-  $(logTM) InfoS "SetupOneChannel - finished"
+  $(logTM) sev "SetupOneChannel - finished"
   pure cp
 
 sendTestPayment :: LndTest m owner => MSat -> owner -> owner -> m ()
@@ -498,12 +542,12 @@ receiveInvoice ::
   ) =>
   RHash ->
   GRPC.Invoice_InvoiceState ->
-  TChan (SubscribeInvoicesRequest, Invoice) ->
+  TChan (a, Invoice) ->
   m (Either LndError ())
 receiveInvoice rh s q = do
   mx0 <- readTChanTimeout (MicroSecondsDelay 30000000) q
   let mx = snd <$> mx0
-  $(logTM) InfoS $ logStr $
+  $(logTM) DebugS $ logStr $
     "receiveInvoice - " <> (show mx :: Text)
   case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
     Just True -> return $ Right ()
@@ -535,7 +579,7 @@ spawnLinkChannelWatcher lnd =
   Watcher.spawnLinkUnit
     lnd
     Lnd.subscribeChannelEventsChan
-    $ \_ _ -> pure ()
+    ignore2
 
 spawnLinkInvoiceWatcher ::
   (KatipContext m, MonadUnliftIO m) =>
@@ -545,4 +589,14 @@ spawnLinkInvoiceWatcher lnd =
   Watcher.spawnLink
     lnd
     Lnd.subscribeInvoicesChan
-    $ \_ _ _ -> pure ()
+    ignore3
+
+spawnLinkSingleInvoiceWatcher ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  m (Watcher RHash Invoice)
+spawnLinkSingleInvoiceWatcher lnd =
+  Watcher.spawnLink
+    lnd
+    Lnd.subscribeSingleInvoiceChan
+    ignore3

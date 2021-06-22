@@ -28,7 +28,7 @@ data LightningAddress
       { pubkey :: NodePubKey,
         host :: NodeLocation
       }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Read)
 
 instance ToGrpc LightningAddress GRPC.LightningAddress where
   toGrpc x =

@@ -51,6 +51,7 @@ data RpcName
   | PendingChannels
   | ClosedChannels
   | ListInvoices
+  | SubscribeSingleInvoice
   deriving (Generic)
 
 instance ToJSON RpcName
@@ -125,9 +126,7 @@ grpcSyncKatip rpcName service method env req =
     $ katipAddContext (sl "RpcRequest" (show req :: Text))
     $ katipAddLndContext env
     $ do
-      $(logTM)
-        (newSeverity env InfoS Nothing Nothing)
-        "RPC is running"
+      $(logTM) (newSev env InfoS) "RPC is running"
       (ts, res) <-
         liftIO $ stopwatch $
           grpcSyncSilent rpcName service method env req
@@ -135,14 +134,10 @@ grpcSyncKatip rpcName service method env req =
         case res of
           Left e ->
             katipAddContext (sl "RpcResponse" (show e :: Text)) $
-              $(logTM)
-                (newSeverity env ErrorS (Just ts) (Just e))
-                "RPC failed"
+              $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
           Right x ->
             katipAddContext (sl "RpcResponse" (show x :: Text)) $
-              $(logTM)
-                (newSeverity env InfoS (Just ts) Nothing)
-                "RPC succeded"
+              $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
       pure res
 
 grpcSubscribeSilent ::
@@ -217,9 +212,7 @@ grpcSubscribeKatip rpcName service method handler env req =
     $ katipAddContext (sl "RpcRequest" (show req :: Text))
     $ katipAddLndContext env
     $ do
-      $(logTM)
-        (newSeverity env InfoS Nothing Nothing)
-        "RPC is running"
+      $(logTM) (newSev env InfoS) "RPC is running"
       (ts, res) <-
         liftIO $ stopwatch $
           grpcSubscribeSilent rpcName service method handler env req
@@ -227,14 +220,10 @@ grpcSubscribeKatip rpcName service method handler env req =
         case res of
           Left e ->
             katipAddContext (sl "RpcResponse" (show e :: Text)) $
-              $(logTM)
-                (newSeverity env ErrorS (Just ts) (Just e))
-                "RPC failed"
+              $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
           Right x ->
             katipAddContext (sl "RpcResponse" (show x :: Text)) $
-              $(logTM)
-                (newSeverity env InfoS (Just ts) Nothing)
-                "RPC succeded"
+              $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
       pure res
 
 genStreamHandler ::

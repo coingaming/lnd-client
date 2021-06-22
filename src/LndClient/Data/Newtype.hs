@@ -53,10 +53,10 @@ newtype TxId (a :: TxKind) = TxId ByteString
   deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
 
 newtype NodePubKey = NodePubKey ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
 
 newtype NodeLocation = NodeLocation Text
-  deriving (Eq, Ord, Show)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
 
 newtype AddIndex = AddIndex Word64
   deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
@@ -249,6 +249,9 @@ instance ToGrpc PaymentRequest GRPC.PayReqString where
 
 instance ToGrpc RHash GRPC.PaymentHash where
   toGrpc = Right . GRPC.PaymentHash mempty . coerce
+
+instance ToGrpc RHash GRPC.SubscribeSingleInvoiceRequest where
+  toGrpc = Right . GRPC.SubscribeSingleInvoiceRequest . coerce
 
 newRHash :: RPreimage -> RHash
 newRHash = RHash . SHA256.hash . coerce

@@ -20,7 +20,7 @@ module LndClient.Watcher
 where
 
 import qualified Data.Map as Map
-import LndClient.Import hiding (spawnLink)
+import LndClient.Import hiding (newSev, spawnLink)
 
 --
 -- TODO : maybe pass OnSub | OnExit callbacks?
@@ -33,6 +33,10 @@ data Watcher a b
         watcherProc :: Async ()
       }
 
+--
+-- TODO : introduce UnWatchAll
+-- and use it in withEnv etc
+--
 data Cmd a
   = Watch a
   | UnWatch a
@@ -48,8 +52,12 @@ data WatcherState a b m
         watcherStateLndChan :: TChan (a, b),
         watcherStateSub :: a -> m (Either LndError ()),
         watcherStateHandler :: a -> Either LndError b -> m (),
-        watcherStateTasks :: Map a (Async (a, Either LndError ()))
+        watcherStateTasks :: Map a (Async (a, Either LndError ())),
+        watcherStateLndEnv :: LndEnv
       }
+
+newSev :: WatcherState a b m -> Severity -> Severity
+newSev w s = newSeverity (watcherStateLndEnv w) s Nothing Nothing
 
 -- Spawn watcher where subscription accepts argument
 -- for example `subscribeInvoicesChan`
@@ -87,13 +95,14 @@ spawnLink env sub handler = do
               watcherStateLndChan = readLndChan,
               watcherStateSub = sub (Just writeLndChan) env,
               watcherStateHandler = handler $ w {watcherProc = proc},
-              watcherStateTasks = mempty
+              watcherStateTasks = mempty,
+              watcherStateLndEnv = env
             }
     liftIO $ putMVar varProc proc
     pure $ w {watcherProc = proc}
   let proc = watcherProc w
   liftIO $ link proc
-  $(logTM) InfoS
+  $(logTM) (newSeverity env InfoS Nothing Nothing)
     $ logStr
     $ ("Watcher spawned as " :: Text)
       <> show (asyncThreadId proc)
@@ -147,10 +156,14 @@ loop w = do
   -- evaluated independently. In this case we need to retry
   -- alternative computation but without reading from
   -- watcherStateLndChan.
+  $(logTM) (newSev w InfoS) "Watcher - cmd <|> lnd <|> task"
   me <- maybeDeadlock . atomically $ cmd <|> lnd <|> task
   event <- case me of
-    Nothing -> atomically $ cmd <|> task
+    Nothing -> do
+      $(logTM) (newSev w InfoS) "Watcher - cmd <|> task"
+      atomically $ cmd <|> task
     Just x -> return x
+  $(logTM) (newSev w InfoS) "Watcher - applying event"
   case event of
     EventCmd x -> applyCmd w x
     EventLnd x -> applyLnd w (second Right x)
@@ -169,7 +182,7 @@ applyCmd ::
   m ()
 applyCmd w = \case
   Watch x -> do
-    $(logTM) InfoS "Watcher - applying Cmd Watch"
+    $(logTM) (newSev w InfoS) "Watcher - applying Cmd Watch"
     if isJust $ Map.lookup x ts
       then loop w
       else do
@@ -180,7 +193,7 @@ applyCmd w = \case
             return t
         loop w {watcherStateTasks = Map.insert x t ts}
   UnWatch x -> do
-    $(logTM) InfoS "Watcher - applying Cmd UnWatch"
+    $(logTM) (newSev w InfoS) "Watcher - applying Cmd UnWatch"
     case Map.lookup x ts of
       Nothing -> loop w
       Just t -> do
@@ -195,7 +208,7 @@ applyLnd ::
   (a, Either LndError b) ->
   m ()
 applyLnd w (x0, x1) = do
-  $(logTM) InfoS "Watcher - applying Lnd"
+  $(logTM) (newSev w InfoS) "Watcher - applying Lnd"
   watcherStateHandler w x0 x1
   loop w
 
@@ -205,7 +218,7 @@ applyTask ::
   (a, Either LndError ()) ->
   m ()
 applyTask w0 (x, res) = do
-  $(logTM) InfoS "Watcher - applying Task"
+  $(logTM) (newSev w0 InfoS) "Watcher - applying Task"
   case Map.lookup x ts of
     Nothing -> loop w0
     Just t -> do
