@@ -19,7 +19,6 @@ import LndClient.Data.CloseChannel
     CloseStatusUpdate (..),
   )
 import LndClient.Data.ClosedChannels (ClosedChannelsRequest (..))
-import LndClient.Data.GetInfo
 import LndClient.Data.HtlcEvent (HtlcEvent (..))
 import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
@@ -53,19 +52,6 @@ data RpcKind = RpcSilent | RpcKatip
 mkRpc :: RpcKind -> Q [Dec]
 mkRpc k = do
   [d|
-    getInfo ::
-      ($(tcc) m) =>
-      LndEnv ->
-      m (Either LndError GetInfoResponse)
-    getInfo env =
-      $(grpcRetry) $
-        $(grpcSync)
-          GetInfo
-          GRPC.lightningClient
-          GRPC.lightningGetInfo
-          env
-          GRPC.GetInfoRequest
-
     initWallet ::
       ($(tcc) m) =>
       LndEnv ->

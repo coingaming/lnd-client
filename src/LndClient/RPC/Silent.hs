@@ -49,6 +49,7 @@ import LndClient.Data.Peer (ConnectPeerRequest (..))
 import LndClient.Import
 import LndClient.RPC.TH
 import LndClient.Util as Util
+import LndGrpc.Client
 
 $(mkRpc RpcSilent)
 

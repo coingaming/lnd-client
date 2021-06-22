@@ -39,6 +39,7 @@ import Data.Text.Lazy as TL
 import Data.Vector (fromList)
 import qualified InvoiceGrpc as GRPC
 import LndClient.Class
+import qualified LndClient.Class2 as C2
 import LndClient.Data.Kind
 import LndClient.Data.Type
 import LndClient.Import.External
@@ -140,7 +141,7 @@ instance FromGrpc NodePubKey Text where
   fromGrpc x =
     case B16.decode $ encodeUtf8 x of
       Right y -> Right $ NodePubKey y
-      Left {} -> Left $ ToGrpcError "NodePubKey hex decoding error"
+      Left {} -> Left $ FromGrpcError "NodePubKey hex decoding error"
 
 instance FromGrpc NodeLocation Text where
   fromGrpc = Right . NodeLocation
@@ -227,6 +228,9 @@ instance ToGrpc Seconds Int64 where
       $ safeFromIntegral (coerce x :: Word64)
 
 instance ToGrpc CipherSeedMnemonic (Vector Text) where
+  toGrpc = Right . fromList . coerce
+
+instance C2.ToGrpc CipherSeedMnemonic (Vector Text) where
   toGrpc = Right . fromList . coerce
 
 instance ToGrpc AezeedPassphrase ByteString where

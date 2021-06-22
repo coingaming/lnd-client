@@ -8,11 +8,11 @@ module LndGrpc.Client
   )
 where
 
-import Data.ByteString.Base16 as B16 (decode)
 import Data.ProtoLens.Message
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
+import Data.Text.Lazy (pack)
 import GHC.TypeLits (Symbol)
-import Lens.Micro
+import qualified LndClient.Class2 as C2
 import LndClient.Data.GetInfo as Lnd
 import LndClient.Data.LndEnv
 import LndClient.Import
@@ -23,7 +23,6 @@ import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
 import Network.HTTP2.Client
 import qualified Proto.LndGrpc as LnGRPC
-import qualified Proto.LndGrpc_Fields as LnGRPC
 
 runUnary ::
   ( MonadIO p,
@@ -37,17 +36,17 @@ runUnary ::
   p (Either LndError res)
 runUnary rpc env req = do
   res <- liftIO $ runClientIO $ do
-    grpc <- makeClient env True True
+    grpc <- makeClient env True False
     rawUnary rpc grpc req
   case res of
     Right (Right (Right (_, _, (Right x)))) -> return $ Right x
     Left e -> return $ Left $ LndGrpcError e
-    Right (Right (Right (_, _, (Left x)))) -> return $ Left $ LndError ("error" <> show x)
-    _ -> return $ Left $ LndError "error"
+    Right (Right (Right (_, _, (Left e)))) -> return $ Left $ LndError $ pack e
+    _ -> return $ Left $ LndError "LndGrpc request error"
 
 getInfo :: (MonadIO m) => LndEnv -> m (Either LndError Lnd.GetInfoResponse)
 getInfo env =
-  join . second fromLnGrpc <$> runUnary (RPC :: RPC LnGRPC.Lightning "getInfo") env defMessage
+  join . second C2.fromGrpc <$> runUnary (RPC :: RPC LnGRPC.Lightning "getInfo") env defMessage
 
 makeClient ::
   LndEnv ->
@@ -62,17 +61,3 @@ makeClient env tlsEnabled doCompress =
       }
   where
     compression = if doCompress then gzip else uncompressed
-
-fromLnGrpc :: LnGRPC.GetInfoResponse -> Either LndError Lnd.GetInfoResponse
-fromLnGrpc x = do
-  pubKey <- decodeNodePubKey $ x ^. LnGRPC.identityPubkey
-  return $
-    GetInfoResponse
-      pubKey
-      (x ^. LnGRPC.syncedToChain)
-      (x ^. LnGRPC.syncedToGraph)
-  where
-    decodeNodePubKey key =
-      case B16.decode $ encodeUtf8 key of
-        Right y -> Right $ NodePubKey y
-        Left {} -> Left $ FromGrpcError "NodePubKey hex decoding error"
