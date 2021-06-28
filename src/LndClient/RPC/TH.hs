@@ -20,7 +20,6 @@ import LndClient.Data.CloseChannel
   )
 import LndClient.Data.ClosedChannels (ClosedChannelsRequest (..))
 import LndClient.Data.HtlcEvent (HtlcEvent (..))
-import LndClient.Data.InitWallet (InitWalletRequest (..))
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (ListChannelsRequest (..))
 import LndClient.Data.ListInvoices (ListInvoiceRequest (..), ListInvoiceResponse (..))
@@ -52,33 +51,6 @@ data RpcKind = RpcSilent | RpcKatip
 mkRpc :: RpcKind -> Q [Dec]
 mkRpc k = do
   [d|
-    initWallet ::
-      ($(tcc) m) =>
-      LndEnv ->
-      m (Either LndError ())
-    initWallet env =
-      case envLndCipherSeedMnemonic env of
-        Nothing -> pure . Left $ LndEnvError "CipherSeed is required for initWallet"
-        Just seed -> do
-          res <-
-            $(grpcRetry) $
-              $(grpcSync)
-                InitWallet
-                GRPC.walletUnlockerClient
-                GRPC.walletUnlockerInitWallet
-                env
-                InitWalletRequest
-                  { walletPassword =
-                      coerce $ envLndWalletPassword env,
-                    cipherSeedMnemonic =
-                      coerce seed,
-                    aezeedPassphrase =
-                      coerce $ envLndAezeedPassphrase env
-                  }
-          if isRight res
-            then waitForGrpc env
-            else return res
-
     unlockWallet ::
       ($(tcc) m) =>
       LndEnv ->

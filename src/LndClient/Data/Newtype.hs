@@ -39,7 +39,7 @@ import Data.Text.Lazy as TL
 import Data.Vector (fromList)
 import qualified InvoiceGrpc as GRPC
 import LndClient.Class
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Data.Kind
 import LndClient.Data.Type
 import LndClient.Import.External
@@ -230,8 +230,8 @@ instance ToGrpc Seconds Int64 where
 instance ToGrpc CipherSeedMnemonic (Vector Text) where
   toGrpc = Right . fromList . coerce
 
-instance C2.ToGrpc CipherSeedMnemonic (Vector Text) where
-  toGrpc = Right . fromList . coerce
+--instance C2.ToGrpc CipherSeedMnemonic (Vector Text) where
+--  toGrpc = Right . fromList . coerce
 
 instance ToGrpc AezeedPassphrase ByteString where
   toGrpc x = Right $ encodeUtf8 (coerce x :: Text)

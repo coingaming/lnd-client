@@ -30,8 +30,8 @@ instance ToGrpc a b => ToGrpc (Maybe a) b where
     Nothing -> Right defMessage
     Just x -> toGrpc x
 
-instance ToGrpc a b => ToGrpc [a] [b] where
-  toGrpc x = mapM toGrpc x
+--instance ToGrpc a b => ToGrpc [a] b where
+--  toGrpc x = mapM toGrpc x
 
 --instance ToGrpc a b => ToGrpc a (Maybe b) where
 --  toGrpc x = Just <$> toGrpc x
