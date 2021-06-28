@@ -370,7 +370,7 @@ cancelAllInvoices ::
   Proxy owner ->
   m ()
 cancelAllInvoices =
-  const $ mapM_ this (enumerate :: [owner])
+  const $ mapM_ (this 0) (enumerate :: [owner])
   where
     listReq =
       ListInvoices.ListInvoiceRequest
@@ -379,12 +379,12 @@ cancelAllInvoices =
           ListInvoices.numMaxInvoices = 0,
           ListInvoices.reversed = False
         }
-    this owner = do
+    this :: Int -> owner -> m ()
+    this 30 owner =
+      error $ "CancelAllInvoices attempt limit exceeded for " <> show owner
+    this attempt owner = do
       lnd <- getLndEnv owner
-      xs0 <-
-        ListInvoices.invoices
-          <$> (liftLndResult =<< Lnd.listInvoices lnd listReq)
-      let xs =
+      let getInvoices =
             filter
               ( \x ->
                   Invoice.state x
@@ -392,41 +392,50 @@ cancelAllInvoices =
                              GRPC.Invoice_InvoiceStateACCEPTED
                            ]
               )
-              xs0
-      mapM_ (Lnd.cancelInvoice lnd) (Invoice.rHash <$> xs)
+              . ListInvoices.invoices
+              <$> (liftLndResult =<< Lnd.listInvoices lnd listReq)
+      is0 <- getInvoices
+      res <- mapM (Lnd.cancelInvoice lnd) (Invoice.rHash <$> is0)
+      is1 <- getInvoices
+      if all isRight res && null is1
+        then pure ()
+        else liftIO (delay 1000000) >> this (attempt + 1) owner
 
 closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
 closeAllChannels po = do
   cancelAllInvoices po
-  mapM_ this enumerate
+  mapM_ (this 0) uniquePairs
   where
-    this :: owner -> m ()
-    this owner0 = do
+    this :: Int -> (owner, owner) -> m ()
+    this 30 owners =
+      error $ "CloseAllChannels - limit exceeded for " <> show owners
+    this attempt (owner0, owner1) = do
       sev <- getSev owner0 InfoS
       $(logTM) sev "CloseAllChannels - closing channels"
       lnd0 <- getLndEnv owner0
-      mapM_
-        ( \(peerOwner :: owner) -> do
-            peerLocation <- getNodeLocation peerOwner
-            GetInfoResponse peerPubKey _ _ <-
-              liftLndResult =<< Lnd.getInfo =<< getLndEnv peerOwner
-            cs <-
-              liftLndResult
-                =<< Lnd.listChannels
-                  lnd0
-                  (ListChannelsRequest False False False False (Just peerPubKey))
-            let cps = Channel.channelPoint <$> cs
-            mapM_
-              ( \cp ->
-                  Lnd.closeChannelSync
-                    lnd0
-                    (ConnectPeerRequest (LightningAddress peerPubKey peerLocation) False)
-                    (CloseChannelRequest cp False Nothing Nothing Nothing)
-              )
-              cps
-            liftLndResult =<< receiveClosedChannels po cps
-        )
-        enumerate
+      peerLocation <- getNodeLocation owner1
+      GetInfoResponse peerPubKey _ _ <-
+        liftLndResult =<< Lnd.getInfo =<< getLndEnv owner1
+      let getChannels =
+            liftLndResult
+              =<< Lnd.listChannels
+                lnd0
+                (ListChannelsRequest False False False False (Just peerPubKey))
+      cs0 <- getChannels
+      let cps = Channel.channelPoint <$> cs0
+      res <-
+        mapM
+          ( \cp ->
+              Lnd.closeChannelSync
+                lnd0
+                (ConnectPeerRequest (LightningAddress peerPubKey peerLocation) False)
+                (CloseChannelRequest cp False Nothing Nothing Nothing)
+          )
+          cps
+      cs1 <- getChannels
+      if all isRight res && null cs1
+        then liftLndResult =<< receiveClosedChannels po cps
+        else liftIO (delay 1000000) >> this (attempt + 1) (owner0, owner1)
 
 receiveActiveChannel ::
   LndTest m owner =>
