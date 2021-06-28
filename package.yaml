@@ -74,21 +74,10 @@ dependencies:
 - proto-lens >= 0.7.0 && < 0.8
 - proto-lens-runtime >= 0.7.0 && < 0.8
 #proto-lens-grpc
-- http2
+- http2-grpc-proto-lens
 - http2-client
 - http2-client-grpc
-- http2-grpc-proto-lens
-- http2-grpc-proto3-wire
 - http2-grpc-types
-- lens
-- lifted-async
-- lifted-base
-- tls
-- process-extras
-- data-default-class
-- warp-grpc
-- warp-tls
-- network
 
 library:
   source-dirs: src

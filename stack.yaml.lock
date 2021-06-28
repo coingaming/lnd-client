@@ -205,26 +205,12 @@ packages:
   original:
     hackage: http2-grpc-types-0.5.0.0@sha256:4d34edc06a48496130f19245817a7cd7ea15c78ac8815570c3795ffc4503cf27,1445
 - completed:
-    hackage: warp-grpc-0.4.0.1@sha256:3859190e4fa23b944cf93ac691b3cec78c2adf4eaff6a4e8070c89fd17915add,1759
-    pantry-tree:
-      size: 709
-      sha256: f542ef3e7e03b9cd0b2c0e0c436ce4e68ab37f56195740639034cc3cd28a6b9f
-  original:
-    hackage: warp-grpc-0.4.0.1@sha256:3859190e4fa23b944cf93ac691b3cec78c2adf4eaff6a4e8070c89fd17915add,1759
-- completed:
     hackage: http2-grpc-proto-lens-0.1.0.0@sha256:7745c53a22a59c5a9456eef11160365ab8d80a306b785881ce26141fe6c9f2fc,1479
     pantry-tree:
       size: 339
       sha256: bdfb2a3c69b78ecad47c1e13fdcc6ca2e3bd47a5c9e7a7413ae41f004c3efc72
   original:
     hackage: http2-grpc-proto-lens-0.1.0.0@sha256:7745c53a22a59c5a9456eef11160365ab8d80a306b785881ce26141fe6c9f2fc,1479
-- completed:
-    hackage: http2-grpc-proto3-wire-0.1.0.0@sha256:4f6c0d27048756155b82ebf7385a20cc8241c7bd854e96d1dd6a1827e75fa410,1504
-    pantry-tree:
-      size: 341
-      sha256: d07d5bb883860e3bf928c00312df133a4c195c99bb397865bd67f433f75387b8
-  original:
-    hackage: http2-grpc-proto3-wire-0.1.0.0@sha256:4f6c0d27048756155b82ebf7385a20cc8241c7bd854e96d1dd6a1827e75fa410,1504
 snapshots:
 - completed:
     size: 524996

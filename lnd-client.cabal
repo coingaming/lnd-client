@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3b2ffd85fb30b8dbcfc4a9ddaf259d869783ed4fea33d4f331093497ed008a26
+-- hash: 4eee7e0103c769dd088142ef28387f9756c437bc5e1a527430ac03b75e7c58e2
 
 name:           lnd-client
 version:        0.1.0.0
@@ -112,29 +112,21 @@ library
     , containers
     , cryptohash-sha256
     , cryptonite
-    , data-default-class
     , deepseq
     , envparse
     , extra
     , grpc-haskell
     , grpc-haskell-core
     , hspec
-    , http2
     , http2-client
     , http2-client-grpc
     , http2-grpc-proto-lens
-    , http2-grpc-proto3-wire
     , http2-grpc-types
     , katip
-    , lens
-    , lifted-async
-    , lifted-base
     , microlens >=0.4.10 && <0.5
-    , network
     , network-bitcoin
     , pem >=0.2.4 && <0.3
     , persistent
-    , process-extras
     , proto-lens >=0.7.0 && <0.8
     , proto-lens-runtime >=0.7.0 && <0.8
     , proto3-suite
@@ -145,13 +137,10 @@ library
     , stm
     , template-haskell
     , text
-    , tls
     , unbounded-delays
     , universum
     , unliftio
     , vector
-    , warp-grpc
-    , warp-tls
     , x509
   default-language: Haskell2010
 
@@ -180,30 +169,22 @@ test-suite lnd-client-test
     , containers
     , cryptohash-sha256
     , cryptonite
-    , data-default-class
     , deepseq
     , envparse
     , extra
     , grpc-haskell
     , grpc-haskell-core
     , hspec
-    , http2
     , http2-client
     , http2-client-grpc
     , http2-grpc-proto-lens
-    , http2-grpc-proto3-wire
     , http2-grpc-types
     , katip
-    , lens
-    , lifted-async
-    , lifted-base
     , lnd-client
     , microlens >=0.4.10 && <0.5
-    , network
     , network-bitcoin
     , pem >=0.2.4 && <0.3
     , persistent
-    , process-extras
     , proto-lens >=0.7.0 && <0.8
     , proto-lens-runtime >=0.7.0 && <0.8
     , proto3-suite
@@ -214,12 +195,9 @@ test-suite lnd-client-test
     , stm
     , template-haskell
     , text
-    , tls
     , unbounded-delays
     , universum
     , unliftio
     , vector
-    , warp-grpc
-    , warp-tls
     , x509
   default-language: Haskell2010
