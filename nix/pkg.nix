@@ -2,10 +2,10 @@
 , base16-bytestring, base64-bytestring, bytestring, chronos
 , containers, cryptohash-sha256, cryptonite, deepseq, envparse
 , extra, grpc-haskell, grpc-haskell-core, hpack, hspec, JuicyPixels
-, katip, lib, network-bitcoin, pem, persistent, proto3-suite
-, proto3-wire, qrcode-core, qrcode-juicypixels, scientific, stm
-, template-haskell, text, unbounded-delays, universum, unliftio
-, vector, x509
+, katip, network-bitcoin, pem, persistent, proto3-suite
+, proto3-wire, qrcode-core, qrcode-juicypixels, scientific, stdenv
+, stm, template-haskell, text, unbounded-delays, universum
+, unliftio, vector, x509
 }:
 mkDerivation {
   pname = "lnd-client";
@@ -32,5 +32,5 @@ mkDerivation {
   ];
   prePatch = "hpack";
   homepage = "https://github.com/githubuser/lnd-client#readme";
-  license = lib.licenses.bsd3;
+  license = stdenv.lib.licenses.bsd3;
 }
