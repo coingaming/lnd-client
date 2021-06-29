@@ -56,6 +56,29 @@ self: super:
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
           }));
+          http2-grpc-proto-lens = doJailbreak (
+            callPackage ./overlay/http2-grpc-proto-lens.nix {
+              stdenv = self.stdenv;
+            }
+          );
+          http2-client-grpc = doJailbreak (callPackage ./overlay/http2-client-grpc.nix {
+            stdenv = self.stdenv;
+          });
+          http2-client = callPackage ./overlay/http2-client.nix {
+            stdenv = self.stdenv;
+          };
+          http2-grpc-types = callPackage ./overlay/http2-grpc-types.nix {
+            stdenv = self.stdenv;
+          };
+          http2 = callPackage ./overlay/http2.nix {
+            stdenv = self.stdenv;
+          };
+          proto-lens = callPackage ./overlay/proto-lens.nix {
+            stdenv = self.stdenv;
+          };
+          proto-lens-runtime = callPackage ./overlay/proto-lens-runtime.nix {
+            stdenv = self.stdenv;
+          };
           proto3-wire = callPackage ./overlay/proto3-wire.nix {
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
