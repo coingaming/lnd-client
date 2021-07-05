@@ -4,28 +4,19 @@
 
 module LndGrpc.Client
   ( runUnary,
-    getInfo,
-    initWallet,
   )
 where
 
-import Data.ProtoLens.Message
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
 import Data.Text.Lazy (pack)
 import GHC.TypeLits (Symbol)
-import qualified LndClient.Class2 as C2
-import LndClient.Data.GetInfo as Lnd
-import LndClient.Data.InitWallet as Lnd
 import LndClient.Data.LndEnv
 import LndClient.Import
 import Network.GRPC.Client
 import Network.GRPC.Client.Helpers
 import Network.GRPC.HTTP2.Encoding (gzip)
 import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
-import Network.GRPC.HTTP2.ProtoLens (RPC (..))
 import Network.HTTP2.Client
-import qualified Proto.LndGrpc as LnGRPC
-import qualified Proto.WalletUnlockerGrpc as LnGRPC
 
 runUnary ::
   ( MonadIO p,
@@ -46,28 +37,6 @@ runUnary rpc env req = do
     Left e -> return $ Left $ LndGrpcError e
     Right (Right (Right (_, _, (Left e)))) -> return $ Left $ LndError $ pack e
     _ -> return $ Left $ LndError "LndGrpc request error"
-
-getInfo :: (MonadIO m) => LndEnv -> m (Either LndError Lnd.GetInfoResponse)
-getInfo env =
-  join . second C2.fromGrpc <$> runUnary (RPC :: RPC LnGRPC.Lightning "getInfo") env defMessage
-
-initWallet :: (MonadIO m) => LndEnv -> m (Either LndError ())
-initWallet env =
-  case envLndCipherSeedMnemonic env of
-    Nothing -> pure . Left $ LndEnvError "CipherSeed is required for initWallet"
-    Just seed -> do
-      let req =
-            InitWalletRequest
-              { walletPassword =
-                  coerce $ envLndWalletPassword env,
-                cipherSeedMnemonic =
-                  coerce seed,
-                aezeedPassphrase =
-                  coerce $ envLndAezeedPassphrase env
-              }
-      case C2.toGrpc req of
-        Right gReq -> join . second C2.fromGrpc <$> runUnary (RPC :: RPC LnGRPC.WalletUnlocker "initWallet") env gReq
-        Left err -> return $ Left err
 
 makeClient ::
   LndEnv ->

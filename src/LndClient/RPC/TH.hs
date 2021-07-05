@@ -9,6 +9,7 @@ where
 
 import qualified InvoiceGrpc as GRPC
 import Language.Haskell.TH.Syntax
+import qualified LndClient.Class2 as C2
 import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.Channel (Channel (..))
@@ -19,7 +20,9 @@ import LndClient.Data.CloseChannel
     CloseStatusUpdate (..),
   )
 import LndClient.Data.ClosedChannels (ClosedChannelsRequest (..))
+import qualified LndClient.Data.GetInfo as GI
 import LndClient.Data.HtlcEvent (HtlcEvent (..))
+import qualified LndClient.Data.InitWallet as IW
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (ListChannelsRequest (..))
 import LndClient.Data.ListInvoices (ListInvoiceRequest (..), ListInvoiceResponse (..))
@@ -39,42 +42,65 @@ import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
 import LndClient.Data.TrackPayment (TrackPaymentRequest (..))
-import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
+import qualified LndClient.Data.UnlockWallet as UW
 import LndClient.Import
 import LndClient.RPC.Generic
 import qualified LndGrpc as GRPC
+import Network.GRPC.HTTP2.ProtoLens (RPC (..))
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.WalletUnlockerGrpc as LnGRPC
 import qualified RouterGrpc as GRPC
-import qualified WalletUnlockerGrpc as GRPC
 
 data RpcKind = RpcSilent | RpcKatip
 
 mkRpc :: RpcKind -> Q [Dec]
 mkRpc k = do
   [d|
+    getInfo ::
+      ($(tcc) m) =>
+      LndEnv ->
+      m (Either LndError GI.GetInfoResponse)
+    getInfo env =
+      $(grpcRetry) $
+        join . second C2.fromGrpc
+          <$> runUnary (RPC :: RPC LnGRPC.Lightning "getInfo") env defMessage
+
+    initWallet ::
+      ($(tcc) m) =>
+      LndEnv ->
+      m (Either LndError ())
+    initWallet env =
+      $(grpcRetry) $
+        case envLndCipherSeedMnemonic env of
+          Nothing -> pure . Left $ LndEnvError "CipherSeed is required for initWallet"
+          Just seed -> do
+            let req =
+                  IW.InitWalletRequest
+                    { IW.walletPassword =
+                        coerce $ envLndWalletPassword env,
+                      IW.cipherSeedMnemonic =
+                        coerce seed,
+                      IW.aezeedPassphrase =
+                        coerce $ envLndAezeedPassphrase env
+                    }
+            case C2.toGrpc req of
+              Right gReq -> join . second C2.fromGrpc <$> runUnary (RPC :: RPC LnGRPC.WalletUnlocker "initWallet") env gReq
+              Left err -> return $ Left err
+
     unlockWallet ::
       ($(tcc) m) =>
       LndEnv ->
       m (Either LndError ())
     unlockWallet env = do
-      res <-
-        $(grpcRetry) $
-          $(grpcSync)
-            UnlockWallet
-            GRPC.walletUnlockerClient
-            GRPC.walletUnlockerUnlockWallet
-            env
-            UnlockWalletRequest
-              { walletPassword = coerce $ envLndWalletPassword env,
-                --
-                -- TODO : this is related to BIP44
-                -- hardcoded value will be sufficient for most cases
-                -- but maybe let's have it in LndEnv as well?
-                --
-                recoveryWindow = 100
+      let req =
+            UW.UnlockWalletRequest
+              { UW.walletPassword = coerce $ envLndWalletPassword env,
+                UW.recoveryWindow = 100
               }
-      if isRight res
-        then waitForGrpc env
-        else return res
+      $(grpcRetry) $
+        case C2.toGrpc req of
+          Right gReq -> join . second C2.fromGrpc <$> runUnary (RPC :: RPC LnGRPC.WalletUnlocker "unlockWallet") env gReq
+          Left err -> return $ Left err
 
     newAddress ::
       ($(tcc) m) =>

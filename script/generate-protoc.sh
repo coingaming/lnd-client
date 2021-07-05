@@ -1,12 +1,6 @@
 #!/bin/sh
-mkdir -p gen-bin
-
-stack install --local-bin-path=gen-bin proto-lens-protoc
-
-protolens="`pwd`/gen-bin/proto-lens-protoc"
-
-protoc  "--plugin=protoc-gen-haskell-protolens=${protolens}" \
-	--haskell-protolens_out=./src \
+protoc --plugin=protoc-gen-haskell-protolens=`which proto-lens-protoc` \
+    --haskell-protolens_out=./src \
     --proto_path=proto \
 	./proto/invoice_grpc.proto  \
     ./proto/router_grpc.proto \

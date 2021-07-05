@@ -11,7 +11,6 @@ where
 
 import Chronos (Timespan)
 import Control.Exception (Exception)
-import qualified Language.Haskell.TH.Syntax as TH
 import LndClient.Import.External
 import Network.GRPC.HighLevel.Generated as G
 import Network.HTTP2.Client.Exceptions as E
@@ -27,14 +26,6 @@ data LndError
   | LndEnvError Text
   | TChanTimeout Text
   deriving (Eq, Show)
-
-newtype FieldIndex
-  = FieldIndex Word32
-  deriving (TH.Lift, Show)
-
-newtype ReversedFieldLocation
-  = ReversedFieldLocation [FieldIndex]
-  deriving (TH.Lift, Semigroup, Show)
 
 newtype LoggingStrategy
   = LoggingStrategy

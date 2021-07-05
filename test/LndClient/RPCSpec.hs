@@ -41,7 +41,6 @@ import LndClient.RPC.Katip
 import LndClient.TestApp
 import qualified LndClient.Watcher as Watcher
 import qualified LndGrpc as GRPC
-import qualified LndGrpc.Client as Client
 import Test.Hspec
 
 spec :: Spec
@@ -145,7 +144,7 @@ spec = do
     w <- Watcher.spawnLinkUnit bob subscribeChannelEventsChan ignore2
     chan <- Watcher.dupLndTChan w
     Watcher.watchUnit w
-    GetInfoResponse bobPubKey _ _ <- liftLndResult =<< Client.getInfo bob
+    GetInfoResponse bobPubKey _ _ <- liftLndResult =<< getInfo bob
     let openChannelRequest =
           OpenChannelRequest
             { nodePubkey = bobPubKey,

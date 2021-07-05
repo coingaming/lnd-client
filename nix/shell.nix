@@ -39,6 +39,9 @@ stdenv.mkDerivation {
     cacert
     xxd
     gzip
+    haskellPackages.ghc-source-gen
+    haskellPackages.proto-lens-protoc
+    which
   ];
 
   TERM="xterm-256color";
