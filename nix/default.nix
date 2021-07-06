@@ -3,10 +3,10 @@ let overlays = [(import ./overlay.nix)];
     localPkgs = import ./nixpkgs.nix;
     nixpkgs = if pkgs == null then import localPkgs {inherit overlays;} else pkgs;
 in
-  with nixpkgs;
+with nixpkgs;
 
 let callPackage = lib.callPackageWith haskellPackages;
-    pkg = callPackage ./pkg.nix {inherit stdenv; };
+    pkg = callPackage ./pkg.nix {inherit stdenv;};
     systemDeps = [ protobuf makeWrapper cacert ];
     testDeps = [ openssl bitcoin lnd ];
 in
