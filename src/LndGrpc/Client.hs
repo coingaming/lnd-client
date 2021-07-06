@@ -12,9 +12,8 @@ import Data.Text.Lazy (pack)
 import GHC.TypeLits (Symbol)
 import LndClient.Data.LndEnv
 import LndClient.Import
-import Network.GRPC.Client
 import Network.GRPC.Client.Helpers
-import Network.GRPC.HTTP2.Encoding (gzip)
+import Network.GRPC.HTTP2.Encoding (gzip, uncompressed)
 import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
 import Network.HTTP2.Client
 

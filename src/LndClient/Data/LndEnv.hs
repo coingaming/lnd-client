@@ -48,9 +48,6 @@ import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel.Client
 import Network.HTTP2.Client
 
---import Network.Socket
---import Network.Socket.Types
-
 newtype LndWalletPassword = LndWalletPassword Text
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 

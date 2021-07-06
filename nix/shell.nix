@@ -26,6 +26,7 @@ stdenv.mkDerivation {
     haskell-ide
     /* Apps */
     bitcoin
+    gzip
     lnd
     /* Utils */
     grpc
@@ -38,7 +39,6 @@ stdenv.mkDerivation {
     protobuf
     cacert
     xxd
-    gzip
     haskellPackages.ghc-source-gen
     haskellPackages.proto-lens-protoc
     which
