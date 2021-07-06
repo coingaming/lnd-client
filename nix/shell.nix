@@ -39,7 +39,6 @@ stdenv.mkDerivation {
     protobuf
     cacert
     xxd
-    haskellPackages.ghc-source-gen
     haskellPackages.proto-lens-protoc
     which
   ];
