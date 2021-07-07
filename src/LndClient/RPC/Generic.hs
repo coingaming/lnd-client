@@ -24,9 +24,10 @@ import qualified Control.Exception as CE
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
 import GHC.TypeLits (Symbol)
 import GHC.TypeLits
+import qualified LndClient.Class2 as C2
 import LndClient.Import
 import LndGrpc.Client
-import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
+import qualified Network.GRPC.HTTP2.ProtoLens as PL
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel
 
@@ -206,7 +207,7 @@ grpcSync2Silent ::
     gA ~ MethodInput s rm,
     gB ~ MethodOutput s rm
   ) =>
-  ProtoLens.RPC s (rm :: Symbol) ->
+  PL.RPC s (rm :: Symbol) ->
   LndEnv ->
   a ->
   m (Either LndError b)
@@ -226,7 +227,7 @@ grpcSync2Katip ::
     Show a,
     Show b
   ) =>
-  ProtoLens.RPC s (rm :: Symbol) ->
+  PL.RPC s (rm :: Symbol) ->
   LndEnv ->
   a ->
   m (Either LndError b)

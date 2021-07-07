@@ -74,7 +74,11 @@ mkRpc k = do
       case envLndCipherSeedMnemonic env of
         Nothing -> pure . Left $ LndEnvError "CipherSeed is required for initWallet"
         Just seed -> do
-          let req =
+          res <-
+            $(grpcRetry) $
+              $(grpcSync2)
+                (RPC :: RPC LnGRPC.WalletUnlocker "initWallet")
+                env
                 IW.InitWalletRequest
                   { IW.walletPassword =
                       coerce $ envLndWalletPassword env,
@@ -83,27 +87,27 @@ mkRpc k = do
                     IW.aezeedPassphrase =
                       coerce $ envLndAezeedPassphrase env
                   }
-          $(grpcRetry) $
-            $(grpcSync2)
-              (RPC :: RPC LnGRPC.WalletUnlocker "initWallet")
-              env
-              req
+          if isRight res
+            then waitForGrpc env
+            else return res
 
     unlockWallet ::
       ($(tcc) m) =>
       LndEnv ->
       m (Either LndError ())
     unlockWallet env = do
-      let req =
+      res <-
+        $(grpcRetry) $
+          $(grpcSync2)
+            (RPC :: RPC LnGRPC.WalletUnlocker "unlockWallet")
+            env
             UW.UnlockWalletRequest
               { UW.walletPassword = coerce $ envLndWalletPassword env,
                 UW.recoveryWindow = 100
               }
-      $(grpcRetry) $
-        $(grpcSync2)
-          (RPC :: RPC LnGRPC.WalletUnlocker "unlockWallet")
-          env
-          req
+      if isRight res
+        then waitForGrpc env
+        else return res
 
     newAddress ::
       ($(tcc) m) =>

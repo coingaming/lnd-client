@@ -51,7 +51,6 @@ import LndClient.Import
 import LndClient.RPC.Generic
 import LndClient.RPC.TH
 import LndClient.Util as Util
-import LndGrpc.Client
 
 $(mkRpc RpcKatip)
 
