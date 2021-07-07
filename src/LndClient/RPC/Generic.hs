@@ -3,10 +3,13 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module LndClient.RPC.Generic
   ( grpcSyncSilent,
     grpcSyncKatip,
+    grpcSync2Silent,
+    grpcSync2Katip,
     grpcSubscribeSilent,
     grpcSubscribeKatip,
     RpcName (..),
@@ -18,7 +21,12 @@ import qualified Control.Exception as CE
     catches,
     throw,
   )
+import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
+import GHC.TypeLits (Symbol)
+import GHC.TypeLits
 import LndClient.Import
+import LndGrpc.Client
+import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
 import Network.GRPC.HighLevel.Generated
 import Network.GRPC.LowLevel
 
@@ -189,6 +197,57 @@ grpcSubscribeSilent _ service method handler env req =
             Left $ GrpcUnexpectedResult "ClientBiDiResponse"
           Left e ->
             Left e
+
+grpcSync2Silent ::
+  ( MonadIO m,
+    C2.ToGrpc a gA,
+    C2.FromGrpc b gB,
+    HasMethod s rm,
+    gA ~ MethodInput s rm,
+    gB ~ MethodOutput s rm
+  ) =>
+  ProtoLens.RPC s (rm :: Symbol) ->
+  LndEnv ->
+  a ->
+  m (Either LndError b)
+grpcSync2Silent rpc env req =
+  case C2.toGrpc req of
+    Right gReq -> join . second C2.fromGrpc <$> runUnary rpc env gReq
+    Left err -> return $ Left err
+
+grpcSync2Katip ::
+  ( MonadIO m,
+    KatipContext m,
+    C2.ToGrpc a gA,
+    C2.FromGrpc b gB,
+    HasMethod s rm,
+    gA ~ MethodInput s rm,
+    gB ~ MethodOutput s rm,
+    Show a,
+    Show b
+  ) =>
+  ProtoLens.RPC s (rm :: Symbol) ->
+  LndEnv ->
+  a ->
+  m (Either LndError b)
+grpcSync2Katip rpc env req =
+  katipAddContext (sl "RpcName" (show $ symbolVal rpc :: Text))
+    $ katipAddContext (sl "RpcRequest" (show req :: Text))
+    $ katipAddLndContext env
+    $ do
+      $(logTM) (newSev env InfoS) "RPC is running"
+      (ts, res) <-
+        liftIO $ stopwatch $
+          grpcSync2Silent rpc env req
+      katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $
+        case res of
+          Left e ->
+            katipAddContext (sl "RpcResponse" (show e :: Text)) $
+              $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
+          Right x ->
+            katipAddContext (sl "RpcResponse" (show x :: Text)) $
+              $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
+      pure res
 
 grpcSubscribeKatip ::
   ( MonadIO m,

@@ -9,7 +9,6 @@ where
 
 import qualified InvoiceGrpc as GRPC
 import Language.Haskell.TH.Syntax
-import qualified LndClient.Class2 as C2
 import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.Channel (Channel (..))
@@ -62,30 +61,33 @@ mkRpc k = do
       m (Either LndError GI.GetInfoResponse)
     getInfo env =
       $(grpcRetry) $
-        join . second C2.fromGrpc
-          <$> runUnary (RPC :: RPC LnGRPC.Lightning "getInfo") env defMessage
+        $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "getInfo")
+          env
+          (defMessage :: LnGRPC.GetInfoRequest)
 
     initWallet ::
       ($(tcc) m) =>
       LndEnv ->
       m (Either LndError ())
-    initWallet env =
-      $(grpcRetry) $
-        case envLndCipherSeedMnemonic env of
-          Nothing -> pure . Left $ LndEnvError "CipherSeed is required for initWallet"
-          Just seed -> do
-            let req =
-                  IW.InitWalletRequest
-                    { IW.walletPassword =
-                        coerce $ envLndWalletPassword env,
-                      IW.cipherSeedMnemonic =
-                        coerce seed,
-                      IW.aezeedPassphrase =
-                        coerce $ envLndAezeedPassphrase env
-                    }
-            case C2.toGrpc req of
-              Right gReq -> join . second C2.fromGrpc <$> runUnary (RPC :: RPC LnGRPC.WalletUnlocker "initWallet") env gReq
-              Left err -> return $ Left err
+    initWallet env = do
+      case envLndCipherSeedMnemonic env of
+        Nothing -> pure . Left $ LndEnvError "CipherSeed is required for initWallet"
+        Just seed -> do
+          let req =
+                IW.InitWalletRequest
+                  { IW.walletPassword =
+                      coerce $ envLndWalletPassword env,
+                    IW.cipherSeedMnemonic =
+                      coerce seed,
+                    IW.aezeedPassphrase =
+                      coerce $ envLndAezeedPassphrase env
+                  }
+          $(grpcRetry) $
+            $(grpcSync2)
+              (RPC :: RPC LnGRPC.WalletUnlocker "initWallet")
+              env
+              req
 
     unlockWallet ::
       ($(tcc) m) =>
@@ -98,9 +100,10 @@ mkRpc k = do
                 UW.recoveryWindow = 100
               }
       $(grpcRetry) $
-        case C2.toGrpc req of
-          Right gReq -> join . second C2.fromGrpc <$> runUnary (RPC :: RPC LnGRPC.WalletUnlocker "unlockWallet") env gReq
-          Left err -> return $ Left err
+        $(grpcSync2)
+          (RPC :: RPC LnGRPC.WalletUnlocker "unlockWallet")
+          env
+          req
 
     newAddress ::
       ($(tcc) m) =>
@@ -461,6 +464,9 @@ mkRpc k = do
     grpcSync = case k of
       RpcSilent -> [e|grpcSyncSilent|]
       RpcKatip -> [e|grpcSyncKatip|]
+    grpcSync2 = case k of
+      RpcSilent -> [e|grpcSync2Silent|]
+      RpcKatip -> [e|grpcSync2Katip|]
     grpcSubscribe = case k of
       RpcSilent -> [e|grpcSubscribeSilent|]
       RpcKatip -> [e|grpcSubscribeKatip|]
