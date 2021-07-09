@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedLists #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 
@@ -12,6 +13,8 @@ module LndClient.RPC.Generic
     grpcSync2Katip,
     grpcSubscribeSilent,
     grpcSubscribeKatip,
+    grpcSubscribe2Silent,
+    grpcSubscribe2Katip,
     RpcName (..),
   )
 where
@@ -22,7 +25,6 @@ import qualified Control.Exception as CE
     throw,
   )
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
-import GHC.TypeLits (Symbol)
 import GHC.TypeLits
 import qualified LndClient.Class2 as C2
 import LndClient.Import
@@ -149,56 +151,6 @@ grpcSyncKatip rpcName service method env req =
               $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
       pure res
 
-grpcSubscribeSilent ::
-  ( MonadIO m,
-    ToGrpc a gA,
-    FromGrpc b gB
-  ) =>
-  RpcName ->
-  (Client -> IO client) ->
-  ( client ->
-    ClientRequest 'ServerStreaming gA gB ->
-    IO (ClientResult streamType streamResult)
-  ) ->
-  (b -> IO ()) ->
-  LndEnv ->
-  a ->
-  m (Either LndError ())
-grpcSubscribeSilent _ service method handler env req =
-  liftIO $ case toGrpc req of
-    Left e -> return $ Left e
-    Right grpcReq ->
-      withGRPCClient (envLndGrpcConfig env) $ \client -> do
-        method' <- method <$> service client
-        let greq =
-              ClientReaderRequest
-                grpcReq
-                ( unGrpcTimeout
-                    . fromMaybe defaultAsyncGrpcTimeout
-                    $ envLndAsyncGrpcTimeout env
-                )
-                (grpcMeta env)
-                (\_ _ s -> genStreamHandler s handler)
-        rawGrpc <-
-          CE.catches
-            (Right <$> method' greq)
-            [ CE.Handler $
-                \(x :: LndError) -> pure $ Left x
-            ]
-        return $ case rawGrpc of
-          Right ClientNormalResponse {} ->
-            Left $ GrpcUnexpectedResult "ClientNormalResponse"
-          Right (ClientErrorResponse err) ->
-            Left $ GrpcError err
-          Right ClientWriterResponse {} ->
-            Left $ GrpcUnexpectedResult "ClientWriterResponse"
-          Right ClientReaderResponse {} ->
-            Right ()
-          Right ClientBiDiResponse {} ->
-            Left $ GrpcUnexpectedResult "ClientBiDiResponse"
-          Left e ->
-            Left e
-
 grpcSync2Silent ::
   ( MonadIO m,
     C2.ToGrpc a gA,
@@ -249,6 +201,116 @@ grpcSync2Katip rpc env req =
             katipAddContext (sl "RpcResponse" (show x :: Text)) $
               $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
       pure res
+
+grpcSubscribe2Silent ::
+  ( MonadIO m,
+    C2.ToGrpc a gA,
+    C2.FromGrpc b gB,
+    HasMethod s rm,
+    gA ~ MethodInput s rm,
+    gB ~ MethodOutput s rm
+  ) =>
+  PL.RPC s (rm :: Symbol) ->
+  (b -> IO ()) ->
+  LndEnv ->
+  a ->
+  m (Either LndError ())
+grpcSubscribe2Silent rpc handler env req =
+  case C2.toGrpc req of
+    Right grpcReq -> do
+      res <- runStreamServer rpc env grpcReq gHandler
+      case res of
+        Left err -> return $ Left err
+        Right _ -> return $ Right ()
+    Left err -> return $ Left err
+  where
+    gHandler _ x =
+      case C2.fromGrpc x of
+        Right b -> liftIO $ handler b
+        Left _ -> return ()
+
+grpcSubscribe2Katip ::
+  ( MonadIO m,
+    KatipContext m,
+    C2.ToGrpc a gA,
+    C2.FromGrpc b gB,
+    HasMethod s rm,
+    Show a,
+    gA ~ MethodInput s rm,
+    gB ~ MethodOutput s rm
+  ) =>
+  PL.RPC s (rm :: Symbol) ->
+  (b -> IO ()) ->
+  LndEnv ->
+  a ->
+  m (Either LndError ())
+grpcSubscribe2Katip rpc handler env req =
+  katipAddContext (sl "RpcName" (show $ symbolVal rpc :: Text))
+    $ katipAddContext (sl "RpcRequest" (show req :: Text))
+    $ katipAddLndContext env
+    $ do
+      $(logTM) (newSev env InfoS) "RPC is running"
+      (ts, res) <-
+        liftIO $ stopwatch $ grpcSubscribe2Silent rpc handler env req
+      katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $
+        case res of
+          Left e ->
+            katipAddContext (sl "RpcResponse" (show e :: Text)) $
+              $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
+          Right x ->
+            katipAddContext (sl "RpcResponse" (show x :: Text)) $
+              $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
+      pure res
+
+grpcSubscribeSilent ::
+  ( MonadIO m,
+    ToGrpc a gA,
+    FromGrpc b gB
+  ) =>
+  RpcName ->
+  (Client -> IO client) ->
+  ( client ->
+    ClientRequest 'ServerStreaming gA gB ->
+    IO (ClientResult streamType streamResult)
+  ) ->
+  (b -> IO ()) ->
+  LndEnv ->
+  a ->
+  m (Either LndError ())
+grpcSubscribeSilent _ service method handler env req =
+  liftIO $ case toGrpc req of
+    Left e -> return $ Left e
+    Right grpcReq ->
+      withGRPCClient (envLndGrpcConfig env) $ \client -> do
+        method' <- method <$> service client
+        let greq =
+              ClientReaderRequest
+                grpcReq
+                ( unGrpcTimeout
+                    . fromMaybe defaultAsyncGrpcTimeout
+                    $ envLndAsyncGrpcTimeout env
+                )
+                (grpcMeta env)
+                (\_ _ s -> genStreamHandler s handler)
+        rawGrpc <-
+          CE.catches
+            (Right <$> method' greq)
+            [ CE.Handler $
+                \(x :: LndError) -> pure $ Left x
+            ]
+        return $ case rawGrpc of
+          Right ClientNormalResponse {} ->
+            Left $ GrpcUnexpectedResult "ClientNormalResponse"
+          Right (ClientErrorResponse err) ->
+            Left $ GrpcError err
+          Right ClientWriterResponse {} ->
+            Left $ GrpcUnexpectedResult "ClientWriterResponse"
+          Right ClientReaderResponse {} ->
+            Right ()
+          Right ClientBiDiResponse {} ->
+            Left $ GrpcUnexpectedResult "ClientBiDiResponse"
+          Left e ->
+            Left e
 
 grpcSubscribeKatip ::
   ( MonadIO m,

@@ -1,7 +1,7 @@
 { mkDerivation, aeson, asn1-encoding, asn1-types, async, base
 , base16-bytestring, base64-bytestring, bytestring, chronos
 , containers, cryptohash-sha256, cryptonite, deepseq, envparse
-, extra, grpc-haskell, grpc-haskell-core, hpack, hspec
+, extra, grpc-haskell, grpc-haskell-core, hpack, hspec, http2
 , http2-client, http2-client-grpc, http2-grpc-proto-lens
 , http2-grpc-types, JuicyPixels, katip, microlens, network-bitcoin
 , pem, persistent, proto-lens, proto-lens-runtime, proto3-suite
@@ -17,7 +17,7 @@ mkDerivation {
     aeson asn1-encoding asn1-types async base base16-bytestring
     base64-bytestring bytestring chronos containers cryptohash-sha256
     cryptonite deepseq envparse extra grpc-haskell grpc-haskell-core
-    hspec http2-client http2-client-grpc http2-grpc-proto-lens
+    hspec http2 http2-client http2-client-grpc http2-grpc-proto-lens
     http2-grpc-types JuicyPixels katip microlens network-bitcoin pem
     persistent proto-lens proto-lens-runtime proto3-suite proto3-wire
     qrcode-core qrcode-juicypixels scientific stm template-haskell text
@@ -28,7 +28,7 @@ mkDerivation {
     aeson asn1-encoding asn1-types async base base16-bytestring
     base64-bytestring bytestring chronos containers cryptohash-sha256
     cryptonite deepseq envparse extra grpc-haskell grpc-haskell-core
-    hspec http2-client http2-client-grpc http2-grpc-proto-lens
+    hspec http2 http2-client http2-client-grpc http2-grpc-proto-lens
     http2-grpc-types JuicyPixels katip microlens network-bitcoin pem
     persistent proto-lens proto-lens-runtime proto3-suite proto3-wire
     qrcode-core qrcode-juicypixels scientific stm template-haskell text

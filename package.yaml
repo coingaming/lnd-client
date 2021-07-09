@@ -78,6 +78,7 @@ dependencies:
 - http2-client
 - http2-client-grpc
 - http2-grpc-types
+- http2
 
 library:
   source-dirs: src

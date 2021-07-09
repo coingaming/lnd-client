@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4eee7e0103c769dd088142ef28387f9756c437bc5e1a527430ac03b75e7c58e2
+-- hash: 87d295355dbfa4ce4eb6aa3982d524e1d8f0f7924de04e8271637f4d03a102dc
 
 name:           lnd-client
 version:        0.1.0.0
@@ -118,6 +118,7 @@ library
     , grpc-haskell
     , grpc-haskell-core
     , hspec
+    , http2
     , http2-client
     , http2-client-grpc
     , http2-grpc-proto-lens
@@ -175,6 +176,7 @@ test-suite lnd-client-test
     , grpc-haskell
     , grpc-haskell-core
     , hspec
+    , http2
     , http2-client
     , http2-client-grpc
     , http2-grpc-proto-lens

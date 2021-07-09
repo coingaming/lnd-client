@@ -169,6 +169,12 @@ instance FromGrpc MSat Int64 where
       (ToGrpcError "MSat overflow")
       $ MSat <$> safeFromIntegral x
 
+instance FromGrpc MSat Word64 where
+  fromGrpc x =
+    maybeToRight
+      (ToGrpcError "MSat overflow")
+      $ MSat <$> safeFromIntegral x
+
 instance ToGrpc Sat Int64 where
   toGrpc x =
     maybeToRight

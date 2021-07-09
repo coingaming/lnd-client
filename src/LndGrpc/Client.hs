@@ -4,9 +4,11 @@
 
 module LndGrpc.Client
   ( runUnary,
+    runStreamServer,
   )
 where
 
+import Data.ProtoLens.Message
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
 import Data.Text.Lazy (pack)
 import GHC.TypeLits (Symbol)
@@ -15,6 +17,7 @@ import LndClient.Import
 import Network.GRPC.Client.Helpers
 import Network.GRPC.HTTP2.Encoding (gzip, uncompressed)
 import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
+import Network.HPACK (HeaderList)
 import Network.HTTP2.Client
 
 runUnary ::
@@ -35,6 +38,26 @@ runUnary rpc env req = do
     Right (Right (Right (_, _, (Right x)))) -> return $ Right x
     Left e -> return $ Left $ LndGrpcError e
     Right (Right (Right (_, _, (Left e)))) -> return $ Left $ LndError $ pack e
+    _ -> return $ Left $ LndError "LndGrpc request error"
+
+runStreamServer ::
+  ( MonadIO p,
+    HasMethod s m,
+    req ~ MethodInput s m,
+    res ~ MethodOutput s m
+  ) =>
+  ProtoLens.RPC s (m :: Symbol) ->
+  LndEnv ->
+  req ->
+  (HeaderList -> res -> ClientIO ()) ->
+  p (Either LndError res)
+runStreamServer rpc env req handler = do
+  r <- liftIO $ runClientIO $ do
+    grpc <- makeClient env True False
+    rawStreamServer rpc grpc () req $ const handler
+  case r of
+    Right (Right ((), _, _)) -> return $ Right defMessage
+    Left e -> return $ Left $ LndGrpcError e
     _ -> return $ Left $ LndError "LndGrpc request error"
 
 makeClient ::
