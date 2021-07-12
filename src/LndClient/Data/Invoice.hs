@@ -64,16 +64,16 @@ instance C2.FromGrpc Invoice LnGRPC.Invoice where
       <*> invoiceAddIndex
       <*> invoiceState
     where
-      invoiceRHash = second RHash $ maybeToRight (FromGrpcError "RHash is not set") $ x ^? LnGRPC.rHash
-      invoiceAmtPaidMsat = join $ second fromGrpc $ maybeToRight (FromGrpcError "AmtPaidMsat is not set") $ x ^? LnGRPC.amtPaidMsat
-      invoiceValueMsat = join $ second fromGrpc $ maybeToRight (FromGrpcError "Value is not set") $ x ^? LnGRPC.valueMsat
-      invoiceSettled = maybeToRight (FromGrpcError "Settled is not set") $ x ^? LnGRPC.settled
-      invoiceSettleIndex = Right $ SettleIndex <$> x ^? LnGRPC.settleIndex
-      invoiceMemo = second fromStrict $ maybeToRight (FromGrpcError "Memo is not set") $ x ^? LnGRPC.memo
-      invoicePaymentRequest = second (PaymentRequest . fromStrict) $ maybeToRight (FromGrpcError "PaymentRequest is not set") $ x ^? LnGRPC.paymentRequest
-      invoicePrivate = maybeToRight (FromGrpcError "Private is not set") $ x ^? LnGRPC.private
-      invoiceAddIndex = second AddIndex $ maybeToRight (FromGrpcError "AddIndex is not set") $ x ^? LnGRPC.addIndex
-      invoiceState = join $ second C2.fromGrpc $ maybeToRight (FromGrpcError "InvoiceState is not set") $ x ^? LnGRPC.state
+      invoiceRHash = Right . RHash $ x ^. LnGRPC.rHash
+      invoiceAmtPaidMsat = fromGrpc $ x ^. LnGRPC.amtPaidMsat
+      invoiceValueMsat = fromGrpc $ x ^. LnGRPC.valueMsat
+      invoiceSettled = Right $ x ^. LnGRPC.settled
+      invoiceSettleIndex = Right . Just . SettleIndex $ x ^. LnGRPC.settleIndex
+      invoiceMemo = Right . fromStrict $ x ^. LnGRPC.memo
+      invoicePaymentRequest = Right . PaymentRequest . fromStrict $ x ^. LnGRPC.paymentRequest
+      invoicePrivate = Right $ x ^. LnGRPC.private
+      invoiceAddIndex = Right . AddIndex $ x ^. LnGRPC.addIndex
+      invoiceState = C2.fromGrpc $ x ^. LnGRPC.state
 
 instance C2.FromGrpc InvoiceState LnGRPC.Invoice'InvoiceState where
   fromGrpc x =

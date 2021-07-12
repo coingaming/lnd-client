@@ -33,6 +33,6 @@ instance C2.FromGrpc GetInfoResponse LnGRPC.GetInfoResponse where
       <*> mSyncedToChain
       <*> mSyncedToGraph
     where
-      mSyncedToChain = maybeToRight (FromGrpcError "SyncedToChain is not set") $ x ^? LnGRPC.syncedToChain
-      mSyncedToGraph = maybeToRight (FromGrpcError "SyncedToGraph is not set") $ x ^? LnGRPC.syncedToGraph
+      mSyncedToChain = Right $ x ^. LnGRPC.syncedToChain
+      mSyncedToGraph = Right $ x ^. LnGRPC.syncedToGraph
       mPubKey = fromGrpc =<< fromStrict <$> maybeToRight (FromGrpcError "IdentityPubkey is not set") (x ^? LnGRPC.identityPubkey)
