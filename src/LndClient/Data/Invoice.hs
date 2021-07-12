@@ -1,5 +1,6 @@
 module LndClient.Data.Invoice
   ( Invoice (..),
+    InvoiceState (..),
   )
 where
 
@@ -83,11 +84,10 @@ instance C2.FromGrpc InvoiceState LnGRPC.Invoice'InvoiceState where
       LnGRPC.Invoice'ACCEPTED -> Right ACCEPTED
       _ -> Left $ FromGrpcError "Invalid Invoice state"
 
-instance FromGrpc InvoiceState GRPC.Invoice'InvoiceState where
+instance FromGrpc InvoiceState GRPC.Invoice_InvoiceState where
   fromGrpc x =
     case x of
-      LnGRPC.Invoice'OPEN -> Right OPEN
-      LnGRPC.Invoice'SETTLED -> Right SETTLED
-      LnGRPC.Invoice'CANCELED -> Right CANCELED
-      LnGRPC.Invoice'ACCEPTED -> Right ACCEPTED
-      _ -> Left $ FromGrpcError "Invalid Invoice state"
+      GRPC.Invoice_InvoiceStateOPEN -> Right OPEN
+      GRPC.Invoice_InvoiceStateSETTLED -> Right SETTLED
+      GRPC.Invoice_InvoiceStateCANCELED -> Right CANCELED
+      GRPC.Invoice_InvoiceStateACCEPTED -> Right ACCEPTED

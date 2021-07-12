@@ -64,7 +64,7 @@ import LndClient.Data.CloseChannel
 import LndClient.Data.ClosedChannels as ClosedChannels
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import qualified LndClient.Data.GetInfo as Lnd (GetInfoResponse (..))
-import LndClient.Data.Invoice as Invoice (Invoice (..))
+import LndClient.Data.Invoice as Invoice (Invoice (..), InvoiceState (..))
 import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
 import qualified LndClient.Data.ListInvoices as ListInvoices
 import qualified LndClient.Data.NewAddress as Lnd
@@ -388,8 +388,8 @@ cancelAllInvoices =
             filter
               ( \x ->
                   Invoice.state x
-                    `elem` [ GRPC.Invoice_InvoiceStateOPEN,
-                             GRPC.Invoice_InvoiceStateACCEPTED
+                    `elem` [ Invoice.OPEN,
+                             Invoice.ACCEPTED
                            ]
               )
               . ListInvoices.invoices
@@ -541,7 +541,7 @@ receiveInvoice ::
     KatipContext m
   ) =>
   RHash ->
-  GRPC.Invoice_InvoiceState ->
+  Invoice.InvoiceState ->
   TChan (a, Invoice) ->
   m (Either LndError ())
 receiveInvoice rh s q = do

@@ -22,7 +22,7 @@ import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import qualified LndClient.Data.CloseChannel as CloseChannel
 import qualified LndClient.Data.ClosedChannels as ClosedChannels
 import LndClient.Data.GetInfo (GetInfoResponse (..))
-import LndClient.Data.Invoice as Invoice (Invoice (..))
+import LndClient.Data.Invoice as Invoice (Invoice (..), InvoiceState (..))
 import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
 import LndClient.Data.ListInvoices as ListInvoices
   ( ListInvoiceRequest (..),
@@ -40,7 +40,6 @@ import LndClient.QRCode
 import LndClient.RPC.Katip
 import LndClient.TestApp
 import qualified LndClient.Watcher as Watcher
-import qualified LndGrpc as GRPC
 import Test.Hspec
 
 spec :: Spec
@@ -93,7 +92,7 @@ spec = do
     res <-
       receiveInvoice
         (AddInvoice.rHash inv)
-        GRPC.Invoice_InvoiceStateOPEN
+        Invoice.OPEN
         queue
     liftIO $ res `shouldSatisfy` isRight
   it "settleNormalInvoice" $ withEnv $ do
@@ -103,12 +102,12 @@ spec = do
     inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
     let rh = AddInvoice.rHash inv
     liftLndResult
-      =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN chan
+      =<< receiveInvoice rh Invoice.OPEN chan
     alice <- getLndEnv Alice
     let pr = AddInvoice.paymentRequest inv
     let spr = SendPaymentRequest pr $ MSat 1000000
     void $ liftLndResult =<< sendPayment alice spr
-    res <- receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED chan
+    res <- receiveInvoice rh Invoice.SETTLED chan
     liftIO $ res `shouldSatisfy` isRight
   it "addHodlInvoice" $ withEnv $ do
     lnd <- getLndEnv Bob
@@ -134,7 +133,7 @@ spec = do
     res <-
       receiveInvoice
         (AddInvoice.rHash inv)
-        GRPC.Invoice_InvoiceStateOPEN
+        Invoice.OPEN
         chan
     Watcher.delete w
     liftIO $ res `shouldSatisfy` isRight
@@ -211,7 +210,7 @@ spec = do
         =<< addHodlInvoice bob hipr
     watchSingleInvoice Bob rh
     liftLndResult
-      =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
+      =<< receiveInvoice rh Invoice.OPEN q
     let spr = SendPaymentRequest pr $ MSat 1000000
     alice <- getLndEnv Alice
     withSpawnLink
@@ -223,10 +222,10 @@ spec = do
           -- https://github.com/lightningnetwork/lnd/issues/4544
           --
           liftLndResult
-            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED qq
+            =<< receiveInvoice rh Invoice.ACCEPTED qq
           res <- cancelInvoice bob rh
           liftLndResult
-            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateCANCELED qq
+            =<< receiveInvoice rh Invoice.CANCELED qq
           liftIO $ res `shouldSatisfy` isRight
       )
   it "settleInvoice" $ withEnv $ do
@@ -241,7 +240,7 @@ spec = do
     pr <- liftLndResult =<< addHodlInvoice bob hipr
     watchSingleInvoice Bob rh
     liftLndResult
-      =<< receiveInvoice rh GRPC.Invoice_InvoiceStateOPEN q
+      =<< receiveInvoice rh Invoice.OPEN q
     let spr = SendPaymentRequest pr $ MSat 1000000
     alice <- getLndEnv Alice
     withSpawnLink
@@ -253,10 +252,10 @@ spec = do
           -- https://github.com/lightningnetwork/lnd/issues/4544
           --
           liftLndResult
-            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateACCEPTED qq
+            =<< receiveInvoice rh Invoice.ACCEPTED qq
           res <- settleInvoice bob r
           liftLndResult
-            =<< receiveInvoice rh GRPC.Invoice_InvoiceStateSETTLED qq
+            =<< receiveInvoice rh Invoice.SETTLED qq
           liftIO $ res `shouldSatisfy` isRight
       )
   it "listInvoices" $ withEnv $ do

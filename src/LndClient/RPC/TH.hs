@@ -208,7 +208,7 @@ mkRpc k = do
       m (Either LndError ())
     subscribeInvoices handler =
       $(grpcSubscribe2)
-        (RPC :: RPC LnGRPC.Invoice "subscribeInvoices")
+        (RPC :: RPC LnGRPC.Lightning "subscribeInvoices")
         handler
 
     subscribeInvoicesChan ::
