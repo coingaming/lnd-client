@@ -25,6 +25,7 @@ import qualified Control.Exception as CE
     throw,
   )
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
+import qualified Data.Text.Lazy as T
 import GHC.TypeLits
 import qualified LndClient.Class2 as C2
 import LndClient.Import
@@ -184,7 +185,7 @@ grpcSync2Katip ::
   a ->
   m (Either LndError b)
 grpcSync2Katip rpc env req =
-  katipAddContext (sl "RpcName" (show $ symbolVal rpc :: Text))
+  katipAddContext (sl "RpcName" (T.pack $ symbolVal rpc))
     $ katipAddContext (sl "RpcRequest" (show req :: Text))
     $ katipAddLndContext env
     $ do
@@ -245,7 +246,7 @@ grpcSubscribe2Katip ::
   a ->
   m (Either LndError ())
 grpcSubscribe2Katip rpc handler env req =
-  katipAddContext (sl "RpcName" (show $ symbolVal rpc :: Text))
+  katipAddContext (sl "RpcName" (T.pack $ symbolVal rpc))
     $ katipAddContext (sl "RpcRequest" (show req :: Text))
     $ katipAddLndContext env
     $ do
