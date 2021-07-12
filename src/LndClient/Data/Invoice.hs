@@ -44,11 +44,11 @@ instance FromGrpc Invoice GRPC.Invoice where
       <*> fromGrpc (GRPC.invoicePaymentRequest x)
       <*> fromGrpc (GRPC.invoicePrivate x)
       <*> fromGrpc (GRPC.invoiceAddIndex x)
-      <*> Right OPEN
-
--- <*> first
---   (\e -> FromGrpcError $ "Invalid Invoice State" <> show e)
---   (enumerated $ GRPC.invoiceState x)
+      <*> ( fromGrpc
+              =<< first
+                (\e -> FromGrpcError $ "Invalid Invoice State" <> show e)
+                (enumerated $ GRPC.invoiceState x)
+          )
 
 instance C2.FromGrpc Invoice LnGRPC.Invoice where
   fromGrpc x =
