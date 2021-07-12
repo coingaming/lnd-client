@@ -397,9 +397,6 @@ cancelAllInvoices =
       is0 <- getInvoices
       res <- mapM (Lnd.cancelInvoice lnd) (Invoice.rHash <$> is0)
       is1 <- getInvoices
-      print ("================================" :: Text)
-      print is1
-      print ("================================" :: Text)
       if all isRight res && null is1
         then pure ()
         else liftIO (delay 1000000) >> this (attempt + 1) owner
