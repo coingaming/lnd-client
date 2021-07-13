@@ -166,9 +166,7 @@ grpcSync2Silent ::
   m (Either LndError b)
 grpcSync2Silent rpc env req =
   case C2.toGrpc req of
-    Right gReq -> do
-      res <- runUnary rpc env gReq
-      return $ join $ second C2.fromGrpc res
+    Right gReq -> join . second C2.fromGrpc <$> runUnary rpc env gReq
     Left err -> return $ Left err
 
 grpcSync2Katip ::
