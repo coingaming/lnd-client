@@ -6,7 +6,7 @@
 
 buildGoModule rec {
   pname = "lnd";
-  version = "0.13.0-beta";
+  version = "0.13.1-beta.rc2";
 
   src = fetchFromGitHub {
     owner = "lightningnetwork";

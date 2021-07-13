@@ -4,13 +4,14 @@
 {-# OPTIONS_GHC -Wno-duplicate-exports#-}
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
 module Proto.LndGrpc (
-        Lightning(..), AbandonChannelRequest(), AbandonChannelResponse(),
-        AddInvoiceResponse(), AddressType(..), AddressType(),
-        AddressType'UnrecognizedValue, Amount(), BakeMacaroonRequest(),
-        BakeMacaroonResponse(), Chain(), ChanBackupExportRequest(),
-        ChanBackupSnapshot(), ChanInfoRequest(), ChanPointShim(),
-        Channel(), ChannelAcceptRequest(), ChannelAcceptResponse(),
-        ChannelBackup(), ChannelBackupSubscription(), ChannelBackups(),
+        Lightning(..), AMP(), AMPRecord(), AbandonChannelRequest(),
+        AbandonChannelResponse(), AddInvoiceResponse(), AddressType(..),
+        AddressType(), AddressType'UnrecognizedValue, Amount(),
+        BakeMacaroonRequest(), BakeMacaroonResponse(), Chain(),
+        ChanBackupExportRequest(), ChanBackupSnapshot(), ChanInfoRequest(),
+        ChanPointShim(), Channel(), ChannelAcceptRequest(),
+        ChannelAcceptResponse(), ChannelBackup(),
+        ChannelBackupSubscription(), ChannelBackups(),
         ChannelBalanceRequest(), ChannelBalanceResponse(),
         ChannelCloseSummary(), ChannelCloseSummary'ClosureType(..),
         ChannelCloseSummary'ClosureType(),
@@ -125,7 +126,9 @@ module Proto.LndGrpc (
         StopRequest(), StopResponse(), TimestampedError(), Transaction(),
         TransactionDetails(), Utxo(), VerifyChanBackupResponse(),
         VerifyMessageRequest(), VerifyMessageResponse(),
-        WalletBalanceRequest(), WalletBalanceResponse()
+        WalletAccountBalance(), WalletBalanceRequest(),
+        WalletBalanceResponse(),
+        WalletBalanceResponse'AccountBalanceEntry()
     ) where
 import qualified Data.ProtoLens.Runtime.Control.DeepSeq as Control.DeepSeq
 import qualified Data.ProtoLens.Runtime.Data.ProtoLens.Prism as Data.ProtoLens.Prism
@@ -152,15 +155,500 @@ import qualified Data.ProtoLens.Runtime.Data.Vector as Data.Vector
 import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Generic
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
-import qualified Proto.Google.Api.Annotations
+{- | Fields :
+     
+         * 'Proto.LndGrpc_Fields.rootShare' @:: Lens' AMP Data.ByteString.ByteString@
+         * 'Proto.LndGrpc_Fields.setId' @:: Lens' AMP Data.ByteString.ByteString@
+         * 'Proto.LndGrpc_Fields.childIndex' @:: Lens' AMP Data.Word.Word32@
+         * 'Proto.LndGrpc_Fields.hash' @:: Lens' AMP Data.ByteString.ByteString@
+         * 'Proto.LndGrpc_Fields.preimage' @:: Lens' AMP Data.ByteString.ByteString@ -}
+data AMP
+  = AMP'_constructor {_AMP'rootShare :: !Data.ByteString.ByteString,
+                      _AMP'setId :: !Data.ByteString.ByteString,
+                      _AMP'childIndex :: !Data.Word.Word32,
+                      _AMP'hash :: !Data.ByteString.ByteString,
+                      _AMP'preimage :: !Data.ByteString.ByteString,
+                      _AMP'_unknownFields :: !Data.ProtoLens.FieldSet}
+  deriving stock (Prelude.Eq, Prelude.Ord)
+instance Prelude.Show AMP where
+  showsPrec _ __x __s
+    = Prelude.showChar
+        '{'
+        (Prelude.showString
+           (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Data.ProtoLens.Field.HasField AMP "rootShare" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AMP'rootShare (\ x__ y__ -> x__ {_AMP'rootShare = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField AMP "setId" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AMP'setId (\ x__ y__ -> x__ {_AMP'setId = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField AMP "childIndex" Data.Word.Word32 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AMP'childIndex (\ x__ y__ -> x__ {_AMP'childIndex = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField AMP "hash" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AMP'hash (\ x__ y__ -> x__ {_AMP'hash = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField AMP "preimage" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AMP'preimage (\ x__ y__ -> x__ {_AMP'preimage = y__}))
+        Prelude.id
+instance Data.ProtoLens.Message AMP where
+  messageName _ = Data.Text.pack "lnrpc.AMP"
+  packedMessageDescriptor _
+    = "\n\
+      \\ETXAMP\DC2\GS\n\
+      \\n\
+      \root_share\CAN\SOH \SOH(\fR\trootShare\DC2\NAK\n\
+      \\ACKset_id\CAN\STX \SOH(\fR\ENQsetId\DC2\US\n\
+      \\vchild_index\CAN\ETX \SOH(\rR\n\
+      \childIndex\DC2\DC2\n\
+      \\EOThash\CAN\EOT \SOH(\fR\EOThash\DC2\SUB\n\
+      \\bpreimage\CAN\ENQ \SOH(\fR\bpreimage"
+  packedFileDescriptor _ = packedFileDescriptor
+  fieldsByTag
+    = let
+        rootShare__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "root_share"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"rootShare")) ::
+              Data.ProtoLens.FieldDescriptor AMP
+        setId__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "set_id"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"setId")) ::
+              Data.ProtoLens.FieldDescriptor AMP
+        childIndex__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "child_index"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt32Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word32)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"childIndex")) ::
+              Data.ProtoLens.FieldDescriptor AMP
+        hash__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "hash"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"hash")) ::
+              Data.ProtoLens.FieldDescriptor AMP
+        preimage__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "preimage"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"preimage")) ::
+              Data.ProtoLens.FieldDescriptor AMP
+      in
+        Data.Map.fromList
+          [(Data.ProtoLens.Tag 1, rootShare__field_descriptor),
+           (Data.ProtoLens.Tag 2, setId__field_descriptor),
+           (Data.ProtoLens.Tag 3, childIndex__field_descriptor),
+           (Data.ProtoLens.Tag 4, hash__field_descriptor),
+           (Data.ProtoLens.Tag 5, preimage__field_descriptor)]
+  unknownFields
+    = Lens.Family2.Unchecked.lens
+        _AMP'_unknownFields (\ x__ y__ -> x__ {_AMP'_unknownFields = y__})
+  defMessage
+    = AMP'_constructor
+        {_AMP'rootShare = Data.ProtoLens.fieldDefault,
+         _AMP'setId = Data.ProtoLens.fieldDefault,
+         _AMP'childIndex = Data.ProtoLens.fieldDefault,
+         _AMP'hash = Data.ProtoLens.fieldDefault,
+         _AMP'preimage = Data.ProtoLens.fieldDefault,
+         _AMP'_unknownFields = []}
+  parseMessage
+    = let
+        loop :: AMP -> Data.ProtoLens.Encoding.Bytes.Parser AMP
+        loop x
+          = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
+               if end then
+                   do (let missing = []
+                       in
+                         if Prelude.null missing then
+                             Prelude.return ()
+                         else
+                             Prelude.fail
+                               ((Prelude.++)
+                                  "Missing required fields: "
+                                  (Prelude.show (missing :: [Prelude.String]))))
+                      Prelude.return
+                        (Lens.Family2.over
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t) x)
+               else
+                   do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                      case tag of
+                        10
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "root_share"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"rootShare") y x)
+                        18
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "set_id"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"setId") y x)
+                        24
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          Prelude.fromIntegral
+                                          Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "child_index"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"childIndex") y x)
+                        34
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "hash"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"hash") y x)
+                        42
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "preimage"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"preimage") y x)
+                        wire
+                          -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
+                                        wire
+                                loop
+                                  (Lens.Family2.over
+                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
+      in
+        (Data.ProtoLens.Encoding.Bytes.<?>)
+          (do loop Data.ProtoLens.defMessage) "AMP"
+  buildMessage
+    = \ _x
+        -> (Data.Monoid.<>)
+             (let
+                _v = Lens.Family2.view (Data.ProtoLens.Field.field @"rootShare") _x
+              in
+                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                    Data.Monoid.mempty
+                else
+                    (Data.Monoid.<>)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt 10)
+                      ((\ bs
+                          -> (Data.Monoid.<>)
+                               (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                  (Prelude.fromIntegral (Data.ByteString.length bs)))
+                               (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                         _v))
+             ((Data.Monoid.<>)
+                (let
+                   _v = Lens.Family2.view (Data.ProtoLens.Field.field @"setId") _x
+                 in
+                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                       Data.Monoid.mempty
+                   else
+                       (Data.Monoid.<>)
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
+                         ((\ bs
+                             -> (Data.Monoid.<>)
+                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                            _v))
+                ((Data.Monoid.<>)
+                   (let
+                      _v
+                        = Lens.Family2.view (Data.ProtoLens.Field.field @"childIndex") _x
+                    in
+                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                          Data.Monoid.mempty
+                      else
+                          (Data.Monoid.<>)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
+                            ((Prelude..)
+                               Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+                   ((Data.Monoid.<>)
+                      (let _v = Lens.Family2.view (Data.ProtoLens.Field.field @"hash") _x
+                       in
+                         if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                             Data.Monoid.mempty
+                         else
+                             (Data.Monoid.<>)
+                               (Data.ProtoLens.Encoding.Bytes.putVarInt 34)
+                               ((\ bs
+                                   -> (Data.Monoid.<>)
+                                        (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                           (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                        (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                  _v))
+                      ((Data.Monoid.<>)
+                         (let
+                            _v = Lens.Family2.view (Data.ProtoLens.Field.field @"preimage") _x
+                          in
+                            if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                                Data.Monoid.mempty
+                            else
+                                (Data.Monoid.<>)
+                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 42)
+                                  ((\ bs
+                                      -> (Data.Monoid.<>)
+                                           (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                              (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                           (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                     _v))
+                         (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                            (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))
+instance Control.DeepSeq.NFData AMP where
+  rnf
+    = \ x__
+        -> Control.DeepSeq.deepseq
+             (_AMP'_unknownFields x__)
+             (Control.DeepSeq.deepseq
+                (_AMP'rootShare x__)
+                (Control.DeepSeq.deepseq
+                   (_AMP'setId x__)
+                   (Control.DeepSeq.deepseq
+                      (_AMP'childIndex x__)
+                      (Control.DeepSeq.deepseq
+                         (_AMP'hash x__)
+                         (Control.DeepSeq.deepseq (_AMP'preimage x__) ())))))
+{- | Fields :
+     
+         * 'Proto.LndGrpc_Fields.rootShare' @:: Lens' AMPRecord Data.ByteString.ByteString@
+         * 'Proto.LndGrpc_Fields.setId' @:: Lens' AMPRecord Data.ByteString.ByteString@
+         * 'Proto.LndGrpc_Fields.childIndex' @:: Lens' AMPRecord Data.Word.Word32@ -}
+data AMPRecord
+  = AMPRecord'_constructor {_AMPRecord'rootShare :: !Data.ByteString.ByteString,
+                            _AMPRecord'setId :: !Data.ByteString.ByteString,
+                            _AMPRecord'childIndex :: !Data.Word.Word32,
+                            _AMPRecord'_unknownFields :: !Data.ProtoLens.FieldSet}
+  deriving stock (Prelude.Eq, Prelude.Ord)
+instance Prelude.Show AMPRecord where
+  showsPrec _ __x __s
+    = Prelude.showChar
+        '{'
+        (Prelude.showString
+           (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Data.ProtoLens.Field.HasField AMPRecord "rootShare" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AMPRecord'rootShare
+           (\ x__ y__ -> x__ {_AMPRecord'rootShare = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField AMPRecord "setId" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AMPRecord'setId (\ x__ y__ -> x__ {_AMPRecord'setId = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField AMPRecord "childIndex" Data.Word.Word32 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AMPRecord'childIndex
+           (\ x__ y__ -> x__ {_AMPRecord'childIndex = y__}))
+        Prelude.id
+instance Data.ProtoLens.Message AMPRecord where
+  messageName _ = Data.Text.pack "lnrpc.AMPRecord"
+  packedMessageDescriptor _
+    = "\n\
+      \\tAMPRecord\DC2\GS\n\
+      \\n\
+      \root_share\CAN\SOH \SOH(\fR\trootShare\DC2\NAK\n\
+      \\ACKset_id\CAN\STX \SOH(\fR\ENQsetId\DC2\US\n\
+      \\vchild_index\CAN\ETX \SOH(\rR\n\
+      \childIndex"
+  packedFileDescriptor _ = packedFileDescriptor
+  fieldsByTag
+    = let
+        rootShare__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "root_share"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"rootShare")) ::
+              Data.ProtoLens.FieldDescriptor AMPRecord
+        setId__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "set_id"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"setId")) ::
+              Data.ProtoLens.FieldDescriptor AMPRecord
+        childIndex__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "child_index"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt32Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word32)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"childIndex")) ::
+              Data.ProtoLens.FieldDescriptor AMPRecord
+      in
+        Data.Map.fromList
+          [(Data.ProtoLens.Tag 1, rootShare__field_descriptor),
+           (Data.ProtoLens.Tag 2, setId__field_descriptor),
+           (Data.ProtoLens.Tag 3, childIndex__field_descriptor)]
+  unknownFields
+    = Lens.Family2.Unchecked.lens
+        _AMPRecord'_unknownFields
+        (\ x__ y__ -> x__ {_AMPRecord'_unknownFields = y__})
+  defMessage
+    = AMPRecord'_constructor
+        {_AMPRecord'rootShare = Data.ProtoLens.fieldDefault,
+         _AMPRecord'setId = Data.ProtoLens.fieldDefault,
+         _AMPRecord'childIndex = Data.ProtoLens.fieldDefault,
+         _AMPRecord'_unknownFields = []}
+  parseMessage
+    = let
+        loop :: AMPRecord -> Data.ProtoLens.Encoding.Bytes.Parser AMPRecord
+        loop x
+          = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
+               if end then
+                   do (let missing = []
+                       in
+                         if Prelude.null missing then
+                             Prelude.return ()
+                         else
+                             Prelude.fail
+                               ((Prelude.++)
+                                  "Missing required fields: "
+                                  (Prelude.show (missing :: [Prelude.String]))))
+                      Prelude.return
+                        (Lens.Family2.over
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t) x)
+               else
+                   do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                      case tag of
+                        10
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "root_share"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"rootShare") y x)
+                        18
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "set_id"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"setId") y x)
+                        24
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          Prelude.fromIntegral
+                                          Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "child_index"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"childIndex") y x)
+                        wire
+                          -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
+                                        wire
+                                loop
+                                  (Lens.Family2.over
+                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
+      in
+        (Data.ProtoLens.Encoding.Bytes.<?>)
+          (do loop Data.ProtoLens.defMessage) "AMPRecord"
+  buildMessage
+    = \ _x
+        -> (Data.Monoid.<>)
+             (let
+                _v = Lens.Family2.view (Data.ProtoLens.Field.field @"rootShare") _x
+              in
+                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                    Data.Monoid.mempty
+                else
+                    (Data.Monoid.<>)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt 10)
+                      ((\ bs
+                          -> (Data.Monoid.<>)
+                               (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                  (Prelude.fromIntegral (Data.ByteString.length bs)))
+                               (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                         _v))
+             ((Data.Monoid.<>)
+                (let
+                   _v = Lens.Family2.view (Data.ProtoLens.Field.field @"setId") _x
+                 in
+                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                       Data.Monoid.mempty
+                   else
+                       (Data.Monoid.<>)
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
+                         ((\ bs
+                             -> (Data.Monoid.<>)
+                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                            _v))
+                ((Data.Monoid.<>)
+                   (let
+                      _v
+                        = Lens.Family2.view (Data.ProtoLens.Field.field @"childIndex") _x
+                    in
+                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                          Data.Monoid.mempty
+                      else
+                          (Data.Monoid.<>)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
+                            ((Prelude..)
+                               Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+                   (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                      (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
+instance Control.DeepSeq.NFData AMPRecord where
+  rnf
+    = \ x__
+        -> Control.DeepSeq.deepseq
+             (_AMPRecord'_unknownFields x__)
+             (Control.DeepSeq.deepseq
+                (_AMPRecord'rootShare x__)
+                (Control.DeepSeq.deepseq
+                   (_AMPRecord'setId x__)
+                   (Control.DeepSeq.deepseq (_AMPRecord'childIndex x__) ())))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.channelPoint' @:: Lens' AbandonChannelRequest ChannelPoint@
          * 'Proto.LndGrpc_Fields.maybe'channelPoint' @:: Lens' AbandonChannelRequest (Prelude.Maybe ChannelPoint)@
-         * 'Proto.LndGrpc_Fields.pendingFundingShimOnly' @:: Lens' AbandonChannelRequest Prelude.Bool@ -}
+         * 'Proto.LndGrpc_Fields.pendingFundingShimOnly' @:: Lens' AbandonChannelRequest Prelude.Bool@
+         * 'Proto.LndGrpc_Fields.iKnowWhatIAmDoing' @:: Lens' AbandonChannelRequest Prelude.Bool@ -}
 data AbandonChannelRequest
   = AbandonChannelRequest'_constructor {_AbandonChannelRequest'channelPoint :: !(Prelude.Maybe ChannelPoint),
                                         _AbandonChannelRequest'pendingFundingShimOnly :: !Prelude.Bool,
+                                        _AbandonChannelRequest'iKnowWhatIAmDoing :: !Prelude.Bool,
                                         _AbandonChannelRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show AbandonChannelRequest where
@@ -191,13 +679,22 @@ instance Data.ProtoLens.Field.HasField AbandonChannelRequest "pendingFundingShim
            (\ x__ y__
               -> x__ {_AbandonChannelRequest'pendingFundingShimOnly = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField AbandonChannelRequest "iKnowWhatIAmDoing" Prelude.Bool where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AbandonChannelRequest'iKnowWhatIAmDoing
+           (\ x__ y__
+              -> x__ {_AbandonChannelRequest'iKnowWhatIAmDoing = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message AbandonChannelRequest where
   messageName _ = Data.Text.pack "lnrpc.AbandonChannelRequest"
   packedMessageDescriptor _
     = "\n\
       \\NAKAbandonChannelRequest\DC28\n\
       \\rchannel_point\CAN\SOH \SOH(\v2\DC3.lnrpc.ChannelPointR\fchannelPoint\DC29\n\
-      \\EMpending_funding_shim_only\CAN\STX \SOH(\bR\SYNpendingFundingShimOnly"
+      \\EMpending_funding_shim_only\CAN\STX \SOH(\bR\SYNpendingFundingShimOnly\DC21\n\
+      \\SYNi_know_what_i_am_doing\CAN\ETX \SOH(\bR\DC1iKnowWhatIAmDoing"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -218,10 +715,20 @@ instance Data.ProtoLens.Message AbandonChannelRequest where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"pendingFundingShimOnly")) ::
               Data.ProtoLens.FieldDescriptor AbandonChannelRequest
+        iKnowWhatIAmDoing__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "i_know_what_i_am_doing"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BoolField ::
+                 Data.ProtoLens.FieldTypeDescriptor Prelude.Bool)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"iKnowWhatIAmDoing")) ::
+              Data.ProtoLens.FieldDescriptor AbandonChannelRequest
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, channelPoint__field_descriptor),
-           (Data.ProtoLens.Tag 2, pendingFundingShimOnly__field_descriptor)]
+           (Data.ProtoLens.Tag 2, pendingFundingShimOnly__field_descriptor),
+           (Data.ProtoLens.Tag 3, iKnowWhatIAmDoing__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _AbandonChannelRequest'_unknownFields
@@ -230,6 +737,7 @@ instance Data.ProtoLens.Message AbandonChannelRequest where
     = AbandonChannelRequest'_constructor
         {_AbandonChannelRequest'channelPoint = Prelude.Nothing,
          _AbandonChannelRequest'pendingFundingShimOnly = Data.ProtoLens.fieldDefault,
+         _AbandonChannelRequest'iKnowWhatIAmDoing = Data.ProtoLens.fieldDefault,
          _AbandonChannelRequest'_unknownFields = []}
   parseMessage
     = let
@@ -271,6 +779,14 @@ instance Data.ProtoLens.Message AbandonChannelRequest where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"pendingFundingShimOnly") y x)
+                        24
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          ((Prelude./=) 0) Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "i_know_what_i_am_doing"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field @"iKnowWhatIAmDoing") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -314,8 +830,23 @@ instance Data.ProtoLens.Message AbandonChannelRequest where
                             Data.ProtoLens.Encoding.Bytes.putVarInt
                             (\ b -> if b then 1 else 0)
                             _v))
-                (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                   (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
+                ((Data.Monoid.<>)
+                   (let
+                      _v
+                        = Lens.Family2.view
+                            (Data.ProtoLens.Field.field @"iKnowWhatIAmDoing") _x
+                    in
+                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                          Data.Monoid.mempty
+                      else
+                          (Data.Monoid.<>)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
+                            ((Prelude..)
+                               Data.ProtoLens.Encoding.Bytes.putVarInt
+                               (\ b -> if b then 1 else 0)
+                               _v))
+                   (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                      (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
 instance Control.DeepSeq.NFData AbandonChannelRequest where
   rnf
     = \ x__
@@ -324,7 +855,9 @@ instance Control.DeepSeq.NFData AbandonChannelRequest where
              (Control.DeepSeq.deepseq
                 (_AbandonChannelRequest'channelPoint x__)
                 (Control.DeepSeq.deepseq
-                   (_AbandonChannelRequest'pendingFundingShimOnly x__) ()))
+                   (_AbandonChannelRequest'pendingFundingShimOnly x__)
+                   (Control.DeepSeq.deepseq
+                      (_AbandonChannelRequest'iKnowWhatIAmDoing x__) ())))
 {- | Fields :
       -}
 data AbandonChannelResponse
@@ -10267,13 +10800,15 @@ instance Control.DeepSeq.NFData ChannelUpdate where
          * 'Proto.LndGrpc_Fields.force' @:: Lens' CloseChannelRequest Prelude.Bool@
          * 'Proto.LndGrpc_Fields.targetConf' @:: Lens' CloseChannelRequest Data.Int.Int32@
          * 'Proto.LndGrpc_Fields.satPerByte' @:: Lens' CloseChannelRequest Data.Int.Int64@
-         * 'Proto.LndGrpc_Fields.deliveryAddress' @:: Lens' CloseChannelRequest Data.Text.Text@ -}
+         * 'Proto.LndGrpc_Fields.deliveryAddress' @:: Lens' CloseChannelRequest Data.Text.Text@
+         * 'Proto.LndGrpc_Fields.satPerVbyte' @:: Lens' CloseChannelRequest Data.Word.Word64@ -}
 data CloseChannelRequest
   = CloseChannelRequest'_constructor {_CloseChannelRequest'channelPoint :: !(Prelude.Maybe ChannelPoint),
                                       _CloseChannelRequest'force :: !Prelude.Bool,
                                       _CloseChannelRequest'targetConf :: !Data.Int.Int32,
                                       _CloseChannelRequest'satPerByte :: !Data.Int.Int64,
                                       _CloseChannelRequest'deliveryAddress :: !Data.Text.Text,
+                                      _CloseChannelRequest'satPerVbyte :: !Data.Word.Word64,
                                       _CloseChannelRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show CloseChannelRequest where
@@ -10324,6 +10859,13 @@ instance Data.ProtoLens.Field.HasField CloseChannelRequest "deliveryAddress" Dat
            _CloseChannelRequest'deliveryAddress
            (\ x__ y__ -> x__ {_CloseChannelRequest'deliveryAddress = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField CloseChannelRequest "satPerVbyte" Data.Word.Word64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _CloseChannelRequest'satPerVbyte
+           (\ x__ y__ -> x__ {_CloseChannelRequest'satPerVbyte = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message CloseChannelRequest where
   messageName _ = Data.Text.pack "lnrpc.CloseChannelRequest"
   packedMessageDescriptor _
@@ -10332,10 +10874,11 @@ instance Data.ProtoLens.Message CloseChannelRequest where
       \\rchannel_point\CAN\SOH \SOH(\v2\DC3.lnrpc.ChannelPointR\fchannelPoint\DC2\DC4\n\
       \\ENQforce\CAN\STX \SOH(\bR\ENQforce\DC2\US\n\
       \\vtarget_conf\CAN\ETX \SOH(\ENQR\n\
-      \targetConf\DC2 \n\
+      \targetConf\DC2$\n\
       \\fsat_per_byte\CAN\EOT \SOH(\ETXR\n\
-      \satPerByte\DC2)\n\
-      \\DLEdelivery_address\CAN\ENQ \SOH(\tR\SIdeliveryAddress"
+      \satPerByteB\STX\CAN\SOH\DC2)\n\
+      \\DLEdelivery_address\CAN\ENQ \SOH(\tR\SIdeliveryAddress\DC2\"\n\
+      \\rsat_per_vbyte\CAN\ACK \SOH(\EOTR\vsatPerVbyte"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -10382,13 +10925,23 @@ instance Data.ProtoLens.Message CloseChannelRequest where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"deliveryAddress")) ::
               Data.ProtoLens.FieldDescriptor CloseChannelRequest
+        satPerVbyte__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "sat_per_vbyte"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"satPerVbyte")) ::
+              Data.ProtoLens.FieldDescriptor CloseChannelRequest
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, channelPoint__field_descriptor),
            (Data.ProtoLens.Tag 2, force__field_descriptor),
            (Data.ProtoLens.Tag 3, targetConf__field_descriptor),
            (Data.ProtoLens.Tag 4, satPerByte__field_descriptor),
-           (Data.ProtoLens.Tag 5, deliveryAddress__field_descriptor)]
+           (Data.ProtoLens.Tag 5, deliveryAddress__field_descriptor),
+           (Data.ProtoLens.Tag 6, satPerVbyte__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _CloseChannelRequest'_unknownFields
@@ -10400,6 +10953,7 @@ instance Data.ProtoLens.Message CloseChannelRequest where
          _CloseChannelRequest'targetConf = Data.ProtoLens.fieldDefault,
          _CloseChannelRequest'satPerByte = Data.ProtoLens.fieldDefault,
          _CloseChannelRequest'deliveryAddress = Data.ProtoLens.fieldDefault,
+         _CloseChannelRequest'satPerVbyte = Data.ProtoLens.fieldDefault,
          _CloseChannelRequest'_unknownFields = []}
   parseMessage
     = let
@@ -10469,6 +11023,11 @@ instance Data.ProtoLens.Message CloseChannelRequest where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"deliveryAddress") y x)
+                        48
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       Data.ProtoLens.Encoding.Bytes.getVarInt "sat_per_vbyte"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"satPerVbyte") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -10553,8 +11112,19 @@ instance Data.ProtoLens.Message CloseChannelRequest where
                                              (Data.ProtoLens.Encoding.Bytes.putBytes bs))
                                      Data.Text.Encoding.encodeUtf8
                                      _v))
-                         (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                            (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))
+                         ((Data.Monoid.<>)
+                            (let
+                               _v
+                                 = Lens.Family2.view (Data.ProtoLens.Field.field @"satPerVbyte") _x
+                             in
+                               if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                                   Data.Monoid.mempty
+                               else
+                                   (Data.Monoid.<>)
+                                     (Data.ProtoLens.Encoding.Bytes.putVarInt 48)
+                                     (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
+                            (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                               (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))))
 instance Control.DeepSeq.NFData CloseChannelRequest where
   rnf
     = \ x__
@@ -10569,7 +11139,9 @@ instance Control.DeepSeq.NFData CloseChannelRequest where
                       (Control.DeepSeq.deepseq
                          (_CloseChannelRequest'satPerByte x__)
                          (Control.DeepSeq.deepseq
-                            (_CloseChannelRequest'deliveryAddress x__) ())))))
+                            (_CloseChannelRequest'deliveryAddress x__)
+                            (Control.DeepSeq.deepseq
+                               (_CloseChannelRequest'satPerVbyte x__) ()))))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.maybe'update' @:: Lens' CloseStatusUpdate (Prelude.Maybe CloseStatusUpdate'Update)@
@@ -12345,9 +12917,13 @@ instance Control.DeepSeq.NFData DebugLevelResponse where
              (_DebugLevelResponse'_unknownFields x__)
              (Control.DeepSeq.deepseq (_DebugLevelResponse'subSystems x__) ())
 {- | Fields :
-      -}
+     
+         * 'Proto.LndGrpc_Fields.failedPaymentsOnly' @:: Lens' DeleteAllPaymentsRequest Prelude.Bool@
+         * 'Proto.LndGrpc_Fields.failedHtlcsOnly' @:: Lens' DeleteAllPaymentsRequest Prelude.Bool@ -}
 data DeleteAllPaymentsRequest
-  = DeleteAllPaymentsRequest'_constructor {_DeleteAllPaymentsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
+  = DeleteAllPaymentsRequest'_constructor {_DeleteAllPaymentsRequest'failedPaymentsOnly :: !Prelude.Bool,
+                                           _DeleteAllPaymentsRequest'failedHtlcsOnly :: !Prelude.Bool,
+                                           _DeleteAllPaymentsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show DeleteAllPaymentsRequest where
   showsPrec _ __x __s
@@ -12355,20 +12931,63 @@ instance Prelude.Show DeleteAllPaymentsRequest where
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Data.ProtoLens.Field.HasField DeleteAllPaymentsRequest "failedPaymentsOnly" Prelude.Bool where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _DeleteAllPaymentsRequest'failedPaymentsOnly
+           (\ x__ y__
+              -> x__ {_DeleteAllPaymentsRequest'failedPaymentsOnly = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField DeleteAllPaymentsRequest "failedHtlcsOnly" Prelude.Bool where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _DeleteAllPaymentsRequest'failedHtlcsOnly
+           (\ x__ y__
+              -> x__ {_DeleteAllPaymentsRequest'failedHtlcsOnly = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message DeleteAllPaymentsRequest where
   messageName _ = Data.Text.pack "lnrpc.DeleteAllPaymentsRequest"
   packedMessageDescriptor _
     = "\n\
-      \\CANDeleteAllPaymentsRequest"
+      \\CANDeleteAllPaymentsRequest\DC20\n\
+      \\DC4failed_payments_only\CAN\SOH \SOH(\bR\DC2failedPaymentsOnly\DC2*\n\
+      \\DC1failed_htlcs_only\CAN\STX \SOH(\bR\SIfailedHtlcsOnly"
   packedFileDescriptor _ = packedFileDescriptor
-  fieldsByTag = let in Data.Map.fromList []
+  fieldsByTag
+    = let
+        failedPaymentsOnly__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "failed_payments_only"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BoolField ::
+                 Data.ProtoLens.FieldTypeDescriptor Prelude.Bool)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"failedPaymentsOnly")) ::
+              Data.ProtoLens.FieldDescriptor DeleteAllPaymentsRequest
+        failedHtlcsOnly__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "failed_htlcs_only"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BoolField ::
+                 Data.ProtoLens.FieldTypeDescriptor Prelude.Bool)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"failedHtlcsOnly")) ::
+              Data.ProtoLens.FieldDescriptor DeleteAllPaymentsRequest
+      in
+        Data.Map.fromList
+          [(Data.ProtoLens.Tag 1, failedPaymentsOnly__field_descriptor),
+           (Data.ProtoLens.Tag 2, failedHtlcsOnly__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _DeleteAllPaymentsRequest'_unknownFields
         (\ x__ y__ -> x__ {_DeleteAllPaymentsRequest'_unknownFields = y__})
   defMessage
     = DeleteAllPaymentsRequest'_constructor
-        {_DeleteAllPaymentsRequest'_unknownFields = []}
+        {_DeleteAllPaymentsRequest'failedPaymentsOnly = Data.ProtoLens.fieldDefault,
+         _DeleteAllPaymentsRequest'failedHtlcsOnly = Data.ProtoLens.fieldDefault,
+         _DeleteAllPaymentsRequest'_unknownFields = []}
   parseMessage
     = let
         loop ::
@@ -12391,25 +13010,74 @@ instance Data.ProtoLens.Message DeleteAllPaymentsRequest where
                            Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t) x)
                else
                    do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
-                      case tag of {
+                      case tag of
+                        8 -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          ((Prelude./=) 0) Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "failed_payments_only"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field @"failedPaymentsOnly") y x)
+                        16
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          ((Prelude./=) 0) Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "failed_htlcs_only"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field @"failedHtlcsOnly") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
                                 loop
                                   (Lens.Family2.over
-                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x) }
+                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
       in
         (Data.ProtoLens.Encoding.Bytes.<?>)
           (do loop Data.ProtoLens.defMessage) "DeleteAllPaymentsRequest"
   buildMessage
     = \ _x
-        -> Data.ProtoLens.Encoding.Wire.buildFieldSet
-             (Lens.Family2.view Data.ProtoLens.unknownFields _x)
+        -> (Data.Monoid.<>)
+             (let
+                _v
+                  = Lens.Family2.view
+                      (Data.ProtoLens.Field.field @"failedPaymentsOnly") _x
+              in
+                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                    Data.Monoid.mempty
+                else
+                    (Data.Monoid.<>)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
+                      ((Prelude..)
+                         Data.ProtoLens.Encoding.Bytes.putVarInt
+                         (\ b -> if b then 1 else 0)
+                         _v))
+             ((Data.Monoid.<>)
+                (let
+                   _v
+                     = Lens.Family2.view
+                         (Data.ProtoLens.Field.field @"failedHtlcsOnly") _x
+                 in
+                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                       Data.Monoid.mempty
+                   else
+                       (Data.Monoid.<>)
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
+                         ((Prelude..)
+                            Data.ProtoLens.Encoding.Bytes.putVarInt
+                            (\ b -> if b then 1 else 0)
+                            _v))
+                (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                   (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData DeleteAllPaymentsRequest where
   rnf
     = \ x__
         -> Control.DeepSeq.deepseq
-             (_DeleteAllPaymentsRequest'_unknownFields x__) ()
+             (_DeleteAllPaymentsRequest'_unknownFields x__)
+             (Control.DeepSeq.deepseq
+                (_DeleteAllPaymentsRequest'failedPaymentsOnly x__)
+                (Control.DeepSeq.deepseq
+                   (_DeleteAllPaymentsRequest'failedHtlcsOnly x__) ()))
 {- | Fields :
       -}
 data DeleteAllPaymentsResponse
@@ -13031,10 +13699,14 @@ instance Control.DeepSeq.NFData EdgeLocator where
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.addrToAmount' @:: Lens' EstimateFeeRequest (Data.Map.Map Data.Text.Text Data.Int.Int64)@
-         * 'Proto.LndGrpc_Fields.targetConf' @:: Lens' EstimateFeeRequest Data.Int.Int32@ -}
+         * 'Proto.LndGrpc_Fields.targetConf' @:: Lens' EstimateFeeRequest Data.Int.Int32@
+         * 'Proto.LndGrpc_Fields.minConfs' @:: Lens' EstimateFeeRequest Data.Int.Int32@
+         * 'Proto.LndGrpc_Fields.spendUnconfirmed' @:: Lens' EstimateFeeRequest Prelude.Bool@ -}
 data EstimateFeeRequest
   = EstimateFeeRequest'_constructor {_EstimateFeeRequest'addrToAmount :: !(Data.Map.Map Data.Text.Text Data.Int.Int64),
                                      _EstimateFeeRequest'targetConf :: !Data.Int.Int32,
+                                     _EstimateFeeRequest'minConfs :: !Data.Int.Int32,
+                                     _EstimateFeeRequest'spendUnconfirmed :: !Prelude.Bool,
                                      _EstimateFeeRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show EstimateFeeRequest where
@@ -13057,6 +13729,20 @@ instance Data.ProtoLens.Field.HasField EstimateFeeRequest "targetConf" Data.Int.
            _EstimateFeeRequest'targetConf
            (\ x__ y__ -> x__ {_EstimateFeeRequest'targetConf = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField EstimateFeeRequest "minConfs" Data.Int.Int32 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _EstimateFeeRequest'minConfs
+           (\ x__ y__ -> x__ {_EstimateFeeRequest'minConfs = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField EstimateFeeRequest "spendUnconfirmed" Prelude.Bool where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _EstimateFeeRequest'spendUnconfirmed
+           (\ x__ y__ -> x__ {_EstimateFeeRequest'spendUnconfirmed = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message EstimateFeeRequest where
   messageName _ = Data.Text.pack "lnrpc.EstimateFeeRequest"
   packedMessageDescriptor _
@@ -13064,7 +13750,9 @@ instance Data.ProtoLens.Message EstimateFeeRequest where
       \\DC2EstimateFeeRequest\DC2O\n\
       \\fAddrToAmount\CAN\SOH \ETX(\v2+.lnrpc.EstimateFeeRequest.AddrToAmountEntryR\fAddrToAmount\DC2\US\n\
       \\vtarget_conf\CAN\STX \SOH(\ENQR\n\
-      \targetConf\SUB?\n\
+      \targetConf\DC2\ESC\n\
+      \\tmin_confs\CAN\ETX \SOH(\ENQR\bminConfs\DC2+\n\
+      \\DC1spend_unconfirmed\CAN\EOT \SOH(\bR\DLEspendUnconfirmed\SUB?\n\
       \\DC1AddrToAmountEntry\DC2\DLE\n\
       \\ETXkey\CAN\SOH \SOH(\tR\ETXkey\DC2\DC4\n\
       \\ENQvalue\CAN\STX \SOH(\ETXR\ENQvalue:\STX8\SOH"
@@ -13090,10 +13778,30 @@ instance Data.ProtoLens.Message EstimateFeeRequest where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"targetConf")) ::
               Data.ProtoLens.FieldDescriptor EstimateFeeRequest
+        minConfs__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "min_confs"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.Int32Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Int.Int32)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"minConfs")) ::
+              Data.ProtoLens.FieldDescriptor EstimateFeeRequest
+        spendUnconfirmed__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "spend_unconfirmed"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BoolField ::
+                 Data.ProtoLens.FieldTypeDescriptor Prelude.Bool)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"spendUnconfirmed")) ::
+              Data.ProtoLens.FieldDescriptor EstimateFeeRequest
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, addrToAmount__field_descriptor),
-           (Data.ProtoLens.Tag 2, targetConf__field_descriptor)]
+           (Data.ProtoLens.Tag 2, targetConf__field_descriptor),
+           (Data.ProtoLens.Tag 3, minConfs__field_descriptor),
+           (Data.ProtoLens.Tag 4, spendUnconfirmed__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _EstimateFeeRequest'_unknownFields
@@ -13102,6 +13810,8 @@ instance Data.ProtoLens.Message EstimateFeeRequest where
     = EstimateFeeRequest'_constructor
         {_EstimateFeeRequest'addrToAmount = Data.Map.empty,
          _EstimateFeeRequest'targetConf = Data.ProtoLens.fieldDefault,
+         _EstimateFeeRequest'minConfs = Data.ProtoLens.fieldDefault,
+         _EstimateFeeRequest'spendUnconfirmed = Data.ProtoLens.fieldDefault,
          _EstimateFeeRequest'_unknownFields = []}
   parseMessage
     = let
@@ -13152,6 +13862,22 @@ instance Data.ProtoLens.Message EstimateFeeRequest where
                                        "target_conf"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"targetConf") y x)
+                        24
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          Prelude.fromIntegral
+                                          Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "min_confs"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"minConfs") y x)
+                        32
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          ((Prelude./=) 0) Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "spend_unconfirmed"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field @"spendUnconfirmed") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -13199,8 +13925,34 @@ instance Data.ProtoLens.Message EstimateFeeRequest where
                          (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
-                (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                   (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
+                ((Data.Monoid.<>)
+                   (let
+                      _v = Lens.Family2.view (Data.ProtoLens.Field.field @"minConfs") _x
+                    in
+                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                          Data.Monoid.mempty
+                      else
+                          (Data.Monoid.<>)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
+                            ((Prelude..)
+                               Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+                   ((Data.Monoid.<>)
+                      (let
+                         _v
+                           = Lens.Family2.view
+                               (Data.ProtoLens.Field.field @"spendUnconfirmed") _x
+                       in
+                         if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                             Data.Monoid.mempty
+                         else
+                             (Data.Monoid.<>)
+                               (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
+                               ((Prelude..)
+                                  Data.ProtoLens.Encoding.Bytes.putVarInt
+                                  (\ b -> if b then 1 else 0)
+                                  _v))
+                      (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                         (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))
 instance Control.DeepSeq.NFData EstimateFeeRequest where
   rnf
     = \ x__
@@ -13208,7 +13960,12 @@ instance Control.DeepSeq.NFData EstimateFeeRequest where
              (_EstimateFeeRequest'_unknownFields x__)
              (Control.DeepSeq.deepseq
                 (_EstimateFeeRequest'addrToAmount x__)
-                (Control.DeepSeq.deepseq (_EstimateFeeRequest'targetConf x__) ()))
+                (Control.DeepSeq.deepseq
+                   (_EstimateFeeRequest'targetConf x__)
+                   (Control.DeepSeq.deepseq
+                      (_EstimateFeeRequest'minConfs x__)
+                      (Control.DeepSeq.deepseq
+                         (_EstimateFeeRequest'spendUnconfirmed x__) ()))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.key' @:: Lens' EstimateFeeRequest'AddrToAmountEntry Data.Text.Text@
@@ -13376,10 +14133,12 @@ instance Control.DeepSeq.NFData EstimateFeeRequest'AddrToAmountEntry where
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.feeSat' @:: Lens' EstimateFeeResponse Data.Int.Int64@
-         * 'Proto.LndGrpc_Fields.feerateSatPerByte' @:: Lens' EstimateFeeResponse Data.Int.Int64@ -}
+         * 'Proto.LndGrpc_Fields.feerateSatPerByte' @:: Lens' EstimateFeeResponse Data.Int.Int64@
+         * 'Proto.LndGrpc_Fields.satPerVbyte' @:: Lens' EstimateFeeResponse Data.Word.Word64@ -}
 data EstimateFeeResponse
   = EstimateFeeResponse'_constructor {_EstimateFeeResponse'feeSat :: !Data.Int.Int64,
                                       _EstimateFeeResponse'feerateSatPerByte :: !Data.Int.Int64,
+                                      _EstimateFeeResponse'satPerVbyte :: !Data.Word.Word64,
                                       _EstimateFeeResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show EstimateFeeResponse where
@@ -13402,13 +14161,21 @@ instance Data.ProtoLens.Field.HasField EstimateFeeResponse "feerateSatPerByte" D
            _EstimateFeeResponse'feerateSatPerByte
            (\ x__ y__ -> x__ {_EstimateFeeResponse'feerateSatPerByte = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField EstimateFeeResponse "satPerVbyte" Data.Word.Word64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _EstimateFeeResponse'satPerVbyte
+           (\ x__ y__ -> x__ {_EstimateFeeResponse'satPerVbyte = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message EstimateFeeResponse where
   messageName _ = Data.Text.pack "lnrpc.EstimateFeeResponse"
   packedMessageDescriptor _
     = "\n\
       \\DC3EstimateFeeResponse\DC2\ETB\n\
-      \\afee_sat\CAN\SOH \SOH(\ETXR\ACKfeeSat\DC2/\n\
-      \\DC4feerate_sat_per_byte\CAN\STX \SOH(\ETXR\DC1feerateSatPerByte"
+      \\afee_sat\CAN\SOH \SOH(\ETXR\ACKfeeSat\DC23\n\
+      \\DC4feerate_sat_per_byte\CAN\STX \SOH(\ETXR\DC1feerateSatPerByteB\STX\CAN\SOH\DC2\"\n\
+      \\rsat_per_vbyte\CAN\ETX \SOH(\EOTR\vsatPerVbyte"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -13429,10 +14196,20 @@ instance Data.ProtoLens.Message EstimateFeeResponse where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"feerateSatPerByte")) ::
               Data.ProtoLens.FieldDescriptor EstimateFeeResponse
+        satPerVbyte__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "sat_per_vbyte"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"satPerVbyte")) ::
+              Data.ProtoLens.FieldDescriptor EstimateFeeResponse
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, feeSat__field_descriptor),
-           (Data.ProtoLens.Tag 2, feerateSatPerByte__field_descriptor)]
+           (Data.ProtoLens.Tag 2, feerateSatPerByte__field_descriptor),
+           (Data.ProtoLens.Tag 3, satPerVbyte__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _EstimateFeeResponse'_unknownFields
@@ -13441,6 +14218,7 @@ instance Data.ProtoLens.Message EstimateFeeResponse where
     = EstimateFeeResponse'_constructor
         {_EstimateFeeResponse'feeSat = Data.ProtoLens.fieldDefault,
          _EstimateFeeResponse'feerateSatPerByte = Data.ProtoLens.fieldDefault,
+         _EstimateFeeResponse'satPerVbyte = Data.ProtoLens.fieldDefault,
          _EstimateFeeResponse'_unknownFields = []}
   parseMessage
     = let
@@ -13480,6 +14258,11 @@ instance Data.ProtoLens.Message EstimateFeeResponse where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"feerateSatPerByte") y x)
+                        24
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       Data.ProtoLens.Encoding.Bytes.getVarInt "sat_per_vbyte"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"satPerVbyte") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -13515,8 +14298,19 @@ instance Data.ProtoLens.Message EstimateFeeResponse where
                          (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
-                (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                   (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
+                ((Data.Monoid.<>)
+                   (let
+                      _v
+                        = Lens.Family2.view (Data.ProtoLens.Field.field @"satPerVbyte") _x
+                    in
+                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                          Data.Monoid.mempty
+                      else
+                          (Data.Monoid.<>)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
+                   (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                      (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
 instance Control.DeepSeq.NFData EstimateFeeResponse where
   rnf
     = \ x__
@@ -13525,7 +14319,9 @@ instance Control.DeepSeq.NFData EstimateFeeResponse where
              (Control.DeepSeq.deepseq
                 (_EstimateFeeResponse'feeSat x__)
                 (Control.DeepSeq.deepseq
-                   (_EstimateFeeResponse'feerateSatPerByte x__) ()))
+                   (_EstimateFeeResponse'feerateSatPerByte x__)
+                   (Control.DeepSeq.deepseq
+                      (_EstimateFeeResponse'satPerVbyte x__) ())))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.chanPoint' @:: Lens' ExportChannelBackupRequest ChannelPoint@
@@ -13751,7 +14547,7 @@ instance Data.ProtoLens.Message Failure where
       \cltvExpiry\DC2\DC4\n\
       \\ENQflags\CAN\a \SOH(\rR\ENQflags\DC20\n\
       \\DC4failure_source_index\CAN\b \SOH(\rR\DC2failureSourceIndex\DC2\SYN\n\
-      \\ACKheight\CAN\t \SOH(\rR\ACKheight\"\212\ENQ\n\
+      \\ACKheight\CAN\t \SOH(\rR\ACKheight\"\239\ENQ\n\
       \\vFailureCode\DC2\f\n\
       \\bRESERVED\DLE\NUL\DC2(\n\
       \$INCORRECT_OR_UNKNOWN_PAYMENT_DETAILS\DLE\SOH\DC2\FS\n\
@@ -13777,7 +14573,8 @@ instance Data.ProtoLens.Message Failure where
       \\SYNPERMANENT_NODE_FAILURE\DLE\DC4\DC2\GS\n\
       \\EMPERMANENT_CHANNEL_FAILURE\DLE\NAK\DC2\DC2\n\
       \\SOEXPIRY_TOO_FAR\DLE\SYN\DC2\SI\n\
-      \\vMPP_TIMEOUT\DLE\ETB\DC2\NAK\n\
+      \\vMPP_TIMEOUT\DLE\ETB\DC2\EM\n\
+      \\NAKINVALID_ONION_PAYLOAD\DLE\CAN\DC2\NAK\n\
       \\DLEINTERNAL_FAILURE\DLE\229\a\DC2\DC4\n\
       \\SIUNKNOWN_FAILURE\DLE\230\a\DC2\ETB\n\
       \\DC2UNREADABLE_FAILURE\DLE\231\aJ\EOT\b\STX\DLE\ETX"
@@ -14132,6 +14929,7 @@ data Failure'FailureCode
     Failure'PERMANENT_CHANNEL_FAILURE |
     Failure'EXPIRY_TOO_FAR |
     Failure'MPP_TIMEOUT |
+    Failure'INVALID_ONION_PAYLOAD |
     Failure'INTERNAL_FAILURE |
     Failure'UNKNOWN_FAILURE |
     Failure'UNREADABLE_FAILURE |
@@ -14164,6 +14962,7 @@ instance Data.ProtoLens.MessageEnum Failure'FailureCode where
   maybeToEnum 21 = Prelude.Just Failure'PERMANENT_CHANNEL_FAILURE
   maybeToEnum 22 = Prelude.Just Failure'EXPIRY_TOO_FAR
   maybeToEnum 23 = Prelude.Just Failure'MPP_TIMEOUT
+  maybeToEnum 24 = Prelude.Just Failure'INVALID_ONION_PAYLOAD
   maybeToEnum 997 = Prelude.Just Failure'INTERNAL_FAILURE
   maybeToEnum 998 = Prelude.Just Failure'UNKNOWN_FAILURE
   maybeToEnum 999 = Prelude.Just Failure'UNREADABLE_FAILURE
@@ -14203,6 +15002,7 @@ instance Data.ProtoLens.MessageEnum Failure'FailureCode where
     = "PERMANENT_CHANNEL_FAILURE"
   showEnum Failure'EXPIRY_TOO_FAR = "EXPIRY_TOO_FAR"
   showEnum Failure'MPP_TIMEOUT = "MPP_TIMEOUT"
+  showEnum Failure'INVALID_ONION_PAYLOAD = "INVALID_ONION_PAYLOAD"
   showEnum Failure'INTERNAL_FAILURE = "INTERNAL_FAILURE"
   showEnum Failure'UNKNOWN_FAILURE = "UNKNOWN_FAILURE"
   showEnum Failure'UNREADABLE_FAILURE = "UNREADABLE_FAILURE"
@@ -14256,6 +15056,8 @@ instance Data.ProtoLens.MessageEnum Failure'FailureCode where
     | (Prelude.==) k "EXPIRY_TOO_FAR"
     = Prelude.Just Failure'EXPIRY_TOO_FAR
     | (Prelude.==) k "MPP_TIMEOUT" = Prelude.Just Failure'MPP_TIMEOUT
+    | (Prelude.==) k "INVALID_ONION_PAYLOAD"
+    = Prelude.Just Failure'INVALID_ONION_PAYLOAD
     | (Prelude.==) k "INTERNAL_FAILURE"
     = Prelude.Just Failure'INTERNAL_FAILURE
     | (Prelude.==) k "UNKNOWN_FAILURE"
@@ -14299,6 +15101,7 @@ instance Prelude.Enum Failure'FailureCode where
   fromEnum Failure'PERMANENT_CHANNEL_FAILURE = 21
   fromEnum Failure'EXPIRY_TOO_FAR = 22
   fromEnum Failure'MPP_TIMEOUT = 23
+  fromEnum Failure'INVALID_ONION_PAYLOAD = 24
   fromEnum Failure'INTERNAL_FAILURE = 997
   fromEnum Failure'UNKNOWN_FAILURE = 998
   fromEnum Failure'UNREADABLE_FAILURE = 999
@@ -14341,7 +15144,8 @@ instance Prelude.Enum Failure'FailureCode where
     = Failure'PERMANENT_CHANNEL_FAILURE
   succ Failure'PERMANENT_CHANNEL_FAILURE = Failure'EXPIRY_TOO_FAR
   succ Failure'EXPIRY_TOO_FAR = Failure'MPP_TIMEOUT
-  succ Failure'MPP_TIMEOUT = Failure'INTERNAL_FAILURE
+  succ Failure'MPP_TIMEOUT = Failure'INVALID_ONION_PAYLOAD
+  succ Failure'INVALID_ONION_PAYLOAD = Failure'INTERNAL_FAILURE
   succ Failure'INTERNAL_FAILURE = Failure'UNKNOWN_FAILURE
   succ Failure'UNKNOWN_FAILURE = Failure'UNREADABLE_FAILURE
   succ (Failure'FailureCode'Unrecognized _)
@@ -14383,7 +15187,8 @@ instance Prelude.Enum Failure'FailureCode where
     = Failure'PERMANENT_NODE_FAILURE
   pred Failure'EXPIRY_TOO_FAR = Failure'PERMANENT_CHANNEL_FAILURE
   pred Failure'MPP_TIMEOUT = Failure'EXPIRY_TOO_FAR
-  pred Failure'INTERNAL_FAILURE = Failure'MPP_TIMEOUT
+  pred Failure'INVALID_ONION_PAYLOAD = Failure'MPP_TIMEOUT
+  pred Failure'INTERNAL_FAILURE = Failure'INVALID_ONION_PAYLOAD
   pred Failure'UNKNOWN_FAILURE = Failure'INTERNAL_FAILURE
   pred Failure'UNREADABLE_FAILURE = Failure'UNKNOWN_FAILURE
   pred (Failure'FailureCode'Unrecognized _)
@@ -14617,6 +15422,14 @@ data FeatureBit
     PAYMENT_ADDR_OPT |
     MPP_REQ |
     MPP_OPT |
+    WUMBO_CHANNELS_REQ |
+    WUMBO_CHANNELS_OPT |
+    ANCHORS_REQ |
+    ANCHORS_OPT |
+    ANCHORS_ZERO_FEE_HTLC_REQ |
+    ANCHORS_ZERO_FEE_HTLC_OPT |
+    AMP_REQ |
+    AMP_OPT |
     FeatureBit'Unrecognized !FeatureBit'UnrecognizedValue
   deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
 instance Data.ProtoLens.MessageEnum FeatureBit where
@@ -14637,6 +15450,14 @@ instance Data.ProtoLens.MessageEnum FeatureBit where
   maybeToEnum 15 = Prelude.Just PAYMENT_ADDR_OPT
   maybeToEnum 16 = Prelude.Just MPP_REQ
   maybeToEnum 17 = Prelude.Just MPP_OPT
+  maybeToEnum 18 = Prelude.Just WUMBO_CHANNELS_REQ
+  maybeToEnum 19 = Prelude.Just WUMBO_CHANNELS_OPT
+  maybeToEnum 20 = Prelude.Just ANCHORS_REQ
+  maybeToEnum 21 = Prelude.Just ANCHORS_OPT
+  maybeToEnum 22 = Prelude.Just ANCHORS_ZERO_FEE_HTLC_REQ
+  maybeToEnum 23 = Prelude.Just ANCHORS_ZERO_FEE_HTLC_OPT
+  maybeToEnum 30 = Prelude.Just AMP_REQ
+  maybeToEnum 31 = Prelude.Just AMP_OPT
   maybeToEnum k
     = Prelude.Just
         (FeatureBit'Unrecognized
@@ -14660,6 +15481,14 @@ instance Data.ProtoLens.MessageEnum FeatureBit where
   showEnum PAYMENT_ADDR_OPT = "PAYMENT_ADDR_OPT"
   showEnum MPP_REQ = "MPP_REQ"
   showEnum MPP_OPT = "MPP_OPT"
+  showEnum WUMBO_CHANNELS_REQ = "WUMBO_CHANNELS_REQ"
+  showEnum WUMBO_CHANNELS_OPT = "WUMBO_CHANNELS_OPT"
+  showEnum ANCHORS_REQ = "ANCHORS_REQ"
+  showEnum ANCHORS_OPT = "ANCHORS_OPT"
+  showEnum ANCHORS_ZERO_FEE_HTLC_REQ = "ANCHORS_ZERO_FEE_HTLC_REQ"
+  showEnum ANCHORS_ZERO_FEE_HTLC_OPT = "ANCHORS_ZERO_FEE_HTLC_OPT"
+  showEnum AMP_REQ = "AMP_REQ"
+  showEnum AMP_OPT = "AMP_OPT"
   showEnum (FeatureBit'Unrecognized (FeatureBit'UnrecognizedValue k))
     = Prelude.show k
   readEnum k
@@ -14691,11 +15520,23 @@ instance Data.ProtoLens.MessageEnum FeatureBit where
     | (Prelude.==) k "PAYMENT_ADDR_OPT" = Prelude.Just PAYMENT_ADDR_OPT
     | (Prelude.==) k "MPP_REQ" = Prelude.Just MPP_REQ
     | (Prelude.==) k "MPP_OPT" = Prelude.Just MPP_OPT
+    | (Prelude.==) k "WUMBO_CHANNELS_REQ"
+    = Prelude.Just WUMBO_CHANNELS_REQ
+    | (Prelude.==) k "WUMBO_CHANNELS_OPT"
+    = Prelude.Just WUMBO_CHANNELS_OPT
+    | (Prelude.==) k "ANCHORS_REQ" = Prelude.Just ANCHORS_REQ
+    | (Prelude.==) k "ANCHORS_OPT" = Prelude.Just ANCHORS_OPT
+    | (Prelude.==) k "ANCHORS_ZERO_FEE_HTLC_REQ"
+    = Prelude.Just ANCHORS_ZERO_FEE_HTLC_REQ
+    | (Prelude.==) k "ANCHORS_ZERO_FEE_HTLC_OPT"
+    = Prelude.Just ANCHORS_ZERO_FEE_HTLC_OPT
+    | (Prelude.==) k "AMP_REQ" = Prelude.Just AMP_REQ
+    | (Prelude.==) k "AMP_OPT" = Prelude.Just AMP_OPT
     | Prelude.otherwise
     = (Prelude.>>=) (Text.Read.readMaybe k) Data.ProtoLens.maybeToEnum
 instance Prelude.Bounded FeatureBit where
   minBound = DATALOSS_PROTECT_REQ
-  maxBound = MPP_OPT
+  maxBound = AMP_OPT
 instance Prelude.Enum FeatureBit where
   toEnum k__
     = Prelude.maybe
@@ -14721,11 +15562,19 @@ instance Prelude.Enum FeatureBit where
   fromEnum PAYMENT_ADDR_OPT = 15
   fromEnum MPP_REQ = 16
   fromEnum MPP_OPT = 17
+  fromEnum WUMBO_CHANNELS_REQ = 18
+  fromEnum WUMBO_CHANNELS_OPT = 19
+  fromEnum ANCHORS_REQ = 20
+  fromEnum ANCHORS_OPT = 21
+  fromEnum ANCHORS_ZERO_FEE_HTLC_REQ = 22
+  fromEnum ANCHORS_ZERO_FEE_HTLC_OPT = 23
+  fromEnum AMP_REQ = 30
+  fromEnum AMP_OPT = 31
   fromEnum (FeatureBit'Unrecognized (FeatureBit'UnrecognizedValue k))
     = Prelude.fromIntegral k
-  succ MPP_OPT
+  succ AMP_OPT
     = Prelude.error
-        "FeatureBit.succ: bad argument MPP_OPT. This value would be out of bounds."
+        "FeatureBit.succ: bad argument AMP_OPT. This value would be out of bounds."
   succ DATALOSS_PROTECT_REQ = DATALOSS_PROTECT_OPT
   succ DATALOSS_PROTECT_OPT = INITIAL_ROUING_SYNC
   succ INITIAL_ROUING_SYNC = UPFRONT_SHUTDOWN_SCRIPT_REQ
@@ -14742,6 +15591,14 @@ instance Prelude.Enum FeatureBit where
   succ PAYMENT_ADDR_REQ = PAYMENT_ADDR_OPT
   succ PAYMENT_ADDR_OPT = MPP_REQ
   succ MPP_REQ = MPP_OPT
+  succ MPP_OPT = WUMBO_CHANNELS_REQ
+  succ WUMBO_CHANNELS_REQ = WUMBO_CHANNELS_OPT
+  succ WUMBO_CHANNELS_OPT = ANCHORS_REQ
+  succ ANCHORS_REQ = ANCHORS_OPT
+  succ ANCHORS_OPT = ANCHORS_ZERO_FEE_HTLC_REQ
+  succ ANCHORS_ZERO_FEE_HTLC_REQ = ANCHORS_ZERO_FEE_HTLC_OPT
+  succ ANCHORS_ZERO_FEE_HTLC_OPT = AMP_REQ
+  succ AMP_REQ = AMP_OPT
   succ (FeatureBit'Unrecognized _)
     = Prelude.error "FeatureBit.succ: bad argument: unrecognized value"
   pred DATALOSS_PROTECT_REQ
@@ -14763,6 +15620,14 @@ instance Prelude.Enum FeatureBit where
   pred PAYMENT_ADDR_OPT = PAYMENT_ADDR_REQ
   pred MPP_REQ = PAYMENT_ADDR_OPT
   pred MPP_OPT = MPP_REQ
+  pred WUMBO_CHANNELS_REQ = MPP_OPT
+  pred WUMBO_CHANNELS_OPT = WUMBO_CHANNELS_REQ
+  pred ANCHORS_REQ = WUMBO_CHANNELS_OPT
+  pred ANCHORS_OPT = ANCHORS_REQ
+  pred ANCHORS_ZERO_FEE_HTLC_REQ = ANCHORS_OPT
+  pred ANCHORS_ZERO_FEE_HTLC_OPT = ANCHORS_ZERO_FEE_HTLC_REQ
+  pred AMP_REQ = ANCHORS_ZERO_FEE_HTLC_OPT
+  pred AMP_OPT = AMP_REQ
   pred (FeatureBit'Unrecognized _)
     = Prelude.error "FeatureBit.pred: bad argument: unrecognized value"
   enumFrom = Data.ProtoLens.Message.Enum.messageEnumFrom
@@ -15527,7 +16392,8 @@ instance Control.DeepSeq.NFData FloatMetric where
          * 'Proto.LndGrpc_Fields.fee' @:: Lens' ForwardingEvent Data.Word.Word64@
          * 'Proto.LndGrpc_Fields.feeMsat' @:: Lens' ForwardingEvent Data.Word.Word64@
          * 'Proto.LndGrpc_Fields.amtInMsat' @:: Lens' ForwardingEvent Data.Word.Word64@
-         * 'Proto.LndGrpc_Fields.amtOutMsat' @:: Lens' ForwardingEvent Data.Word.Word64@ -}
+         * 'Proto.LndGrpc_Fields.amtOutMsat' @:: Lens' ForwardingEvent Data.Word.Word64@
+         * 'Proto.LndGrpc_Fields.timestampNs' @:: Lens' ForwardingEvent Data.Word.Word64@ -}
 data ForwardingEvent
   = ForwardingEvent'_constructor {_ForwardingEvent'timestamp :: !Data.Word.Word64,
                                   _ForwardingEvent'chanIdIn :: !Data.Word.Word64,
@@ -15538,6 +16404,7 @@ data ForwardingEvent
                                   _ForwardingEvent'feeMsat :: !Data.Word.Word64,
                                   _ForwardingEvent'amtInMsat :: !Data.Word.Word64,
                                   _ForwardingEvent'amtOutMsat :: !Data.Word.Word64,
+                                  _ForwardingEvent'timestampNs :: !Data.Word.Word64,
                                   _ForwardingEvent'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show ForwardingEvent where
@@ -15609,12 +16476,19 @@ instance Data.ProtoLens.Field.HasField ForwardingEvent "amtOutMsat" Data.Word.Wo
            _ForwardingEvent'amtOutMsat
            (\ x__ y__ -> x__ {_ForwardingEvent'amtOutMsat = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField ForwardingEvent "timestampNs" Data.Word.Word64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _ForwardingEvent'timestampNs
+           (\ x__ y__ -> x__ {_ForwardingEvent'timestampNs = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message ForwardingEvent where
   messageName _ = Data.Text.pack "lnrpc.ForwardingEvent"
   packedMessageDescriptor _
     = "\n\
-      \\SIForwardingEvent\DC2\FS\n\
-      \\ttimestamp\CAN\SOH \SOH(\EOTR\ttimestamp\DC2 \n\
+      \\SIForwardingEvent\DC2 \n\
+      \\ttimestamp\CAN\SOH \SOH(\EOTR\ttimestampB\STX\CAN\SOH\DC2 \n\
       \\n\
       \chan_id_in\CAN\STX \SOH(\EOTR\bchanIdInB\STX0\SOH\DC2\"\n\
       \\vchan_id_out\CAN\EOT \SOH(\EOTR\tchanIdOutB\STX0\SOH\DC2\NAK\n\
@@ -15625,7 +16499,8 @@ instance Data.ProtoLens.Message ForwardingEvent where
       \\vamt_in_msat\CAN\t \SOH(\EOTR\tamtInMsat\DC2 \n\
       \\famt_out_msat\CAN\n\
       \ \SOH(\EOTR\n\
-      \amtOutMsat"
+      \amtOutMsat\DC2!\n\
+      \\ftimestamp_ns\CAN\v \SOH(\EOTR\vtimestampNs"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -15706,6 +16581,15 @@ instance Data.ProtoLens.Message ForwardingEvent where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"amtOutMsat")) ::
               Data.ProtoLens.FieldDescriptor ForwardingEvent
+        timestampNs__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "timestamp_ns"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"timestampNs")) ::
+              Data.ProtoLens.FieldDescriptor ForwardingEvent
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, timestamp__field_descriptor),
@@ -15716,7 +16600,8 @@ instance Data.ProtoLens.Message ForwardingEvent where
            (Data.ProtoLens.Tag 7, fee__field_descriptor),
            (Data.ProtoLens.Tag 8, feeMsat__field_descriptor),
            (Data.ProtoLens.Tag 9, amtInMsat__field_descriptor),
-           (Data.ProtoLens.Tag 10, amtOutMsat__field_descriptor)]
+           (Data.ProtoLens.Tag 10, amtOutMsat__field_descriptor),
+           (Data.ProtoLens.Tag 11, timestampNs__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _ForwardingEvent'_unknownFields
@@ -15732,6 +16617,7 @@ instance Data.ProtoLens.Message ForwardingEvent where
          _ForwardingEvent'feeMsat = Data.ProtoLens.fieldDefault,
          _ForwardingEvent'amtInMsat = Data.ProtoLens.fieldDefault,
          _ForwardingEvent'amtOutMsat = Data.ProtoLens.fieldDefault,
+         _ForwardingEvent'timestampNs = Data.ProtoLens.fieldDefault,
          _ForwardingEvent'_unknownFields = []}
   parseMessage
     = let
@@ -15796,6 +16682,11 @@ instance Data.ProtoLens.Message ForwardingEvent where
                                        Data.ProtoLens.Encoding.Bytes.getVarInt "amt_out_msat"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"amtOutMsat") y x)
+                        88
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       Data.ProtoLens.Encoding.Bytes.getVarInt "timestamp_ns"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"timestampNs") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -15900,8 +16791,21 @@ instance Data.ProtoLens.Message ForwardingEvent where
                                             (Data.Monoid.<>)
                                               (Data.ProtoLens.Encoding.Bytes.putVarInt 80)
                                               (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
-                                     (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                                        (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))))))
+                                     ((Data.Monoid.<>)
+                                        (let
+                                           _v
+                                             = Lens.Family2.view
+                                                 (Data.ProtoLens.Field.field @"timestampNs") _x
+                                         in
+                                           if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                                               Data.Monoid.mempty
+                                           else
+                                               (Data.Monoid.<>)
+                                                 (Data.ProtoLens.Encoding.Bytes.putVarInt 88)
+                                                 (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
+                                        (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                           (Lens.Family2.view
+                                              Data.ProtoLens.unknownFields _x)))))))))))
 instance Control.DeepSeq.NFData ForwardingEvent where
   rnf
     = \ x__
@@ -15924,7 +16828,9 @@ instance Control.DeepSeq.NFData ForwardingEvent where
                                   (Control.DeepSeq.deepseq
                                      (_ForwardingEvent'amtInMsat x__)
                                      (Control.DeepSeq.deepseq
-                                        (_ForwardingEvent'amtOutMsat x__) ())))))))))
+                                        (_ForwardingEvent'amtOutMsat x__)
+                                        (Control.DeepSeq.deepseq
+                                           (_ForwardingEvent'timestampNs x__) ()))))))))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.startTime' @:: Lens' ForwardingHistoryRequest Data.Word.Word64@
@@ -19093,10 +19999,12 @@ instance Control.DeepSeq.NFData GetRecoveryInfoResponse where
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.startHeight' @:: Lens' GetTransactionsRequest Data.Int.Int32@
-         * 'Proto.LndGrpc_Fields.endHeight' @:: Lens' GetTransactionsRequest Data.Int.Int32@ -}
+         * 'Proto.LndGrpc_Fields.endHeight' @:: Lens' GetTransactionsRequest Data.Int.Int32@
+         * 'Proto.LndGrpc_Fields.account' @:: Lens' GetTransactionsRequest Data.Text.Text@ -}
 data GetTransactionsRequest
   = GetTransactionsRequest'_constructor {_GetTransactionsRequest'startHeight :: !Data.Int.Int32,
                                          _GetTransactionsRequest'endHeight :: !Data.Int.Int32,
+                                         _GetTransactionsRequest'account :: !Data.Text.Text,
                                          _GetTransactionsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show GetTransactionsRequest where
@@ -19119,6 +20027,13 @@ instance Data.ProtoLens.Field.HasField GetTransactionsRequest "endHeight" Data.I
            _GetTransactionsRequest'endHeight
            (\ x__ y__ -> x__ {_GetTransactionsRequest'endHeight = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField GetTransactionsRequest "account" Data.Text.Text where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _GetTransactionsRequest'account
+           (\ x__ y__ -> x__ {_GetTransactionsRequest'account = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message GetTransactionsRequest where
   messageName _ = Data.Text.pack "lnrpc.GetTransactionsRequest"
   packedMessageDescriptor _
@@ -19126,7 +20041,8 @@ instance Data.ProtoLens.Message GetTransactionsRequest where
       \\SYNGetTransactionsRequest\DC2!\n\
       \\fstart_height\CAN\SOH \SOH(\ENQR\vstartHeight\DC2\GS\n\
       \\n\
-      \end_height\CAN\STX \SOH(\ENQR\tendHeight"
+      \end_height\CAN\STX \SOH(\ENQR\tendHeight\DC2\CAN\n\
+      \\aaccount\CAN\ETX \SOH(\tR\aaccount"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -19148,10 +20064,19 @@ instance Data.ProtoLens.Message GetTransactionsRequest where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"endHeight")) ::
               Data.ProtoLens.FieldDescriptor GetTransactionsRequest
+        account__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "account"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.StringField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Text.Text)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"account")) ::
+              Data.ProtoLens.FieldDescriptor GetTransactionsRequest
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, startHeight__field_descriptor),
-           (Data.ProtoLens.Tag 2, endHeight__field_descriptor)]
+           (Data.ProtoLens.Tag 2, endHeight__field_descriptor),
+           (Data.ProtoLens.Tag 3, account__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _GetTransactionsRequest'_unknownFields
@@ -19160,6 +20085,7 @@ instance Data.ProtoLens.Message GetTransactionsRequest where
     = GetTransactionsRequest'_constructor
         {_GetTransactionsRequest'startHeight = Data.ProtoLens.fieldDefault,
          _GetTransactionsRequest'endHeight = Data.ProtoLens.fieldDefault,
+         _GetTransactionsRequest'account = Data.ProtoLens.fieldDefault,
          _GetTransactionsRequest'_unknownFields = []}
   parseMessage
     = let
@@ -19199,6 +20125,18 @@ instance Data.ProtoLens.Message GetTransactionsRequest where
                                        "end_height"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"endHeight") y x)
+                        26
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                                       Data.ProtoLens.Encoding.Bytes.getBytes
+                                                         (Prelude.fromIntegral len)
+                                           Data.ProtoLens.Encoding.Bytes.runEither
+                                             (case Data.Text.Encoding.decodeUtf8' value of
+                                                (Prelude.Left err)
+                                                  -> Prelude.Left (Prelude.show err)
+                                                (Prelude.Right r) -> Prelude.Right r))
+                                       "account"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"account") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -19233,8 +20171,25 @@ instance Data.ProtoLens.Message GetTransactionsRequest where
                          (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
-                (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                   (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
+                ((Data.Monoid.<>)
+                   (let
+                      _v = Lens.Family2.view (Data.ProtoLens.Field.field @"account") _x
+                    in
+                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                          Data.Monoid.mempty
+                      else
+                          (Data.Monoid.<>)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 26)
+                            ((Prelude..)
+                               (\ bs
+                                  -> (Data.Monoid.<>)
+                                       (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                          (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                       (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                               Data.Text.Encoding.encodeUtf8
+                               _v))
+                   (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                      (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
 instance Control.DeepSeq.NFData GetTransactionsRequest where
   rnf
     = \ x__
@@ -19243,7 +20198,9 @@ instance Control.DeepSeq.NFData GetTransactionsRequest where
              (Control.DeepSeq.deepseq
                 (_GetTransactionsRequest'startHeight x__)
                 (Control.DeepSeq.deepseq
-                   (_GetTransactionsRequest'endHeight x__) ()))
+                   (_GetTransactionsRequest'endHeight x__)
+                   (Control.DeepSeq.deepseq
+                      (_GetTransactionsRequest'account x__) ())))
 {- | Fields :
       -}
 data GraphTopologySubscription
@@ -19957,6 +20914,7 @@ instance Control.DeepSeq.NFData HTLC where
                                (Control.DeepSeq.deepseq (_HTLC'forwardingHtlcIndex x__) ())))))))
 {- | Fields :
      
+         * 'Proto.LndGrpc_Fields.attemptId' @:: Lens' HTLCAttempt Data.Word.Word64@
          * 'Proto.LndGrpc_Fields.status' @:: Lens' HTLCAttempt HTLCAttempt'HTLCStatus@
          * 'Proto.LndGrpc_Fields.route' @:: Lens' HTLCAttempt Route@
          * 'Proto.LndGrpc_Fields.maybe'route' @:: Lens' HTLCAttempt (Prelude.Maybe Route)@
@@ -19966,7 +20924,8 @@ instance Control.DeepSeq.NFData HTLC where
          * 'Proto.LndGrpc_Fields.maybe'failure' @:: Lens' HTLCAttempt (Prelude.Maybe Failure)@
          * 'Proto.LndGrpc_Fields.preimage' @:: Lens' HTLCAttempt Data.ByteString.ByteString@ -}
 data HTLCAttempt
-  = HTLCAttempt'_constructor {_HTLCAttempt'status :: !HTLCAttempt'HTLCStatus,
+  = HTLCAttempt'_constructor {_HTLCAttempt'attemptId :: !Data.Word.Word64,
+                              _HTLCAttempt'status :: !HTLCAttempt'HTLCStatus,
                               _HTLCAttempt'route :: !(Prelude.Maybe Route),
                               _HTLCAttempt'attemptTimeNs :: !Data.Int.Int64,
                               _HTLCAttempt'resolveTimeNs :: !Data.Int.Int64,
@@ -19980,6 +20939,13 @@ instance Prelude.Show HTLCAttempt where
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Data.ProtoLens.Field.HasField HTLCAttempt "attemptId" Data.Word.Word64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _HTLCAttempt'attemptId
+           (\ x__ y__ -> x__ {_HTLCAttempt'attemptId = y__}))
+        Prelude.id
 instance Data.ProtoLens.Field.HasField HTLCAttempt "status" HTLCAttempt'HTLCStatus where
   fieldOf _
     = (Prelude..)
@@ -20037,7 +21003,9 @@ instance Data.ProtoLens.Message HTLCAttempt where
   messageName _ = Data.Text.pack "lnrpc.HTLCAttempt"
   packedMessageDescriptor _
     = "\n\
-      \\vHTLCAttempt\DC25\n\
+      \\vHTLCAttempt\DC2\GS\n\
+      \\n\
+      \attempt_id\CAN\a \SOH(\EOTR\tattemptId\DC25\n\
       \\ACKstatus\CAN\SOH \SOH(\SO2\GS.lnrpc.HTLCAttempt.HTLCStatusR\ACKstatus\DC2\"\n\
       \\ENQroute\CAN\STX \SOH(\v2\f.lnrpc.RouteR\ENQroute\DC2&\n\
       \\SIattempt_time_ns\CAN\ETX \SOH(\ETXR\rattemptTimeNs\DC2&\n\
@@ -20053,6 +21021,15 @@ instance Data.ProtoLens.Message HTLCAttempt where
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
+        attemptId__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "attempt_id"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"attemptId")) ::
+              Data.ProtoLens.FieldDescriptor HTLCAttempt
         status__field_descriptor
           = Data.ProtoLens.FieldDescriptor
               "status"
@@ -20106,7 +21083,8 @@ instance Data.ProtoLens.Message HTLCAttempt where
               Data.ProtoLens.FieldDescriptor HTLCAttempt
       in
         Data.Map.fromList
-          [(Data.ProtoLens.Tag 1, status__field_descriptor),
+          [(Data.ProtoLens.Tag 7, attemptId__field_descriptor),
+           (Data.ProtoLens.Tag 1, status__field_descriptor),
            (Data.ProtoLens.Tag 2, route__field_descriptor),
            (Data.ProtoLens.Tag 3, attemptTimeNs__field_descriptor),
            (Data.ProtoLens.Tag 4, resolveTimeNs__field_descriptor),
@@ -20118,7 +21096,8 @@ instance Data.ProtoLens.Message HTLCAttempt where
         (\ x__ y__ -> x__ {_HTLCAttempt'_unknownFields = y__})
   defMessage
     = HTLCAttempt'_constructor
-        {_HTLCAttempt'status = Data.ProtoLens.fieldDefault,
+        {_HTLCAttempt'attemptId = Data.ProtoLens.fieldDefault,
+         _HTLCAttempt'status = Data.ProtoLens.fieldDefault,
          _HTLCAttempt'route = Prelude.Nothing,
          _HTLCAttempt'attemptTimeNs = Data.ProtoLens.fieldDefault,
          _HTLCAttempt'resolveTimeNs = Data.ProtoLens.fieldDefault,
@@ -20147,6 +21126,11 @@ instance Data.ProtoLens.Message HTLCAttempt where
                else
                    do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
                       case tag of
+                        56
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       Data.ProtoLens.Encoding.Bytes.getVarInt "attempt_id"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"attemptId") y x)
                         8 -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
                                           Prelude.toEnum
@@ -20208,109 +21192,125 @@ instance Data.ProtoLens.Message HTLCAttempt where
     = \ _x
         -> (Data.Monoid.<>)
              (let
-                _v = Lens.Family2.view (Data.ProtoLens.Field.field @"status") _x
+                _v = Lens.Family2.view (Data.ProtoLens.Field.field @"attemptId") _x
               in
                 if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                     Data.Monoid.mempty
                 else
                     (Data.Monoid.<>)
-                      (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
-                      ((Prelude..)
-                         ((Prelude..)
-                            Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                         Prelude.fromEnum
-                         _v))
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt 56)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
              ((Data.Monoid.<>)
-                (case
-                     Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'route") _x
-                 of
-                   Prelude.Nothing -> Data.Monoid.mempty
-                   (Prelude.Just _v)
-                     -> (Data.Monoid.<>)
-                          (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
-                          ((Prelude..)
-                             (\ bs
-                                -> (Data.Monoid.<>)
-                                     (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                        (Prelude.fromIntegral (Data.ByteString.length bs)))
-                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                             Data.ProtoLens.encodeMessage
-                             _v))
-                ((Data.Monoid.<>)
-                   (let
-                      _v
-                        = Lens.Family2.view
-                            (Data.ProtoLens.Field.field @"attemptTimeNs") _x
-                    in
-                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
-                          Data.Monoid.mempty
-                      else
-                          (Data.Monoid.<>)
-                            (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
+                (let
+                   _v = Lens.Family2.view (Data.ProtoLens.Field.field @"status") _x
+                 in
+                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                       Data.Monoid.mempty
+                   else
+                       (Data.Monoid.<>)
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
+                         ((Prelude..)
                             ((Prelude..)
-                               Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+                               Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
+                            Prelude.fromEnum
+                            _v))
+                ((Data.Monoid.<>)
+                   (case
+                        Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'route") _x
+                    of
+                      Prelude.Nothing -> Data.Monoid.mempty
+                      (Prelude.Just _v)
+                        -> (Data.Monoid.<>)
+                             (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
+                             ((Prelude..)
+                                (\ bs
+                                   -> (Data.Monoid.<>)
+                                        (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                           (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                        (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                Data.ProtoLens.encodeMessage
+                                _v))
                    ((Data.Monoid.<>)
                       (let
                          _v
                            = Lens.Family2.view
-                               (Data.ProtoLens.Field.field @"resolveTimeNs") _x
+                               (Data.ProtoLens.Field.field @"attemptTimeNs") _x
                        in
                          if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                              Data.Monoid.mempty
                          else
                              (Data.Monoid.<>)
-                               (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
+                               (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
                                ((Prelude..)
                                   Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
                       ((Data.Monoid.<>)
-                         (case
-                              Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'failure") _x
-                          of
-                            Prelude.Nothing -> Data.Monoid.mempty
-                            (Prelude.Just _v)
-                              -> (Data.Monoid.<>)
-                                   (Data.ProtoLens.Encoding.Bytes.putVarInt 42)
-                                   ((Prelude..)
-                                      (\ bs
-                                         -> (Data.Monoid.<>)
-                                              (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                 (Prelude.fromIntegral (Data.ByteString.length bs)))
-                                              (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                      Data.ProtoLens.encodeMessage
-                                      _v))
+                         (let
+                            _v
+                              = Lens.Family2.view
+                                  (Data.ProtoLens.Field.field @"resolveTimeNs") _x
+                          in
+                            if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                                Data.Monoid.mempty
+                            else
+                                (Data.Monoid.<>)
+                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
+                                  ((Prelude..)
+                                     Data.ProtoLens.Encoding.Bytes.putVarInt
+                                     Prelude.fromIntegral
+                                     _v))
                          ((Data.Monoid.<>)
-                            (let
-                               _v = Lens.Family2.view (Data.ProtoLens.Field.field @"preimage") _x
-                             in
-                               if (Prelude.==) _v Data.ProtoLens.fieldDefault then
-                                   Data.Monoid.mempty
-                               else
-                                   (Data.Monoid.<>)
-                                     (Data.ProtoLens.Encoding.Bytes.putVarInt 50)
-                                     ((\ bs
-                                         -> (Data.Monoid.<>)
-                                              (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                 (Prelude.fromIntegral (Data.ByteString.length bs)))
-                                              (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                        _v))
-                            (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                               (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))))
+                            (case
+                                 Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'failure") _x
+                             of
+                               Prelude.Nothing -> Data.Monoid.mempty
+                               (Prelude.Just _v)
+                                 -> (Data.Monoid.<>)
+                                      (Data.ProtoLens.Encoding.Bytes.putVarInt 42)
+                                      ((Prelude..)
+                                         (\ bs
+                                            -> (Data.Monoid.<>)
+                                                 (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                    (Prelude.fromIntegral
+                                                       (Data.ByteString.length bs)))
+                                                 (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                         Data.ProtoLens.encodeMessage
+                                         _v))
+                            ((Data.Monoid.<>)
+                               (let
+                                  _v = Lens.Family2.view (Data.ProtoLens.Field.field @"preimage") _x
+                                in
+                                  if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                                      Data.Monoid.mempty
+                                  else
+                                      (Data.Monoid.<>)
+                                        (Data.ProtoLens.Encoding.Bytes.putVarInt 50)
+                                        ((\ bs
+                                            -> (Data.Monoid.<>)
+                                                 (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                    (Prelude.fromIntegral
+                                                       (Data.ByteString.length bs)))
+                                                 (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                           _v))
+                               (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                  (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))))
 instance Control.DeepSeq.NFData HTLCAttempt where
   rnf
     = \ x__
         -> Control.DeepSeq.deepseq
              (_HTLCAttempt'_unknownFields x__)
              (Control.DeepSeq.deepseq
-                (_HTLCAttempt'status x__)
+                (_HTLCAttempt'attemptId x__)
                 (Control.DeepSeq.deepseq
-                   (_HTLCAttempt'route x__)
+                   (_HTLCAttempt'status x__)
                    (Control.DeepSeq.deepseq
-                      (_HTLCAttempt'attemptTimeNs x__)
+                      (_HTLCAttempt'route x__)
                       (Control.DeepSeq.deepseq
-                         (_HTLCAttempt'resolveTimeNs x__)
+                         (_HTLCAttempt'attemptTimeNs x__)
                          (Control.DeepSeq.deepseq
-                            (_HTLCAttempt'failure x__)
-                            (Control.DeepSeq.deepseq (_HTLCAttempt'preimage x__) ()))))))
+                            (_HTLCAttempt'resolveTimeNs x__)
+                            (Control.DeepSeq.deepseq
+                               (_HTLCAttempt'failure x__)
+                               (Control.DeepSeq.deepseq (_HTLCAttempt'preimage x__) ())))))))
 newtype HTLCAttempt'HTLCStatus'UnrecognizedValue
   = HTLCAttempt'HTLCStatus'UnrecognizedValue Data.Int.Int32
   deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
@@ -20395,6 +21395,8 @@ instance Control.DeepSeq.NFData HTLCAttempt'HTLCStatus where
          * 'Proto.LndGrpc_Fields.tlvPayload' @:: Lens' Hop Prelude.Bool@
          * 'Proto.LndGrpc_Fields.mppRecord' @:: Lens' Hop MPPRecord@
          * 'Proto.LndGrpc_Fields.maybe'mppRecord' @:: Lens' Hop (Prelude.Maybe MPPRecord)@
+         * 'Proto.LndGrpc_Fields.ampRecord' @:: Lens' Hop AMPRecord@
+         * 'Proto.LndGrpc_Fields.maybe'ampRecord' @:: Lens' Hop (Prelude.Maybe AMPRecord)@
          * 'Proto.LndGrpc_Fields.customRecords' @:: Lens' Hop (Data.Map.Map Data.Word.Word64 Data.ByteString.ByteString)@ -}
 data Hop
   = Hop'_constructor {_Hop'chanId :: !Data.Word.Word64,
@@ -20407,6 +21409,7 @@ data Hop
                       _Hop'pubKey :: !Data.Text.Text,
                       _Hop'tlvPayload :: !Prelude.Bool,
                       _Hop'mppRecord :: !(Prelude.Maybe MPPRecord),
+                      _Hop'ampRecord :: !(Prelude.Maybe AMPRecord),
                       _Hop'customRecords :: !(Data.Map.Map Data.Word.Word64 Data.ByteString.ByteString),
                       _Hop'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
@@ -20483,6 +21486,18 @@ instance Data.ProtoLens.Field.HasField Hop "maybe'mppRecord" (Prelude.Maybe MPPR
         (Lens.Family2.Unchecked.lens
            _Hop'mppRecord (\ x__ y__ -> x__ {_Hop'mppRecord = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField Hop "ampRecord" AMPRecord where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _Hop'ampRecord (\ x__ y__ -> x__ {_Hop'ampRecord = y__}))
+        (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
+instance Data.ProtoLens.Field.HasField Hop "maybe'ampRecord" (Prelude.Maybe AMPRecord) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _Hop'ampRecord (\ x__ y__ -> x__ {_Hop'ampRecord = y__}))
+        Prelude.id
 instance Data.ProtoLens.Field.HasField Hop "customRecords" (Data.Map.Map Data.Word.Word64 Data.ByteString.ByteString) where
   fieldOf _
     = (Prelude..)
@@ -20494,8 +21509,8 @@ instance Data.ProtoLens.Message Hop where
   packedMessageDescriptor _
     = "\n\
       \\ETXHop\DC2\ESC\n\
-      \\achan_id\CAN\SOH \SOH(\EOTR\ACKchanIdB\STX0\SOH\DC2#\n\
-      \\rchan_capacity\CAN\STX \SOH(\ETXR\fchanCapacity\DC2(\n\
+      \\achan_id\CAN\SOH \SOH(\EOTR\ACKchanIdB\STX0\SOH\DC2'\n\
+      \\rchan_capacity\CAN\STX \SOH(\ETXR\fchanCapacityB\STX\CAN\SOH\DC2(\n\
       \\SOamt_to_forward\CAN\ETX \SOH(\ETXR\famtToForwardB\STX\CAN\SOH\DC2\DC4\n\
       \\ETXfee\CAN\EOT \SOH(\ETXR\ETXfeeB\STX\CAN\SOH\DC2\SYN\n\
       \\ACKexpiry\CAN\ENQ \SOH(\rR\ACKexpiry\DC2-\n\
@@ -20506,7 +21521,9 @@ instance Data.ProtoLens.Message Hop where
       \tlvPayload\DC2/\n\
       \\n\
       \mpp_record\CAN\n\
-      \ \SOH(\v2\DLE.lnrpc.MPPRecordR\tmppRecord\DC2D\n\
+      \ \SOH(\v2\DLE.lnrpc.MPPRecordR\tmppRecord\DC2/\n\
+      \\n\
+      \amp_record\CAN\f \SOH(\v2\DLE.lnrpc.AMPRecordR\tampRecord\DC2D\n\
       \\SOcustom_records\CAN\v \ETX(\v2\GS.lnrpc.Hop.CustomRecordsEntryR\rcustomRecords\SUB@\n\
       \\DC2CustomRecordsEntry\DC2\DLE\n\
       \\ETXkey\CAN\SOH \SOH(\EOTR\ETXkey\DC2\DC4\n\
@@ -20598,6 +21615,14 @@ instance Data.ProtoLens.Message Hop where
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'mppRecord")) ::
               Data.ProtoLens.FieldDescriptor Hop
+        ampRecord__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "amp_record"
+              (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
+                 Data.ProtoLens.FieldTypeDescriptor AMPRecord)
+              (Data.ProtoLens.OptionalField
+                 (Data.ProtoLens.Field.field @"maybe'ampRecord")) ::
+              Data.ProtoLens.FieldDescriptor Hop
         customRecords__field_descriptor
           = Data.ProtoLens.FieldDescriptor
               "custom_records"
@@ -20620,6 +21645,7 @@ instance Data.ProtoLens.Message Hop where
            (Data.ProtoLens.Tag 8, pubKey__field_descriptor),
            (Data.ProtoLens.Tag 9, tlvPayload__field_descriptor),
            (Data.ProtoLens.Tag 10, mppRecord__field_descriptor),
+           (Data.ProtoLens.Tag 12, ampRecord__field_descriptor),
            (Data.ProtoLens.Tag 11, customRecords__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
@@ -20635,7 +21661,7 @@ instance Data.ProtoLens.Message Hop where
          _Hop'feeMsat = Data.ProtoLens.fieldDefault,
          _Hop'pubKey = Data.ProtoLens.fieldDefault,
          _Hop'tlvPayload = Data.ProtoLens.fieldDefault,
-         _Hop'mppRecord = Prelude.Nothing,
+         _Hop'mppRecord = Prelude.Nothing, _Hop'ampRecord = Prelude.Nothing,
          _Hop'customRecords = Data.Map.empty, _Hop'_unknownFields = []}
   parseMessage
     = let
@@ -20736,6 +21762,14 @@ instance Data.ProtoLens.Message Hop where
                                        "mpp_record"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"mppRecord") y x)
+                        98
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.isolate
+                                             (Prelude.fromIntegral len) Data.ProtoLens.parseMessage)
+                                       "amp_record"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"ampRecord") y x)
                         90
                           -> do !(entry :: Hop'CustomRecordsEntry) <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                                                         (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -20904,38 +21938,59 @@ instance Data.ProtoLens.Message Hop where
                                                      Data.ProtoLens.encodeMessage
                                                      _v))
                                         ((Data.Monoid.<>)
-                                           (Data.Monoid.mconcat
-                                              (Prelude.map
-                                                 (\ _v
-                                                    -> (Data.Monoid.<>)
-                                                         (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                            90)
-                                                         ((Prelude..)
-                                                            (\ bs
-                                                               -> (Data.Monoid.<>)
-                                                                    (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                                       (Prelude.fromIntegral
-                                                                          (Data.ByteString.length
-                                                                             bs)))
-                                                                    (Data.ProtoLens.Encoding.Bytes.putBytes
-                                                                       bs))
-                                                            Data.ProtoLens.encodeMessage
-                                                            (Lens.Family2.set
-                                                               (Data.ProtoLens.Field.field @"key")
-                                                               (Prelude.fst _v)
+                                           (case
+                                                Lens.Family2.view
+                                                  (Data.ProtoLens.Field.field @"maybe'ampRecord") _x
+                                            of
+                                              Prelude.Nothing -> Data.Monoid.mempty
+                                              (Prelude.Just _v)
+                                                -> (Data.Monoid.<>)
+                                                     (Data.ProtoLens.Encoding.Bytes.putVarInt 98)
+                                                     ((Prelude..)
+                                                        (\ bs
+                                                           -> (Data.Monoid.<>)
+                                                                (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                   (Prelude.fromIntegral
+                                                                      (Data.ByteString.length bs)))
+                                                                (Data.ProtoLens.Encoding.Bytes.putBytes
+                                                                   bs))
+                                                        Data.ProtoLens.encodeMessage
+                                                        _v))
+                                           ((Data.Monoid.<>)
+                                              (Data.Monoid.mconcat
+                                                 (Prelude.map
+                                                    (\ _v
+                                                       -> (Data.Monoid.<>)
+                                                            (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                               90)
+                                                            ((Prelude..)
+                                                               (\ bs
+                                                                  -> (Data.Monoid.<>)
+                                                                       (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                          (Prelude.fromIntegral
+                                                                             (Data.ByteString.length
+                                                                                bs)))
+                                                                       (Data.ProtoLens.Encoding.Bytes.putBytes
+                                                                          bs))
+                                                               Data.ProtoLens.encodeMessage
                                                                (Lens.Family2.set
                                                                   (Data.ProtoLens.Field.field
-                                                                     @"value")
-                                                                  (Prelude.snd _v)
-                                                                  (Data.ProtoLens.defMessage ::
-                                                                     Hop'CustomRecordsEntry)))))
-                                                 (Data.Map.toList
-                                                    (Lens.Family2.view
-                                                       (Data.ProtoLens.Field.field @"customRecords")
-                                                       _x))))
-                                           (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                                              (Lens.Family2.view
-                                                 Data.ProtoLens.unknownFields _x))))))))))))
+                                                                     @"key")
+                                                                  (Prelude.fst _v)
+                                                                  (Lens.Family2.set
+                                                                     (Data.ProtoLens.Field.field
+                                                                        @"value")
+                                                                     (Prelude.snd _v)
+                                                                     (Data.ProtoLens.defMessage ::
+                                                                        Hop'CustomRecordsEntry)))))
+                                                    (Data.Map.toList
+                                                       (Lens.Family2.view
+                                                          (Data.ProtoLens.Field.field
+                                                             @"customRecords")
+                                                          _x))))
+                                              (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                                 (Lens.Family2.view
+                                                    Data.ProtoLens.unknownFields _x)))))))))))))
 instance Control.DeepSeq.NFData Hop where
   rnf
     = \ x__
@@ -20962,7 +22017,9 @@ instance Control.DeepSeq.NFData Hop where
                                         (Control.DeepSeq.deepseq
                                            (_Hop'mppRecord x__)
                                            (Control.DeepSeq.deepseq
-                                              (_Hop'customRecords x__) ())))))))))))
+                                              (_Hop'ampRecord x__)
+                                              (Control.DeepSeq.deepseq
+                                                 (_Hop'customRecords x__) ()))))))))))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.key' @:: Lens' Hop'CustomRecordsEntry Data.Word.Word64@
@@ -21498,7 +22555,8 @@ instance Control.DeepSeq.NFData Initiator where
          * 'Proto.LndGrpc_Fields.vec'htlcs' @:: Lens' Invoice (Data.Vector.Vector InvoiceHTLC)@
          * 'Proto.LndGrpc_Fields.features' @:: Lens' Invoice (Data.Map.Map Data.Word.Word32 Feature)@
          * 'Proto.LndGrpc_Fields.isKeysend' @:: Lens' Invoice Prelude.Bool@
-         * 'Proto.LndGrpc_Fields.paymentAddr' @:: Lens' Invoice Data.ByteString.ByteString@ -}
+         * 'Proto.LndGrpc_Fields.paymentAddr' @:: Lens' Invoice Data.ByteString.ByteString@
+         * 'Proto.LndGrpc_Fields.isAmp' @:: Lens' Invoice Prelude.Bool@ -}
 data Invoice
   = Invoice'_constructor {_Invoice'memo :: !Data.Text.Text,
                           _Invoice'rPreimage :: !Data.ByteString.ByteString,
@@ -21525,6 +22583,7 @@ data Invoice
                           _Invoice'features :: !(Data.Map.Map Data.Word.Word32 Feature),
                           _Invoice'isKeysend :: !Prelude.Bool,
                           _Invoice'paymentAddr :: !Data.ByteString.ByteString,
+                          _Invoice'isAmp :: !Prelude.Bool,
                           _Invoice'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show Invoice where
@@ -21706,6 +22765,12 @@ instance Data.ProtoLens.Field.HasField Invoice "paymentAddr" Data.ByteString.Byt
            _Invoice'paymentAddr
            (\ x__ y__ -> x__ {_Invoice'paymentAddr = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField Invoice "isAmp" Prelude.Bool where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _Invoice'isAmp (\ x__ y__ -> x__ {_Invoice'isAmp = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message Invoice where
   messageName _ = Data.Text.pack "lnrpc.Invoice"
   packedMessageDescriptor _
@@ -21743,7 +22808,8 @@ instance Data.ProtoLens.Message Invoice where
       \\bfeatures\CAN\CAN \ETX(\v2\FS.lnrpc.Invoice.FeaturesEntryR\bfeatures\DC2\GS\n\
       \\n\
       \is_keysend\CAN\EM \SOH(\bR\tisKeysend\DC2!\n\
-      \\fpayment_addr\CAN\SUB \SOH(\fR\vpaymentAddr\SUBK\n\
+      \\fpayment_addr\CAN\SUB \SOH(\fR\vpaymentAddr\DC2\NAK\n\
+      \\ACKis_amp\CAN\ESC \SOH(\bR\ENQisAmp\SUBK\n\
       \\rFeaturesEntry\DC2\DLE\n\
       \\ETXkey\CAN\SOH \SOH(\rR\ETXkey\DC2$\n\
       \\ENQvalue\CAN\STX \SOH(\v2\SO.lnrpc.FeatureR\ENQvalue:\STX8\SOH\"A\n\
@@ -21972,6 +23038,14 @@ instance Data.ProtoLens.Message Invoice where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"paymentAddr")) ::
               Data.ProtoLens.FieldDescriptor Invoice
+        isAmp__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "is_amp"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BoolField ::
+                 Data.ProtoLens.FieldTypeDescriptor Prelude.Bool)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"isAmp")) ::
+              Data.ProtoLens.FieldDescriptor Invoice
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, memo__field_descriptor),
@@ -21998,7 +23072,8 @@ instance Data.ProtoLens.Message Invoice where
            (Data.ProtoLens.Tag 22, htlcs__field_descriptor),
            (Data.ProtoLens.Tag 24, features__field_descriptor),
            (Data.ProtoLens.Tag 25, isKeysend__field_descriptor),
-           (Data.ProtoLens.Tag 26, paymentAddr__field_descriptor)]
+           (Data.ProtoLens.Tag 26, paymentAddr__field_descriptor),
+           (Data.ProtoLens.Tag 27, isAmp__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _Invoice'_unknownFields
@@ -22030,6 +23105,7 @@ instance Data.ProtoLens.Message Invoice where
          _Invoice'features = Data.Map.empty,
          _Invoice'isKeysend = Data.ProtoLens.fieldDefault,
          _Invoice'paymentAddr = Data.ProtoLens.fieldDefault,
+         _Invoice'isAmp = Data.ProtoLens.fieldDefault,
          _Invoice'_unknownFields = []}
   parseMessage
     = let
@@ -22336,6 +23412,15 @@ instance Data.ProtoLens.Message Invoice where
                                        "payment_addr"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"paymentAddr") y x)
+                                  mutable'htlcs
+                                  mutable'routeHints
+                        216
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          ((Prelude./=) 0) Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "is_amp"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"isAmp") y x)
                                   mutable'htlcs
                                   mutable'routeHints
                         wire
@@ -22825,10 +23910,34 @@ instance Data.ProtoLens.Message Invoice where
                                                                                                        (Data.ProtoLens.Encoding.Bytes.putBytes
                                                                                                           bs))
                                                                                                  _v))
-                                                                                     (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                                                                                        (Lens.Family2.view
-                                                                                           Data.ProtoLens.unknownFields
-                                                                                           _x))))))))))))))))))))))))))
+                                                                                     ((Data.Monoid.<>)
+                                                                                        (let
+                                                                                           _v
+                                                                                             = Lens.Family2.view
+                                                                                                 (Data.ProtoLens.Field.field
+                                                                                                    @"isAmp")
+                                                                                                 _x
+                                                                                         in
+                                                                                           if (Prelude.==)
+                                                                                                _v
+                                                                                                Data.ProtoLens.fieldDefault then
+                                                                                               Data.Monoid.mempty
+                                                                                           else
+                                                                                               (Data.Monoid.<>)
+                                                                                                 (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                                                    216)
+                                                                                                 ((Prelude..)
+                                                                                                    Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                                                    (\ b
+                                                                                                       -> if b then
+                                                                                                              1
+                                                                                                          else
+                                                                                                              0)
+                                                                                                    _v))
+                                                                                        (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                                                                           (Lens.Family2.view
+                                                                                              Data.ProtoLens.unknownFields
+                                                                                              _x)))))))))))))))))))))))))))
 instance Control.DeepSeq.NFData Invoice where
   rnf
     = \ x__
@@ -22887,7 +23996,10 @@ instance Control.DeepSeq.NFData Invoice where
                                                                                      (Control.DeepSeq.deepseq
                                                                                         (_Invoice'paymentAddr
                                                                                            x__)
-                                                                                        ())))))))))))))))))))))))))
+                                                                                        (Control.DeepSeq.deepseq
+                                                                                           (_Invoice'isAmp
+                                                                                              x__)
+                                                                                           ()))))))))))))))))))))))))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.key' @:: Lens' Invoice'FeaturesEntry Data.Word.Word32@
@@ -23136,7 +24248,9 @@ instance Control.DeepSeq.NFData Invoice'InvoiceState where
          * 'Proto.LndGrpc_Fields.expiryHeight' @:: Lens' InvoiceHTLC Data.Int.Int32@
          * 'Proto.LndGrpc_Fields.state' @:: Lens' InvoiceHTLC InvoiceHTLCState@
          * 'Proto.LndGrpc_Fields.customRecords' @:: Lens' InvoiceHTLC (Data.Map.Map Data.Word.Word64 Data.ByteString.ByteString)@
-         * 'Proto.LndGrpc_Fields.mppTotalAmtMsat' @:: Lens' InvoiceHTLC Data.Word.Word64@ -}
+         * 'Proto.LndGrpc_Fields.mppTotalAmtMsat' @:: Lens' InvoiceHTLC Data.Word.Word64@
+         * 'Proto.LndGrpc_Fields.amp' @:: Lens' InvoiceHTLC AMP@
+         * 'Proto.LndGrpc_Fields.maybe'amp' @:: Lens' InvoiceHTLC (Prelude.Maybe AMP)@ -}
 data InvoiceHTLC
   = InvoiceHTLC'_constructor {_InvoiceHTLC'chanId :: !Data.Word.Word64,
                               _InvoiceHTLC'htlcIndex :: !Data.Word.Word64,
@@ -23148,6 +24262,7 @@ data InvoiceHTLC
                               _InvoiceHTLC'state :: !InvoiceHTLCState,
                               _InvoiceHTLC'customRecords :: !(Data.Map.Map Data.Word.Word64 Data.ByteString.ByteString),
                               _InvoiceHTLC'mppTotalAmtMsat :: !Data.Word.Word64,
+                              _InvoiceHTLC'amp :: !(Prelude.Maybe AMP),
                               _InvoiceHTLC'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show InvoiceHTLC where
@@ -23224,6 +24339,18 @@ instance Data.ProtoLens.Field.HasField InvoiceHTLC "mppTotalAmtMsat" Data.Word.W
            _InvoiceHTLC'mppTotalAmtMsat
            (\ x__ y__ -> x__ {_InvoiceHTLC'mppTotalAmtMsat = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField InvoiceHTLC "amp" AMP where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _InvoiceHTLC'amp (\ x__ y__ -> x__ {_InvoiceHTLC'amp = y__}))
+        (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
+instance Data.ProtoLens.Field.HasField InvoiceHTLC "maybe'amp" (Prelude.Maybe AMP) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _InvoiceHTLC'amp (\ x__ y__ -> x__ {_InvoiceHTLC'amp = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message InvoiceHTLC where
   messageName _ = Data.Text.pack "lnrpc.InvoiceHTLC"
   packedMessageDescriptor _
@@ -23241,7 +24368,9 @@ instance Data.ProtoLens.Message InvoiceHTLC where
       \\ENQstate\CAN\b \SOH(\SO2\ETB.lnrpc.InvoiceHTLCStateR\ENQstate\DC2L\n\
       \\SOcustom_records\CAN\t \ETX(\v2%.lnrpc.InvoiceHTLC.CustomRecordsEntryR\rcustomRecords\DC2+\n\
       \\DC2mpp_total_amt_msat\CAN\n\
-      \ \SOH(\EOTR\SImppTotalAmtMsat\SUB@\n\
+      \ \SOH(\EOTR\SImppTotalAmtMsat\DC2\FS\n\
+      \\ETXamp\CAN\v \SOH(\v2\n\
+      \.lnrpc.AMPR\ETXamp\SUB@\n\
       \\DC2CustomRecordsEntry\DC2\DLE\n\
       \\ETXkey\CAN\SOH \SOH(\EOTR\ETXkey\DC2\DC4\n\
       \\ENQvalue\CAN\STX \SOH(\fR\ENQvalue:\STX8\SOH"
@@ -23336,6 +24465,14 @@ instance Data.ProtoLens.Message InvoiceHTLC where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"mppTotalAmtMsat")) ::
               Data.ProtoLens.FieldDescriptor InvoiceHTLC
+        amp__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "amp"
+              (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
+                 Data.ProtoLens.FieldTypeDescriptor AMP)
+              (Data.ProtoLens.OptionalField
+                 (Data.ProtoLens.Field.field @"maybe'amp")) ::
+              Data.ProtoLens.FieldDescriptor InvoiceHTLC
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, chanId__field_descriptor),
@@ -23347,7 +24484,8 @@ instance Data.ProtoLens.Message InvoiceHTLC where
            (Data.ProtoLens.Tag 7, expiryHeight__field_descriptor),
            (Data.ProtoLens.Tag 8, state__field_descriptor),
            (Data.ProtoLens.Tag 9, customRecords__field_descriptor),
-           (Data.ProtoLens.Tag 10, mppTotalAmtMsat__field_descriptor)]
+           (Data.ProtoLens.Tag 10, mppTotalAmtMsat__field_descriptor),
+           (Data.ProtoLens.Tag 11, amp__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _InvoiceHTLC'_unknownFields
@@ -23364,6 +24502,7 @@ instance Data.ProtoLens.Message InvoiceHTLC where
          _InvoiceHTLC'state = Data.ProtoLens.fieldDefault,
          _InvoiceHTLC'customRecords = Data.Map.empty,
          _InvoiceHTLC'mppTotalAmtMsat = Data.ProtoLens.fieldDefault,
+         _InvoiceHTLC'amp = Prelude.Nothing,
          _InvoiceHTLC'_unknownFields = []}
   parseMessage
     = let
@@ -23466,6 +24605,13 @@ instance Data.ProtoLens.Message InvoiceHTLC where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"mppTotalAmtMsat") y x)
+                        90
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.isolate
+                                             (Prelude.fromIntegral len) Data.ProtoLens.parseMessage)
+                                       "amp"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"amp") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -23616,9 +24762,28 @@ instance Data.ProtoLens.Message InvoiceHTLC where
                                                (Data.Monoid.<>)
                                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 80)
                                                  (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
-                                        (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                                           (Lens.Family2.view
-                                              Data.ProtoLens.unknownFields _x)))))))))))
+                                        ((Data.Monoid.<>)
+                                           (case
+                                                Lens.Family2.view
+                                                  (Data.ProtoLens.Field.field @"maybe'amp") _x
+                                            of
+                                              Prelude.Nothing -> Data.Monoid.mempty
+                                              (Prelude.Just _v)
+                                                -> (Data.Monoid.<>)
+                                                     (Data.ProtoLens.Encoding.Bytes.putVarInt 90)
+                                                     ((Prelude..)
+                                                        (\ bs
+                                                           -> (Data.Monoid.<>)
+                                                                (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                   (Prelude.fromIntegral
+                                                                      (Data.ByteString.length bs)))
+                                                                (Data.ProtoLens.Encoding.Bytes.putBytes
+                                                                   bs))
+                                                        Data.ProtoLens.encodeMessage
+                                                        _v))
+                                           (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                              (Lens.Family2.view
+                                                 Data.ProtoLens.unknownFields _x))))))))))))
 instance Control.DeepSeq.NFData InvoiceHTLC where
   rnf
     = \ x__
@@ -23643,7 +24808,9 @@ instance Control.DeepSeq.NFData InvoiceHTLC where
                                      (Control.DeepSeq.deepseq
                                         (_InvoiceHTLC'customRecords x__)
                                         (Control.DeepSeq.deepseq
-                                           (_InvoiceHTLC'mppTotalAmtMsat x__) ()))))))))))
+                                           (_InvoiceHTLC'mppTotalAmtMsat x__)
+                                           (Control.DeepSeq.deepseq
+                                              (_InvoiceHTLC'amp x__) ())))))))))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.key' @:: Lens' InvoiceHTLC'CustomRecordsEntry Data.Word.Word64@
@@ -27267,10 +28434,12 @@ instance Control.DeepSeq.NFData ListPermissionsResponse'MethodPermissionsEntry w
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.minConfs' @:: Lens' ListUnspentRequest Data.Int.Int32@
-         * 'Proto.LndGrpc_Fields.maxConfs' @:: Lens' ListUnspentRequest Data.Int.Int32@ -}
+         * 'Proto.LndGrpc_Fields.maxConfs' @:: Lens' ListUnspentRequest Data.Int.Int32@
+         * 'Proto.LndGrpc_Fields.account' @:: Lens' ListUnspentRequest Data.Text.Text@ -}
 data ListUnspentRequest
   = ListUnspentRequest'_constructor {_ListUnspentRequest'minConfs :: !Data.Int.Int32,
                                      _ListUnspentRequest'maxConfs :: !Data.Int.Int32,
+                                     _ListUnspentRequest'account :: !Data.Text.Text,
                                      _ListUnspentRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show ListUnspentRequest where
@@ -27293,13 +28462,21 @@ instance Data.ProtoLens.Field.HasField ListUnspentRequest "maxConfs" Data.Int.In
            _ListUnspentRequest'maxConfs
            (\ x__ y__ -> x__ {_ListUnspentRequest'maxConfs = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField ListUnspentRequest "account" Data.Text.Text where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _ListUnspentRequest'account
+           (\ x__ y__ -> x__ {_ListUnspentRequest'account = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message ListUnspentRequest where
   messageName _ = Data.Text.pack "lnrpc.ListUnspentRequest"
   packedMessageDescriptor _
     = "\n\
       \\DC2ListUnspentRequest\DC2\ESC\n\
       \\tmin_confs\CAN\SOH \SOH(\ENQR\bminConfs\DC2\ESC\n\
-      \\tmax_confs\CAN\STX \SOH(\ENQR\bmaxConfs"
+      \\tmax_confs\CAN\STX \SOH(\ENQR\bmaxConfs\DC2\CAN\n\
+      \\aaccount\CAN\ETX \SOH(\tR\aaccount"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -27321,10 +28498,19 @@ instance Data.ProtoLens.Message ListUnspentRequest where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"maxConfs")) ::
               Data.ProtoLens.FieldDescriptor ListUnspentRequest
+        account__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "account"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.StringField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Text.Text)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"account")) ::
+              Data.ProtoLens.FieldDescriptor ListUnspentRequest
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, minConfs__field_descriptor),
-           (Data.ProtoLens.Tag 2, maxConfs__field_descriptor)]
+           (Data.ProtoLens.Tag 2, maxConfs__field_descriptor),
+           (Data.ProtoLens.Tag 3, account__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _ListUnspentRequest'_unknownFields
@@ -27333,6 +28519,7 @@ instance Data.ProtoLens.Message ListUnspentRequest where
     = ListUnspentRequest'_constructor
         {_ListUnspentRequest'minConfs = Data.ProtoLens.fieldDefault,
          _ListUnspentRequest'maxConfs = Data.ProtoLens.fieldDefault,
+         _ListUnspentRequest'account = Data.ProtoLens.fieldDefault,
          _ListUnspentRequest'_unknownFields = []}
   parseMessage
     = let
@@ -27372,6 +28559,18 @@ instance Data.ProtoLens.Message ListUnspentRequest where
                                        "max_confs"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"maxConfs") y x)
+                        26
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                                       Data.ProtoLens.Encoding.Bytes.getBytes
+                                                         (Prelude.fromIntegral len)
+                                           Data.ProtoLens.Encoding.Bytes.runEither
+                                             (case Data.Text.Encoding.decodeUtf8' value of
+                                                (Prelude.Left err)
+                                                  -> Prelude.Left (Prelude.show err)
+                                                (Prelude.Right r) -> Prelude.Right r))
+                                       "account"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"account") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -27405,8 +28604,25 @@ instance Data.ProtoLens.Message ListUnspentRequest where
                          (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
-                (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                   (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
+                ((Data.Monoid.<>)
+                   (let
+                      _v = Lens.Family2.view (Data.ProtoLens.Field.field @"account") _x
+                    in
+                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                          Data.Monoid.mempty
+                      else
+                          (Data.Monoid.<>)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 26)
+                            ((Prelude..)
+                               (\ bs
+                                  -> (Data.Monoid.<>)
+                                       (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                          (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                       (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                               Data.Text.Encoding.encodeUtf8
+                               _v))
+                   (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                      (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
 instance Control.DeepSeq.NFData ListUnspentRequest where
   rnf
     = \ x__
@@ -27414,7 +28630,9 @@ instance Control.DeepSeq.NFData ListUnspentRequest where
              (_ListUnspentRequest'_unknownFields x__)
              (Control.DeepSeq.deepseq
                 (_ListUnspentRequest'minConfs x__)
-                (Control.DeepSeq.deepseq (_ListUnspentRequest'maxConfs x__) ()))
+                (Control.DeepSeq.deepseq
+                   (_ListUnspentRequest'maxConfs x__)
+                   (Control.DeepSeq.deepseq (_ListUnspentRequest'account x__) ())))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.utxos' @:: Lens' ListUnspentResponse [Utxo]@
@@ -29071,9 +30289,11 @@ instance Control.DeepSeq.NFData NetworkInfoRequest where
              (_NetworkInfoRequest'_unknownFields x__) ()
 {- | Fields :
      
-         * 'Proto.LndGrpc_Fields.type'' @:: Lens' NewAddressRequest AddressType@ -}
+         * 'Proto.LndGrpc_Fields.type'' @:: Lens' NewAddressRequest AddressType@
+         * 'Proto.LndGrpc_Fields.account' @:: Lens' NewAddressRequest Data.Text.Text@ -}
 data NewAddressRequest
   = NewAddressRequest'_constructor {_NewAddressRequest'type' :: !AddressType,
+                                    _NewAddressRequest'account :: !Data.Text.Text,
                                     _NewAddressRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show NewAddressRequest where
@@ -29089,12 +30309,20 @@ instance Data.ProtoLens.Field.HasField NewAddressRequest "type'" AddressType whe
            _NewAddressRequest'type'
            (\ x__ y__ -> x__ {_NewAddressRequest'type' = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField NewAddressRequest "account" Data.Text.Text where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _NewAddressRequest'account
+           (\ x__ y__ -> x__ {_NewAddressRequest'account = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message NewAddressRequest where
   messageName _ = Data.Text.pack "lnrpc.NewAddressRequest"
   packedMessageDescriptor _
     = "\n\
       \\DC1NewAddressRequest\DC2&\n\
-      \\EOTtype\CAN\SOH \SOH(\SO2\DC2.lnrpc.AddressTypeR\EOTtype"
+      \\EOTtype\CAN\SOH \SOH(\SO2\DC2.lnrpc.AddressTypeR\EOTtype\DC2\CAN\n\
+      \\aaccount\CAN\STX \SOH(\tR\aaccount"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -29106,8 +30334,18 @@ instance Data.ProtoLens.Message NewAddressRequest where
               (Data.ProtoLens.PlainField
                  Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"type'")) ::
               Data.ProtoLens.FieldDescriptor NewAddressRequest
+        account__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "account"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.StringField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Text.Text)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"account")) ::
+              Data.ProtoLens.FieldDescriptor NewAddressRequest
       in
-        Data.Map.fromList [(Data.ProtoLens.Tag 1, type'__field_descriptor)]
+        Data.Map.fromList
+          [(Data.ProtoLens.Tag 1, type'__field_descriptor),
+           (Data.ProtoLens.Tag 2, account__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _NewAddressRequest'_unknownFields
@@ -29115,6 +30353,7 @@ instance Data.ProtoLens.Message NewAddressRequest where
   defMessage
     = NewAddressRequest'_constructor
         {_NewAddressRequest'type' = Data.ProtoLens.fieldDefault,
+         _NewAddressRequest'account = Data.ProtoLens.fieldDefault,
          _NewAddressRequest'_unknownFields = []}
   parseMessage
     = let
@@ -29147,6 +30386,18 @@ instance Data.ProtoLens.Message NewAddressRequest where
                                              Data.ProtoLens.Encoding.Bytes.getVarInt))
                                        "type"
                                 loop (Lens.Family2.set (Data.ProtoLens.Field.field @"type'") y x)
+                        18
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                                       Data.ProtoLens.Encoding.Bytes.getBytes
+                                                         (Prelude.fromIntegral len)
+                                           Data.ProtoLens.Encoding.Bytes.runEither
+                                             (case Data.Text.Encoding.decodeUtf8' value of
+                                                (Prelude.Left err)
+                                                  -> Prelude.Left (Prelude.show err)
+                                                (Prelude.Right r) -> Prelude.Right r))
+                                       "account"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"account") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -29172,14 +30423,33 @@ instance Data.ProtoLens.Message NewAddressRequest where
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
                          Prelude.fromEnum
                          _v))
-             (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                (Lens.Family2.view Data.ProtoLens.unknownFields _x))
+             ((Data.Monoid.<>)
+                (let
+                   _v = Lens.Family2.view (Data.ProtoLens.Field.field @"account") _x
+                 in
+                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                       Data.Monoid.mempty
+                   else
+                       (Data.Monoid.<>)
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
+                         ((Prelude..)
+                            (\ bs
+                               -> (Data.Monoid.<>)
+                                    (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                       (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                            Data.Text.Encoding.encodeUtf8
+                            _v))
+                (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                   (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData NewAddressRequest where
   rnf
     = \ x__
         -> Control.DeepSeq.deepseq
              (_NewAddressRequest'_unknownFields x__)
-             (Control.DeepSeq.deepseq (_NewAddressRequest'type' x__) ())
+             (Control.DeepSeq.deepseq
+                (_NewAddressRequest'type' x__)
+                (Control.DeepSeq.deepseq (_NewAddressRequest'account x__) ()))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.address' @:: Lens' NewAddressResponse Data.Text.Text@ -}
@@ -30619,6 +31889,8 @@ instance Control.DeepSeq.NFData NodePair where
          * 'Proto.LndGrpc_Fields.globalFeatures' @:: Lens' NodeUpdate Data.ByteString.ByteString@
          * 'Proto.LndGrpc_Fields.alias' @:: Lens' NodeUpdate Data.Text.Text@
          * 'Proto.LndGrpc_Fields.color' @:: Lens' NodeUpdate Data.Text.Text@
+         * 'Proto.LndGrpc_Fields.nodeAddresses' @:: Lens' NodeUpdate [NodeAddress]@
+         * 'Proto.LndGrpc_Fields.vec'nodeAddresses' @:: Lens' NodeUpdate (Data.Vector.Vector NodeAddress)@
          * 'Proto.LndGrpc_Fields.features' @:: Lens' NodeUpdate (Data.Map.Map Data.Word.Word32 Feature)@ -}
 data NodeUpdate
   = NodeUpdate'_constructor {_NodeUpdate'addresses :: !(Data.Vector.Vector Data.Text.Text),
@@ -30626,6 +31898,7 @@ data NodeUpdate
                              _NodeUpdate'globalFeatures :: !Data.ByteString.ByteString,
                              _NodeUpdate'alias :: !Data.Text.Text,
                              _NodeUpdate'color :: !Data.Text.Text,
+                             _NodeUpdate'nodeAddresses :: !(Data.Vector.Vector NodeAddress),
                              _NodeUpdate'features :: !(Data.Map.Map Data.Word.Word32 Feature),
                              _NodeUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
@@ -30677,6 +31950,22 @@ instance Data.ProtoLens.Field.HasField NodeUpdate "color" Data.Text.Text where
         (Lens.Family2.Unchecked.lens
            _NodeUpdate'color (\ x__ y__ -> x__ {_NodeUpdate'color = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField NodeUpdate "nodeAddresses" [NodeAddress] where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _NodeUpdate'nodeAddresses
+           (\ x__ y__ -> x__ {_NodeUpdate'nodeAddresses = y__}))
+        (Lens.Family2.Unchecked.lens
+           Data.Vector.Generic.toList
+           (\ _ y__ -> Data.Vector.Generic.fromList y__))
+instance Data.ProtoLens.Field.HasField NodeUpdate "vec'nodeAddresses" (Data.Vector.Vector NodeAddress) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _NodeUpdate'nodeAddresses
+           (\ x__ y__ -> x__ {_NodeUpdate'nodeAddresses = y__}))
+        Prelude.id
 instance Data.ProtoLens.Field.HasField NodeUpdate "features" (Data.Map.Map Data.Word.Word32 Feature) where
   fieldOf _
     = (Prelude..)
@@ -30689,12 +31978,13 @@ instance Data.ProtoLens.Message NodeUpdate where
   packedMessageDescriptor _
     = "\n\
       \\n\
-      \NodeUpdate\DC2\FS\n\
-      \\taddresses\CAN\SOH \ETX(\tR\taddresses\DC2!\n\
+      \NodeUpdate\DC2 \n\
+      \\taddresses\CAN\SOH \ETX(\tR\taddressesB\STX\CAN\SOH\DC2!\n\
       \\fidentity_key\CAN\STX \SOH(\tR\videntityKey\DC2+\n\
       \\SIglobal_features\CAN\ETX \SOH(\fR\SOglobalFeaturesB\STX\CAN\SOH\DC2\DC4\n\
       \\ENQalias\CAN\EOT \SOH(\tR\ENQalias\DC2\DC4\n\
-      \\ENQcolor\CAN\ENQ \SOH(\tR\ENQcolor\DC2;\n\
+      \\ENQcolor\CAN\ENQ \SOH(\tR\ENQcolor\DC29\n\
+      \\SOnode_addresses\CAN\a \ETX(\v2\DC2.lnrpc.NodeAddressR\rnodeAddresses\DC2;\n\
       \\bfeatures\CAN\ACK \ETX(\v2\US.lnrpc.NodeUpdate.FeaturesEntryR\bfeatures\SUBK\n\
       \\rFeaturesEntry\DC2\DLE\n\
       \\ETXkey\CAN\SOH \SOH(\rR\ETXkey\DC2$\n\
@@ -30745,6 +32035,15 @@ instance Data.ProtoLens.Message NodeUpdate where
               (Data.ProtoLens.PlainField
                  Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"color")) ::
               Data.ProtoLens.FieldDescriptor NodeUpdate
+        nodeAddresses__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "node_addresses"
+              (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
+                 Data.ProtoLens.FieldTypeDescriptor NodeAddress)
+              (Data.ProtoLens.RepeatedField
+                 Data.ProtoLens.Unpacked
+                 (Data.ProtoLens.Field.field @"nodeAddresses")) ::
+              Data.ProtoLens.FieldDescriptor NodeUpdate
         features__field_descriptor
           = Data.ProtoLens.FieldDescriptor
               "features"
@@ -30762,6 +32061,7 @@ instance Data.ProtoLens.Message NodeUpdate where
            (Data.ProtoLens.Tag 3, globalFeatures__field_descriptor),
            (Data.ProtoLens.Tag 4, alias__field_descriptor),
            (Data.ProtoLens.Tag 5, color__field_descriptor),
+           (Data.ProtoLens.Tag 7, nodeAddresses__field_descriptor),
            (Data.ProtoLens.Tag 6, features__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
@@ -30774,6 +32074,7 @@ instance Data.ProtoLens.Message NodeUpdate where
          _NodeUpdate'globalFeatures = Data.ProtoLens.fieldDefault,
          _NodeUpdate'alias = Data.ProtoLens.fieldDefault,
          _NodeUpdate'color = Data.ProtoLens.fieldDefault,
+         _NodeUpdate'nodeAddresses = Data.Vector.Generic.empty,
          _NodeUpdate'features = Data.Map.empty,
          _NodeUpdate'_unknownFields = []}
   parseMessage
@@ -30781,13 +32082,17 @@ instance Data.ProtoLens.Message NodeUpdate where
         loop ::
           NodeUpdate
           -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld Data.Text.Text
-             -> Data.ProtoLens.Encoding.Bytes.Parser NodeUpdate
-        loop x mutable'addresses
+             -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld NodeAddress
+                -> Data.ProtoLens.Encoding.Bytes.Parser NodeUpdate
+        loop x mutable'addresses mutable'nodeAddresses
           = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
                if end then
                    do frozen'addresses <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
                                             (Data.ProtoLens.Encoding.Growing.unsafeFreeze
                                                mutable'addresses)
+                      frozen'nodeAddresses <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
+                                                (Data.ProtoLens.Encoding.Growing.unsafeFreeze
+                                                   mutable'nodeAddresses)
                       (let missing = []
                        in
                          if Prelude.null missing then
@@ -30802,7 +32107,12 @@ instance Data.ProtoLens.Message NodeUpdate where
                            Data.ProtoLens.unknownFields
                            (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
-                              (Data.ProtoLens.Field.field @"vec'addresses") frozen'addresses x))
+                              (Data.ProtoLens.Field.field @"vec'addresses")
+                              frozen'addresses
+                              (Lens.Family2.set
+                                 (Data.ProtoLens.Field.field @"vec'nodeAddresses")
+                                 frozen'nodeAddresses
+                                 x)))
                else
                    do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
                       case tag of
@@ -30819,7 +32129,7 @@ instance Data.ProtoLens.Message NodeUpdate where
                                         "addresses"
                                 v <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
                                        (Data.ProtoLens.Encoding.Growing.append mutable'addresses y)
-                                loop x v
+                                loop x v mutable'nodeAddresses
                         18
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -30834,6 +32144,7 @@ instance Data.ProtoLens.Message NodeUpdate where
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"identityKey") y x)
                                   mutable'addresses
+                                  mutable'nodeAddresses
                         26
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -30844,6 +32155,7 @@ instance Data.ProtoLens.Message NodeUpdate where
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"globalFeatures") y x)
                                   mutable'addresses
+                                  mutable'nodeAddresses
                         34
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -30858,6 +32170,7 @@ instance Data.ProtoLens.Message NodeUpdate where
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"alias") y x)
                                   mutable'addresses
+                                  mutable'nodeAddresses
                         42
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -30872,6 +32185,18 @@ instance Data.ProtoLens.Message NodeUpdate where
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"color") y x)
                                   mutable'addresses
+                                  mutable'nodeAddresses
+                        58
+                          -> do !y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                        (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                            Data.ProtoLens.Encoding.Bytes.isolate
+                                              (Prelude.fromIntegral len)
+                                              Data.ProtoLens.parseMessage)
+                                        "node_addresses"
+                                v <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
+                                       (Data.ProtoLens.Encoding.Growing.append
+                                          mutable'nodeAddresses y)
+                                loop x mutable'addresses v
                         50
                           -> do !(entry :: NodeUpdate'FeaturesEntry) <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                                                           (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -30890,7 +32215,8 @@ instance Data.ProtoLens.Message NodeUpdate where
                                         (Data.ProtoLens.Field.field @"features")
                                         (\ !t -> Data.Map.insert key value t)
                                         x)
-                                     mutable'addresses)
+                                     mutable'addresses
+                                     mutable'nodeAddresses)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -30898,11 +32224,15 @@ instance Data.ProtoLens.Message NodeUpdate where
                                   (Lens.Family2.over
                                      Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
                                   mutable'addresses
+                                  mutable'nodeAddresses
       in
         (Data.ProtoLens.Encoding.Bytes.<?>)
           (do mutable'addresses <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
                                      Data.ProtoLens.Encoding.Growing.new
-              loop Data.ProtoLens.defMessage mutable'addresses)
+              mutable'nodeAddresses <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
+                                         Data.ProtoLens.Encoding.Growing.new
+              loop
+                Data.ProtoLens.defMessage mutable'addresses mutable'nodeAddresses)
           "NodeUpdate"
   buildMessage
     = \ _x
@@ -30991,32 +32321,48 @@ instance Data.ProtoLens.Message NodeUpdate where
                                      Data.Text.Encoding.encodeUtf8
                                      _v))
                          ((Data.Monoid.<>)
-                            (Data.Monoid.mconcat
-                               (Prelude.map
-                                  (\ _v
-                                     -> (Data.Monoid.<>)
-                                          (Data.ProtoLens.Encoding.Bytes.putVarInt 50)
-                                          ((Prelude..)
-                                             (\ bs
-                                                -> (Data.Monoid.<>)
-                                                     (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                        (Prelude.fromIntegral
-                                                           (Data.ByteString.length bs)))
-                                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                             Data.ProtoLens.encodeMessage
-                                             (Lens.Family2.set
-                                                (Data.ProtoLens.Field.field @"key")
-                                                (Prelude.fst _v)
+                            (Data.ProtoLens.Encoding.Bytes.foldMapBuilder
+                               (\ _v
+                                  -> (Data.Monoid.<>)
+                                       (Data.ProtoLens.Encoding.Bytes.putVarInt 58)
+                                       ((Prelude..)
+                                          (\ bs
+                                             -> (Data.Monoid.<>)
+                                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                     (Prelude.fromIntegral
+                                                        (Data.ByteString.length bs)))
+                                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                          Data.ProtoLens.encodeMessage
+                                          _v))
+                               (Lens.Family2.view
+                                  (Data.ProtoLens.Field.field @"vec'nodeAddresses") _x))
+                            ((Data.Monoid.<>)
+                               (Data.Monoid.mconcat
+                                  (Prelude.map
+                                     (\ _v
+                                        -> (Data.Monoid.<>)
+                                             (Data.ProtoLens.Encoding.Bytes.putVarInt 50)
+                                             ((Prelude..)
+                                                (\ bs
+                                                   -> (Data.Monoid.<>)
+                                                        (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                           (Prelude.fromIntegral
+                                                              (Data.ByteString.length bs)))
+                                                        (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                                Data.ProtoLens.encodeMessage
                                                 (Lens.Family2.set
-                                                   (Data.ProtoLens.Field.field @"value")
-                                                   (Prelude.snd _v)
-                                                   (Data.ProtoLens.defMessage ::
-                                                      NodeUpdate'FeaturesEntry)))))
-                                  (Data.Map.toList
-                                     (Lens.Family2.view
-                                        (Data.ProtoLens.Field.field @"features") _x))))
-                            (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                               (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))))
+                                                   (Data.ProtoLens.Field.field @"key")
+                                                   (Prelude.fst _v)
+                                                   (Lens.Family2.set
+                                                      (Data.ProtoLens.Field.field @"value")
+                                                      (Prelude.snd _v)
+                                                      (Data.ProtoLens.defMessage ::
+                                                         NodeUpdate'FeaturesEntry)))))
+                                     (Data.Map.toList
+                                        (Lens.Family2.view
+                                           (Data.ProtoLens.Field.field @"features") _x))))
+                               (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                  (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))))
 instance Control.DeepSeq.NFData NodeUpdate where
   rnf
     = \ x__
@@ -31032,7 +32378,9 @@ instance Control.DeepSeq.NFData NodeUpdate where
                          (_NodeUpdate'alias x__)
                          (Control.DeepSeq.deepseq
                             (_NodeUpdate'color x__)
-                            (Control.DeepSeq.deepseq (_NodeUpdate'features x__) ()))))))
+                            (Control.DeepSeq.deepseq
+                               (_NodeUpdate'nodeAddresses x__)
+                               (Control.DeepSeq.deepseq (_NodeUpdate'features x__) ())))))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.key' @:: Lens' NodeUpdate'FeaturesEntry Data.Word.Word32@
@@ -31380,6 +32728,7 @@ instance Control.DeepSeq.NFData Op where
                 (_Op'entity x__) (Control.DeepSeq.deepseq (_Op'actions x__) ()))
 {- | Fields :
      
+         * 'Proto.LndGrpc_Fields.satPerVbyte' @:: Lens' OpenChannelRequest Data.Word.Word64@
          * 'Proto.LndGrpc_Fields.nodePubkey' @:: Lens' OpenChannelRequest Data.ByteString.ByteString@
          * 'Proto.LndGrpc_Fields.nodePubkeyString' @:: Lens' OpenChannelRequest Data.Text.Text@
          * 'Proto.LndGrpc_Fields.localFundingAmount' @:: Lens' OpenChannelRequest Data.Int.Int64@
@@ -31398,7 +32747,8 @@ instance Control.DeepSeq.NFData Op where
          * 'Proto.LndGrpc_Fields.remoteMaxHtlcs' @:: Lens' OpenChannelRequest Data.Word.Word32@
          * 'Proto.LndGrpc_Fields.maxLocalCsv' @:: Lens' OpenChannelRequest Data.Word.Word32@ -}
 data OpenChannelRequest
-  = OpenChannelRequest'_constructor {_OpenChannelRequest'nodePubkey :: !Data.ByteString.ByteString,
+  = OpenChannelRequest'_constructor {_OpenChannelRequest'satPerVbyte :: !Data.Word.Word64,
+                                     _OpenChannelRequest'nodePubkey :: !Data.ByteString.ByteString,
                                      _OpenChannelRequest'nodePubkeyString :: !Data.Text.Text,
                                      _OpenChannelRequest'localFundingAmount :: !Data.Int.Int64,
                                      _OpenChannelRequest'pushSat :: !Data.Int.Int64,
@@ -31422,6 +32772,13 @@ instance Prelude.Show OpenChannelRequest where
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Data.ProtoLens.Field.HasField OpenChannelRequest "satPerVbyte" Data.Word.Word64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _OpenChannelRequest'satPerVbyte
+           (\ x__ y__ -> x__ {_OpenChannelRequest'satPerVbyte = y__}))
+        Prelude.id
 instance Data.ProtoLens.Field.HasField OpenChannelRequest "nodePubkey" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -31546,16 +32903,17 @@ instance Data.ProtoLens.Message OpenChannelRequest where
   messageName _ = Data.Text.pack "lnrpc.OpenChannelRequest"
   packedMessageDescriptor _
     = "\n\
-      \\DC2OpenChannelRequest\DC2\US\n\
+      \\DC2OpenChannelRequest\DC2\"\n\
+      \\rsat_per_vbyte\CAN\SOH \SOH(\EOTR\vsatPerVbyte\DC2\US\n\
       \\vnode_pubkey\CAN\STX \SOH(\fR\n\
       \nodePubkey\DC20\n\
       \\DC2node_pubkey_string\CAN\ETX \SOH(\tR\DLEnodePubkeyStringB\STX\CAN\SOH\DC20\n\
       \\DC4local_funding_amount\CAN\EOT \SOH(\ETXR\DC2localFundingAmount\DC2\EM\n\
       \\bpush_sat\CAN\ENQ \SOH(\ETXR\apushSat\DC2\US\n\
       \\vtarget_conf\CAN\ACK \SOH(\ENQR\n\
-      \targetConf\DC2 \n\
+      \targetConf\DC2$\n\
       \\fsat_per_byte\CAN\a \SOH(\ETXR\n\
-      \satPerByte\DC2\CAN\n\
+      \satPerByteB\STX\CAN\SOH\DC2\CAN\n\
       \\aprivate\CAN\b \SOH(\bR\aprivate\DC2\"\n\
       \\rmin_htlc_msat\CAN\t \SOH(\ETXR\vminHtlcMsat\DC2(\n\
       \\DLEremote_csv_delay\CAN\n\
@@ -31570,6 +32928,15 @@ instance Data.ProtoLens.Message OpenChannelRequest where
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
+        satPerVbyte__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "sat_per_vbyte"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"satPerVbyte")) ::
+              Data.ProtoLens.FieldDescriptor OpenChannelRequest
         nodePubkey__field_descriptor
           = Data.ProtoLens.FieldDescriptor
               "node_pubkey"
@@ -31713,7 +33080,8 @@ instance Data.ProtoLens.Message OpenChannelRequest where
               Data.ProtoLens.FieldDescriptor OpenChannelRequest
       in
         Data.Map.fromList
-          [(Data.ProtoLens.Tag 2, nodePubkey__field_descriptor),
+          [(Data.ProtoLens.Tag 1, satPerVbyte__field_descriptor),
+           (Data.ProtoLens.Tag 2, nodePubkey__field_descriptor),
            (Data.ProtoLens.Tag 3, nodePubkeyString__field_descriptor),
            (Data.ProtoLens.Tag 4, localFundingAmount__field_descriptor),
            (Data.ProtoLens.Tag 5, pushSat__field_descriptor),
@@ -31736,7 +33104,8 @@ instance Data.ProtoLens.Message OpenChannelRequest where
         (\ x__ y__ -> x__ {_OpenChannelRequest'_unknownFields = y__})
   defMessage
     = OpenChannelRequest'_constructor
-        {_OpenChannelRequest'nodePubkey = Data.ProtoLens.fieldDefault,
+        {_OpenChannelRequest'satPerVbyte = Data.ProtoLens.fieldDefault,
+         _OpenChannelRequest'nodePubkey = Data.ProtoLens.fieldDefault,
          _OpenChannelRequest'nodePubkeyString = Data.ProtoLens.fieldDefault,
          _OpenChannelRequest'localFundingAmount = Data.ProtoLens.fieldDefault,
          _OpenChannelRequest'pushSat = Data.ProtoLens.fieldDefault,
@@ -31776,6 +33145,10 @@ instance Data.ProtoLens.Message OpenChannelRequest where
                else
                    do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
                       case tag of
+                        8 -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       Data.ProtoLens.Encoding.Bytes.getVarInt "sat_per_vbyte"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"satPerVbyte") y x)
                         18
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -31929,72 +33302,71 @@ instance Data.ProtoLens.Message OpenChannelRequest where
         -> (Data.Monoid.<>)
              (let
                 _v
-                  = Lens.Family2.view (Data.ProtoLens.Field.field @"nodePubkey") _x
+                  = Lens.Family2.view (Data.ProtoLens.Field.field @"satPerVbyte") _x
               in
                 if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                     Data.Monoid.mempty
                 else
                     (Data.Monoid.<>)
-                      (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
-                      ((\ bs
-                          -> (Data.Monoid.<>)
-                               (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                  (Prelude.fromIntegral (Data.ByteString.length bs)))
-                               (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         _v))
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
              ((Data.Monoid.<>)
                 (let
                    _v
-                     = Lens.Family2.view
-                         (Data.ProtoLens.Field.field @"nodePubkeyString") _x
+                     = Lens.Family2.view (Data.ProtoLens.Field.field @"nodePubkey") _x
                  in
                    if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                        Data.Monoid.mempty
                    else
                        (Data.Monoid.<>)
-                         (Data.ProtoLens.Encoding.Bytes.putVarInt 26)
-                         ((Prelude..)
-                            (\ bs
-                               -> (Data.Monoid.<>)
-                                    (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                       (Prelude.fromIntegral (Data.ByteString.length bs)))
-                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                            Data.Text.Encoding.encodeUtf8
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
+                         ((\ bs
+                             -> (Data.Monoid.<>)
+                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
                             _v))
                 ((Data.Monoid.<>)
                    (let
                       _v
                         = Lens.Family2.view
-                            (Data.ProtoLens.Field.field @"localFundingAmount") _x
+                            (Data.ProtoLens.Field.field @"nodePubkeyString") _x
                     in
                       if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                           Data.Monoid.mempty
                       else
                           (Data.Monoid.<>)
-                            (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 26)
                             ((Prelude..)
-                               Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+                               (\ bs
+                                  -> (Data.Monoid.<>)
+                                       (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                          (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                       (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                               Data.Text.Encoding.encodeUtf8
+                               _v))
                    ((Data.Monoid.<>)
                       (let
-                         _v = Lens.Family2.view (Data.ProtoLens.Field.field @"pushSat") _x
+                         _v
+                           = Lens.Family2.view
+                               (Data.ProtoLens.Field.field @"localFundingAmount") _x
                        in
                          if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                              Data.Monoid.mempty
                          else
                              (Data.Monoid.<>)
-                               (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
+                               (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
                                ((Prelude..)
                                   Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
                       ((Data.Monoid.<>)
                          (let
-                            _v
-                              = Lens.Family2.view (Data.ProtoLens.Field.field @"targetConf") _x
+                            _v = Lens.Family2.view (Data.ProtoLens.Field.field @"pushSat") _x
                           in
                             if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                 Data.Monoid.mempty
                             else
                                 (Data.Monoid.<>)
-                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 48)
+                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
                                   ((Prelude..)
                                      Data.ProtoLens.Encoding.Bytes.putVarInt
                                      Prelude.fromIntegral
@@ -32002,56 +33374,58 @@ instance Data.ProtoLens.Message OpenChannelRequest where
                          ((Data.Monoid.<>)
                             (let
                                _v
-                                 = Lens.Family2.view (Data.ProtoLens.Field.field @"satPerByte") _x
+                                 = Lens.Family2.view (Data.ProtoLens.Field.field @"targetConf") _x
                              in
                                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                    Data.Monoid.mempty
                                else
                                    (Data.Monoid.<>)
-                                     (Data.ProtoLens.Encoding.Bytes.putVarInt 56)
+                                     (Data.ProtoLens.Encoding.Bytes.putVarInt 48)
                                      ((Prelude..)
                                         Data.ProtoLens.Encoding.Bytes.putVarInt
                                         Prelude.fromIntegral
                                         _v))
                             ((Data.Monoid.<>)
                                (let
-                                  _v = Lens.Family2.view (Data.ProtoLens.Field.field @"private") _x
+                                  _v
+                                    = Lens.Family2.view
+                                        (Data.ProtoLens.Field.field @"satPerByte") _x
                                 in
                                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                       Data.Monoid.mempty
                                   else
                                       (Data.Monoid.<>)
-                                        (Data.ProtoLens.Encoding.Bytes.putVarInt 64)
+                                        (Data.ProtoLens.Encoding.Bytes.putVarInt 56)
                                         ((Prelude..)
                                            Data.ProtoLens.Encoding.Bytes.putVarInt
-                                           (\ b -> if b then 1 else 0)
+                                           Prelude.fromIntegral
                                            _v))
                                ((Data.Monoid.<>)
                                   (let
                                      _v
                                        = Lens.Family2.view
-                                           (Data.ProtoLens.Field.field @"minHtlcMsat") _x
+                                           (Data.ProtoLens.Field.field @"private") _x
                                    in
                                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                          Data.Monoid.mempty
                                      else
                                          (Data.Monoid.<>)
-                                           (Data.ProtoLens.Encoding.Bytes.putVarInt 72)
+                                           (Data.ProtoLens.Encoding.Bytes.putVarInt 64)
                                            ((Prelude..)
                                               Data.ProtoLens.Encoding.Bytes.putVarInt
-                                              Prelude.fromIntegral
+                                              (\ b -> if b then 1 else 0)
                                               _v))
                                   ((Data.Monoid.<>)
                                      (let
                                         _v
                                           = Lens.Family2.view
-                                              (Data.ProtoLens.Field.field @"remoteCsvDelay") _x
+                                              (Data.ProtoLens.Field.field @"minHtlcMsat") _x
                                       in
                                         if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                             Data.Monoid.mempty
                                         else
                                             (Data.Monoid.<>)
-                                              (Data.ProtoLens.Encoding.Bytes.putVarInt 80)
+                                              (Data.ProtoLens.Encoding.Bytes.putVarInt 72)
                                               ((Prelude..)
                                                  Data.ProtoLens.Encoding.Bytes.putVarInt
                                                  Prelude.fromIntegral
@@ -32060,13 +33434,13 @@ instance Data.ProtoLens.Message OpenChannelRequest where
                                         (let
                                            _v
                                              = Lens.Family2.view
-                                                 (Data.ProtoLens.Field.field @"minConfs") _x
+                                                 (Data.ProtoLens.Field.field @"remoteCsvDelay") _x
                                          in
                                            if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                                Data.Monoid.mempty
                                            else
                                                (Data.Monoid.<>)
-                                                 (Data.ProtoLens.Encoding.Bytes.putVarInt 88)
+                                                 (Data.ProtoLens.Encoding.Bytes.putVarInt 80)
                                                  ((Prelude..)
                                                     Data.ProtoLens.Encoding.Bytes.putVarInt
                                                     Prelude.fromIntegral
@@ -32075,87 +33449,89 @@ instance Data.ProtoLens.Message OpenChannelRequest where
                                            (let
                                               _v
                                                 = Lens.Family2.view
-                                                    (Data.ProtoLens.Field.field @"spendUnconfirmed")
-                                                    _x
+                                                    (Data.ProtoLens.Field.field @"minConfs") _x
                                             in
                                               if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                                   Data.Monoid.mempty
                                               else
                                                   (Data.Monoid.<>)
-                                                    (Data.ProtoLens.Encoding.Bytes.putVarInt 96)
+                                                    (Data.ProtoLens.Encoding.Bytes.putVarInt 88)
                                                     ((Prelude..)
                                                        Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                       (\ b -> if b then 1 else 0)
+                                                       Prelude.fromIntegral
                                                        _v))
                                            ((Data.Monoid.<>)
                                               (let
                                                  _v
                                                    = Lens.Family2.view
-                                                       (Data.ProtoLens.Field.field @"closeAddress")
+                                                       (Data.ProtoLens.Field.field
+                                                          @"spendUnconfirmed")
                                                        _x
                                                in
                                                  if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                                      Data.Monoid.mempty
                                                  else
                                                      (Data.Monoid.<>)
-                                                       (Data.ProtoLens.Encoding.Bytes.putVarInt 106)
+                                                       (Data.ProtoLens.Encoding.Bytes.putVarInt 96)
                                                        ((Prelude..)
-                                                          (\ bs
-                                                             -> (Data.Monoid.<>)
-                                                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                                     (Prelude.fromIntegral
-                                                                        (Data.ByteString.length
-                                                                           bs)))
-                                                                  (Data.ProtoLens.Encoding.Bytes.putBytes
-                                                                     bs))
-                                                          Data.Text.Encoding.encodeUtf8
+                                                          Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                          (\ b -> if b then 1 else 0)
                                                           _v))
                                               ((Data.Monoid.<>)
-                                                 (case
-                                                      Lens.Family2.view
-                                                        (Data.ProtoLens.Field.field
-                                                           @"maybe'fundingShim")
-                                                        _x
-                                                  of
-                                                    Prelude.Nothing -> Data.Monoid.mempty
-                                                    (Prelude.Just _v)
-                                                      -> (Data.Monoid.<>)
-                                                           (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                              114)
-                                                           ((Prelude..)
-                                                              (\ bs
-                                                                 -> (Data.Monoid.<>)
-                                                                      (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                                         (Prelude.fromIntegral
-                                                                            (Data.ByteString.length
-                                                                               bs)))
-                                                                      (Data.ProtoLens.Encoding.Bytes.putBytes
-                                                                         bs))
-                                                              Data.ProtoLens.encodeMessage
-                                                              _v))
+                                                 (let
+                                                    _v
+                                                      = Lens.Family2.view
+                                                          (Data.ProtoLens.Field.field
+                                                             @"closeAddress")
+                                                          _x
+                                                  in
+                                                    if (Prelude.==)
+                                                         _v Data.ProtoLens.fieldDefault then
+                                                        Data.Monoid.mempty
+                                                    else
+                                                        (Data.Monoid.<>)
+                                                          (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                             106)
+                                                          ((Prelude..)
+                                                             (\ bs
+                                                                -> (Data.Monoid.<>)
+                                                                     (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                        (Prelude.fromIntegral
+                                                                           (Data.ByteString.length
+                                                                              bs)))
+                                                                     (Data.ProtoLens.Encoding.Bytes.putBytes
+                                                                        bs))
+                                                             Data.Text.Encoding.encodeUtf8
+                                                             _v))
                                                  ((Data.Monoid.<>)
-                                                    (let
-                                                       _v
-                                                         = Lens.Family2.view
-                                                             (Data.ProtoLens.Field.field
-                                                                @"remoteMaxValueInFlightMsat")
-                                                             _x
-                                                     in
-                                                       if (Prelude.==)
-                                                            _v Data.ProtoLens.fieldDefault then
-                                                           Data.Monoid.mempty
-                                                       else
-                                                           (Data.Monoid.<>)
-                                                             (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                                120)
-                                                             (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                                _v))
+                                                    (case
+                                                         Lens.Family2.view
+                                                           (Data.ProtoLens.Field.field
+                                                              @"maybe'fundingShim")
+                                                           _x
+                                                     of
+                                                       Prelude.Nothing -> Data.Monoid.mempty
+                                                       (Prelude.Just _v)
+                                                         -> (Data.Monoid.<>)
+                                                              (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                 114)
+                                                              ((Prelude..)
+                                                                 (\ bs
+                                                                    -> (Data.Monoid.<>)
+                                                                         (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                            (Prelude.fromIntegral
+                                                                               (Data.ByteString.length
+                                                                                  bs)))
+                                                                         (Data.ProtoLens.Encoding.Bytes.putBytes
+                                                                            bs))
+                                                                 Data.ProtoLens.encodeMessage
+                                                                 _v))
                                                     ((Data.Monoid.<>)
                                                        (let
                                                           _v
                                                             = Lens.Family2.view
                                                                 (Data.ProtoLens.Field.field
-                                                                   @"remoteMaxHtlcs")
+                                                                   @"remoteMaxValueInFlightMsat")
                                                                 _x
                                                         in
                                                           if (Prelude.==)
@@ -32164,17 +33540,15 @@ instance Data.ProtoLens.Message OpenChannelRequest where
                                                           else
                                                               (Data.Monoid.<>)
                                                                 (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                                   128)
-                                                                ((Prelude..)
-                                                                   Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                                   Prelude.fromIntegral
+                                                                   120)
+                                                                (Data.ProtoLens.Encoding.Bytes.putVarInt
                                                                    _v))
                                                        ((Data.Monoid.<>)
                                                           (let
                                                              _v
                                                                = Lens.Family2.view
                                                                    (Data.ProtoLens.Field.field
-                                                                      @"maxLocalCsv")
+                                                                      @"remoteMaxHtlcs")
                                                                    _x
                                                            in
                                                              if (Prelude.==)
@@ -32184,54 +33558,78 @@ instance Data.ProtoLens.Message OpenChannelRequest where
                                                              else
                                                                  (Data.Monoid.<>)
                                                                    (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                                      136)
+                                                                      128)
                                                                    ((Prelude..)
                                                                       Data.ProtoLens.Encoding.Bytes.putVarInt
                                                                       Prelude.fromIntegral
                                                                       _v))
-                                                          (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                                                             (Lens.Family2.view
-                                                                Data.ProtoLens.unknownFields
-                                                                _x)))))))))))))))))
+                                                          ((Data.Monoid.<>)
+                                                             (let
+                                                                _v
+                                                                  = Lens.Family2.view
+                                                                      (Data.ProtoLens.Field.field
+                                                                         @"maxLocalCsv")
+                                                                      _x
+                                                              in
+                                                                if (Prelude.==)
+                                                                     _v
+                                                                     Data.ProtoLens.fieldDefault then
+                                                                    Data.Monoid.mempty
+                                                                else
+                                                                    (Data.Monoid.<>)
+                                                                      (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                         136)
+                                                                      ((Prelude..)
+                                                                         Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                         Prelude.fromIntegral
+                                                                         _v))
+                                                             (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                                                (Lens.Family2.view
+                                                                   Data.ProtoLens.unknownFields
+                                                                   _x))))))))))))))))))
 instance Control.DeepSeq.NFData OpenChannelRequest where
   rnf
     = \ x__
         -> Control.DeepSeq.deepseq
              (_OpenChannelRequest'_unknownFields x__)
              (Control.DeepSeq.deepseq
-                (_OpenChannelRequest'nodePubkey x__)
+                (_OpenChannelRequest'satPerVbyte x__)
                 (Control.DeepSeq.deepseq
-                   (_OpenChannelRequest'nodePubkeyString x__)
+                   (_OpenChannelRequest'nodePubkey x__)
                    (Control.DeepSeq.deepseq
-                      (_OpenChannelRequest'localFundingAmount x__)
+                      (_OpenChannelRequest'nodePubkeyString x__)
                       (Control.DeepSeq.deepseq
-                         (_OpenChannelRequest'pushSat x__)
+                         (_OpenChannelRequest'localFundingAmount x__)
                          (Control.DeepSeq.deepseq
-                            (_OpenChannelRequest'targetConf x__)
+                            (_OpenChannelRequest'pushSat x__)
                             (Control.DeepSeq.deepseq
-                               (_OpenChannelRequest'satPerByte x__)
+                               (_OpenChannelRequest'targetConf x__)
                                (Control.DeepSeq.deepseq
-                                  (_OpenChannelRequest'private x__)
+                                  (_OpenChannelRequest'satPerByte x__)
                                   (Control.DeepSeq.deepseq
-                                     (_OpenChannelRequest'minHtlcMsat x__)
+                                     (_OpenChannelRequest'private x__)
                                      (Control.DeepSeq.deepseq
-                                        (_OpenChannelRequest'remoteCsvDelay x__)
+                                        (_OpenChannelRequest'minHtlcMsat x__)
                                         (Control.DeepSeq.deepseq
-                                           (_OpenChannelRequest'minConfs x__)
+                                           (_OpenChannelRequest'remoteCsvDelay x__)
                                            (Control.DeepSeq.deepseq
-                                              (_OpenChannelRequest'spendUnconfirmed x__)
+                                              (_OpenChannelRequest'minConfs x__)
                                               (Control.DeepSeq.deepseq
-                                                 (_OpenChannelRequest'closeAddress x__)
+                                                 (_OpenChannelRequest'spendUnconfirmed x__)
                                                  (Control.DeepSeq.deepseq
-                                                    (_OpenChannelRequest'fundingShim x__)
+                                                    (_OpenChannelRequest'closeAddress x__)
                                                     (Control.DeepSeq.deepseq
-                                                       (_OpenChannelRequest'remoteMaxValueInFlightMsat
-                                                          x__)
+                                                       (_OpenChannelRequest'fundingShim x__)
                                                        (Control.DeepSeq.deepseq
-                                                          (_OpenChannelRequest'remoteMaxHtlcs x__)
+                                                          (_OpenChannelRequest'remoteMaxValueInFlightMsat
+                                                             x__)
                                                           (Control.DeepSeq.deepseq
-                                                             (_OpenChannelRequest'maxLocalCsv x__)
-                                                             ()))))))))))))))))
+                                                             (_OpenChannelRequest'remoteMaxHtlcs
+                                                                x__)
+                                                             (Control.DeepSeq.deepseq
+                                                                (_OpenChannelRequest'maxLocalCsv
+                                                                   x__)
+                                                                ())))))))))))))))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.pendingChanId' @:: Lens' OpenStatusUpdate Data.ByteString.ByteString@
@@ -35153,11 +36551,12 @@ instance Data.ProtoLens.Message Peer where
       \lastFlapNs\SUBK\n\
       \\rFeaturesEntry\DC2\DLE\n\
       \\ETXkey\CAN\SOH \SOH(\rR\ETXkey\DC2$\n\
-      \\ENQvalue\CAN\STX \SOH(\v2\SO.lnrpc.FeatureR\ENQvalue:\STX8\SOH\"?\n\
+      \\ENQvalue\CAN\STX \SOH(\v2\SO.lnrpc.FeatureR\ENQvalue:\STX8\SOH\"P\n\
       \\bSyncType\DC2\DLE\n\
       \\fUNKNOWN_SYNC\DLE\NUL\DC2\SI\n\
       \\vACTIVE_SYNC\DLE\SOH\DC2\DLE\n\
-      \\fPASSIVE_SYNC\DLE\STX"
+      \\fPASSIVE_SYNC\DLE\STX\DC2\SI\n\
+      \\vPINNED_SYNC\DLE\ETX"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -35886,12 +37285,14 @@ data Peer'SyncType
   = Peer'UNKNOWN_SYNC |
     Peer'ACTIVE_SYNC |
     Peer'PASSIVE_SYNC |
+    Peer'PINNED_SYNC |
     Peer'SyncType'Unrecognized !Peer'SyncType'UnrecognizedValue
   deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
 instance Data.ProtoLens.MessageEnum Peer'SyncType where
   maybeToEnum 0 = Prelude.Just Peer'UNKNOWN_SYNC
   maybeToEnum 1 = Prelude.Just Peer'ACTIVE_SYNC
   maybeToEnum 2 = Prelude.Just Peer'PASSIVE_SYNC
+  maybeToEnum 3 = Prelude.Just Peer'PINNED_SYNC
   maybeToEnum k
     = Prelude.Just
         (Peer'SyncType'Unrecognized
@@ -35899,6 +37300,7 @@ instance Data.ProtoLens.MessageEnum Peer'SyncType where
   showEnum Peer'UNKNOWN_SYNC = "UNKNOWN_SYNC"
   showEnum Peer'ACTIVE_SYNC = "ACTIVE_SYNC"
   showEnum Peer'PASSIVE_SYNC = "PASSIVE_SYNC"
+  showEnum Peer'PINNED_SYNC = "PINNED_SYNC"
   showEnum
     (Peer'SyncType'Unrecognized (Peer'SyncType'UnrecognizedValue k))
     = Prelude.show k
@@ -35906,11 +37308,12 @@ instance Data.ProtoLens.MessageEnum Peer'SyncType where
     | (Prelude.==) k "UNKNOWN_SYNC" = Prelude.Just Peer'UNKNOWN_SYNC
     | (Prelude.==) k "ACTIVE_SYNC" = Prelude.Just Peer'ACTIVE_SYNC
     | (Prelude.==) k "PASSIVE_SYNC" = Prelude.Just Peer'PASSIVE_SYNC
+    | (Prelude.==) k "PINNED_SYNC" = Prelude.Just Peer'PINNED_SYNC
     | Prelude.otherwise
     = (Prelude.>>=) (Text.Read.readMaybe k) Data.ProtoLens.maybeToEnum
 instance Prelude.Bounded Peer'SyncType where
   minBound = Peer'UNKNOWN_SYNC
-  maxBound = Peer'PASSIVE_SYNC
+  maxBound = Peer'PINNED_SYNC
 instance Prelude.Enum Peer'SyncType where
   toEnum k__
     = Prelude.maybe
@@ -35922,14 +37325,16 @@ instance Prelude.Enum Peer'SyncType where
   fromEnum Peer'UNKNOWN_SYNC = 0
   fromEnum Peer'ACTIVE_SYNC = 1
   fromEnum Peer'PASSIVE_SYNC = 2
+  fromEnum Peer'PINNED_SYNC = 3
   fromEnum
     (Peer'SyncType'Unrecognized (Peer'SyncType'UnrecognizedValue k))
     = Prelude.fromIntegral k
-  succ Peer'PASSIVE_SYNC
+  succ Peer'PINNED_SYNC
     = Prelude.error
-        "Peer'SyncType.succ: bad argument Peer'PASSIVE_SYNC. This value would be out of bounds."
+        "Peer'SyncType.succ: bad argument Peer'PINNED_SYNC. This value would be out of bounds."
   succ Peer'UNKNOWN_SYNC = Peer'ACTIVE_SYNC
   succ Peer'ACTIVE_SYNC = Peer'PASSIVE_SYNC
+  succ Peer'PASSIVE_SYNC = Peer'PINNED_SYNC
   succ (Peer'SyncType'Unrecognized _)
     = Prelude.error
         "Peer'SyncType.succ: bad argument: unrecognized value"
@@ -35938,6 +37343,7 @@ instance Prelude.Enum Peer'SyncType where
         "Peer'SyncType.pred: bad argument Peer'UNKNOWN_SYNC. This value would be out of bounds."
   pred Peer'ACTIVE_SYNC = Peer'UNKNOWN_SYNC
   pred Peer'PASSIVE_SYNC = Peer'ACTIVE_SYNC
+  pred Peer'PINNED_SYNC = Peer'PASSIVE_SYNC
   pred (Peer'SyncType'Unrecognized _)
     = Prelude.error
         "Peer'SyncType.pred: bad argument: unrecognized value"
@@ -43591,6 +44997,7 @@ instance Control.DeepSeq.NFData RoutingPolicy where
          * 'Proto.LndGrpc_Fields.addr' @:: Lens' SendCoinsRequest Data.Text.Text@
          * 'Proto.LndGrpc_Fields.amount' @:: Lens' SendCoinsRequest Data.Int.Int64@
          * 'Proto.LndGrpc_Fields.targetConf' @:: Lens' SendCoinsRequest Data.Int.Int32@
+         * 'Proto.LndGrpc_Fields.satPerVbyte' @:: Lens' SendCoinsRequest Data.Word.Word64@
          * 'Proto.LndGrpc_Fields.satPerByte' @:: Lens' SendCoinsRequest Data.Int.Int64@
          * 'Proto.LndGrpc_Fields.sendAll' @:: Lens' SendCoinsRequest Prelude.Bool@
          * 'Proto.LndGrpc_Fields.label' @:: Lens' SendCoinsRequest Data.Text.Text@
@@ -43600,6 +45007,7 @@ data SendCoinsRequest
   = SendCoinsRequest'_constructor {_SendCoinsRequest'addr :: !Data.Text.Text,
                                    _SendCoinsRequest'amount :: !Data.Int.Int64,
                                    _SendCoinsRequest'targetConf :: !Data.Int.Int32,
+                                   _SendCoinsRequest'satPerVbyte :: !Data.Word.Word64,
                                    _SendCoinsRequest'satPerByte :: !Data.Int.Int64,
                                    _SendCoinsRequest'sendAll :: !Prelude.Bool,
                                    _SendCoinsRequest'label :: !Data.Text.Text,
@@ -43633,6 +45041,13 @@ instance Data.ProtoLens.Field.HasField SendCoinsRequest "targetConf" Data.Int.In
         (Lens.Family2.Unchecked.lens
            _SendCoinsRequest'targetConf
            (\ x__ y__ -> x__ {_SendCoinsRequest'targetConf = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField SendCoinsRequest "satPerVbyte" Data.Word.Word64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _SendCoinsRequest'satPerVbyte
+           (\ x__ y__ -> x__ {_SendCoinsRequest'satPerVbyte = y__}))
         Prelude.id
 instance Data.ProtoLens.Field.HasField SendCoinsRequest "satPerByte" Data.Int.Int64 where
   fieldOf _
@@ -43677,9 +45092,10 @@ instance Data.ProtoLens.Message SendCoinsRequest where
       \\EOTaddr\CAN\SOH \SOH(\tR\EOTaddr\DC2\SYN\n\
       \\ACKamount\CAN\STX \SOH(\ETXR\ACKamount\DC2\US\n\
       \\vtarget_conf\CAN\ETX \SOH(\ENQR\n\
-      \targetConf\DC2 \n\
+      \targetConf\DC2\"\n\
+      \\rsat_per_vbyte\CAN\EOT \SOH(\EOTR\vsatPerVbyte\DC2$\n\
       \\fsat_per_byte\CAN\ENQ \SOH(\ETXR\n\
-      \satPerByte\DC2\EM\n\
+      \satPerByteB\STX\CAN\SOH\DC2\EM\n\
       \\bsend_all\CAN\ACK \SOH(\bR\asendAll\DC2\DC4\n\
       \\ENQlabel\CAN\a \SOH(\tR\ENQlabel\DC2\ESC\n\
       \\tmin_confs\CAN\b \SOH(\ENQR\bminConfs\DC2+\n\
@@ -43711,6 +45127,15 @@ instance Data.ProtoLens.Message SendCoinsRequest where
               (Data.ProtoLens.PlainField
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"targetConf")) ::
+              Data.ProtoLens.FieldDescriptor SendCoinsRequest
+        satPerVbyte__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "sat_per_vbyte"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"satPerVbyte")) ::
               Data.ProtoLens.FieldDescriptor SendCoinsRequest
         satPerByte__field_descriptor
           = Data.ProtoLens.FieldDescriptor
@@ -43760,6 +45185,7 @@ instance Data.ProtoLens.Message SendCoinsRequest where
           [(Data.ProtoLens.Tag 1, addr__field_descriptor),
            (Data.ProtoLens.Tag 2, amount__field_descriptor),
            (Data.ProtoLens.Tag 3, targetConf__field_descriptor),
+           (Data.ProtoLens.Tag 4, satPerVbyte__field_descriptor),
            (Data.ProtoLens.Tag 5, satPerByte__field_descriptor),
            (Data.ProtoLens.Tag 6, sendAll__field_descriptor),
            (Data.ProtoLens.Tag 7, label__field_descriptor),
@@ -43774,6 +45200,7 @@ instance Data.ProtoLens.Message SendCoinsRequest where
         {_SendCoinsRequest'addr = Data.ProtoLens.fieldDefault,
          _SendCoinsRequest'amount = Data.ProtoLens.fieldDefault,
          _SendCoinsRequest'targetConf = Data.ProtoLens.fieldDefault,
+         _SendCoinsRequest'satPerVbyte = Data.ProtoLens.fieldDefault,
          _SendCoinsRequest'satPerByte = Data.ProtoLens.fieldDefault,
          _SendCoinsRequest'sendAll = Data.ProtoLens.fieldDefault,
          _SendCoinsRequest'label = Data.ProtoLens.fieldDefault,
@@ -43830,6 +45257,11 @@ instance Data.ProtoLens.Message SendCoinsRequest where
                                        "target_conf"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"targetConf") y x)
+                        32
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       Data.ProtoLens.Encoding.Bytes.getVarInt "sat_per_vbyte"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"satPerVbyte") y x)
                         40
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -43925,76 +45357,91 @@ instance Data.ProtoLens.Message SendCoinsRequest where
                    ((Data.Monoid.<>)
                       (let
                          _v
-                           = Lens.Family2.view (Data.ProtoLens.Field.field @"satPerByte") _x
+                           = Lens.Family2.view (Data.ProtoLens.Field.field @"satPerVbyte") _x
                        in
                          if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                              Data.Monoid.mempty
                          else
                              (Data.Monoid.<>)
-                               (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
-                               ((Prelude..)
-                                  Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+                               (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
+                               (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
                       ((Data.Monoid.<>)
                          (let
-                            _v = Lens.Family2.view (Data.ProtoLens.Field.field @"sendAll") _x
+                            _v
+                              = Lens.Family2.view (Data.ProtoLens.Field.field @"satPerByte") _x
                           in
                             if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                 Data.Monoid.mempty
                             else
                                 (Data.Monoid.<>)
-                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 48)
+                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
                                   ((Prelude..)
                                      Data.ProtoLens.Encoding.Bytes.putVarInt
-                                     (\ b -> if b then 1 else 0)
+                                     Prelude.fromIntegral
                                      _v))
                          ((Data.Monoid.<>)
                             (let
-                               _v = Lens.Family2.view (Data.ProtoLens.Field.field @"label") _x
+                               _v = Lens.Family2.view (Data.ProtoLens.Field.field @"sendAll") _x
                              in
                                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                    Data.Monoid.mempty
                                else
                                    (Data.Monoid.<>)
-                                     (Data.ProtoLens.Encoding.Bytes.putVarInt 58)
+                                     (Data.ProtoLens.Encoding.Bytes.putVarInt 48)
                                      ((Prelude..)
-                                        (\ bs
-                                           -> (Data.Monoid.<>)
-                                                (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                   (Prelude.fromIntegral
-                                                      (Data.ByteString.length bs)))
-                                                (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                        Data.Text.Encoding.encodeUtf8
+                                        Data.ProtoLens.Encoding.Bytes.putVarInt
+                                        (\ b -> if b then 1 else 0)
                                         _v))
                             ((Data.Monoid.<>)
                                (let
-                                  _v = Lens.Family2.view (Data.ProtoLens.Field.field @"minConfs") _x
+                                  _v = Lens.Family2.view (Data.ProtoLens.Field.field @"label") _x
                                 in
                                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                       Data.Monoid.mempty
                                   else
                                       (Data.Monoid.<>)
-                                        (Data.ProtoLens.Encoding.Bytes.putVarInt 64)
+                                        (Data.ProtoLens.Encoding.Bytes.putVarInt 58)
                                         ((Prelude..)
-                                           Data.ProtoLens.Encoding.Bytes.putVarInt
-                                           Prelude.fromIntegral
+                                           (\ bs
+                                              -> (Data.Monoid.<>)
+                                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                      (Prelude.fromIntegral
+                                                         (Data.ByteString.length bs)))
+                                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                           Data.Text.Encoding.encodeUtf8
                                            _v))
                                ((Data.Monoid.<>)
                                   (let
                                      _v
                                        = Lens.Family2.view
-                                           (Data.ProtoLens.Field.field @"spendUnconfirmed") _x
+                                           (Data.ProtoLens.Field.field @"minConfs") _x
                                    in
                                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                          Data.Monoid.mempty
                                      else
                                          (Data.Monoid.<>)
-                                           (Data.ProtoLens.Encoding.Bytes.putVarInt 72)
+                                           (Data.ProtoLens.Encoding.Bytes.putVarInt 64)
                                            ((Prelude..)
                                               Data.ProtoLens.Encoding.Bytes.putVarInt
-                                              (\ b -> if b then 1 else 0)
+                                              Prelude.fromIntegral
                                               _v))
-                                  (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                                     (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))))))
+                                  ((Data.Monoid.<>)
+                                     (let
+                                        _v
+                                          = Lens.Family2.view
+                                              (Data.ProtoLens.Field.field @"spendUnconfirmed") _x
+                                      in
+                                        if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                                            Data.Monoid.mempty
+                                        else
+                                            (Data.Monoid.<>)
+                                              (Data.ProtoLens.Encoding.Bytes.putVarInt 72)
+                                              ((Prelude..)
+                                                 Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                 (\ b -> if b then 1 else 0)
+                                                 _v))
+                                     (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                        (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))))))
 instance Control.DeepSeq.NFData SendCoinsRequest where
   rnf
     = \ x__
@@ -44007,15 +45454,17 @@ instance Control.DeepSeq.NFData SendCoinsRequest where
                    (Control.DeepSeq.deepseq
                       (_SendCoinsRequest'targetConf x__)
                       (Control.DeepSeq.deepseq
-                         (_SendCoinsRequest'satPerByte x__)
+                         (_SendCoinsRequest'satPerVbyte x__)
                          (Control.DeepSeq.deepseq
-                            (_SendCoinsRequest'sendAll x__)
+                            (_SendCoinsRequest'satPerByte x__)
                             (Control.DeepSeq.deepseq
-                               (_SendCoinsRequest'label x__)
+                               (_SendCoinsRequest'sendAll x__)
                                (Control.DeepSeq.deepseq
-                                  (_SendCoinsRequest'minConfs x__)
+                                  (_SendCoinsRequest'label x__)
                                   (Control.DeepSeq.deepseq
-                                     (_SendCoinsRequest'spendUnconfirmed x__) ()))))))))
+                                     (_SendCoinsRequest'minConfs x__)
+                                     (Control.DeepSeq.deepseq
+                                        (_SendCoinsRequest'spendUnconfirmed x__) ())))))))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.txid' @:: Lens' SendCoinsResponse Data.Text.Text@ -}
@@ -44137,6 +45586,7 @@ instance Control.DeepSeq.NFData SendCoinsResponse where
      
          * 'Proto.LndGrpc_Fields.addrToAmount' @:: Lens' SendManyRequest (Data.Map.Map Data.Text.Text Data.Int.Int64)@
          * 'Proto.LndGrpc_Fields.targetConf' @:: Lens' SendManyRequest Data.Int.Int32@
+         * 'Proto.LndGrpc_Fields.satPerVbyte' @:: Lens' SendManyRequest Data.Word.Word64@
          * 'Proto.LndGrpc_Fields.satPerByte' @:: Lens' SendManyRequest Data.Int.Int64@
          * 'Proto.LndGrpc_Fields.label' @:: Lens' SendManyRequest Data.Text.Text@
          * 'Proto.LndGrpc_Fields.minConfs' @:: Lens' SendManyRequest Data.Int.Int32@
@@ -44144,6 +45594,7 @@ instance Control.DeepSeq.NFData SendCoinsResponse where
 data SendManyRequest
   = SendManyRequest'_constructor {_SendManyRequest'addrToAmount :: !(Data.Map.Map Data.Text.Text Data.Int.Int64),
                                   _SendManyRequest'targetConf :: !Data.Int.Int32,
+                                  _SendManyRequest'satPerVbyte :: !Data.Word.Word64,
                                   _SendManyRequest'satPerByte :: !Data.Int.Int64,
                                   _SendManyRequest'label :: !Data.Text.Text,
                                   _SendManyRequest'minConfs :: !Data.Int.Int32,
@@ -44169,6 +45620,13 @@ instance Data.ProtoLens.Field.HasField SendManyRequest "targetConf" Data.Int.Int
         (Lens.Family2.Unchecked.lens
            _SendManyRequest'targetConf
            (\ x__ y__ -> x__ {_SendManyRequest'targetConf = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField SendManyRequest "satPerVbyte" Data.Word.Word64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _SendManyRequest'satPerVbyte
+           (\ x__ y__ -> x__ {_SendManyRequest'satPerVbyte = y__}))
         Prelude.id
 instance Data.ProtoLens.Field.HasField SendManyRequest "satPerByte" Data.Int.Int64 where
   fieldOf _
@@ -44205,9 +45663,10 @@ instance Data.ProtoLens.Message SendManyRequest where
       \\SISendManyRequest\DC2L\n\
       \\fAddrToAmount\CAN\SOH \ETX(\v2(.lnrpc.SendManyRequest.AddrToAmountEntryR\fAddrToAmount\DC2\US\n\
       \\vtarget_conf\CAN\ETX \SOH(\ENQR\n\
-      \targetConf\DC2 \n\
+      \targetConf\DC2\"\n\
+      \\rsat_per_vbyte\CAN\EOT \SOH(\EOTR\vsatPerVbyte\DC2$\n\
       \\fsat_per_byte\CAN\ENQ \SOH(\ETXR\n\
-      \satPerByte\DC2\DC4\n\
+      \satPerByteB\STX\CAN\SOH\DC2\DC4\n\
       \\ENQlabel\CAN\ACK \SOH(\tR\ENQlabel\DC2\ESC\n\
       \\tmin_confs\CAN\a \SOH(\ENQR\bminConfs\DC2+\n\
       \\DC1spend_unconfirmed\CAN\b \SOH(\bR\DLEspendUnconfirmed\SUB?\n\
@@ -44235,6 +45694,15 @@ instance Data.ProtoLens.Message SendManyRequest where
               (Data.ProtoLens.PlainField
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"targetConf")) ::
+              Data.ProtoLens.FieldDescriptor SendManyRequest
+        satPerVbyte__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "sat_per_vbyte"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"satPerVbyte")) ::
               Data.ProtoLens.FieldDescriptor SendManyRequest
         satPerByte__field_descriptor
           = Data.ProtoLens.FieldDescriptor
@@ -44275,6 +45743,7 @@ instance Data.ProtoLens.Message SendManyRequest where
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, addrToAmount__field_descriptor),
            (Data.ProtoLens.Tag 3, targetConf__field_descriptor),
+           (Data.ProtoLens.Tag 4, satPerVbyte__field_descriptor),
            (Data.ProtoLens.Tag 5, satPerByte__field_descriptor),
            (Data.ProtoLens.Tag 6, label__field_descriptor),
            (Data.ProtoLens.Tag 7, minConfs__field_descriptor),
@@ -44287,6 +45756,7 @@ instance Data.ProtoLens.Message SendManyRequest where
     = SendManyRequest'_constructor
         {_SendManyRequest'addrToAmount = Data.Map.empty,
          _SendManyRequest'targetConf = Data.ProtoLens.fieldDefault,
+         _SendManyRequest'satPerVbyte = Data.ProtoLens.fieldDefault,
          _SendManyRequest'satPerByte = Data.ProtoLens.fieldDefault,
          _SendManyRequest'label = Data.ProtoLens.fieldDefault,
          _SendManyRequest'minConfs = Data.ProtoLens.fieldDefault,
@@ -44341,6 +45811,11 @@ instance Data.ProtoLens.Message SendManyRequest where
                                        "target_conf"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"targetConf") y x)
+                        32
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       Data.ProtoLens.Encoding.Bytes.getVarInt "sat_per_vbyte"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"satPerVbyte") y x)
                         40
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -44427,62 +45902,73 @@ instance Data.ProtoLens.Message SendManyRequest where
                 ((Data.Monoid.<>)
                    (let
                       _v
-                        = Lens.Family2.view (Data.ProtoLens.Field.field @"satPerByte") _x
+                        = Lens.Family2.view (Data.ProtoLens.Field.field @"satPerVbyte") _x
                     in
                       if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                           Data.Monoid.mempty
                       else
                           (Data.Monoid.<>)
-                            (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
-                            ((Prelude..)
-                               Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
                    ((Data.Monoid.<>)
                       (let
-                         _v = Lens.Family2.view (Data.ProtoLens.Field.field @"label") _x
+                         _v
+                           = Lens.Family2.view (Data.ProtoLens.Field.field @"satPerByte") _x
                        in
                          if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                              Data.Monoid.mempty
                          else
                              (Data.Monoid.<>)
-                               (Data.ProtoLens.Encoding.Bytes.putVarInt 50)
+                               (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
                                ((Prelude..)
-                                  (\ bs
-                                     -> (Data.Monoid.<>)
-                                          (Data.ProtoLens.Encoding.Bytes.putVarInt
-                                             (Prelude.fromIntegral (Data.ByteString.length bs)))
-                                          (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                  Data.Text.Encoding.encodeUtf8
-                                  _v))
+                                  Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
                       ((Data.Monoid.<>)
                          (let
-                            _v = Lens.Family2.view (Data.ProtoLens.Field.field @"minConfs") _x
+                            _v = Lens.Family2.view (Data.ProtoLens.Field.field @"label") _x
                           in
                             if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                 Data.Monoid.mempty
                             else
                                 (Data.Monoid.<>)
-                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 56)
+                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 50)
                                   ((Prelude..)
-                                     Data.ProtoLens.Encoding.Bytes.putVarInt
-                                     Prelude.fromIntegral
+                                     (\ bs
+                                        -> (Data.Monoid.<>)
+                                             (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                             (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                     Data.Text.Encoding.encodeUtf8
                                      _v))
                          ((Data.Monoid.<>)
                             (let
-                               _v
-                                 = Lens.Family2.view
-                                     (Data.ProtoLens.Field.field @"spendUnconfirmed") _x
+                               _v = Lens.Family2.view (Data.ProtoLens.Field.field @"minConfs") _x
                              in
                                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
                                    Data.Monoid.mempty
                                else
                                    (Data.Monoid.<>)
-                                     (Data.ProtoLens.Encoding.Bytes.putVarInt 64)
+                                     (Data.ProtoLens.Encoding.Bytes.putVarInt 56)
                                      ((Prelude..)
                                         Data.ProtoLens.Encoding.Bytes.putVarInt
-                                        (\ b -> if b then 1 else 0)
+                                        Prelude.fromIntegral
                                         _v))
-                            (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                               (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))))
+                            ((Data.Monoid.<>)
+                               (let
+                                  _v
+                                    = Lens.Family2.view
+                                        (Data.ProtoLens.Field.field @"spendUnconfirmed") _x
+                                in
+                                  if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                                      Data.Monoid.mempty
+                                  else
+                                      (Data.Monoid.<>)
+                                        (Data.ProtoLens.Encoding.Bytes.putVarInt 64)
+                                        ((Prelude..)
+                                           Data.ProtoLens.Encoding.Bytes.putVarInt
+                                           (\ b -> if b then 1 else 0)
+                                           _v))
+                               (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                  (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))))
 instance Control.DeepSeq.NFData SendManyRequest where
   rnf
     = \ x__
@@ -44493,13 +45979,15 @@ instance Control.DeepSeq.NFData SendManyRequest where
                 (Control.DeepSeq.deepseq
                    (_SendManyRequest'targetConf x__)
                    (Control.DeepSeq.deepseq
-                      (_SendManyRequest'satPerByte x__)
+                      (_SendManyRequest'satPerVbyte x__)
                       (Control.DeepSeq.deepseq
-                         (_SendManyRequest'label x__)
+                         (_SendManyRequest'satPerByte x__)
                          (Control.DeepSeq.deepseq
-                            (_SendManyRequest'minConfs x__)
+                            (_SendManyRequest'label x__)
                             (Control.DeepSeq.deepseq
-                               (_SendManyRequest'spendUnconfirmed x__) ()))))))
+                               (_SendManyRequest'minConfs x__)
+                               (Control.DeepSeq.deepseq
+                                  (_SendManyRequest'spendUnconfirmed x__) ())))))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.key' @:: Lens' SendManyRequest'AddrToAmountEntry Data.Text.Text@
@@ -44797,7 +46285,8 @@ instance Control.DeepSeq.NFData SendManyResponse where
          * 'Proto.LndGrpc_Fields.destCustomRecords' @:: Lens' SendRequest (Data.Map.Map Data.Word.Word64 Data.ByteString.ByteString)@
          * 'Proto.LndGrpc_Fields.allowSelfPayment' @:: Lens' SendRequest Prelude.Bool@
          * 'Proto.LndGrpc_Fields.destFeatures' @:: Lens' SendRequest [FeatureBit]@
-         * 'Proto.LndGrpc_Fields.vec'destFeatures' @:: Lens' SendRequest (Data.Vector.Vector FeatureBit)@ -}
+         * 'Proto.LndGrpc_Fields.vec'destFeatures' @:: Lens' SendRequest (Data.Vector.Vector FeatureBit)@
+         * 'Proto.LndGrpc_Fields.paymentAddr' @:: Lens' SendRequest Data.ByteString.ByteString@ -}
 data SendRequest
   = SendRequest'_constructor {_SendRequest'dest :: !Data.ByteString.ByteString,
                               _SendRequest'destString :: !Data.Text.Text,
@@ -44814,6 +46303,7 @@ data SendRequest
                               _SendRequest'destCustomRecords :: !(Data.Map.Map Data.Word.Word64 Data.ByteString.ByteString),
                               _SendRequest'allowSelfPayment :: !Prelude.Bool,
                               _SendRequest'destFeatures :: !(Data.Vector.Vector FeatureBit),
+                              _SendRequest'paymentAddr :: !Data.ByteString.ByteString,
                               _SendRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show SendRequest where
@@ -44941,6 +46431,13 @@ instance Data.ProtoLens.Field.HasField SendRequest "vec'destFeatures" (Data.Vect
            _SendRequest'destFeatures
            (\ x__ y__ -> x__ {_SendRequest'destFeatures = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField SendRequest "paymentAddr" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _SendRequest'paymentAddr
+           (\ x__ y__ -> x__ {_SendRequest'paymentAddr = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message SendRequest where
   messageName _ = Data.Text.pack "lnrpc.SendRequest"
   packedMessageDescriptor _
@@ -44963,7 +46460,8 @@ instance Data.ProtoLens.Message SendRequest where
       \ \SOH(\rR\tcltvLimit\DC2Y\n\
       \\DC3dest_custom_records\CAN\v \ETX(\v2).lnrpc.SendRequest.DestCustomRecordsEntryR\DC1destCustomRecords\DC2,\n\
       \\DC2allow_self_payment\CAN\SO \SOH(\bR\DLEallowSelfPayment\DC26\n\
-      \\rdest_features\CAN\SI \ETX(\SO2\DC1.lnrpc.FeatureBitR\fdestFeatures\SUBD\n\
+      \\rdest_features\CAN\SI \ETX(\SO2\DC1.lnrpc.FeatureBitR\fdestFeatures\DC2!\n\
+      \\fpayment_addr\CAN\DLE \SOH(\fR\vpaymentAddr\SUBD\n\
       \\SYNDestCustomRecordsEntry\DC2\DLE\n\
       \\ETXkey\CAN\SOH \SOH(\EOTR\ETXkey\DC2\DC4\n\
       \\ENQvalue\CAN\STX \SOH(\fR\ENQvalue:\STX8\SOH"
@@ -45102,6 +46600,15 @@ instance Data.ProtoLens.Message SendRequest where
                  Data.ProtoLens.Packed
                  (Data.ProtoLens.Field.field @"destFeatures")) ::
               Data.ProtoLens.FieldDescriptor SendRequest
+        paymentAddr__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "payment_addr"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"paymentAddr")) ::
+              Data.ProtoLens.FieldDescriptor SendRequest
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, dest__field_descriptor),
@@ -45118,7 +46625,8 @@ instance Data.ProtoLens.Message SendRequest where
            (Data.ProtoLens.Tag 10, cltvLimit__field_descriptor),
            (Data.ProtoLens.Tag 11, destCustomRecords__field_descriptor),
            (Data.ProtoLens.Tag 14, allowSelfPayment__field_descriptor),
-           (Data.ProtoLens.Tag 15, destFeatures__field_descriptor)]
+           (Data.ProtoLens.Tag 15, destFeatures__field_descriptor),
+           (Data.ProtoLens.Tag 16, paymentAddr__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _SendRequest'_unknownFields
@@ -45140,6 +46648,7 @@ instance Data.ProtoLens.Message SendRequest where
          _SendRequest'destCustomRecords = Data.Map.empty,
          _SendRequest'allowSelfPayment = Data.ProtoLens.fieldDefault,
          _SendRequest'destFeatures = Data.Vector.Generic.empty,
+         _SendRequest'paymentAddr = Data.ProtoLens.fieldDefault,
          _SendRequest'_unknownFields = []}
   parseMessage
     = let
@@ -45362,6 +46871,15 @@ instance Data.ProtoLens.Message SendRequest where
                                             in ploop)
                                              mutable'destFeatures)
                                 loop x y
+                        130
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "payment_addr"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"paymentAddr") y x)
+                                  mutable'destFeatures
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -45646,10 +47164,35 @@ instance Data.ProtoLens.Message SendRequest where
                                                                                Prelude.fromIntegral)
                                                                             Prelude.fromEnum)
                                                                          p))))
-                                                       (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                                                          (Lens.Family2.view
-                                                             Data.ProtoLens.unknownFields
-                                                             _x))))))))))))))))
+                                                       ((Data.Monoid.<>)
+                                                          (let
+                                                             _v
+                                                               = Lens.Family2.view
+                                                                   (Data.ProtoLens.Field.field
+                                                                      @"paymentAddr")
+                                                                   _x
+                                                           in
+                                                             if (Prelude.==)
+                                                                  _v
+                                                                  Data.ProtoLens.fieldDefault then
+                                                                 Data.Monoid.mempty
+                                                             else
+                                                                 (Data.Monoid.<>)
+                                                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                      130)
+                                                                   ((\ bs
+                                                                       -> (Data.Monoid.<>)
+                                                                            (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                                               (Prelude.fromIntegral
+                                                                                  (Data.ByteString.length
+                                                                                     bs)))
+                                                                            (Data.ProtoLens.Encoding.Bytes.putBytes
+                                                                               bs))
+                                                                      _v))
+                                                          (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                                             (Lens.Family2.view
+                                                                Data.ProtoLens.unknownFields
+                                                                _x)))))))))))))))))
 instance Control.DeepSeq.NFData SendRequest where
   rnf
     = \ x__
@@ -45685,7 +47228,9 @@ instance Control.DeepSeq.NFData SendRequest where
                                                        (_SendRequest'allowSelfPayment x__)
                                                        (Control.DeepSeq.deepseq
                                                           (_SendRequest'destFeatures x__)
-                                                          ())))))))))))))))
+                                                          (Control.DeepSeq.deepseq
+                                                             (_SendRequest'paymentAddr x__)
+                                                             ()))))))))))))))))
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.key' @:: Lens' SendRequest'DestCustomRecordsEntry Data.Word.Word64@
@@ -48327,6 +49872,165 @@ instance Control.DeepSeq.NFData VerifyMessageResponse where
                 (_VerifyMessageResponse'valid x__)
                 (Control.DeepSeq.deepseq (_VerifyMessageResponse'pubkey x__) ()))
 {- | Fields :
+     
+         * 'Proto.LndGrpc_Fields.confirmedBalance' @:: Lens' WalletAccountBalance Data.Int.Int64@
+         * 'Proto.LndGrpc_Fields.unconfirmedBalance' @:: Lens' WalletAccountBalance Data.Int.Int64@ -}
+data WalletAccountBalance
+  = WalletAccountBalance'_constructor {_WalletAccountBalance'confirmedBalance :: !Data.Int.Int64,
+                                       _WalletAccountBalance'unconfirmedBalance :: !Data.Int.Int64,
+                                       _WalletAccountBalance'_unknownFields :: !Data.ProtoLens.FieldSet}
+  deriving stock (Prelude.Eq, Prelude.Ord)
+instance Prelude.Show WalletAccountBalance where
+  showsPrec _ __x __s
+    = Prelude.showChar
+        '{'
+        (Prelude.showString
+           (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Data.ProtoLens.Field.HasField WalletAccountBalance "confirmedBalance" Data.Int.Int64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WalletAccountBalance'confirmedBalance
+           (\ x__ y__ -> x__ {_WalletAccountBalance'confirmedBalance = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField WalletAccountBalance "unconfirmedBalance" Data.Int.Int64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WalletAccountBalance'unconfirmedBalance
+           (\ x__ y__
+              -> x__ {_WalletAccountBalance'unconfirmedBalance = y__}))
+        Prelude.id
+instance Data.ProtoLens.Message WalletAccountBalance where
+  messageName _ = Data.Text.pack "lnrpc.WalletAccountBalance"
+  packedMessageDescriptor _
+    = "\n\
+      \\DC4WalletAccountBalance\DC2+\n\
+      \\DC1confirmed_balance\CAN\SOH \SOH(\ETXR\DLEconfirmedBalance\DC2/\n\
+      \\DC3unconfirmed_balance\CAN\STX \SOH(\ETXR\DC2unconfirmedBalance"
+  packedFileDescriptor _ = packedFileDescriptor
+  fieldsByTag
+    = let
+        confirmedBalance__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "confirmed_balance"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.Int64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Int.Int64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"confirmedBalance")) ::
+              Data.ProtoLens.FieldDescriptor WalletAccountBalance
+        unconfirmedBalance__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "unconfirmed_balance"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.Int64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Int.Int64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"unconfirmedBalance")) ::
+              Data.ProtoLens.FieldDescriptor WalletAccountBalance
+      in
+        Data.Map.fromList
+          [(Data.ProtoLens.Tag 1, confirmedBalance__field_descriptor),
+           (Data.ProtoLens.Tag 2, unconfirmedBalance__field_descriptor)]
+  unknownFields
+    = Lens.Family2.Unchecked.lens
+        _WalletAccountBalance'_unknownFields
+        (\ x__ y__ -> x__ {_WalletAccountBalance'_unknownFields = y__})
+  defMessage
+    = WalletAccountBalance'_constructor
+        {_WalletAccountBalance'confirmedBalance = Data.ProtoLens.fieldDefault,
+         _WalletAccountBalance'unconfirmedBalance = Data.ProtoLens.fieldDefault,
+         _WalletAccountBalance'_unknownFields = []}
+  parseMessage
+    = let
+        loop ::
+          WalletAccountBalance
+          -> Data.ProtoLens.Encoding.Bytes.Parser WalletAccountBalance
+        loop x
+          = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
+               if end then
+                   do (let missing = []
+                       in
+                         if Prelude.null missing then
+                             Prelude.return ()
+                         else
+                             Prelude.fail
+                               ((Prelude.++)
+                                  "Missing required fields: "
+                                  (Prelude.show (missing :: [Prelude.String]))))
+                      Prelude.return
+                        (Lens.Family2.over
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t) x)
+               else
+                   do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                      case tag of
+                        8 -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          Prelude.fromIntegral
+                                          Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "confirmed_balance"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field @"confirmedBalance") y x)
+                        16
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          Prelude.fromIntegral
+                                          Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "unconfirmed_balance"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field @"unconfirmedBalance") y x)
+                        wire
+                          -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
+                                        wire
+                                loop
+                                  (Lens.Family2.over
+                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
+      in
+        (Data.ProtoLens.Encoding.Bytes.<?>)
+          (do loop Data.ProtoLens.defMessage) "WalletAccountBalance"
+  buildMessage
+    = \ _x
+        -> (Data.Monoid.<>)
+             (let
+                _v
+                  = Lens.Family2.view
+                      (Data.ProtoLens.Field.field @"confirmedBalance") _x
+              in
+                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                    Data.Monoid.mempty
+                else
+                    (Data.Monoid.<>)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
+                      ((Prelude..)
+                         Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+             ((Data.Monoid.<>)
+                (let
+                   _v
+                     = Lens.Family2.view
+                         (Data.ProtoLens.Field.field @"unconfirmedBalance") _x
+                 in
+                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                       Data.Monoid.mempty
+                   else
+                       (Data.Monoid.<>)
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
+                         ((Prelude..)
+                            Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+                (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                   (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
+instance Control.DeepSeq.NFData WalletAccountBalance where
+  rnf
+    = \ x__
+        -> Control.DeepSeq.deepseq
+             (_WalletAccountBalance'_unknownFields x__)
+             (Control.DeepSeq.deepseq
+                (_WalletAccountBalance'confirmedBalance x__)
+                (Control.DeepSeq.deepseq
+                   (_WalletAccountBalance'unconfirmedBalance x__) ()))
+{- | Fields :
       -}
 data WalletBalanceRequest
   = WalletBalanceRequest'_constructor {_WalletBalanceRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
@@ -48396,11 +50100,13 @@ instance Control.DeepSeq.NFData WalletBalanceRequest where
      
          * 'Proto.LndGrpc_Fields.totalBalance' @:: Lens' WalletBalanceResponse Data.Int.Int64@
          * 'Proto.LndGrpc_Fields.confirmedBalance' @:: Lens' WalletBalanceResponse Data.Int.Int64@
-         * 'Proto.LndGrpc_Fields.unconfirmedBalance' @:: Lens' WalletBalanceResponse Data.Int.Int64@ -}
+         * 'Proto.LndGrpc_Fields.unconfirmedBalance' @:: Lens' WalletBalanceResponse Data.Int.Int64@
+         * 'Proto.LndGrpc_Fields.accountBalance' @:: Lens' WalletBalanceResponse (Data.Map.Map Data.Text.Text WalletAccountBalance)@ -}
 data WalletBalanceResponse
   = WalletBalanceResponse'_constructor {_WalletBalanceResponse'totalBalance :: !Data.Int.Int64,
                                         _WalletBalanceResponse'confirmedBalance :: !Data.Int.Int64,
                                         _WalletBalanceResponse'unconfirmedBalance :: !Data.Int.Int64,
+                                        _WalletBalanceResponse'accountBalance :: !(Data.Map.Map Data.Text.Text WalletAccountBalance),
                                         _WalletBalanceResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord)
 instance Prelude.Show WalletBalanceResponse where
@@ -48431,6 +50137,13 @@ instance Data.ProtoLens.Field.HasField WalletBalanceResponse "unconfirmedBalance
            (\ x__ y__
               -> x__ {_WalletBalanceResponse'unconfirmedBalance = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField WalletBalanceResponse "accountBalance" (Data.Map.Map Data.Text.Text WalletAccountBalance) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WalletBalanceResponse'accountBalance
+           (\ x__ y__ -> x__ {_WalletBalanceResponse'accountBalance = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message WalletBalanceResponse where
   messageName _ = Data.Text.pack "lnrpc.WalletBalanceResponse"
   packedMessageDescriptor _
@@ -48438,7 +50151,11 @@ instance Data.ProtoLens.Message WalletBalanceResponse where
       \\NAKWalletBalanceResponse\DC2#\n\
       \\rtotal_balance\CAN\SOH \SOH(\ETXR\ftotalBalance\DC2+\n\
       \\DC1confirmed_balance\CAN\STX \SOH(\ETXR\DLEconfirmedBalance\DC2/\n\
-      \\DC3unconfirmed_balance\CAN\ETX \SOH(\ETXR\DC2unconfirmedBalance"
+      \\DC3unconfirmed_balance\CAN\ETX \SOH(\ETXR\DC2unconfirmedBalance\DC2Y\n\
+      \\SIaccount_balance\CAN\EOT \ETX(\v20.lnrpc.WalletBalanceResponse.AccountBalanceEntryR\SOaccountBalance\SUB^\n\
+      \\DC3AccountBalanceEntry\DC2\DLE\n\
+      \\ETXkey\CAN\SOH \SOH(\tR\ETXkey\DC21\n\
+      \\ENQvalue\CAN\STX \SOH(\v2\ESC.lnrpc.WalletAccountBalanceR\ENQvalue:\STX8\SOH"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -48469,11 +50186,22 @@ instance Data.ProtoLens.Message WalletBalanceResponse where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"unconfirmedBalance")) ::
               Data.ProtoLens.FieldDescriptor WalletBalanceResponse
+        accountBalance__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "account_balance"
+              (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
+                 Data.ProtoLens.FieldTypeDescriptor WalletBalanceResponse'AccountBalanceEntry)
+              (Data.ProtoLens.MapField
+                 (Data.ProtoLens.Field.field @"key")
+                 (Data.ProtoLens.Field.field @"value")
+                 (Data.ProtoLens.Field.field @"accountBalance")) ::
+              Data.ProtoLens.FieldDescriptor WalletBalanceResponse
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, totalBalance__field_descriptor),
            (Data.ProtoLens.Tag 2, confirmedBalance__field_descriptor),
-           (Data.ProtoLens.Tag 3, unconfirmedBalance__field_descriptor)]
+           (Data.ProtoLens.Tag 3, unconfirmedBalance__field_descriptor),
+           (Data.ProtoLens.Tag 4, accountBalance__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _WalletBalanceResponse'_unknownFields
@@ -48483,6 +50211,7 @@ instance Data.ProtoLens.Message WalletBalanceResponse where
         {_WalletBalanceResponse'totalBalance = Data.ProtoLens.fieldDefault,
          _WalletBalanceResponse'confirmedBalance = Data.ProtoLens.fieldDefault,
          _WalletBalanceResponse'unconfirmedBalance = Data.ProtoLens.fieldDefault,
+         _WalletBalanceResponse'accountBalance = Data.Map.empty,
          _WalletBalanceResponse'_unknownFields = []}
   parseMessage
     = let
@@ -48533,6 +50262,24 @@ instance Data.ProtoLens.Message WalletBalanceResponse where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"unconfirmedBalance") y x)
+                        34
+                          -> do !(entry :: WalletBalanceResponse'AccountBalanceEntry) <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                                                                           (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                                                                               Data.ProtoLens.Encoding.Bytes.isolate
+                                                                                                 (Prelude.fromIntegral
+                                                                                                    len)
+                                                                                                 Data.ProtoLens.parseMessage)
+                                                                                           "account_balance"
+                                (let
+                                   key = Lens.Family2.view (Data.ProtoLens.Field.field @"key") entry
+                                   value
+                                     = Lens.Family2.view (Data.ProtoLens.Field.field @"value") entry
+                                 in
+                                   loop
+                                     (Lens.Family2.over
+                                        (Data.ProtoLens.Field.field @"accountBalance")
+                                        (\ !t -> Data.Map.insert key value t)
+                                        x))
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -48582,8 +50329,33 @@ instance Data.ProtoLens.Message WalletBalanceResponse where
                             (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
                             ((Prelude..)
                                Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
-                   (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                      (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
+                   ((Data.Monoid.<>)
+                      (Data.Monoid.mconcat
+                         (Prelude.map
+                            (\ _v
+                               -> (Data.Monoid.<>)
+                                    (Data.ProtoLens.Encoding.Bytes.putVarInt 34)
+                                    ((Prelude..)
+                                       (\ bs
+                                          -> (Data.Monoid.<>)
+                                               (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                  (Prelude.fromIntegral
+                                                     (Data.ByteString.length bs)))
+                                               (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                       Data.ProtoLens.encodeMessage
+                                       (Lens.Family2.set
+                                          (Data.ProtoLens.Field.field @"key")
+                                          (Prelude.fst _v)
+                                          (Lens.Family2.set
+                                             (Data.ProtoLens.Field.field @"value")
+                                             (Prelude.snd _v)
+                                             (Data.ProtoLens.defMessage ::
+                                                WalletBalanceResponse'AccountBalanceEntry)))))
+                            (Data.Map.toList
+                               (Lens.Family2.view
+                                  (Data.ProtoLens.Field.field @"accountBalance") _x))))
+                      (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                         (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))
 instance Control.DeepSeq.NFData WalletBalanceResponse where
   rnf
     = \ x__
@@ -48594,7 +50366,187 @@ instance Control.DeepSeq.NFData WalletBalanceResponse where
                 (Control.DeepSeq.deepseq
                    (_WalletBalanceResponse'confirmedBalance x__)
                    (Control.DeepSeq.deepseq
-                      (_WalletBalanceResponse'unconfirmedBalance x__) ())))
+                      (_WalletBalanceResponse'unconfirmedBalance x__)
+                      (Control.DeepSeq.deepseq
+                         (_WalletBalanceResponse'accountBalance x__) ()))))
+{- | Fields :
+     
+         * 'Proto.LndGrpc_Fields.key' @:: Lens' WalletBalanceResponse'AccountBalanceEntry Data.Text.Text@
+         * 'Proto.LndGrpc_Fields.value' @:: Lens' WalletBalanceResponse'AccountBalanceEntry WalletAccountBalance@
+         * 'Proto.LndGrpc_Fields.maybe'value' @:: Lens' WalletBalanceResponse'AccountBalanceEntry (Prelude.Maybe WalletAccountBalance)@ -}
+data WalletBalanceResponse'AccountBalanceEntry
+  = WalletBalanceResponse'AccountBalanceEntry'_constructor {_WalletBalanceResponse'AccountBalanceEntry'key :: !Data.Text.Text,
+                                                            _WalletBalanceResponse'AccountBalanceEntry'value :: !(Prelude.Maybe WalletAccountBalance),
+                                                            _WalletBalanceResponse'AccountBalanceEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
+  deriving stock (Prelude.Eq, Prelude.Ord)
+instance Prelude.Show WalletBalanceResponse'AccountBalanceEntry where
+  showsPrec _ __x __s
+    = Prelude.showChar
+        '{'
+        (Prelude.showString
+           (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Data.ProtoLens.Field.HasField WalletBalanceResponse'AccountBalanceEntry "key" Data.Text.Text where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WalletBalanceResponse'AccountBalanceEntry'key
+           (\ x__ y__
+              -> x__ {_WalletBalanceResponse'AccountBalanceEntry'key = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField WalletBalanceResponse'AccountBalanceEntry "value" WalletAccountBalance where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WalletBalanceResponse'AccountBalanceEntry'value
+           (\ x__ y__
+              -> x__ {_WalletBalanceResponse'AccountBalanceEntry'value = y__}))
+        (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
+instance Data.ProtoLens.Field.HasField WalletBalanceResponse'AccountBalanceEntry "maybe'value" (Prelude.Maybe WalletAccountBalance) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WalletBalanceResponse'AccountBalanceEntry'value
+           (\ x__ y__
+              -> x__ {_WalletBalanceResponse'AccountBalanceEntry'value = y__}))
+        Prelude.id
+instance Data.ProtoLens.Message WalletBalanceResponse'AccountBalanceEntry where
+  messageName _
+    = Data.Text.pack "lnrpc.WalletBalanceResponse.AccountBalanceEntry"
+  packedMessageDescriptor _
+    = "\n\
+      \\DC3AccountBalanceEntry\DC2\DLE\n\
+      \\ETXkey\CAN\SOH \SOH(\tR\ETXkey\DC21\n\
+      \\ENQvalue\CAN\STX \SOH(\v2\ESC.lnrpc.WalletAccountBalanceR\ENQvalue:\STX8\SOH"
+  packedFileDescriptor _ = packedFileDescriptor
+  fieldsByTag
+    = let
+        key__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "key"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.StringField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Text.Text)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"key")) ::
+              Data.ProtoLens.FieldDescriptor WalletBalanceResponse'AccountBalanceEntry
+        value__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "value"
+              (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
+                 Data.ProtoLens.FieldTypeDescriptor WalletAccountBalance)
+              (Data.ProtoLens.OptionalField
+                 (Data.ProtoLens.Field.field @"maybe'value")) ::
+              Data.ProtoLens.FieldDescriptor WalletBalanceResponse'AccountBalanceEntry
+      in
+        Data.Map.fromList
+          [(Data.ProtoLens.Tag 1, key__field_descriptor),
+           (Data.ProtoLens.Tag 2, value__field_descriptor)]
+  unknownFields
+    = Lens.Family2.Unchecked.lens
+        _WalletBalanceResponse'AccountBalanceEntry'_unknownFields
+        (\ x__ y__
+           -> x__
+                {_WalletBalanceResponse'AccountBalanceEntry'_unknownFields = y__})
+  defMessage
+    = WalletBalanceResponse'AccountBalanceEntry'_constructor
+        {_WalletBalanceResponse'AccountBalanceEntry'key = Data.ProtoLens.fieldDefault,
+         _WalletBalanceResponse'AccountBalanceEntry'value = Prelude.Nothing,
+         _WalletBalanceResponse'AccountBalanceEntry'_unknownFields = []}
+  parseMessage
+    = let
+        loop ::
+          WalletBalanceResponse'AccountBalanceEntry
+          -> Data.ProtoLens.Encoding.Bytes.Parser WalletBalanceResponse'AccountBalanceEntry
+        loop x
+          = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
+               if end then
+                   do (let missing = []
+                       in
+                         if Prelude.null missing then
+                             Prelude.return ()
+                         else
+                             Prelude.fail
+                               ((Prelude.++)
+                                  "Missing required fields: "
+                                  (Prelude.show (missing :: [Prelude.String]))))
+                      Prelude.return
+                        (Lens.Family2.over
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t) x)
+               else
+                   do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                      case tag of
+                        10
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                                       Data.ProtoLens.Encoding.Bytes.getBytes
+                                                         (Prelude.fromIntegral len)
+                                           Data.ProtoLens.Encoding.Bytes.runEither
+                                             (case Data.Text.Encoding.decodeUtf8' value of
+                                                (Prelude.Left err)
+                                                  -> Prelude.Left (Prelude.show err)
+                                                (Prelude.Right r) -> Prelude.Right r))
+                                       "key"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"key") y x)
+                        18
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.isolate
+                                             (Prelude.fromIntegral len) Data.ProtoLens.parseMessage)
+                                       "value"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"value") y x)
+                        wire
+                          -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
+                                        wire
+                                loop
+                                  (Lens.Family2.over
+                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
+      in
+        (Data.ProtoLens.Encoding.Bytes.<?>)
+          (do loop Data.ProtoLens.defMessage) "AccountBalanceEntry"
+  buildMessage
+    = \ _x
+        -> (Data.Monoid.<>)
+             (let _v = Lens.Family2.view (Data.ProtoLens.Field.field @"key") _x
+              in
+                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                    Data.Monoid.mempty
+                else
+                    (Data.Monoid.<>)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt 10)
+                      ((Prelude..)
+                         (\ bs
+                            -> (Data.Monoid.<>)
+                                 (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                    (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                 (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                         Data.Text.Encoding.encodeUtf8
+                         _v))
+             ((Data.Monoid.<>)
+                (case
+                     Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'value") _x
+                 of
+                   Prelude.Nothing -> Data.Monoid.mempty
+                   (Prelude.Just _v)
+                     -> (Data.Monoid.<>)
+                          (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
+                          ((Prelude..)
+                             (\ bs
+                                -> (Data.Monoid.<>)
+                                     (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                        (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                             Data.ProtoLens.encodeMessage
+                             _v))
+                (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                   (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
+instance Control.DeepSeq.NFData WalletBalanceResponse'AccountBalanceEntry where
+  rnf
+    = \ x__
+        -> Control.DeepSeq.deepseq
+             (_WalletBalanceResponse'AccountBalanceEntry'_unknownFields x__)
+             (Control.DeepSeq.deepseq
+                (_WalletBalanceResponse'AccountBalanceEntry'key x__)
+                (Control.DeepSeq.deepseq
+                   (_WalletBalanceResponse'AccountBalanceEntry'value x__) ()))
 data Lightning = Lightning {}
 instance Data.ProtoLens.Service.Types.Service Lightning where
   type ServiceName Lightning = "Lightning"
@@ -48956,7 +50908,7 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl Lightning "listPermissions" 
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\
-    \\SOlnd_grpc.proto\DC2\ENQlnrpc\SUB\FSgoogle/api/annotations.proto\"\230\SOH\n\
+    \\SOlnd_grpc.proto\DC2\ENQlnrpc\"\230\SOH\n\
     \\EOTUtxo\DC25\n\
     \\faddress_type\CAN\SOH \SOH(\SO2\DC2.lnrpc.AddressTypeR\vaddressType\DC2\CAN\n\
     \\aaddress\CAN\STX \SOH(\tR\aaddress\DC2\GS\n\
@@ -48980,11 +50932,12 @@ packedFileDescriptor
     \\n\
     \raw_tx_hex\CAN\t \SOH(\tR\brawTxHex\DC2\DC4\n\
     \\ENQlabel\CAN\n\
-    \ \SOH(\tR\ENQlabel\"Z\n\
+    \ \SOH(\tR\ENQlabel\"t\n\
     \\SYNGetTransactionsRequest\DC2!\n\
     \\fstart_height\CAN\SOH \SOH(\ENQR\vstartHeight\DC2\GS\n\
     \\n\
-    \end_height\CAN\STX \SOH(\ENQR\tendHeight\"L\n\
+    \end_height\CAN\STX \SOH(\ENQR\tendHeight\DC2\CAN\n\
+    \\aaccount\CAN\ETX \SOH(\tR\aaccount\"L\n\
     \\DC2TransactionDetails\DC26\n\
     \\ftransactions\CAN\SOH \ETX(\v2\DC2.lnrpc.TransactionR\ftransactions\"h\n\
     \\bFeeLimit\DC2\SYN\n\
@@ -48992,7 +50945,7 @@ packedFileDescriptor
     \\n\
     \fixed_msat\CAN\ETX \SOH(\ETXH\NULR\tfixedMsat\DC2\SUB\n\
     \\apercent\CAN\STX \SOH(\ETXH\NULR\apercentB\a\n\
-    \\ENQlimit\"\199\ENQ\n\
+    \\ENQlimit\"\234\ENQ\n\
     \\vSendRequest\DC2\DC2\n\
     \\EOTdest\CAN\SOH \SOH(\fR\EOTdest\DC2#\n\
     \\vdest_string\CAN\STX \SOH(\tR\n\
@@ -49011,7 +50964,8 @@ packedFileDescriptor
     \ \SOH(\rR\tcltvLimit\DC2Y\n\
     \\DC3dest_custom_records\CAN\v \ETX(\v2).lnrpc.SendRequest.DestCustomRecordsEntryR\DC1destCustomRecords\DC2,\n\
     \\DC2allow_self_payment\CAN\SO \SOH(\bR\DLEallowSelfPayment\DC26\n\
-    \\rdest_features\CAN\SI \ETX(\SO2\DC1.lnrpc.FeatureBitR\fdestFeatures\SUBD\n\
+    \\rdest_features\CAN\SI \ETX(\SO2\DC1.lnrpc.FeatureBitR\fdestFeatures\DC2!\n\
+    \\fpayment_addr\CAN\DLE \SOH(\fR\vpaymentAddr\SUBD\n\
     \\SYNDestCustomRecordsEntry\DC2\DLE\n\
     \\ETXkey\CAN\SOH \SOH(\EOTR\ETXkey\DC2\DC4\n\
     \\ENQvalue\CAN\STX \SOH(\fR\ENQvalue:\STX8\SOH\"\180\SOH\n\
@@ -49069,23 +51023,27 @@ packedFileDescriptor
     \\foutput_index\CAN\ETX \SOH(\rR\voutputIndex\">\n\
     \\DLELightningAddress\DC2\SYN\n\
     \\ACKpubkey\CAN\SOH \SOH(\tR\ACKpubkey\DC2\DC2\n\
-    \\EOThost\CAN\STX \SOH(\tR\EOThost\"\199\SOH\n\
+    \\EOThost\CAN\STX \SOH(\tR\EOThost\"\145\STX\n\
     \\DC2EstimateFeeRequest\DC2O\n\
     \\fAddrToAmount\CAN\SOH \ETX(\v2+.lnrpc.EstimateFeeRequest.AddrToAmountEntryR\fAddrToAmount\DC2\US\n\
     \\vtarget_conf\CAN\STX \SOH(\ENQR\n\
-    \targetConf\SUB?\n\
+    \targetConf\DC2\ESC\n\
+    \\tmin_confs\CAN\ETX \SOH(\ENQR\bminConfs\DC2+\n\
+    \\DC1spend_unconfirmed\CAN\EOT \SOH(\bR\DLEspendUnconfirmed\SUB?\n\
     \\DC1AddrToAmountEntry\DC2\DLE\n\
     \\ETXkey\CAN\SOH \SOH(\tR\ETXkey\DC2\DC4\n\
-    \\ENQvalue\CAN\STX \SOH(\ETXR\ENQvalue:\STX8\SOH\"_\n\
+    \\ENQvalue\CAN\STX \SOH(\ETXR\ENQvalue:\STX8\SOH\"\135\SOH\n\
     \\DC3EstimateFeeResponse\DC2\ETB\n\
-    \\afee_sat\CAN\SOH \SOH(\ETXR\ACKfeeSat\DC2/\n\
-    \\DC4feerate_sat_per_byte\CAN\STX \SOH(\ETXR\DC1feerateSatPerByte\"\195\STX\n\
+    \\afee_sat\CAN\SOH \SOH(\ETXR\ACKfeeSat\DC23\n\
+    \\DC4feerate_sat_per_byte\CAN\STX \SOH(\ETXR\DC1feerateSatPerByteB\STX\CAN\SOH\DC2\"\n\
+    \\rsat_per_vbyte\CAN\ETX \SOH(\EOTR\vsatPerVbyte\"\235\STX\n\
     \\SISendManyRequest\DC2L\n\
     \\fAddrToAmount\CAN\SOH \ETX(\v2(.lnrpc.SendManyRequest.AddrToAmountEntryR\fAddrToAmount\DC2\US\n\
     \\vtarget_conf\CAN\ETX \SOH(\ENQR\n\
-    \targetConf\DC2 \n\
+    \targetConf\DC2\"\n\
+    \\rsat_per_vbyte\CAN\EOT \SOH(\EOTR\vsatPerVbyte\DC2$\n\
     \\fsat_per_byte\CAN\ENQ \SOH(\ETXR\n\
-    \satPerByte\DC2\DC4\n\
+    \satPerByteB\STX\CAN\SOH\DC2\DC4\n\
     \\ENQlabel\CAN\ACK \SOH(\tR\ENQlabel\DC2\ESC\n\
     \\tmin_confs\CAN\a \SOH(\ENQR\bminConfs\DC2+\n\
     \\DC1spend_unconfirmed\CAN\b \SOH(\bR\DLEspendUnconfirmed\SUB?\n\
@@ -49093,27 +51051,30 @@ packedFileDescriptor
     \\ETXkey\CAN\SOH \SOH(\tR\ETXkey\DC2\DC4\n\
     \\ENQvalue\CAN\STX \SOH(\ETXR\ENQvalue:\STX8\SOH\"&\n\
     \\DLESendManyResponse\DC2\DC2\n\
-    \\EOTtxid\CAN\SOH \SOH(\tR\EOTtxid\"\252\SOH\n\
+    \\EOTtxid\CAN\SOH \SOH(\tR\EOTtxid\"\164\STX\n\
     \\DLESendCoinsRequest\DC2\DC2\n\
     \\EOTaddr\CAN\SOH \SOH(\tR\EOTaddr\DC2\SYN\n\
     \\ACKamount\CAN\STX \SOH(\ETXR\ACKamount\DC2\US\n\
     \\vtarget_conf\CAN\ETX \SOH(\ENQR\n\
-    \targetConf\DC2 \n\
+    \targetConf\DC2\"\n\
+    \\rsat_per_vbyte\CAN\EOT \SOH(\EOTR\vsatPerVbyte\DC2$\n\
     \\fsat_per_byte\CAN\ENQ \SOH(\ETXR\n\
-    \satPerByte\DC2\EM\n\
+    \satPerByteB\STX\CAN\SOH\DC2\EM\n\
     \\bsend_all\CAN\ACK \SOH(\bR\asendAll\DC2\DC4\n\
     \\ENQlabel\CAN\a \SOH(\tR\ENQlabel\DC2\ESC\n\
     \\tmin_confs\CAN\b \SOH(\ENQR\bminConfs\DC2+\n\
     \\DC1spend_unconfirmed\CAN\t \SOH(\bR\DLEspendUnconfirmed\"'\n\
     \\DC1SendCoinsResponse\DC2\DC2\n\
-    \\EOTtxid\CAN\SOH \SOH(\tR\EOTtxid\"N\n\
+    \\EOTtxid\CAN\SOH \SOH(\tR\EOTtxid\"h\n\
     \\DC2ListUnspentRequest\DC2\ESC\n\
     \\tmin_confs\CAN\SOH \SOH(\ENQR\bminConfs\DC2\ESC\n\
-    \\tmax_confs\CAN\STX \SOH(\ENQR\bmaxConfs\"8\n\
+    \\tmax_confs\CAN\STX \SOH(\ENQR\bmaxConfs\DC2\CAN\n\
+    \\aaccount\CAN\ETX \SOH(\tR\aaccount\"8\n\
     \\DC3ListUnspentResponse\DC2!\n\
-    \\ENQutxos\CAN\SOH \ETX(\v2\v.lnrpc.UtxoR\ENQutxos\";\n\
+    \\ENQutxos\CAN\SOH \ETX(\v2\v.lnrpc.UtxoR\ENQutxos\"U\n\
     \\DC1NewAddressRequest\DC2&\n\
-    \\EOTtype\CAN\SOH \SOH(\SO2\DC2.lnrpc.AddressTypeR\EOTtype\".\n\
+    \\EOTtype\CAN\SOH \SOH(\SO2\DC2.lnrpc.AddressTypeR\EOTtype\DC2\CAN\n\
+    \\aaccount\CAN\STX \SOH(\tR\aaccount\".\n\
     \\DC2NewAddressResponse\DC2\CAN\n\
     \\aaddress\CAN\SOH \SOH(\tR\aaddress\"&\n\
     \\DC2SignMessageRequest\DC2\DLE\n\
@@ -49238,7 +51199,7 @@ packedFileDescriptor
     \\DLEfunding_canceled\CAN\ENQ \SOH(\bR\SIfundingCanceled\DC2\FS\n\
     \\tabandoned\CAN\ACK \SOH(\bR\tabandoned\"P\n\
     \\SYNClosedChannelsResponse\DC26\n\
-    \\bchannels\CAN\SOH \ETX(\v2\SUB.lnrpc.ChannelCloseSummaryR\bchannels\"\206\EOT\n\
+    \\bchannels\CAN\SOH \ETX(\v2\SUB.lnrpc.ChannelCloseSummaryR\bchannels\"\223\EOT\n\
     \\EOTPeer\DC2\ETB\n\
     \\apub_key\CAN\SOH \SOH(\tR\ACKpubKey\DC2\CAN\n\
     \\aaddress\CAN\ETX \SOH(\tR\aaddress\DC2\GS\n\
@@ -49260,11 +51221,12 @@ packedFileDescriptor
     \lastFlapNs\SUBK\n\
     \\rFeaturesEntry\DC2\DLE\n\
     \\ETXkey\CAN\SOH \SOH(\rR\ETXkey\DC2$\n\
-    \\ENQvalue\CAN\STX \SOH(\v2\SO.lnrpc.FeatureR\ENQvalue:\STX8\SOH\"?\n\
+    \\ENQvalue\CAN\STX \SOH(\v2\SO.lnrpc.FeatureR\ENQvalue:\STX8\SOH\"P\n\
     \\bSyncType\DC2\DLE\n\
     \\fUNKNOWN_SYNC\DLE\NUL\DC2\SI\n\
     \\vACTIVE_SYNC\DLE\SOH\DC2\DLE\n\
-    \\fPASSIVE_SYNC\DLE\STX\"F\n\
+    \\fPASSIVE_SYNC\DLE\STX\DC2\SI\n\
+    \\vPINNED_SYNC\DLE\ETX\"F\n\
     \\DLETimestampedError\DC2\FS\n\
     \\ttimestamp\CAN\SOH \SOH(\EOTR\ttimestamp\DC2\DC4\n\
     \\ENQerror\CAN\STX \SOH(\tR\ENQerror\"5\n\
@@ -49321,15 +51283,16 @@ packedFileDescriptor
     \\rchannel_point\CAN\SOH \SOH(\v2\DC3.lnrpc.ChannelPointR\fchannelPoint\"Q\n\
     \\DC2ChannelCloseUpdate\DC2!\n\
     \\fclosing_txid\CAN\SOH \SOH(\fR\vclosingTxid\DC2\CAN\n\
-    \\asuccess\CAN\STX \SOH(\bR\asuccess\"\211\SOH\n\
+    \\asuccess\CAN\STX \SOH(\bR\asuccess\"\251\SOH\n\
     \\DC3CloseChannelRequest\DC28\n\
     \\rchannel_point\CAN\SOH \SOH(\v2\DC3.lnrpc.ChannelPointR\fchannelPoint\DC2\DC4\n\
     \\ENQforce\CAN\STX \SOH(\bR\ENQforce\DC2\US\n\
     \\vtarget_conf\CAN\ETX \SOH(\ENQR\n\
-    \targetConf\DC2 \n\
+    \targetConf\DC2$\n\
     \\fsat_per_byte\CAN\EOT \SOH(\ETXR\n\
-    \satPerByte\DC2)\n\
-    \\DLEdelivery_address\CAN\ENQ \SOH(\tR\SIdeliveryAddress\"\150\SOH\n\
+    \satPerByteB\STX\CAN\SOH\DC2)\n\
+    \\DLEdelivery_address\CAN\ENQ \SOH(\tR\SIdeliveryAddress\DC2\"\n\
+    \\rsat_per_vbyte\CAN\ACK \SOH(\EOTR\vsatPerVbyte\"\150\SOH\n\
     \\DC1CloseStatusUpdate\DC2;\n\
     \\rclose_pending\CAN\SOH \SOH(\v2\DC4.lnrpc.PendingUpdateH\NULR\fclosePending\DC2:\n\
     \\n\
@@ -49341,17 +51304,18 @@ packedFileDescriptor
     \\DC3ReadyForPsbtFunding\DC2'\n\
     \\SIfunding_address\CAN\SOH \SOH(\tR\SOfundingAddress\DC2%\n\
     \\SOfunding_amount\CAN\STX \SOH(\ETXR\rfundingAmount\DC2\DC2\n\
-    \\EOTpsbt\CAN\ETX \SOH(\fR\EOTpsbt\"\152\ENQ\n\
-    \\DC2OpenChannelRequest\DC2\US\n\
+    \\EOTpsbt\CAN\ETX \SOH(\fR\EOTpsbt\"\192\ENQ\n\
+    \\DC2OpenChannelRequest\DC2\"\n\
+    \\rsat_per_vbyte\CAN\SOH \SOH(\EOTR\vsatPerVbyte\DC2\US\n\
     \\vnode_pubkey\CAN\STX \SOH(\fR\n\
     \nodePubkey\DC20\n\
     \\DC2node_pubkey_string\CAN\ETX \SOH(\tR\DLEnodePubkeyStringB\STX\CAN\SOH\DC20\n\
     \\DC4local_funding_amount\CAN\EOT \SOH(\ETXR\DC2localFundingAmount\DC2\EM\n\
     \\bpush_sat\CAN\ENQ \SOH(\ETXR\apushSat\DC2\US\n\
     \\vtarget_conf\CAN\ACK \SOH(\ENQR\n\
-    \targetConf\DC2 \n\
+    \targetConf\DC2$\n\
     \\fsat_per_byte\CAN\a \SOH(\ETXR\n\
-    \satPerByte\DC2\CAN\n\
+    \satPerByteB\STX\CAN\SOH\DC2\CAN\n\
     \\aprivate\CAN\b \SOH(\bR\aprivate\DC2\"\n\
     \\rmin_htlc_msat\CAN\t \SOH(\ETXR\vminHtlcMsat\DC2(\n\
     \\DLEremote_csv_delay\CAN\n\
@@ -49493,12 +51457,19 @@ packedFileDescriptor
     \\SOACTIVE_CHANNEL\DLE\STX\DC2\DC4\n\
     \\DLEINACTIVE_CHANNEL\DLE\ETX\DC2\CAN\n\
     \\DC4PENDING_OPEN_CHANNEL\DLE\EOTB\t\n\
-    \\achannel\"\SYN\n\
-    \\DC4WalletBalanceRequest\"\154\SOH\n\
+    \\achannel\"t\n\
+    \\DC4WalletAccountBalance\DC2+\n\
+    \\DC1confirmed_balance\CAN\SOH \SOH(\ETXR\DLEconfirmedBalance\DC2/\n\
+    \\DC3unconfirmed_balance\CAN\STX \SOH(\ETXR\DC2unconfirmedBalance\"\SYN\n\
+    \\DC4WalletBalanceRequest\"\213\STX\n\
     \\NAKWalletBalanceResponse\DC2#\n\
     \\rtotal_balance\CAN\SOH \SOH(\ETXR\ftotalBalance\DC2+\n\
     \\DC1confirmed_balance\CAN\STX \SOH(\ETXR\DLEconfirmedBalance\DC2/\n\
-    \\DC3unconfirmed_balance\CAN\ETX \SOH(\ETXR\DC2unconfirmedBalance\".\n\
+    \\DC3unconfirmed_balance\CAN\ETX \SOH(\ETXR\DC2unconfirmedBalance\DC2Y\n\
+    \\SIaccount_balance\CAN\EOT \ETX(\v20.lnrpc.WalletBalanceResponse.AccountBalanceEntryR\SOaccountBalance\SUB^\n\
+    \\DC3AccountBalanceEntry\DC2\DLE\n\
+    \\ETXkey\CAN\SOH \SOH(\tR\ETXkey\DC21\n\
+    \\ENQvalue\CAN\STX \SOH(\v2\ESC.lnrpc.WalletAccountBalanceR\ENQvalue:\STX8\SOH\".\n\
     \\ACKAmount\DC2\DLE\n\
     \\ETXsat\CAN\SOH \SOH(\EOTR\ETXsat\DC2\DC2\n\
     \\EOTmsat\CAN\STX \SOH(\EOTR\EOTmsat\"\ETB\n\
@@ -49544,10 +51515,10 @@ packedFileDescriptor
     \\DC1direction_reverse\CAN\STX \SOH(\bR\DLEdirectionReverse\"^\n\
     \\DC3QueryRoutesResponse\DC2$\n\
     \\ACKroutes\CAN\SOH \ETX(\v2\f.lnrpc.RouteR\ACKroutes\DC2!\n\
-    \\fsuccess_prob\CAN\STX \SOH(\SOHR\vsuccessProb\"\220\ETX\n\
+    \\fsuccess_prob\CAN\STX \SOH(\SOHR\vsuccessProb\"\145\EOT\n\
     \\ETXHop\DC2\ESC\n\
-    \\achan_id\CAN\SOH \SOH(\EOTR\ACKchanIdB\STX0\SOH\DC2#\n\
-    \\rchan_capacity\CAN\STX \SOH(\ETXR\fchanCapacity\DC2(\n\
+    \\achan_id\CAN\SOH \SOH(\EOTR\ACKchanIdB\STX0\SOH\DC2'\n\
+    \\rchan_capacity\CAN\STX \SOH(\ETXR\fchanCapacityB\STX\CAN\SOH\DC2(\n\
     \\SOamt_to_forward\CAN\ETX \SOH(\ETXR\famtToForwardB\STX\CAN\SOH\DC2\DC4\n\
     \\ETXfee\CAN\EOT \SOH(\ETXR\ETXfeeB\STX\CAN\SOH\DC2\SYN\n\
     \\ACKexpiry\CAN\ENQ \SOH(\rR\ACKexpiry\DC2-\n\
@@ -49558,7 +51529,9 @@ packedFileDescriptor
     \tlvPayload\DC2/\n\
     \\n\
     \mpp_record\CAN\n\
-    \ \SOH(\v2\DLE.lnrpc.MPPRecordR\tmppRecord\DC2D\n\
+    \ \SOH(\v2\DLE.lnrpc.MPPRecordR\tmppRecord\DC2/\n\
+    \\n\
+    \amp_record\CAN\f \SOH(\v2\DLE.lnrpc.AMPRecordR\tampRecord\DC2D\n\
     \\SOcustom_records\CAN\v \ETX(\v2\GS.lnrpc.Hop.CustomRecordsEntryR\rcustomRecords\SUB@\n\
     \\DC2CustomRecordsEntry\DC2\DLE\n\
     \\ETXkey\CAN\SOH \SOH(\EOTR\ETXkey\DC2\DC4\n\
@@ -49566,7 +51539,13 @@ packedFileDescriptor
     \\tMPPRecord\DC2!\n\
     \\fpayment_addr\CAN\v \SOH(\fR\vpaymentAddr\DC2$\n\
     \\SOtotal_amt_msat\CAN\n\
-    \ \SOH(\ETXR\ftotalAmtMsat\"\225\SOH\n\
+    \ \SOH(\ETXR\ftotalAmtMsat\"b\n\
+    \\tAMPRecord\DC2\GS\n\
+    \\n\
+    \root_share\CAN\SOH \SOH(\fR\trootShare\DC2\NAK\n\
+    \\ACKset_id\CAN\STX \SOH(\fR\ENQsetId\DC2\US\n\
+    \\vchild_index\CAN\ETX \SOH(\rR\n\
+    \childIndex\"\225\SOH\n\
     \\ENQRoute\DC2&\n\
     \\SItotal_time_lock\CAN\SOH \SOH(\rR\rtotalTimeLock\DC2!\n\
     \\n\
@@ -49656,14 +51635,15 @@ packedFileDescriptor
     \\DC3GraphTopologyUpdate\DC24\n\
     \\fnode_updates\CAN\SOH \ETX(\v2\DC1.lnrpc.NodeUpdateR\vnodeUpdates\DC2A\n\
     \\SIchannel_updates\CAN\STX \ETX(\v2\CAN.lnrpc.ChannelEdgeUpdateR\SOchannelUpdates\DC2=\n\
-    \\fclosed_chans\CAN\ETX \ETX(\v2\SUB.lnrpc.ClosedChannelUpdateR\vclosedChans\"\176\STX\n\
+    \\fclosed_chans\CAN\ETX \ETX(\v2\SUB.lnrpc.ClosedChannelUpdateR\vclosedChans\"\239\STX\n\
     \\n\
-    \NodeUpdate\DC2\FS\n\
-    \\taddresses\CAN\SOH \ETX(\tR\taddresses\DC2!\n\
+    \NodeUpdate\DC2 \n\
+    \\taddresses\CAN\SOH \ETX(\tR\taddressesB\STX\CAN\SOH\DC2!\n\
     \\fidentity_key\CAN\STX \SOH(\tR\videntityKey\DC2+\n\
     \\SIglobal_features\CAN\ETX \SOH(\fR\SOglobalFeaturesB\STX\CAN\SOH\DC2\DC4\n\
     \\ENQalias\CAN\EOT \SOH(\tR\ENQalias\DC2\DC4\n\
-    \\ENQcolor\CAN\ENQ \SOH(\tR\ENQcolor\DC2;\n\
+    \\ENQcolor\CAN\ENQ \SOH(\tR\ENQcolor\DC29\n\
+    \\SOnode_addresses\CAN\a \ETX(\v2\DC2.lnrpc.NodeAddressR\rnodeAddresses\DC2;\n\
     \\bfeatures\CAN\ACK \ETX(\v2\US.lnrpc.NodeUpdate.FeaturesEntryR\bfeatures\SUBK\n\
     \\rFeaturesEntry\DC2\DLE\n\
     \\ETXkey\CAN\SOH \SOH(\rR\ETXkey\DC2$\n\
@@ -49689,7 +51669,7 @@ packedFileDescriptor
     \\ESCfee_proportional_millionths\CAN\EOT \SOH(\rR\EMfeeProportionalMillionths\DC2*\n\
     \\DC1cltv_expiry_delta\CAN\ENQ \SOH(\rR\SIcltvExpiryDelta\"8\n\
     \\tRouteHint\DC2+\n\
-    \\thop_hints\CAN\SOH \ETX(\v2\SO.lnrpc.HopHintR\bhopHints\"\255\a\n\
+    \\thop_hints\CAN\SOH \ETX(\v2\SO.lnrpc.HopHintR\bhopHints\"\150\b\n\
     \\aInvoice\DC2\DC2\n\
     \\EOTmemo\CAN\SOH \SOH(\tR\EOTmemo\DC2\GS\n\
     \\n\
@@ -49723,7 +51703,8 @@ packedFileDescriptor
     \\bfeatures\CAN\CAN \ETX(\v2\FS.lnrpc.Invoice.FeaturesEntryR\bfeatures\DC2\GS\n\
     \\n\
     \is_keysend\CAN\EM \SOH(\bR\tisKeysend\DC2!\n\
-    \\fpayment_addr\CAN\SUB \SOH(\fR\vpaymentAddr\SUBK\n\
+    \\fpayment_addr\CAN\SUB \SOH(\fR\vpaymentAddr\DC2\NAK\n\
+    \\ACKis_amp\CAN\ESC \SOH(\bR\ENQisAmp\SUBK\n\
     \\rFeaturesEntry\DC2\DLE\n\
     \\ETXkey\CAN\SOH \SOH(\rR\ETXkey\DC2$\n\
     \\ENQvalue\CAN\STX \SOH(\v2\SO.lnrpc.FeatureR\ENQvalue:\STX8\SOH\"A\n\
@@ -49731,7 +51712,7 @@ packedFileDescriptor
     \\EOTOPEN\DLE\NUL\DC2\v\n\
     \\aSETTLED\DLE\SOH\DC2\f\n\
     \\bCANCELED\DLE\STX\DC2\f\n\
-    \\bACCEPTED\DLE\ETXJ\EOT\b\STX\DLE\ETX\"\222\ETX\n\
+    \\bACCEPTED\DLE\ETXJ\EOT\b\STX\DLE\ETX\"\252\ETX\n\
     \\vInvoiceHTLC\DC2\ESC\n\
     \\achan_id\CAN\SOH \SOH(\EOTR\ACKchanIdB\STX0\SOH\DC2\GS\n\
     \\n\
@@ -49745,10 +51726,20 @@ packedFileDescriptor
     \\ENQstate\CAN\b \SOH(\SO2\ETB.lnrpc.InvoiceHTLCStateR\ENQstate\DC2L\n\
     \\SOcustom_records\CAN\t \ETX(\v2%.lnrpc.InvoiceHTLC.CustomRecordsEntryR\rcustomRecords\DC2+\n\
     \\DC2mpp_total_amt_msat\CAN\n\
-    \ \SOH(\EOTR\SImppTotalAmtMsat\SUB@\n\
+    \ \SOH(\EOTR\SImppTotalAmtMsat\DC2\FS\n\
+    \\ETXamp\CAN\v \SOH(\v2\n\
+    \.lnrpc.AMPR\ETXamp\SUB@\n\
     \\DC2CustomRecordsEntry\DC2\DLE\n\
     \\ETXkey\CAN\SOH \SOH(\EOTR\ETXkey\DC2\DC4\n\
-    \\ENQvalue\CAN\STX \SOH(\fR\ENQvalue:\STX8\SOH\"\148\SOH\n\
+    \\ENQvalue\CAN\STX \SOH(\fR\ENQvalue:\STX8\SOH\"\140\SOH\n\
+    \\ETXAMP\DC2\GS\n\
+    \\n\
+    \root_share\CAN\SOH \SOH(\fR\trootShare\DC2\NAK\n\
+    \\ACKset_id\CAN\STX \SOH(\fR\ENQsetId\DC2\US\n\
+    \\vchild_index\CAN\ETX \SOH(\rR\n\
+    \childIndex\DC2\DC2\n\
+    \\EOThash\CAN\EOT \SOH(\fR\EOThash\DC2\SUB\n\
+    \\bpreimage\CAN\ENQ \SOH(\fR\bpreimage\"\148\SOH\n\
     \\DC2AddInvoiceResponse\DC2\NAK\n\
     \\ACKr_hash\CAN\SOH \SOH(\fR\ENQrHash\DC2'\n\
     \\SIpayment_request\CAN\STX \SOH(\tR\SOpaymentRequest\DC2\ESC\n\
@@ -49793,8 +51784,10 @@ packedFileDescriptor
     \\tIN_FLIGHT\DLE\SOH\DC2\r\n\
     \\tSUCCEEDED\DLE\STX\DC2\n\
     \\n\
-    \\ACKFAILED\DLE\ETXJ\EOT\b\EOT\DLE\ENQ\"\182\STX\n\
-    \\vHTLCAttempt\DC25\n\
+    \\ACKFAILED\DLE\ETXJ\EOT\b\EOT\DLE\ENQ\"\213\STX\n\
+    \\vHTLCAttempt\DC2\GS\n\
+    \\n\
+    \attempt_id\CAN\a \SOH(\EOTR\tattemptId\DC25\n\
     \\ACKstatus\CAN\SOH \SOH(\SO2\GS.lnrpc.HTLCAttempt.HTLCStatusR\ACKstatus\DC2\"\n\
     \\ENQroute\CAN\STX \SOH(\v2\f.lnrpc.RouteR\ENQroute\DC2&\n\
     \\SIattempt_time_ns\CAN\ETX \SOH(\ETXR\rattemptTimeNs\DC2&\n\
@@ -49815,12 +51808,15 @@ packedFileDescriptor
     \\DC4ListPaymentsResponse\DC2*\n\
     \\bpayments\CAN\SOH \ETX(\v2\SO.lnrpc.PaymentR\bpayments\DC2,\n\
     \\DC2first_index_offset\CAN\STX \SOH(\EOTR\DLEfirstIndexOffset\DC2*\n\
-    \\DC1last_index_offset\CAN\ETX \SOH(\EOTR\SIlastIndexOffset\"\SUB\n\
-    \\CANDeleteAllPaymentsRequest\"\ESC\n\
-    \\EMDeleteAllPaymentsResponse\"\140\SOH\n\
+    \\DC1last_index_offset\CAN\ETX \SOH(\EOTR\SIlastIndexOffset\"x\n\
+    \\CANDeleteAllPaymentsRequest\DC20\n\
+    \\DC4failed_payments_only\CAN\SOH \SOH(\bR\DC2failedPaymentsOnly\DC2*\n\
+    \\DC1failed_htlcs_only\CAN\STX \SOH(\bR\SIfailedHtlcsOnly\"\ESC\n\
+    \\EMDeleteAllPaymentsResponse\"\191\SOH\n\
     \\NAKAbandonChannelRequest\DC28\n\
     \\rchannel_point\CAN\SOH \SOH(\v2\DC3.lnrpc.ChannelPointR\fchannelPoint\DC29\n\
-    \\EMpending_funding_shim_only\CAN\STX \SOH(\bR\SYNpendingFundingShimOnly\"\CAN\n\
+    \\EMpending_funding_shim_only\CAN\STX \SOH(\bR\SYNpendingFundingShimOnly\DC21\n\
+    \\SYNi_know_what_i_am_doing\CAN\ETX \SOH(\bR\DC1iKnowWhatIAmDoing\"\CAN\n\
     \\SYNAbandonChannelResponse\"F\n\
     \\DC1DebugLevelRequest\DC2\DC2\n\
     \\EOTshow\CAN\SOH \SOH(\bR\EOTshow\DC2\GS\n\
@@ -49886,9 +51882,9 @@ packedFileDescriptor
     \start_time\CAN\SOH \SOH(\EOTR\tstartTime\DC2\EM\n\
     \\bend_time\CAN\STX \SOH(\EOTR\aendTime\DC2!\n\
     \\findex_offset\CAN\ETX \SOH(\rR\vindexOffset\DC2$\n\
-    \\SOnum_max_events\CAN\EOT \SOH(\rR\fnumMaxEvents\"\148\STX\n\
-    \\SIForwardingEvent\DC2\FS\n\
-    \\ttimestamp\CAN\SOH \SOH(\EOTR\ttimestamp\DC2 \n\
+    \\SOnum_max_events\CAN\EOT \SOH(\rR\fnumMaxEvents\"\187\STX\n\
+    \\SIForwardingEvent\DC2 \n\
+    \\ttimestamp\CAN\SOH \SOH(\EOTR\ttimestampB\STX\CAN\SOH\DC2 \n\
     \\n\
     \chan_id_in\CAN\STX \SOH(\EOTR\bchanIdInB\STX0\SOH\DC2\"\n\
     \\vchan_id_out\CAN\EOT \SOH(\EOTR\tchanIdOutB\STX0\SOH\DC2\NAK\n\
@@ -49899,7 +51895,8 @@ packedFileDescriptor
     \\vamt_in_msat\CAN\t \SOH(\EOTR\tamtInMsat\DC2 \n\
     \\famt_out_msat\CAN\n\
     \ \SOH(\EOTR\n\
-    \amtOutMsat\"\140\SOH\n\
+    \amtOutMsat\DC2!\n\
+    \\ftimestamp_ns\CAN\v \SOH(\EOTR\vtimestampNs\"\140\SOH\n\
     \\EMForwardingHistoryResponse\DC2C\n\
     \\DC1forwarding_events\CAN\SOH \ETX(\v2\SYN.lnrpc.ForwardingEventR\DLEforwardingEvents\DC2*\n\
     \\DC1last_offset_index\CAN\STX \SOH(\rR\SIlastOffsetIndex\"P\n\
@@ -49951,7 +51948,7 @@ packedFileDescriptor
     \\DC2method_permissions\CAN\SOH \ETX(\v25.lnrpc.ListPermissionsResponse.MethodPermissionsEntryR\DC1methodPermissions\SUBc\n\
     \\SYNMethodPermissionsEntry\DC2\DLE\n\
     \\ETXkey\CAN\SOH \SOH(\tR\ETXkey\DC23\n\
-    \\ENQvalue\CAN\STX \SOH(\v2\GS.lnrpc.MacaroonPermissionListR\ENQvalue:\STX8\SOH\"\149\b\n\
+    \\ENQvalue\CAN\STX \SOH(\v2\GS.lnrpc.MacaroonPermissionListR\ENQvalue:\STX8\SOH\"\176\b\n\
     \\aFailure\DC2.\n\
     \\EOTcode\CAN\SOH \SOH(\SO2\SUB.lnrpc.Failure.FailureCodeR\EOTcode\DC2;\n\
     \\SOchannel_update\CAN\ETX \SOH(\v2\DC4.lnrpc.ChannelUpdateR\rchannelUpdate\DC2\ESC\n\
@@ -49961,7 +51958,7 @@ packedFileDescriptor
     \cltvExpiry\DC2\DC4\n\
     \\ENQflags\CAN\a \SOH(\rR\ENQflags\DC20\n\
     \\DC4failure_source_index\CAN\b \SOH(\rR\DC2failureSourceIndex\DC2\SYN\n\
-    \\ACKheight\CAN\t \SOH(\rR\ACKheight\"\212\ENQ\n\
+    \\ACKheight\CAN\t \SOH(\rR\ACKheight\"\239\ENQ\n\
     \\vFailureCode\DC2\f\n\
     \\bRESERVED\DLE\NUL\DC2(\n\
     \$INCORRECT_OR_UNKNOWN_PAYMENT_DETAILS\DLE\SOH\DC2\FS\n\
@@ -49987,7 +51984,8 @@ packedFileDescriptor
     \\SYNPERMANENT_NODE_FAILURE\DLE\DC4\DC2\GS\n\
     \\EMPERMANENT_CHANNEL_FAILURE\DLE\NAK\DC2\DC2\n\
     \\SOEXPIRY_TOO_FAR\DLE\SYN\DC2\SI\n\
-    \\vMPP_TIMEOUT\DLE\ETB\DC2\NAK\n\
+    \\vMPP_TIMEOUT\DLE\ETB\DC2\EM\n\
+    \\NAKINVALID_ONION_PAYLOAD\DLE\CAN\DC2\NAK\n\
     \\DLEINTERNAL_FAILURE\DLE\229\a\DC2\DC4\n\
     \\SIUNKNOWN_FAILURE\DLE\230\a\DC2\ETB\n\
     \\DC2UNREADABLE_FAILURE\DLE\231\aJ\EOT\b\STX\DLE\ETX\"\179\ETX\n\
@@ -50058,7 +52056,7 @@ packedFileDescriptor
     \\ETBFAILURE_REASON_NO_ROUTE\DLE\STX\DC2\CAN\n\
     \\DC4FAILURE_REASON_ERROR\DLE\ETX\DC2,\n\
     \(FAILURE_REASON_INCORRECT_PAYMENT_DETAILS\DLE\EOT\DC2'\n\
-    \#FAILURE_REASON_INSUFFICIENT_BALANCE\DLE\ENQ*\165\ETX\n\
+    \#FAILURE_REASON_INSUFFICIENT_BALANCE\DLE\ENQ*\207\EOT\n\
     \\n\
     \FeatureBit\DC2\CAN\n\
     \\DC4DATALOSS_PROTECT_REQ\DLE\NUL\DC2\CAN\n\
@@ -50078,7 +52076,15 @@ packedFileDescriptor
     \\DLEPAYMENT_ADDR_REQ\DLE\SO\DC2\DC4\n\
     \\DLEPAYMENT_ADDR_OPT\DLE\SI\DC2\v\n\
     \\aMPP_REQ\DLE\DLE\DC2\v\n\
-    \\aMPP_OPT\DLE\DC12\201!\n\
+    \\aMPP_OPT\DLE\DC1\DC2\SYN\n\
+    \\DC2WUMBO_CHANNELS_REQ\DLE\DC2\DC2\SYN\n\
+    \\DC2WUMBO_CHANNELS_OPT\DLE\DC3\DC2\SI\n\
+    \\vANCHORS_REQ\DLE\DC4\DC2\SI\n\
+    \\vANCHORS_OPT\DLE\NAK\DC2\GS\n\
+    \\EMANCHORS_ZERO_FEE_HTLC_REQ\DLE\SYN\DC2\GS\n\
+    \\EMANCHORS_ZERO_FEE_HTLC_OPT\DLE\ETB\DC2\v\n\
+    \\aAMP_REQ\DLE\RS\DC2\v\n\
+    \\aAMP_OPT\DLE\US2\201!\n\
     \\tLightning\DC2J\n\
     \\rWalletBalance\DC2\ESC.lnrpc.WalletBalanceRequest\SUB\FS.lnrpc.WalletBalanceResponse\DC2M\n\
     \\SOChannelBalance\DC2\FS.lnrpc.ChannelBalanceRequest\SUB\GS.lnrpc.ChannelBalanceResponse\DC2K\n\
@@ -50142,12 +52148,11 @@ packedFileDescriptor
     \\fBakeMacaroon\DC2\SUB.lnrpc.BakeMacaroonRequest\SUB\ESC.lnrpc.BakeMacaroonResponse\DC2P\n\
     \\SIListMacaroonIDs\DC2\GS.lnrpc.ListMacaroonIDsRequest\SUB\RS.lnrpc.ListMacaroonIDsResponse\DC2S\n\
     \\DLEDeleteMacaroonID\DC2\RS.lnrpc.DeleteMacaroonIDRequest\SUB\US.lnrpc.DeleteMacaroonIDResponse\DC2P\n\
-    \\SIListPermissions\DC2\GS.lnrpc.ListPermissionsRequest\SUB\RS.lnrpc.ListPermissionsResponseB'Z%github.com/lightningnetwork/lnd/lnrpcJ\251\185\b\n\
-    \\a\DC2\ENQ\NUL\NUL\150\GS\SOH\n\
-    \\b\n\
-    \\SOH\f\DC2\ETX\NUL\NUL\DC2\n\
-    \\t\n\
-    \\STX\ETX\NUL\DC2\ETX\STX\NUL&\n\
+    \\SIListPermissions\DC2\GS.lnrpc.ListPermissionsRequest\SUB\RS.lnrpc.ListPermissionsResponseB'Z%github.com/lightningnetwork/lnd/lnrpcJ\205\234\b\n\
+    \\a\DC2\ENQ\STX\NUL\176\RS\SOH\n\
+    \\130\SOH\n\
+    \\SOH\f\DC2\ETX\STX\NUL\DC22x source https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/rpc.proto\n\
+    \\n\
     \\b\n\
     \\SOH\STX\DC2\ETX\EOT\NUL\SO\n\
     \\b\n\
@@ -50155,7 +52160,7 @@ packedFileDescriptor
     \\t\n\
     \\STX\b\v\DC2\ETX\ACK\NUL<\n\
     \\228\ENQ\n\
-    \\STX\ACK\NUL\DC2\ENQ\ESC\NUL\134\EOT\SOH\SUB1 Lightning is the main RPC server of the daemon.\n\
+    \\STX\ACK\NUL\DC2\ENQ\ESC\NUL\135\EOT\SOH\SUB1 Lightning is the main RPC server of the daemon.\n\
     \2\163\ENQ\n\
     \ Comments in this file will be directly parsed into the API\n\
     \ Documentation as descriptions of the associated method, message, or field.\n\
@@ -50227,11 +52232,11 @@ packedFileDescriptor
     \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETX9\NAK'\n\
     \\f\n\
     \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETX92E\n\
-    \\210\STX\n\
-    \\EOT\ACK\NUL\STX\EOT\DC2\ETXB\EOTA\SUB\196\STX lncli: `sendcoins`\n\
+    \\211\STX\n\
+    \\EOT\ACK\NUL\STX\EOT\DC2\ETXB\EOTA\SUB\197\STX lncli: `sendcoins`\n\
     \SendCoins executes a request to send coins to a particular address. Unlike\n\
     \SendMany, this RPC call only allows creating a single output at a time. If\n\
-    \neither target_conf, or sat_per_byte are set, then the internal wallet will\n\
+    \neither target_conf, or sat_per_vbyte are set, then the internal wallet will\n\
     \consult its fee model to determine a fee for the default confirmation\n\
     \target.\n\
     \\n\
@@ -50268,10 +52273,10 @@ packedFileDescriptor
     \\ENQ\ACK\NUL\STX\ACK\ACK\DC2\ETXR\DC1\ETB\n\
     \\f\n\
     \\ENQ\ACK\NUL\STX\ACK\ETX\DC2\ETXR\CAN#\n\
-    \\160\STX\n\
-    \\EOT\ACK\NUL\STX\a\DC2\ETXZ\EOT>\SUB\146\STX lncli: `sendmany`\n\
+    \\161\STX\n\
+    \\EOT\ACK\NUL\STX\a\DC2\ETXZ\EOT>\SUB\147\STX lncli: `sendmany`\n\
     \SendMany handles a request for a transaction that creates multiple specified\n\
-    \outputs in parallel. If neither target_conf, or sat_per_byte are set, then\n\
+    \outputs in parallel. If neither target_conf, or sat_per_vbyte are set, then\n\
     \the internal wallet will consult its fee model to determine a fee for the\n\
     \default confirmation target.\n\
     \\n\
@@ -50846,12 +52851,13 @@ packedFileDescriptor
     \\ENQ\ACK\NUL\STX0\STX\DC2\EOT\168\ETX\GS0\n\
     \\r\n\
     \\ENQ\ACK\NUL\STX0\ETX\DC2\EOT\169\ETX\DC1%\n\
-    \\164\ENQ\n\
-    \\EOT\ACK\NUL\STX1\DC2\ACK\183\ETX\EOT\184\ETX,\SUB\147\ENQ lncli: `fwdinghistory`\n\
+    \\133\ACK\n\
+    \\EOT\ACK\NUL\STX1\DC2\ACK\184\ETX\EOT\185\ETX,\SUB\244\ENQ lncli: `fwdinghistory`\n\
     \ForwardingHistory allows the caller to query the htlcswitch for a record of\n\
     \all HTLCs forwarded within the target time range, and integer offset\n\
-    \within that time range. If no time-range is specified, then the first chunk\n\
-    \of the past 24 hrs of forwarding history are returned.\n\
+    \within that time range, for a maximum number of events. If no maximum number\n\
+    \of events is specified, up to 100 events will be returned. If no time-range\n\
+    \is specified, then events will be returned in the order that they occured.\n\
     \\n\
     \A list of forwarding events are returned. The size of each forwarding event\n\
     \is 40 bytes, and the max message size able to be returned in gRPC is 4 MiB.\n\
@@ -50860,13 +52866,13 @@ packedFileDescriptor
     \request to allow the caller to skip a series of records.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX1\SOH\DC2\EOT\183\ETX\b\EM\n\
+    \\ENQ\ACK\NUL\STX1\SOH\DC2\EOT\184\ETX\b\EM\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX1\STX\DC2\EOT\183\ETX\ESC3\n\
+    \\ENQ\ACK\NUL\STX1\STX\DC2\EOT\184\ETX\ESC3\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX1\ETX\DC2\EOT\184\ETX\DC1*\n\
+    \\ENQ\ACK\NUL\STX1\ETX\DC2\EOT\185\ETX\DC1*\n\
     \\178\ETX\n\
-    \\EOT\ACK\NUL\STX2\DC2\ACK\194\ETX\EOT\195\ETX \SUB\161\ETX lncli: `exportchanbackup`\n\
+    \\EOT\ACK\NUL\STX2\DC2\ACK\195\ETX\EOT\196\ETX \SUB\161\ETX lncli: `exportchanbackup`\n\
     \ExportChannelBackup attempts to return an encrypted static channel backup\n\
     \for the target channel identified by it channel point. The backup is\n\
     \encrypted with a key generated from the aezeed seed of the user. The\n\
@@ -50875,13 +52881,13 @@ packedFileDescriptor
     \from the WalletUnlocker service.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX2\SOH\DC2\EOT\194\ETX\b\ESC\n\
+    \\ENQ\ACK\NUL\STX2\SOH\DC2\EOT\195\ETX\b\ESC\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX2\STX\DC2\EOT\194\ETX\GS7\n\
+    \\ENQ\ACK\NUL\STX2\STX\DC2\EOT\195\ETX\GS7\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX2\ETX\DC2\EOT\195\ETX\DC1\RS\n\
+    \\ENQ\ACK\NUL\STX2\ETX\DC2\EOT\196\ETX\DC1\RS\n\
     \\202\STX\n\
-    \\EOT\ACK\NUL\STX3\DC2\ACK\204\ETX\EOT\205\ETX%\SUB\185\STX\n\
+    \\EOT\ACK\NUL\STX3\DC2\ACK\205\ETX\EOT\206\ETX%\SUB\185\STX\n\
     \ExportAllChannelBackups returns static channel backups for all existing\n\
     \channels known to lnd. A set of regular singular static channel backups for\n\
     \each channel are returned. Additionally, a multi-channel backup is returned\n\
@@ -50889,38 +52895,38 @@ packedFileDescriptor
     \each channel.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX3\SOH\DC2\EOT\204\ETX\b\US\n\
+    \\ENQ\ACK\NUL\STX3\SOH\DC2\EOT\205\ETX\b\US\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX3\STX\DC2\EOT\204\ETX!8\n\
+    \\ENQ\ACK\NUL\STX3\STX\DC2\EOT\205\ETX!8\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX3\ETX\DC2\EOT\205\ETX\DC1#\n\
+    \\ENQ\ACK\NUL\STX3\ETX\DC2\EOT\206\ETX\DC1#\n\
     \\212\SOH\n\
-    \\EOT\ACK\NUL\STX4\DC2\ACK\212\ETX\EOT\213\ETX+\SUB\195\SOH\n\
+    \\EOT\ACK\NUL\STX4\DC2\ACK\213\ETX\EOT\214\ETX+\SUB\195\SOH\n\
     \VerifyChanBackup allows a caller to verify the integrity of a channel backup\n\
     \snapshot. This method will accept either a packed Single or a packed Multi.\n\
     \Specifying both will result in an error.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX4\SOH\DC2\EOT\212\ETX\b\CAN\n\
+    \\ENQ\ACK\NUL\STX4\SOH\DC2\EOT\213\ETX\b\CAN\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX4\STX\DC2\EOT\212\ETX\SUB,\n\
+    \\ENQ\ACK\NUL\STX4\STX\DC2\EOT\213\ETX\SUB,\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX4\ETX\DC2\EOT\213\ETX\DC1)\n\
+    \\ENQ\ACK\NUL\STX4\ETX\DC2\EOT\214\ETX\DC1)\n\
     \\207\STX\n\
-    \\EOT\ACK\NUL\STX5\DC2\ACK\221\ETX\EOT\222\ETX(\SUB\190\STX lncli: `restorechanbackup`\n\
+    \\EOT\ACK\NUL\STX5\DC2\ACK\222\ETX\EOT\223\ETX(\SUB\190\STX lncli: `restorechanbackup`\n\
     \RestoreChannelBackups accepts a set of singular channel backups, or a\n\
     \single encrypted multi-chan backup and attempts to recover any funds\n\
     \remaining within the channel. If we are able to unpack the backup, then the\n\
     \new channel will be shown under listchannels, as well as pending channels.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX5\SOH\DC2\EOT\221\ETX\b\GS\n\
+    \\ENQ\ACK\NUL\STX5\SOH\DC2\EOT\222\ETX\b\GS\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX5\STX\DC2\EOT\221\ETX\US7\n\
+    \\ENQ\ACK\NUL\STX5\STX\DC2\EOT\222\ETX\US7\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX5\ETX\DC2\EOT\222\ETX\DC1&\n\
+    \\ENQ\ACK\NUL\STX5\ETX\DC2\EOT\223\ETX\DC1&\n\
     \\223\ETX\n\
-    \\EOT\ACK\NUL\STX6\DC2\ACK\233\ETX\EOT\234\ETX,\SUB\206\ETX\n\
+    \\EOT\ACK\NUL\STX6\DC2\ACK\234\ETX\EOT\235\ETX,\SUB\206\ETX\n\
     \SubscribeChannelBackups allows a client to sub-subscribe to the most up to\n\
     \date information concerning the state of all channel backups. Each time a\n\
     \new channel is added, we return the new set of channels, along with a\n\
@@ -50930,274 +52936,274 @@ packedFileDescriptor
     \channel(s) removed.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX6\SOH\DC2\EOT\233\ETX\b\US\n\
+    \\ENQ\ACK\NUL\STX6\SOH\DC2\EOT\234\ETX\b\US\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX6\STX\DC2\EOT\233\ETX!:\n\
+    \\ENQ\ACK\NUL\STX6\STX\DC2\EOT\234\ETX!:\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX6\ACK\DC2\EOT\234\ETX\DC1\ETB\n\
+    \\ENQ\ACK\NUL\STX6\ACK\DC2\EOT\235\ETX\DC1\ETB\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX6\ETX\DC2\EOT\234\ETX\CAN*\n\
+    \\ENQ\ACK\NUL\STX6\ETX\DC2\EOT\235\ETX\CAN*\n\
     \\194\SOH\n\
-    \\EOT\ACK\NUL\STX7\DC2\EOT\241\ETX\EOTJ\SUB\179\SOH lncli: `bakemacaroon`\n\
+    \\EOT\ACK\NUL\STX7\DC2\EOT\242\ETX\EOTJ\SUB\179\SOH lncli: `bakemacaroon`\n\
     \BakeMacaroon allows the creation of a new macaroon with custom read and\n\
     \write permissions. No first-party caveats are added since this can be done\n\
     \offline.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX7\SOH\DC2\EOT\241\ETX\b\DC4\n\
+    \\ENQ\ACK\NUL\STX7\SOH\DC2\EOT\242\ETX\b\DC4\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX7\STX\DC2\EOT\241\ETX\SYN)\n\
+    \\ENQ\ACK\NUL\STX7\STX\DC2\EOT\242\ETX\SYN)\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX7\ETX\DC2\EOT\241\ETX4H\n\
+    \\ENQ\ACK\NUL\STX7\ETX\DC2\EOT\242\ETX4H\n\
     \d\n\
-    \\EOT\ACK\NUL\STX8\DC2\ACK\246\ETX\EOT\247\ETX*\SUBT lncli: `listmacaroonids`\n\
+    \\EOT\ACK\NUL\STX8\DC2\ACK\247\ETX\EOT\248\ETX*\SUBT lncli: `listmacaroonids`\n\
     \ListMacaroonIDs returns all root key IDs that are in use.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX8\SOH\DC2\EOT\246\ETX\b\ETB\n\
+    \\ENQ\ACK\NUL\STX8\SOH\DC2\EOT\247\ETX\b\ETB\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX8\STX\DC2\EOT\246\ETX\EM/\n\
+    \\ENQ\ACK\NUL\STX8\STX\DC2\EOT\247\ETX\EM/\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX8\ETX\DC2\EOT\247\ETX\DC1(\n\
+    \\ENQ\ACK\NUL\STX8\ETX\DC2\EOT\248\ETX\DC1(\n\
     \\147\SOH\n\
-    \\EOT\ACK\NUL\STX9\DC2\ACK\253\ETX\EOT\254\ETX+\SUB\130\SOH lncli: `deletemacaroonid`\n\
+    \\EOT\ACK\NUL\STX9\DC2\ACK\254\ETX\EOT\255\ETX+\SUB\130\SOH lncli: `deletemacaroonid`\n\
     \DeleteMacaroonID deletes the specified macaroon ID and invalidates all\n\
     \macaroons derived from that ID.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX9\SOH\DC2\EOT\253\ETX\b\CAN\n\
+    \\ENQ\ACK\NUL\STX9\SOH\DC2\EOT\254\ETX\b\CAN\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX9\STX\DC2\EOT\253\ETX\SUB1\n\
+    \\ENQ\ACK\NUL\STX9\STX\DC2\EOT\254\ETX\SUB1\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX9\ETX\DC2\EOT\254\ETX\DC1)\n\
+    \\ENQ\ACK\NUL\STX9\ETX\DC2\EOT\255\ETX\DC1)\n\
     \\140\SOH\n\
-    \\EOT\ACK\NUL\STX:\DC2\ACK\132\EOT\EOT\133\EOT*\SUB| lncli: `listpermissions`\n\
+    \\EOT\ACK\NUL\STX:\DC2\ACK\133\EOT\EOT\134\EOT*\SUB| lncli: `listpermissions`\n\
     \ListPermissions lists all RPC method URIs and their required macaroon\n\
     \permissions to access them.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX:\SOH\DC2\EOT\132\EOT\b\ETB\n\
+    \\ENQ\ACK\NUL\STX:\SOH\DC2\EOT\133\EOT\b\ETB\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX:\STX\DC2\EOT\132\EOT\EM/\n\
+    \\ENQ\ACK\NUL\STX:\STX\DC2\EOT\133\EOT\EM/\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX:\ETX\DC2\EOT\133\EOT\DC1(\n\
+    \\ENQ\ACK\NUL\STX:\ETX\DC2\EOT\134\EOT\DC1(\n\
     \\f\n\
-    \\STX\EOT\NUL\DC2\ACK\136\EOT\NUL\154\EOT\SOH\n\
+    \\STX\EOT\NUL\DC2\ACK\137\EOT\NUL\155\EOT\SOH\n\
     \\v\n\
-    \\ETX\EOT\NUL\SOH\DC2\EOT\136\EOT\b\f\n\
+    \\ETX\EOT\NUL\SOH\DC2\EOT\137\EOT\b\f\n\
     \#\n\
-    \\EOT\EOT\NUL\STX\NUL\DC2\EOT\138\EOT\EOT!\SUB\NAK The type of address\n\
+    \\EOT\EOT\NUL\STX\NUL\DC2\EOT\139\EOT\EOT!\SUB\NAK The type of address\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\NUL\STX\NUL\EOT\DC2\ACK\138\EOT\EOT\136\EOT\SO\n\
+    \\ENQ\EOT\NUL\STX\NUL\EOT\DC2\ACK\139\EOT\EOT\137\EOT\SO\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\NUL\ACK\DC2\EOT\138\EOT\EOT\SI\n\
+    \\ENQ\EOT\NUL\STX\NUL\ACK\DC2\EOT\139\EOT\EOT\SI\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\EOT\138\EOT\DLE\FS\n\
+    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\EOT\139\EOT\DLE\FS\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\EOT\138\EOT\US \n\
+    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\EOT\139\EOT\US \n\
     \\ESC\n\
-    \\EOT\EOT\NUL\STX\SOH\DC2\EOT\141\EOT\EOT\ETB\SUB\r The address\n\
+    \\EOT\EOT\NUL\STX\SOH\DC2\EOT\142\EOT\EOT\ETB\SUB\r The address\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\NUL\STX\SOH\EOT\DC2\ACK\141\EOT\EOT\138\EOT!\n\
+    \\ENQ\EOT\NUL\STX\SOH\EOT\DC2\ACK\142\EOT\EOT\139\EOT!\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\EOT\141\EOT\EOT\n\
+    \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\EOT\142\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\SOH\SOH\DC2\EOT\141\EOT\v\DC2\n\
+    \\ENQ\EOT\NUL\STX\SOH\SOH\DC2\EOT\142\EOT\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\SOH\ETX\DC2\EOT\141\EOT\NAK\SYN\n\
+    \\ENQ\EOT\NUL\STX\SOH\ETX\DC2\EOT\142\EOT\NAK\SYN\n\
     \9\n\
-    \\EOT\EOT\NUL\STX\STX\DC2\EOT\144\EOT\EOT\EM\SUB+ The value of the unspent coin in satoshis\n\
+    \\EOT\EOT\NUL\STX\STX\DC2\EOT\145\EOT\EOT\EM\SUB+ The value of the unspent coin in satoshis\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\NUL\STX\STX\EOT\DC2\ACK\144\EOT\EOT\141\EOT\ETB\n\
+    \\ENQ\EOT\NUL\STX\STX\EOT\DC2\ACK\145\EOT\EOT\142\EOT\ETB\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\STX\ENQ\DC2\EOT\144\EOT\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\STX\ENQ\DC2\EOT\145\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\STX\SOH\DC2\EOT\144\EOT\n\
+    \\ENQ\EOT\NUL\STX\STX\SOH\DC2\EOT\145\EOT\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\STX\ETX\DC2\EOT\144\EOT\ETB\CAN\n\
+    \\ENQ\EOT\NUL\STX\STX\ETX\DC2\EOT\145\EOT\ETB\CAN\n\
     \#\n\
-    \\EOT\EOT\NUL\STX\ETX\DC2\EOT\147\EOT\EOT\EM\SUB\NAK The pkscript in hex\n\
+    \\EOT\EOT\NUL\STX\ETX\DC2\EOT\148\EOT\EOT\EM\SUB\NAK The pkscript in hex\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\NUL\STX\ETX\EOT\DC2\ACK\147\EOT\EOT\144\EOT\EM\n\
+    \\ENQ\EOT\NUL\STX\ETX\EOT\DC2\ACK\148\EOT\EOT\145\EOT\EM\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\ETX\ENQ\DC2\EOT\147\EOT\EOT\n\
+    \\ENQ\EOT\NUL\STX\ETX\ENQ\DC2\EOT\148\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\ETX\SOH\DC2\EOT\147\EOT\v\DC4\n\
+    \\ENQ\EOT\NUL\STX\ETX\SOH\DC2\EOT\148\EOT\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\ETX\ETX\DC2\EOT\147\EOT\ETB\CAN\n\
+    \\ENQ\EOT\NUL\STX\ETX\ETX\DC2\EOT\148\EOT\ETB\CAN\n\
     \-\n\
-    \\EOT\EOT\NUL\STX\EOT\DC2\EOT\150\EOT\EOT\SUB\SUB\US The outpoint in format txid:n\n\
+    \\EOT\EOT\NUL\STX\EOT\DC2\EOT\151\EOT\EOT\SUB\SUB\US The outpoint in format txid:n\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\NUL\STX\EOT\EOT\DC2\ACK\150\EOT\EOT\147\EOT\EM\n\
+    \\ENQ\EOT\NUL\STX\EOT\EOT\DC2\ACK\151\EOT\EOT\148\EOT\EM\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\EOT\ACK\DC2\EOT\150\EOT\EOT\f\n\
+    \\ENQ\EOT\NUL\STX\EOT\ACK\DC2\EOT\151\EOT\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\EOT\SOH\DC2\EOT\150\EOT\r\NAK\n\
+    \\ENQ\EOT\NUL\STX\EOT\SOH\DC2\EOT\151\EOT\r\NAK\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\EOT\ETX\DC2\EOT\150\EOT\CAN\EM\n\
+    \\ENQ\EOT\NUL\STX\EOT\ETX\DC2\EOT\151\EOT\CAN\EM\n\
     \8\n\
-    \\EOT\EOT\NUL\STX\ENQ\DC2\EOT\153\EOT\EOT\FS\SUB* The number of confirmations for the Utxo\n\
+    \\EOT\EOT\NUL\STX\ENQ\DC2\EOT\154\EOT\EOT\FS\SUB* The number of confirmations for the Utxo\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\NUL\STX\ENQ\EOT\DC2\ACK\153\EOT\EOT\150\EOT\SUB\n\
+    \\ENQ\EOT\NUL\STX\ENQ\EOT\DC2\ACK\154\EOT\EOT\151\EOT\SUB\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\ENQ\ENQ\DC2\EOT\153\EOT\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\ENQ\ENQ\DC2\EOT\154\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\ENQ\SOH\DC2\EOT\153\EOT\n\
+    \\ENQ\EOT\NUL\STX\ENQ\SOH\DC2\EOT\154\EOT\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\ENQ\ETX\DC2\EOT\153\EOT\SUB\ESC\n\
+    \\ENQ\EOT\NUL\STX\ENQ\ETX\DC2\EOT\154\EOT\SUB\ESC\n\
     \\f\n\
-    \\STX\EOT\SOH\DC2\ACK\156\EOT\NUL\186\EOT\SOH\n\
+    \\STX\EOT\SOH\DC2\ACK\157\EOT\NUL\187\EOT\SOH\n\
     \\v\n\
-    \\ETX\EOT\SOH\SOH\DC2\EOT\156\EOT\b\DC3\n\
+    \\ETX\EOT\SOH\SOH\DC2\EOT\157\EOT\b\DC3\n\
     \$\n\
-    \\EOT\EOT\SOH\STX\NUL\DC2\EOT\158\EOT\EOT\ETB\SUB\SYN The transaction hash\n\
+    \\EOT\EOT\SOH\STX\NUL\DC2\EOT\159\EOT\EOT\ETB\SUB\SYN The transaction hash\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SOH\STX\NUL\EOT\DC2\ACK\158\EOT\EOT\156\EOT\NAK\n\
+    \\ENQ\EOT\SOH\STX\NUL\EOT\DC2\ACK\159\EOT\EOT\157\EOT\NAK\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\NUL\ENQ\DC2\EOT\158\EOT\EOT\n\
+    \\ENQ\EOT\SOH\STX\NUL\ENQ\DC2\EOT\159\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\NUL\SOH\DC2\EOT\158\EOT\v\DC2\n\
+    \\ENQ\EOT\SOH\STX\NUL\SOH\DC2\EOT\159\EOT\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\NUL\ETX\DC2\EOT\158\EOT\NAK\SYN\n\
+    \\ENQ\EOT\SOH\STX\NUL\ETX\DC2\EOT\159\EOT\NAK\SYN\n\
     \?\n\
-    \\EOT\EOT\SOH\STX\SOH\DC2\EOT\161\EOT\EOT\NAK\SUB1 The transaction amount, denominated in satoshis\n\
+    \\EOT\EOT\SOH\STX\SOH\DC2\EOT\162\EOT\EOT\NAK\SUB1 The transaction amount, denominated in satoshis\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SOH\STX\SOH\EOT\DC2\ACK\161\EOT\EOT\158\EOT\ETB\n\
+    \\ENQ\EOT\SOH\STX\SOH\EOT\DC2\ACK\162\EOT\EOT\159\EOT\ETB\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\SOH\ENQ\DC2\EOT\161\EOT\EOT\t\n\
+    \\ENQ\EOT\SOH\STX\SOH\ENQ\DC2\EOT\162\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\SOH\SOH\DC2\EOT\161\EOT\n\
+    \\ENQ\EOT\SOH\STX\SOH\SOH\DC2\EOT\162\EOT\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\SOH\ETX\DC2\EOT\161\EOT\DC3\DC4\n\
+    \\ENQ\EOT\SOH\STX\SOH\ETX\DC2\EOT\162\EOT\DC3\DC4\n\
     \+\n\
-    \\EOT\EOT\SOH\STX\STX\DC2\EOT\164\EOT\EOT \SUB\GS The number of confirmations\n\
+    \\EOT\EOT\SOH\STX\STX\DC2\EOT\165\EOT\EOT \SUB\GS The number of confirmations\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SOH\STX\STX\EOT\DC2\ACK\164\EOT\EOT\161\EOT\NAK\n\
+    \\ENQ\EOT\SOH\STX\STX\EOT\DC2\ACK\165\EOT\EOT\162\EOT\NAK\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\STX\ENQ\DC2\EOT\164\EOT\EOT\t\n\
+    \\ENQ\EOT\SOH\STX\STX\ENQ\DC2\EOT\165\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\STX\SOH\DC2\EOT\164\EOT\n\
+    \\ENQ\EOT\SOH\STX\STX\SOH\DC2\EOT\165\EOT\n\
     \\ESC\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\STX\ETX\DC2\EOT\164\EOT\RS\US\n\
+    \\ENQ\EOT\SOH\STX\STX\ETX\DC2\EOT\165\EOT\RS\US\n\
     \F\n\
-    \\EOT\EOT\SOH\STX\ETX\DC2\EOT\167\EOT\EOT\SUB\SUB8 The hash of the block this transaction was included in\n\
+    \\EOT\EOT\SOH\STX\ETX\DC2\EOT\168\EOT\EOT\SUB\SUB8 The hash of the block this transaction was included in\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SOH\STX\ETX\EOT\DC2\ACK\167\EOT\EOT\164\EOT \n\
+    \\ENQ\EOT\SOH\STX\ETX\EOT\DC2\ACK\168\EOT\EOT\165\EOT \n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\ETX\ENQ\DC2\EOT\167\EOT\EOT\n\
+    \\ENQ\EOT\SOH\STX\ETX\ENQ\DC2\EOT\168\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\ETX\SOH\DC2\EOT\167\EOT\v\NAK\n\
+    \\ENQ\EOT\SOH\STX\ETX\SOH\DC2\EOT\168\EOT\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\ETX\ETX\DC2\EOT\167\EOT\CAN\EM\n\
+    \\ENQ\EOT\SOH\STX\ETX\ETX\DC2\EOT\168\EOT\CAN\EM\n\
     \H\n\
-    \\EOT\EOT\SOH\STX\EOT\DC2\EOT\170\EOT\EOT\ESC\SUB: The height of the block this transaction was included in\n\
+    \\EOT\EOT\SOH\STX\EOT\DC2\EOT\171\EOT\EOT\ESC\SUB: The height of the block this transaction was included in\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SOH\STX\EOT\EOT\DC2\ACK\170\EOT\EOT\167\EOT\SUB\n\
+    \\ENQ\EOT\SOH\STX\EOT\EOT\DC2\ACK\171\EOT\EOT\168\EOT\SUB\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\EOT\ENQ\DC2\EOT\170\EOT\EOT\t\n\
+    \\ENQ\EOT\SOH\STX\EOT\ENQ\DC2\EOT\171\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\EOT\SOH\DC2\EOT\170\EOT\n\
+    \\ENQ\EOT\SOH\STX\EOT\SOH\DC2\EOT\171\EOT\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\EOT\ETX\DC2\EOT\170\EOT\EM\SUB\n\
+    \\ENQ\EOT\SOH\STX\EOT\ETX\DC2\EOT\171\EOT\EM\SUB\n\
     \-\n\
-    \\EOT\EOT\SOH\STX\ENQ\DC2\EOT\173\EOT\EOT\EM\SUB\US Timestamp of this transaction\n\
+    \\EOT\EOT\SOH\STX\ENQ\DC2\EOT\174\EOT\EOT\EM\SUB\US Timestamp of this transaction\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SOH\STX\ENQ\EOT\DC2\ACK\173\EOT\EOT\170\EOT\ESC\n\
+    \\ENQ\EOT\SOH\STX\ENQ\EOT\DC2\ACK\174\EOT\EOT\171\EOT\ESC\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\ENQ\ENQ\DC2\EOT\173\EOT\EOT\t\n\
+    \\ENQ\EOT\SOH\STX\ENQ\ENQ\DC2\EOT\174\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\ENQ\SOH\DC2\EOT\173\EOT\n\
+    \\ENQ\EOT\SOH\STX\ENQ\SOH\DC2\EOT\174\EOT\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\ENQ\ETX\DC2\EOT\173\EOT\ETB\CAN\n\
+    \\ENQ\EOT\SOH\STX\ENQ\ETX\DC2\EOT\174\EOT\ETB\CAN\n\
     \.\n\
-    \\EOT\EOT\SOH\STX\ACK\DC2\EOT\176\EOT\EOT\EM\SUB  Fees paid for this transaction\n\
+    \\EOT\EOT\SOH\STX\ACK\DC2\EOT\177\EOT\EOT\EM\SUB  Fees paid for this transaction\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SOH\STX\ACK\EOT\DC2\ACK\176\EOT\EOT\173\EOT\EM\n\
+    \\ENQ\EOT\SOH\STX\ACK\EOT\DC2\ACK\177\EOT\EOT\174\EOT\EM\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\ACK\ENQ\DC2\EOT\176\EOT\EOT\t\n\
+    \\ENQ\EOT\SOH\STX\ACK\ENQ\DC2\EOT\177\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\ACK\SOH\DC2\EOT\176\EOT\n\
+    \\ENQ\EOT\SOH\STX\ACK\SOH\DC2\EOT\177\EOT\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\ACK\ETX\DC2\EOT\176\EOT\ETB\CAN\n\
+    \\ENQ\EOT\SOH\STX\ACK\ETX\DC2\EOT\177\EOT\ETB\CAN\n\
     \B\n\
-    \\EOT\EOT\SOH\STX\a\DC2\EOT\179\EOT\EOT'\SUB4 Addresses that received funds for this transaction\n\
+    \\EOT\EOT\SOH\STX\a\DC2\EOT\180\EOT\EOT'\SUB4 Addresses that received funds for this transaction\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\a\EOT\DC2\EOT\179\EOT\EOT\f\n\
+    \\ENQ\EOT\SOH\STX\a\EOT\DC2\EOT\180\EOT\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\a\ENQ\DC2\EOT\179\EOT\r\DC3\n\
+    \\ENQ\EOT\SOH\STX\a\ENQ\DC2\EOT\180\EOT\r\DC3\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\a\SOH\DC2\EOT\179\EOT\DC4\"\n\
+    \\ENQ\EOT\SOH\STX\a\SOH\DC2\EOT\180\EOT\DC4\"\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\a\ETX\DC2\EOT\179\EOT%&\n\
+    \\ENQ\EOT\SOH\STX\a\ETX\DC2\EOT\180\EOT%&\n\
     \(\n\
-    \\EOT\EOT\SOH\STX\b\DC2\EOT\182\EOT\EOT\SUB\SUB\SUB The raw transaction hex.\n\
+    \\EOT\EOT\SOH\STX\b\DC2\EOT\183\EOT\EOT\SUB\SUB\SUB The raw transaction hex.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SOH\STX\b\EOT\DC2\ACK\182\EOT\EOT\179\EOT'\n\
+    \\ENQ\EOT\SOH\STX\b\EOT\DC2\ACK\183\EOT\EOT\180\EOT'\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\b\ENQ\DC2\EOT\182\EOT\EOT\n\
+    \\ENQ\EOT\SOH\STX\b\ENQ\DC2\EOT\183\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\b\SOH\DC2\EOT\182\EOT\v\NAK\n\
+    \\ENQ\EOT\SOH\STX\b\SOH\DC2\EOT\183\EOT\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\b\ETX\DC2\EOT\182\EOT\CAN\EM\n\
+    \\ENQ\EOT\SOH\STX\b\ETX\DC2\EOT\183\EOT\CAN\EM\n\
     \I\n\
-    \\EOT\EOT\SOH\STX\t\DC2\EOT\185\EOT\EOT\SYN\SUB; A label that was optionally set on transaction broadcast.\n\
+    \\EOT\EOT\SOH\STX\t\DC2\EOT\186\EOT\EOT\SYN\SUB; A label that was optionally set on transaction broadcast.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SOH\STX\t\EOT\DC2\ACK\185\EOT\EOT\182\EOT\SUB\n\
+    \\ENQ\EOT\SOH\STX\t\EOT\DC2\ACK\186\EOT\EOT\183\EOT\SUB\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\t\ENQ\DC2\EOT\185\EOT\EOT\n\
+    \\ENQ\EOT\SOH\STX\t\ENQ\DC2\EOT\186\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\t\SOH\DC2\EOT\185\EOT\v\DLE\n\
+    \\ENQ\EOT\SOH\STX\t\SOH\DC2\EOT\186\EOT\v\DLE\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\t\ETX\DC2\EOT\185\EOT\DC3\NAK\n\
+    \\ENQ\EOT\SOH\STX\t\ETX\DC2\EOT\186\EOT\DC3\NAK\n\
     \\f\n\
-    \\STX\EOT\STX\DC2\ACK\187\EOT\NUL\202\EOT\SOH\n\
+    \\STX\EOT\STX\DC2\ACK\188\EOT\NUL\206\EOT\SOH\n\
     \\v\n\
-    \\ETX\EOT\STX\SOH\DC2\EOT\187\EOT\b\RS\n\
+    \\ETX\EOT\STX\SOH\DC2\EOT\188\EOT\b\RS\n\
     \\151\SOH\n\
-    \\EOT\EOT\STX\STX\NUL\DC2\EOT\192\EOT\EOT\ESC\SUB\136\SOH\n\
+    \\EOT\EOT\STX\STX\NUL\DC2\EOT\193\EOT\EOT\ESC\SUB\136\SOH\n\
     \The height from which to list transactions, inclusive. If this value is\n\
     \greater than end_height, transactions will be read in reverse.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\STX\STX\NUL\EOT\DC2\ACK\192\EOT\EOT\187\EOT \n\
+    \\ENQ\EOT\STX\STX\NUL\EOT\DC2\ACK\193\EOT\EOT\188\EOT \n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\EOT\192\EOT\EOT\t\n\
+    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\EOT\193\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\EOT\192\EOT\n\
+    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\EOT\193\EOT\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\EOT\192\EOT\EM\SUB\n\
+    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\EOT\193\EOT\EM\SUB\n\
     \\188\STX\n\
-    \\EOT\EOT\STX\STX\SOH\DC2\EOT\201\EOT\EOT\EM\SUB\173\STX\n\
+    \\EOT\EOT\STX\STX\SOH\DC2\EOT\202\EOT\EOT\EM\SUB\173\STX\n\
     \The height until which to list transactions, inclusive. To include\n\
     \unconfirmed transactions, this value should be set to -1, which will\n\
     \return transactions from start_height until the current chain tip and\n\
@@ -51205,266 +53211,278 @@ packedFileDescriptor
     \default to this option.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\ACK\201\EOT\EOT\192\EOT\ESC\n\
+    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\ACK\202\EOT\EOT\193\EOT\ESC\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\EOT\201\EOT\EOT\t\n\
+    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\EOT\202\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\EOT\201\EOT\n\
+    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\EOT\202\EOT\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\EOT\201\EOT\ETB\CAN\n\
-    \\f\n\
-    \\STX\EOT\ETX\DC2\ACK\204\EOT\NUL\207\EOT\SOH\n\
-    \\v\n\
-    \\ETX\EOT\ETX\SOH\DC2\EOT\204\EOT\b\SUB\n\
-    \@\n\
-    \\EOT\EOT\ETX\STX\NUL\DC2\EOT\206\EOT\EOT*\SUB2 The list of transactions relevant to the wallet.\n\
+    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\EOT\202\EOT\ETB\CAN\n\
+    \W\n\
+    \\EOT\EOT\STX\STX\STX\DC2\EOT\205\EOT\EOT\ETB\SUBI An optional filter to only include transactions relevant to an account.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\STX\STX\STX\EOT\DC2\ACK\205\EOT\EOT\202\EOT\EM\n\
+    \\r\n\
+    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\EOT\205\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\EOT\DC2\EOT\206\EOT\EOT\f\n\
+    \\ENQ\EOT\STX\STX\STX\SOH\DC2\EOT\205\EOT\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\ACK\DC2\EOT\206\EOT\r\CAN\n\
-    \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\EOT\206\EOT\EM%\n\
-    \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\EOT\206\EOT()\n\
+    \\ENQ\EOT\STX\STX\STX\ETX\DC2\EOT\205\EOT\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT\EOT\DC2\ACK\209\EOT\NUL\228\EOT\SOH\n\
+    \\STX\EOT\ETX\DC2\ACK\208\EOT\NUL\211\EOT\SOH\n\
     \\v\n\
-    \\ETX\EOT\EOT\SOH\DC2\EOT\209\EOT\b\DLE\n\
-    \\SO\n\
-    \\EOT\EOT\EOT\b\NUL\DC2\ACK\210\EOT\EOT\227\EOT\ENQ\n\
+    \\ETX\EOT\ETX\SOH\DC2\EOT\208\EOT\b\SUB\n\
+    \@\n\
+    \\EOT\EOT\ETX\STX\NUL\DC2\EOT\210\EOT\EOT*\SUB2 The list of transactions relevant to the wallet.\n\
+    \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\b\NUL\SOH\DC2\EOT\210\EOT\n\
+    \\ENQ\EOT\ETX\STX\NUL\EOT\DC2\EOT\210\EOT\EOT\f\n\
+    \\r\n\
+    \\ENQ\EOT\ETX\STX\NUL\ACK\DC2\EOT\210\EOT\r\CAN\n\
+    \\r\n\
+    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\EOT\210\EOT\EM%\n\
+    \\r\n\
+    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\EOT\210\EOT()\n\
+    \\f\n\
+    \\STX\EOT\EOT\DC2\ACK\213\EOT\NUL\232\EOT\SOH\n\
+    \\v\n\
+    \\ETX\EOT\EOT\SOH\DC2\EOT\213\EOT\b\DLE\n\
+    \\SO\n\
+    \\EOT\EOT\EOT\b\NUL\DC2\ACK\214\EOT\EOT\231\EOT\ENQ\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\b\NUL\SOH\DC2\EOT\214\EOT\n\
     \\SI\n\
     \\DEL\n\
-    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\216\EOT\b\CAN\SUBq\n\
+    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\220\EOT\b\CAN\SUBq\n\
     \The fee limit expressed as a fixed amount of satoshis.\n\
     \\n\
     \The fields fixed and fixed_msat are mutually exclusive.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\216\EOT\b\r\n\
+    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\220\EOT\b\r\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\216\EOT\SO\DC3\n\
+    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\220\EOT\SO\DC3\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\216\EOT\SYN\ETB\n\
+    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\220\EOT\SYN\ETB\n\
     \\132\SOH\n\
-    \\EOT\EOT\EOT\STX\SOH\DC2\EOT\223\EOT\b\GS\SUBv\n\
+    \\EOT\EOT\EOT\STX\SOH\DC2\EOT\227\EOT\b\GS\SUBv\n\
     \The fee limit expressed as a fixed amount of millisatoshis.\n\
     \\n\
     \The fields fixed and fixed_msat are mutually exclusive.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\ENQ\DC2\EOT\223\EOT\b\r\n\
+    \\ENQ\EOT\EOT\STX\SOH\ENQ\DC2\EOT\227\EOT\b\r\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\SOH\DC2\EOT\223\EOT\SO\CAN\n\
+    \\ENQ\EOT\EOT\STX\SOH\SOH\DC2\EOT\227\EOT\SO\CAN\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\ETX\DC2\EOT\223\EOT\ESC\FS\n\
+    \\ENQ\EOT\EOT\STX\SOH\ETX\DC2\EOT\227\EOT\ESC\FS\n\
     \N\n\
-    \\EOT\EOT\EOT\STX\STX\DC2\EOT\226\EOT\b\SUB\SUB@ The fee limit expressed as a percentage of the payment amount.\n\
+    \\EOT\EOT\EOT\STX\STX\DC2\EOT\230\EOT\b\SUB\SUB@ The fee limit expressed as a percentage of the payment amount.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\STX\ENQ\DC2\EOT\226\EOT\b\r\n\
+    \\ENQ\EOT\EOT\STX\STX\ENQ\DC2\EOT\230\EOT\b\r\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\STX\SOH\DC2\EOT\226\EOT\SO\NAK\n\
+    \\ENQ\EOT\EOT\STX\STX\SOH\DC2\EOT\230\EOT\SO\NAK\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\STX\ETX\DC2\EOT\226\EOT\CAN\EM\n\
+    \\ENQ\EOT\EOT\STX\STX\ETX\DC2\EOT\230\EOT\CAN\EM\n\
     \\f\n\
-    \\STX\EOT\ENQ\DC2\ACK\230\EOT\NUL\200\ENQ\SOH\n\
+    \\STX\EOT\ENQ\DC2\ACK\234\EOT\NUL\209\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\ENQ\SOH\DC2\EOT\230\EOT\b\DC3\n\
+    \\ETX\EOT\ENQ\SOH\DC2\EOT\234\EOT\b\DC3\n\
     \t\n\
-    \\EOT\EOT\ENQ\STX\NUL\DC2\EOT\235\EOT\EOT\DC3\SUBf\n\
+    \\EOT\EOT\ENQ\STX\NUL\DC2\EOT\239\EOT\EOT\DC3\SUBf\n\
     \The identity pubkey of the payment recipient. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\NUL\EOT\DC2\ACK\235\EOT\EOT\230\EOT\NAK\n\
+    \\ENQ\EOT\ENQ\STX\NUL\EOT\DC2\ACK\239\EOT\EOT\234\EOT\NAK\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\NUL\ENQ\DC2\EOT\235\EOT\EOT\t\n\
+    \\ENQ\EOT\ENQ\STX\NUL\ENQ\DC2\EOT\239\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\NUL\SOH\DC2\EOT\235\EOT\n\
+    \\ENQ\EOT\ENQ\STX\NUL\SOH\DC2\EOT\239\EOT\n\
     \\SO\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\NUL\ETX\DC2\EOT\235\EOT\DC1\DC2\n\
+    \\ENQ\EOT\ENQ\STX\NUL\ETX\DC2\EOT\239\EOT\DC1\DC2\n\
     \\153\SOH\n\
-    \\EOT\EOT\ENQ\STX\SOH\DC2\EOT\241\EOT\EOT/\SUB\138\SOH\n\
+    \\EOT\EOT\ENQ\STX\SOH\DC2\EOT\245\EOT\EOT/\SUB\138\SOH\n\
     \The hex-encoded identity pubkey of the payment recipient. Deprecated now\n\
     \that the REST gateway supports base64 encoding of bytes fields.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\SOH\EOT\DC2\ACK\241\EOT\EOT\235\EOT\DC3\n\
+    \\ENQ\EOT\ENQ\STX\SOH\EOT\DC2\ACK\245\EOT\EOT\239\EOT\DC3\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\SOH\ENQ\DC2\EOT\241\EOT\EOT\n\
+    \\ENQ\EOT\ENQ\STX\SOH\ENQ\DC2\EOT\245\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\SOH\SOH\DC2\EOT\241\EOT\v\SYN\n\
+    \\ENQ\EOT\ENQ\STX\SOH\SOH\DC2\EOT\245\EOT\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\SOH\ETX\DC2\EOT\241\EOT\EM\SUB\n\
+    \\ENQ\EOT\ENQ\STX\SOH\ETX\DC2\EOT\245\EOT\EM\SUB\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\SOH\b\DC2\EOT\241\EOT\ESC.\n\
+    \\ENQ\EOT\ENQ\STX\SOH\b\DC2\EOT\245\EOT\ESC.\n\
     \\SO\n\
-    \\ACK\EOT\ENQ\STX\SOH\b\ETX\DC2\EOT\241\EOT\FS-\n\
+    \\ACK\EOT\ENQ\STX\SOH\b\ETX\DC2\EOT\245\EOT\FS-\n\
     \n\n\
-    \\EOT\EOT\ENQ\STX\STX\DC2\EOT\248\EOT\EOT\DC2\SUB`\n\
+    \\EOT\EOT\ENQ\STX\STX\DC2\EOT\252\EOT\EOT\DC2\SUB`\n\
     \The amount to send expressed in satoshis.\n\
     \\n\
     \The fields amt and amt_msat are mutually exclusive.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\STX\EOT\DC2\ACK\248\EOT\EOT\241\EOT/\n\
+    \\ENQ\EOT\ENQ\STX\STX\EOT\DC2\ACK\252\EOT\EOT\245\EOT/\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\STX\ENQ\DC2\EOT\248\EOT\EOT\t\n\
+    \\ENQ\EOT\ENQ\STX\STX\ENQ\DC2\EOT\252\EOT\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\STX\SOH\DC2\EOT\248\EOT\n\
+    \\ENQ\EOT\ENQ\STX\STX\SOH\DC2\EOT\252\EOT\n\
     \\r\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\STX\ETX\DC2\EOT\248\EOT\DLE\DC1\n\
+    \\ENQ\EOT\ENQ\STX\STX\ETX\DC2\EOT\252\EOT\DLE\DC1\n\
     \s\n\
-    \\EOT\EOT\ENQ\STX\ETX\DC2\EOT\255\EOT\EOT\CAN\SUBe\n\
+    \\EOT\EOT\ENQ\STX\ETX\DC2\EOT\131\ENQ\EOT\CAN\SUBe\n\
     \The amount to send expressed in millisatoshis.\n\
     \\n\
     \The fields amt and amt_msat are mutually exclusive.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\ETX\EOT\DC2\ACK\255\EOT\EOT\248\EOT\DC2\n\
+    \\ENQ\EOT\ENQ\STX\ETX\EOT\DC2\ACK\131\ENQ\EOT\252\EOT\DC2\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\ETX\ENQ\DC2\EOT\255\EOT\EOT\t\n\
+    \\ENQ\EOT\ENQ\STX\ETX\ENQ\DC2\EOT\131\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\ETX\SOH\DC2\EOT\255\EOT\n\
+    \\ENQ\EOT\ENQ\STX\ETX\SOH\DC2\EOT\131\ENQ\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\ETX\ETX\DC2\EOT\255\EOT\NAK\ETB\n\
+    \\ENQ\EOT\ENQ\STX\ETX\ETX\DC2\EOT\131\ENQ\NAK\ETB\n\
     \q\n\
-    \\EOT\EOT\ENQ\STX\EOT\DC2\EOT\133\ENQ\EOT\ESC\SUBc\n\
+    \\EOT\EOT\ENQ\STX\EOT\DC2\EOT\137\ENQ\EOT\ESC\SUBc\n\
     \The hash to use within the payment's HTLC. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\EOT\EOT\DC2\ACK\133\ENQ\EOT\255\EOT\CAN\n\
+    \\ENQ\EOT\ENQ\STX\EOT\EOT\DC2\ACK\137\ENQ\EOT\131\ENQ\CAN\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\EOT\ENQ\DC2\EOT\133\ENQ\EOT\t\n\
+    \\ENQ\EOT\ENQ\STX\EOT\ENQ\DC2\EOT\137\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\EOT\SOH\DC2\EOT\133\ENQ\n\
+    \\ENQ\EOT\ENQ\STX\EOT\SOH\DC2\EOT\137\ENQ\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\EOT\ETX\DC2\EOT\133\ENQ\EM\SUB\n\
+    \\ENQ\EOT\ENQ\STX\EOT\ETX\DC2\EOT\137\ENQ\EM\SUB\n\
     \\150\SOH\n\
-    \\EOT\EOT\ENQ\STX\ENQ\DC2\EOT\139\ENQ\EOT7\SUB\135\SOH\n\
+    \\EOT\EOT\ENQ\STX\ENQ\DC2\EOT\143\ENQ\EOT7\SUB\135\SOH\n\
     \The hex-encoded hash to use within the payment's HTLC. Deprecated now\n\
     \that the REST gateway supports base64 encoding of bytes fields.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\ENQ\EOT\DC2\ACK\139\ENQ\EOT\133\ENQ\ESC\n\
+    \\ENQ\EOT\ENQ\STX\ENQ\EOT\DC2\ACK\143\ENQ\EOT\137\ENQ\ESC\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\ENQ\ENQ\DC2\EOT\139\ENQ\EOT\n\
+    \\ENQ\EOT\ENQ\STX\ENQ\ENQ\DC2\EOT\143\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\ENQ\SOH\DC2\EOT\139\ENQ\v\RS\n\
+    \\ENQ\EOT\ENQ\STX\ENQ\SOH\DC2\EOT\143\ENQ\v\RS\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\ENQ\ETX\DC2\EOT\139\ENQ!\"\n\
+    \\ENQ\EOT\ENQ\STX\ENQ\ETX\DC2\EOT\143\ENQ!\"\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\ENQ\b\DC2\EOT\139\ENQ#6\n\
+    \\ENQ\EOT\ENQ\STX\ENQ\b\DC2\EOT\143\ENQ#6\n\
     \\SO\n\
-    \\ACK\EOT\ENQ\STX\ENQ\b\ETX\DC2\EOT\139\ENQ$5\n\
+    \\ACK\EOT\ENQ\STX\ENQ\b\ETX\DC2\EOT\143\ENQ$5\n\
     \\188\SOH\n\
-    \\EOT\EOT\ENQ\STX\ACK\DC2\EOT\146\ENQ\EOT\US\SUB\173\SOH\n\
+    \\EOT\EOT\ENQ\STX\ACK\DC2\EOT\150\ENQ\EOT\US\SUB\173\SOH\n\
     \A bare-bones invoice for a payment within the Lightning Network. With the\n\
     \details of the invoice, the sender has all the data necessary to send a\n\
     \payment to the recipient.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\ACK\EOT\DC2\ACK\146\ENQ\EOT\139\ENQ7\n\
+    \\ENQ\EOT\ENQ\STX\ACK\EOT\DC2\ACK\150\ENQ\EOT\143\ENQ7\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\ACK\ENQ\DC2\EOT\146\ENQ\EOT\n\
+    \\ENQ\EOT\ENQ\STX\ACK\ENQ\DC2\EOT\150\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\ACK\SOH\DC2\EOT\146\ENQ\v\SUB\n\
+    \\ENQ\EOT\ENQ\STX\ACK\SOH\DC2\EOT\150\ENQ\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\ACK\ETX\DC2\EOT\146\ENQ\GS\RS\n\
+    \\ENQ\EOT\ENQ\STX\ACK\ETX\DC2\EOT\150\ENQ\GS\RS\n\
     \q\n\
-    \\EOT\EOT\ENQ\STX\a\DC2\EOT\152\ENQ\EOT\US\SUBc\n\
+    \\EOT\EOT\ENQ\STX\a\DC2\EOT\156\ENQ\EOT\US\SUBc\n\
     \The CLTV delta from the current height that should be used to set the\n\
     \timelock for the final hop.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\a\EOT\DC2\ACK\152\ENQ\EOT\146\ENQ\US\n\
+    \\ENQ\EOT\ENQ\STX\a\EOT\DC2\ACK\156\ENQ\EOT\150\ENQ\US\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\a\ENQ\DC2\EOT\152\ENQ\EOT\t\n\
+    \\ENQ\EOT\ENQ\STX\a\ENQ\DC2\EOT\156\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\a\SOH\DC2\EOT\152\ENQ\n\
+    \\ENQ\EOT\ENQ\STX\a\SOH\DC2\EOT\156\ENQ\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\a\ETX\DC2\EOT\152\ENQ\GS\RS\n\
+    \\ENQ\EOT\ENQ\STX\a\ETX\DC2\EOT\156\ENQ\GS\RS\n\
     \\130\STX\n\
-    \\EOT\EOT\ENQ\STX\b\DC2\EOT\160\ENQ\EOT\ESC\SUB\243\SOH\n\
+    \\EOT\EOT\ENQ\STX\b\DC2\EOT\164\ENQ\EOT\ESC\SUB\243\SOH\n\
     \The maximum number of satoshis that will be paid as a fee of the payment.\n\
     \This value can be represented either as a percentage of the amount being\n\
     \sent, or as a fixed amount of the maximum fee the user is willing the pay to\n\
     \send the payment.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\b\EOT\DC2\ACK\160\ENQ\EOT\152\ENQ\US\n\
+    \\ENQ\EOT\ENQ\STX\b\EOT\DC2\ACK\164\ENQ\EOT\156\ENQ\US\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\b\ACK\DC2\EOT\160\ENQ\EOT\f\n\
+    \\ENQ\EOT\ENQ\STX\b\ACK\DC2\EOT\164\ENQ\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\b\SOH\DC2\EOT\160\ENQ\r\SYN\n\
+    \\ENQ\EOT\ENQ\STX\b\SOH\DC2\EOT\164\ENQ\r\SYN\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\b\ETX\DC2\EOT\160\ENQ\EM\SUB\n\
+    \\ENQ\EOT\ENQ\STX\b\ETX\DC2\EOT\164\ENQ\EM\SUB\n\
     \t\n\
-    \\EOT\EOT\ENQ\STX\t\DC2\EOT\166\ENQ\EOT5\SUBf\n\
+    \\EOT\EOT\ENQ\STX\t\DC2\EOT\170\ENQ\EOT5\SUBf\n\
     \The channel id of the channel that must be taken to the first hop. If zero,\n\
     \any channel may be used.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\t\EOT\DC2\ACK\166\ENQ\EOT\160\ENQ\ESC\n\
+    \\ENQ\EOT\ENQ\STX\t\EOT\DC2\ACK\170\ENQ\EOT\164\ENQ\ESC\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\t\ENQ\DC2\EOT\166\ENQ\EOT\n\
+    \\ENQ\EOT\ENQ\STX\t\ENQ\DC2\EOT\170\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\t\SOH\DC2\EOT\166\ENQ\v\ESC\n\
+    \\ENQ\EOT\ENQ\STX\t\SOH\DC2\EOT\170\ENQ\v\ESC\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\t\ETX\DC2\EOT\166\ENQ\RS\US\n\
+    \\ENQ\EOT\ENQ\STX\t\ETX\DC2\EOT\170\ENQ\RS\US\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\t\b\DC2\EOT\166\ENQ 4\n\
+    \\ENQ\EOT\ENQ\STX\t\b\DC2\EOT\170\ENQ 4\n\
     \\SO\n\
-    \\ACK\EOT\ENQ\STX\t\b\ACK\DC2\EOT\166\ENQ!3\n\
+    \\ACK\EOT\ENQ\STX\t\b\ACK\DC2\EOT\170\ENQ!3\n\
     \W\n\
     \\EOT\EOT\ENQ\STX\n\
-    \\DC2\EOT\171\ENQ\EOT\US\SUBI\n\
+    \\DC2\EOT\175\ENQ\EOT\US\SUBI\n\
     \The pubkey of the last hop of the route. If empty, any hop may be used.\n\
     \\n\
     \\SI\n\
     \\ENQ\EOT\ENQ\STX\n\
-    \\EOT\DC2\ACK\171\ENQ\EOT\166\ENQ5\n\
+    \\EOT\DC2\ACK\175\ENQ\EOT\170\ENQ5\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\n\
-    \\ENQ\DC2\EOT\171\ENQ\EOT\t\n\
+    \\ENQ\DC2\EOT\175\ENQ\EOT\t\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\n\
-    \\SOH\DC2\EOT\171\ENQ\n\
+    \\SOH\DC2\EOT\175\ENQ\n\
     \\EM\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\n\
-    \\ETX\DC2\EOT\171\ENQ\FS\RS\n\
+    \\ETX\DC2\EOT\175\ENQ\FS\RS\n\
     \\185\SOH\n\
-    \\EOT\EOT\ENQ\STX\v\DC2\EOT\178\ENQ\EOT\ESC\SUB\170\SOH\n\
+    \\EOT\EOT\ENQ\STX\v\DC2\EOT\182\ENQ\EOT\ESC\SUB\170\SOH\n\
     \An optional maximum total time lock for the route. This should not exceed\n\
     \lnd's `--max-cltv-expiry` setting. If zero, then the value of\n\
     \`--max-cltv-expiry` is enforced.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\v\EOT\DC2\ACK\178\ENQ\EOT\171\ENQ\US\n\
+    \\ENQ\EOT\ENQ\STX\v\EOT\DC2\ACK\182\ENQ\EOT\175\ENQ\US\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\v\ENQ\DC2\EOT\178\ENQ\EOT\n\
+    \\ENQ\EOT\ENQ\STX\v\ENQ\DC2\EOT\182\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\v\SOH\DC2\EOT\178\ENQ\v\NAK\n\
+    \\ENQ\EOT\ENQ\STX\v\SOH\DC2\EOT\182\ENQ\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\v\ETX\DC2\EOT\178\ENQ\CAN\SUB\n\
+    \\ENQ\EOT\ENQ\STX\v\ETX\DC2\EOT\182\ENQ\CAN\SUB\n\
     \\204\STX\n\
-    \\EOT\EOT\ENQ\STX\f\DC2\EOT\187\ENQ\EOT0\SUB\189\STX\n\
+    \\EOT\EOT\ENQ\STX\f\DC2\EOT\191\ENQ\EOT0\SUB\189\STX\n\
     \An optional field that can be used to pass an arbitrary set of TLV records\n\
     \to a peer which understands the new records. This can be used to pass\n\
     \application specific data during the payment attempt. Record types are\n\
@@ -51472,26 +53490,26 @@ packedFileDescriptor
     \must be encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\f\EOT\DC2\ACK\187\ENQ\EOT\178\ENQ\ESC\n\
+    \\ENQ\EOT\ENQ\STX\f\EOT\DC2\ACK\191\ENQ\EOT\182\ENQ\ESC\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\f\ACK\DC2\EOT\187\ENQ\EOT\SYN\n\
+    \\ENQ\EOT\ENQ\STX\f\ACK\DC2\EOT\191\ENQ\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\f\SOH\DC2\EOT\187\ENQ\ETB*\n\
+    \\ENQ\EOT\ENQ\STX\f\SOH\DC2\EOT\191\ENQ\ETB*\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\f\ETX\DC2\EOT\187\ENQ-/\n\
+    \\ENQ\EOT\ENQ\STX\f\ETX\DC2\EOT\191\ENQ-/\n\
     \@\n\
-    \\EOT\EOT\ENQ\STX\r\DC2\EOT\190\ENQ\EOT!\SUB2 If set, circular payments to self are permitted.\n\
+    \\EOT\EOT\ENQ\STX\r\DC2\EOT\194\ENQ\EOT!\SUB2 If set, circular payments to self are permitted.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ENQ\STX\r\EOT\DC2\ACK\190\ENQ\EOT\187\ENQ0\n\
+    \\ENQ\EOT\ENQ\STX\r\EOT\DC2\ACK\194\ENQ\EOT\191\ENQ0\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\r\ENQ\DC2\EOT\190\ENQ\EOT\b\n\
+    \\ENQ\EOT\ENQ\STX\r\ENQ\DC2\EOT\194\ENQ\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\r\SOH\DC2\EOT\190\ENQ\t\ESC\n\
+    \\ENQ\EOT\ENQ\STX\r\SOH\DC2\EOT\194\ENQ\t\ESC\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\r\ETX\DC2\EOT\190\ENQ\RS \n\
+    \\ENQ\EOT\ENQ\STX\r\ETX\DC2\EOT\194\ENQ\RS \n\
     \\195\STX\n\
-    \\EOT\EOT\ENQ\STX\SO\DC2\EOT\199\ENQ\EOT+\SUB\180\STX\n\
+    \\EOT\EOT\ENQ\STX\SO\DC2\EOT\203\ENQ\EOT+\SUB\180\STX\n\
     \Features assumed to be supported by the final node. All transitive feature\n\
     \dependencies must also be set properly. For a given feature bit pair, either\n\
     \optional or remote may be set, but not both. If this field is nil or empty,\n\
@@ -51499,318 +53517,331 @@ packedFileDescriptor
     \fallback.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\SO\EOT\DC2\EOT\199\ENQ\EOT\f\n\
+    \\ENQ\EOT\ENQ\STX\SO\EOT\DC2\EOT\203\ENQ\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\SO\ACK\DC2\EOT\199\ENQ\r\ETB\n\
+    \\ENQ\EOT\ENQ\STX\SO\ACK\DC2\EOT\203\ENQ\r\ETB\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\SO\SOH\DC2\EOT\199\ENQ\CAN%\n\
+    \\ENQ\EOT\ENQ\STX\SO\SOH\DC2\EOT\203\ENQ\CAN%\n\
     \\r\n\
-    \\ENQ\EOT\ENQ\STX\SO\ETX\DC2\EOT\199\ENQ(*\n\
-    \\f\n\
-    \\STX\EOT\ACK\DC2\ACK\202\ENQ\NUL\207\ENQ\SOH\n\
-    \\v\n\
-    \\ETX\EOT\ACK\SOH\DC2\EOT\202\ENQ\b\DC4\n\
-    \\f\n\
-    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\203\ENQ\EOT\GS\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\NUL\EOT\DC2\ACK\203\ENQ\EOT\202\ENQ\SYN\n\
-    \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\203\ENQ\EOT\n\
+    \\ENQ\EOT\ENQ\STX\SO\ETX\DC2\EOT\203\ENQ(*\n\
+    \=\n\
+    \\EOT\EOT\ENQ\STX\SI\DC2\EOT\208\ENQ\EOT\FS\SUB/\n\
+    \The payment address of the generated invoice.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\203\ENQ\v\CAN\n\
-    \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\203\ENQ\ESC\FS\n\
-    \\f\n\
-    \\EOT\EOT\ACK\STX\SOH\DC2\EOT\204\ENQ\EOT\US\n\
     \\SI\n\
-    \\ENQ\EOT\ACK\STX\SOH\EOT\DC2\ACK\204\ENQ\EOT\203\ENQ\GS\n\
+    \\ENQ\EOT\ENQ\STX\SI\EOT\DC2\ACK\208\ENQ\EOT\203\ENQ+\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\ENQ\DC2\EOT\204\ENQ\EOT\t\n\
+    \\ENQ\EOT\ENQ\STX\SI\ENQ\DC2\EOT\208\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\SOH\DC2\EOT\204\ENQ\n\
-    \\SUB\n\
-    \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\ETX\DC2\EOT\204\ENQ\GS\RS\n\
-    \\f\n\
-    \\EOT\EOT\ACK\STX\STX\DC2\EOT\205\ENQ\EOT\FS\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\STX\EOT\DC2\ACK\205\ENQ\EOT\204\ENQ\US\n\
-    \\r\n\
-    \\ENQ\EOT\ACK\STX\STX\ACK\DC2\EOT\205\ENQ\EOT\t\n\
-    \\r\n\
-    \\ENQ\EOT\ACK\STX\STX\SOH\DC2\EOT\205\ENQ\n\
-    \\ETB\n\
-    \\r\n\
-    \\ENQ\EOT\ACK\STX\STX\ETX\DC2\EOT\205\ENQ\SUB\ESC\n\
-    \\f\n\
-    \\EOT\EOT\ACK\STX\ETX\DC2\EOT\206\ENQ\EOT\ESC\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\ETX\EOT\DC2\ACK\206\ENQ\EOT\205\ENQ\FS\n\
-    \\r\n\
-    \\ENQ\EOT\ACK\STX\ETX\ENQ\DC2\EOT\206\ENQ\EOT\t\n\
-    \\r\n\
-    \\ENQ\EOT\ACK\STX\ETX\SOH\DC2\EOT\206\ENQ\n\
+    \\ENQ\EOT\ENQ\STX\SI\SOH\DC2\EOT\208\ENQ\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\ETX\ETX\DC2\EOT\206\ENQ\EM\SUB\n\
+    \\ENQ\EOT\ENQ\STX\SI\ETX\DC2\EOT\208\ENQ\EM\ESC\n\
     \\f\n\
-    \\STX\EOT\a\DC2\ACK\209\ENQ\NUL\226\ENQ\SOH\n\
+    \\STX\EOT\ACK\DC2\ACK\211\ENQ\NUL\216\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\a\SOH\DC2\EOT\209\ENQ\b\SUB\n\
+    \\ETX\EOT\ACK\SOH\DC2\EOT\211\ENQ\b\DC4\n\
+    \\f\n\
+    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\212\ENQ\EOT\GS\n\
+    \\SI\n\
+    \\ENQ\EOT\ACK\STX\NUL\EOT\DC2\ACK\212\ENQ\EOT\211\ENQ\SYN\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\212\ENQ\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\212\ENQ\v\CAN\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\212\ENQ\ESC\FS\n\
+    \\f\n\
+    \\EOT\EOT\ACK\STX\SOH\DC2\EOT\213\ENQ\EOT\US\n\
+    \\SI\n\
+    \\ENQ\EOT\ACK\STX\SOH\EOT\DC2\ACK\213\ENQ\EOT\212\ENQ\GS\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\SOH\ENQ\DC2\EOT\213\ENQ\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\SOH\SOH\DC2\EOT\213\ENQ\n\
+    \\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\SOH\ETX\DC2\EOT\213\ENQ\GS\RS\n\
+    \\f\n\
+    \\EOT\EOT\ACK\STX\STX\DC2\EOT\214\ENQ\EOT\FS\n\
+    \\SI\n\
+    \\ENQ\EOT\ACK\STX\STX\EOT\DC2\ACK\214\ENQ\EOT\213\ENQ\US\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\STX\ACK\DC2\EOT\214\ENQ\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\STX\SOH\DC2\EOT\214\ENQ\n\
+    \\ETB\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\STX\ETX\DC2\EOT\214\ENQ\SUB\ESC\n\
+    \\f\n\
+    \\EOT\EOT\ACK\STX\ETX\DC2\EOT\215\ENQ\EOT\ESC\n\
+    \\SI\n\
+    \\ENQ\EOT\ACK\STX\ETX\EOT\DC2\ACK\215\ENQ\EOT\214\ENQ\FS\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\ETX\ENQ\DC2\EOT\215\ENQ\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\ETX\SOH\DC2\EOT\215\ENQ\n\
+    \\SYN\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\ETX\ETX\DC2\EOT\215\ENQ\EM\SUB\n\
+    \\f\n\
+    \\STX\EOT\a\DC2\ACK\218\ENQ\NUL\235\ENQ\SOH\n\
+    \\v\n\
+    \\ETX\EOT\a\SOH\DC2\EOT\218\ENQ\b\SUB\n\
     \l\n\
-    \\EOT\EOT\a\STX\NUL\DC2\EOT\214\ENQ\EOT\ESC\SUB^\n\
+    \\EOT\EOT\a\STX\NUL\DC2\EOT\223\ENQ\EOT\ESC\SUB^\n\
     \The payment hash to use for the HTLC. When using REST, this field must be\n\
     \encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\a\STX\NUL\EOT\DC2\ACK\214\ENQ\EOT\209\ENQ\FS\n\
+    \\ENQ\EOT\a\STX\NUL\EOT\DC2\ACK\223\ENQ\EOT\218\ENQ\FS\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\214\ENQ\EOT\t\n\
+    \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\223\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\SOH\DC2\EOT\214\ENQ\n\
+    \\ENQ\EOT\a\STX\NUL\SOH\DC2\EOT\223\ENQ\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\ETX\DC2\EOT\214\ENQ\EM\SUB\n\
+    \\ENQ\EOT\a\STX\NUL\ETX\DC2\EOT\223\ENQ\EM\SUB\n\
     \\157\SOH\n\
-    \\EOT\EOT\a\STX\SOH\DC2\EOT\220\ENQ\EOT7\SUB\142\SOH\n\
+    \\EOT\EOT\a\STX\SOH\DC2\EOT\229\ENQ\EOT7\SUB\142\SOH\n\
     \An optional hex-encoded payment hash to be used for the HTLC. Deprecated now\n\
     \that the REST gateway supports base64 encoding of bytes fields.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\a\STX\SOH\EOT\DC2\ACK\220\ENQ\EOT\214\ENQ\ESC\n\
+    \\ENQ\EOT\a\STX\SOH\EOT\DC2\ACK\229\ENQ\EOT\223\ENQ\ESC\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\SOH\ENQ\DC2\EOT\220\ENQ\EOT\n\
+    \\ENQ\EOT\a\STX\SOH\ENQ\DC2\EOT\229\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\SOH\SOH\DC2\EOT\220\ENQ\v\RS\n\
+    \\ENQ\EOT\a\STX\SOH\SOH\DC2\EOT\229\ENQ\v\RS\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\SOH\ETX\DC2\EOT\220\ENQ!\"\n\
+    \\ENQ\EOT\a\STX\SOH\ETX\DC2\EOT\229\ENQ!\"\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\SOH\b\DC2\EOT\220\ENQ#6\n\
+    \\ENQ\EOT\a\STX\SOH\b\DC2\EOT\229\ENQ#6\n\
     \\SO\n\
-    \\ACK\EOT\a\STX\SOH\b\ETX\DC2\EOT\220\ENQ$5\n\
+    \\ACK\EOT\a\STX\SOH\b\ETX\DC2\EOT\229\ENQ$5\n\
     \\v\n\
-    \\ETX\EOT\a\t\DC2\EOT\222\ENQ\EOT\SI\n\
+    \\ETX\EOT\a\t\DC2\EOT\231\ENQ\EOT\SI\n\
     \\f\n\
-    \\EOT\EOT\a\t\NUL\DC2\EOT\222\ENQ\r\SO\n\
+    \\EOT\EOT\a\t\NUL\DC2\EOT\231\ENQ\r\SO\n\
     \\r\n\
-    \\ENQ\EOT\a\t\NUL\SOH\DC2\EOT\222\ENQ\r\SO\n\
+    \\ENQ\EOT\a\t\NUL\SOH\DC2\EOT\231\ENQ\r\SO\n\
     \\r\n\
-    \\ENQ\EOT\a\t\NUL\STX\DC2\EOT\222\ENQ\r\SO\n\
+    \\ENQ\EOT\a\t\NUL\STX\DC2\EOT\231\ENQ\r\SO\n\
     \M\n\
-    \\EOT\EOT\a\STX\STX\DC2\EOT\225\ENQ\EOT\DC4\SUB? Route that should be used to attempt to complete the payment.\n\
+    \\EOT\EOT\a\STX\STX\DC2\EOT\234\ENQ\EOT\DC4\SUB? Route that should be used to attempt to complete the payment.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\a\STX\STX\EOT\DC2\ACK\225\ENQ\EOT\222\ENQ\SI\n\
+    \\ENQ\EOT\a\STX\STX\EOT\DC2\ACK\234\ENQ\EOT\231\ENQ\SI\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\STX\ACK\DC2\EOT\225\ENQ\EOT\t\n\
+    \\ENQ\EOT\a\STX\STX\ACK\DC2\EOT\234\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\STX\SOH\DC2\EOT\225\ENQ\n\
+    \\ENQ\EOT\a\STX\STX\SOH\DC2\EOT\234\ENQ\n\
     \\SI\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\STX\ETX\DC2\EOT\225\ENQ\DC2\DC3\n\
+    \\ENQ\EOT\a\STX\STX\ETX\DC2\EOT\234\ENQ\DC2\DC3\n\
     \\f\n\
-    \\STX\EOT\b\DC2\ACK\228\ENQ\NUL\147\ACK\SOH\n\
+    \\STX\EOT\b\DC2\ACK\237\ENQ\NUL\156\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT\b\SOH\DC2\EOT\228\ENQ\b\FS\n\
+    \\ETX\EOT\b\SOH\DC2\EOT\237\ENQ\b\FS\n\
     \N\n\
-    \\EOT\EOT\b\STX\NUL\DC2\EOT\230\ENQ\EOT\SUB\SUB@ The pubkey of the node that wishes to open an inbound channel.\n\
+    \\EOT\EOT\b\STX\NUL\DC2\EOT\239\ENQ\EOT\SUB\SUB@ The pubkey of the node that wishes to open an inbound channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\NUL\EOT\DC2\ACK\230\ENQ\EOT\228\ENQ\RS\n\
+    \\ENQ\EOT\b\STX\NUL\EOT\DC2\ACK\239\ENQ\EOT\237\ENQ\RS\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\NUL\ENQ\DC2\EOT\230\ENQ\EOT\t\n\
+    \\ENQ\EOT\b\STX\NUL\ENQ\DC2\EOT\239\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\NUL\SOH\DC2\EOT\230\ENQ\n\
+    \\ENQ\EOT\b\STX\NUL\SOH\DC2\EOT\239\ENQ\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\NUL\ETX\DC2\EOT\230\ENQ\CAN\EM\n\
+    \\ENQ\EOT\b\STX\NUL\ETX\DC2\EOT\239\ENQ\CAN\EM\n\
     \S\n\
-    \\EOT\EOT\b\STX\SOH\DC2\EOT\233\ENQ\EOT\EM\SUBE The hash of the genesis block that the proposed channel resides in.\n\
+    \\EOT\EOT\b\STX\SOH\DC2\EOT\242\ENQ\EOT\EM\SUBE The hash of the genesis block that the proposed channel resides in.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\SOH\EOT\DC2\ACK\233\ENQ\EOT\230\ENQ\SUB\n\
+    \\ENQ\EOT\b\STX\SOH\EOT\DC2\ACK\242\ENQ\EOT\239\ENQ\SUB\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\SOH\ENQ\DC2\EOT\233\ENQ\EOT\t\n\
+    \\ENQ\EOT\b\STX\SOH\ENQ\DC2\EOT\242\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\SOH\SOH\DC2\EOT\233\ENQ\n\
+    \\ENQ\EOT\b\STX\SOH\SOH\DC2\EOT\242\ENQ\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\SOH\ETX\DC2\EOT\233\ENQ\ETB\CAN\n\
+    \\ENQ\EOT\b\STX\SOH\ETX\DC2\EOT\242\ENQ\ETB\CAN\n\
     \'\n\
-    \\EOT\EOT\b\STX\STX\DC2\EOT\236\ENQ\EOT\RS\SUB\EM The pending channel id.\n\
+    \\EOT\EOT\b\STX\STX\DC2\EOT\245\ENQ\EOT\RS\SUB\EM The pending channel id.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\STX\EOT\DC2\ACK\236\ENQ\EOT\233\ENQ\EM\n\
+    \\ENQ\EOT\b\STX\STX\EOT\DC2\ACK\245\ENQ\EOT\242\ENQ\EM\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\STX\ENQ\DC2\EOT\236\ENQ\EOT\t\n\
+    \\ENQ\EOT\b\STX\STX\ENQ\DC2\EOT\245\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\STX\SOH\DC2\EOT\236\ENQ\n\
+    \\ENQ\EOT\b\STX\STX\SOH\DC2\EOT\245\ENQ\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\STX\ETX\DC2\EOT\236\ENQ\FS\GS\n\
+    \\ENQ\EOT\b\STX\STX\ETX\DC2\EOT\245\ENQ\FS\GS\n\
     \\\\n\
-    \\EOT\EOT\b\STX\ETX\DC2\EOT\240\ENQ\EOT\ESC\SUBN The funding amount in satoshis that initiator wishes to use in the\n\
+    \\EOT\EOT\b\STX\ETX\DC2\EOT\249\ENQ\EOT\ESC\SUBN The funding amount in satoshis that initiator wishes to use in the\n\
     \ channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\ETX\EOT\DC2\ACK\240\ENQ\EOT\236\ENQ\RS\n\
+    \\ENQ\EOT\b\STX\ETX\EOT\DC2\ACK\249\ENQ\EOT\245\ENQ\RS\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\ETX\ENQ\DC2\EOT\240\ENQ\EOT\n\
+    \\ENQ\EOT\b\STX\ETX\ENQ\DC2\EOT\249\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\ETX\SOH\DC2\EOT\240\ENQ\v\SYN\n\
+    \\ENQ\EOT\b\STX\ETX\SOH\DC2\EOT\249\ENQ\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\ETX\ETX\DC2\EOT\240\ENQ\EM\SUB\n\
+    \\ENQ\EOT\b\STX\ETX\ETX\DC2\EOT\249\ENQ\EM\SUB\n\
     \I\n\
-    \\EOT\EOT\b\STX\EOT\DC2\EOT\243\ENQ\EOT\CAN\SUB; The push amount of the proposed channel in millisatoshis.\n\
+    \\EOT\EOT\b\STX\EOT\DC2\EOT\252\ENQ\EOT\CAN\SUB; The push amount of the proposed channel in millisatoshis.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\EOT\EOT\DC2\ACK\243\ENQ\EOT\240\ENQ\ESC\n\
+    \\ENQ\EOT\b\STX\EOT\EOT\DC2\ACK\252\ENQ\EOT\249\ENQ\ESC\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\EOT\ENQ\DC2\EOT\243\ENQ\EOT\n\
+    \\ENQ\EOT\b\STX\EOT\ENQ\DC2\EOT\252\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\EOT\SOH\DC2\EOT\243\ENQ\v\DC3\n\
+    \\ENQ\EOT\b\STX\EOT\SOH\DC2\EOT\252\ENQ\v\DC3\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\EOT\ETX\DC2\EOT\243\ENQ\SYN\ETB\n\
+    \\ENQ\EOT\b\STX\EOT\ETX\DC2\EOT\252\ENQ\SYN\ETB\n\
     \@\n\
-    \\EOT\EOT\b\STX\ENQ\DC2\EOT\246\ENQ\EOT\SUB\SUB2 The dust limit of the initiator's commitment tx.\n\
+    \\EOT\EOT\b\STX\ENQ\DC2\EOT\255\ENQ\EOT\SUB\SUB2 The dust limit of the initiator's commitment tx.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\ENQ\EOT\DC2\ACK\246\ENQ\EOT\243\ENQ\CAN\n\
+    \\ENQ\EOT\b\STX\ENQ\EOT\DC2\ACK\255\ENQ\EOT\252\ENQ\CAN\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\ENQ\ENQ\DC2\EOT\246\ENQ\EOT\n\
+    \\ENQ\EOT\b\STX\ENQ\ENQ\DC2\EOT\255\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\ENQ\SOH\DC2\EOT\246\ENQ\v\NAK\n\
+    \\ENQ\EOT\b\STX\ENQ\SOH\DC2\EOT\255\ENQ\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\ENQ\ETX\DC2\EOT\246\ENQ\CAN\EM\n\
+    \\ENQ\EOT\b\STX\ENQ\ETX\DC2\EOT\255\ENQ\CAN\EM\n\
     \b\n\
-    \\EOT\EOT\b\STX\ACK\DC2\EOT\250\ENQ\EOT#\SUBT The maximum amount of coins in millisatoshis that can be pending in this\n\
+    \\EOT\EOT\b\STX\ACK\DC2\EOT\131\ACK\EOT#\SUBT The maximum amount of coins in millisatoshis that can be pending in this\n\
     \ channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\ACK\EOT\DC2\ACK\250\ENQ\EOT\246\ENQ\SUB\n\
+    \\ENQ\EOT\b\STX\ACK\EOT\DC2\ACK\131\ACK\EOT\255\ENQ\SUB\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\ACK\ENQ\DC2\EOT\250\ENQ\EOT\n\
+    \\ENQ\EOT\b\STX\ACK\ENQ\DC2\EOT\131\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\ACK\SOH\DC2\EOT\250\ENQ\v\RS\n\
+    \\ENQ\EOT\b\STX\ACK\SOH\DC2\EOT\131\ACK\v\RS\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\ACK\ETX\DC2\EOT\250\ENQ!\"\n\
+    \\ENQ\EOT\b\STX\ACK\ETX\DC2\EOT\131\ACK!\"\n\
     \_\n\
-    \\EOT\EOT\b\STX\a\DC2\EOT\254\ENQ\EOT\US\SUBQ The minimum amount of satoshis the initiator requires us to have at all\n\
+    \\EOT\EOT\b\STX\a\DC2\EOT\135\ACK\EOT\US\SUBQ The minimum amount of satoshis the initiator requires us to have at all\n\
     \ times.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\a\EOT\DC2\ACK\254\ENQ\EOT\250\ENQ#\n\
+    \\ENQ\EOT\b\STX\a\EOT\DC2\ACK\135\ACK\EOT\131\ACK#\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\a\ENQ\DC2\EOT\254\ENQ\EOT\n\
+    \\ENQ\EOT\b\STX\a\ENQ\DC2\EOT\135\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\a\SOH\DC2\EOT\254\ENQ\v\SUB\n\
+    \\ENQ\EOT\b\STX\a\SOH\DC2\EOT\135\ACK\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\a\ETX\DC2\EOT\254\ENQ\GS\RS\n\
+    \\ENQ\EOT\b\STX\a\ETX\DC2\EOT\135\ACK\GS\RS\n\
     \R\n\
-    \\EOT\EOT\b\STX\b\DC2\EOT\129\ACK\EOT\CAN\SUBD The smallest HTLC in millisatoshis that the initiator will accept.\n\
+    \\EOT\EOT\b\STX\b\DC2\EOT\138\ACK\EOT\CAN\SUBD The smallest HTLC in millisatoshis that the initiator will accept.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\b\EOT\DC2\ACK\129\ACK\EOT\254\ENQ\US\n\
+    \\ENQ\EOT\b\STX\b\EOT\DC2\ACK\138\ACK\EOT\135\ACK\US\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\b\ENQ\DC2\EOT\129\ACK\EOT\n\
+    \\ENQ\EOT\b\STX\b\ENQ\DC2\EOT\138\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\b\SOH\DC2\EOT\129\ACK\v\DC3\n\
+    \\ENQ\EOT\b\STX\b\SOH\DC2\EOT\138\ACK\v\DC3\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\b\ETX\DC2\EOT\129\ACK\SYN\ETB\n\
+    \\ENQ\EOT\b\STX\b\ETX\DC2\EOT\138\ACK\SYN\ETB\n\
     \c\n\
-    \\EOT\EOT\b\STX\t\DC2\EOT\133\ACK\EOT\ESC\SUBU The initial fee rate that the initiator suggests for both commitment\n\
+    \\EOT\EOT\b\STX\t\DC2\EOT\142\ACK\EOT\ESC\SUBU The initial fee rate that the initiator suggests for both commitment\n\
     \ transactions.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\t\EOT\DC2\ACK\133\ACK\EOT\129\ACK\CAN\n\
+    \\ENQ\EOT\b\STX\t\EOT\DC2\ACK\142\ACK\EOT\138\ACK\CAN\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\t\ENQ\DC2\EOT\133\ACK\EOT\n\
+    \\ENQ\EOT\b\STX\t\ENQ\DC2\EOT\142\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\t\SOH\DC2\EOT\133\ACK\v\NAK\n\
+    \\ENQ\EOT\b\STX\t\SOH\DC2\EOT\142\ACK\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\t\ETX\DC2\EOT\133\ACK\CAN\SUB\n\
+    \\ENQ\EOT\b\STX\t\ETX\DC2\EOT\142\ACK\CAN\SUB\n\
     \\129\SOH\n\
     \\EOT\EOT\b\STX\n\
-    \\DC2\EOT\139\ACK\EOT\SUB\SUBs\n\
+    \\DC2\EOT\148\ACK\EOT\SUB\SUBs\n\
     \The number of blocks to use for the relative time lock in the pay-to-self\n\
     \output of both commitment transactions.\n\
     \\n\
     \\SI\n\
     \\ENQ\EOT\b\STX\n\
-    \\EOT\DC2\ACK\139\ACK\EOT\133\ACK\ESC\n\
+    \\EOT\DC2\ACK\148\ACK\EOT\142\ACK\ESC\n\
     \\r\n\
     \\ENQ\EOT\b\STX\n\
-    \\ENQ\DC2\EOT\139\ACK\EOT\n\
+    \\ENQ\DC2\EOT\148\ACK\EOT\n\
     \\n\
     \\r\n\
     \\ENQ\EOT\b\STX\n\
-    \\SOH\DC2\EOT\139\ACK\v\DC4\n\
+    \\SOH\DC2\EOT\148\ACK\v\DC4\n\
     \\r\n\
     \\ENQ\EOT\b\STX\n\
-    \\ETX\DC2\EOT\139\ACK\ETB\EM\n\
+    \\ETX\DC2\EOT\148\ACK\ETB\EM\n\
     \S\n\
-    \\EOT\EOT\b\STX\v\DC2\EOT\142\ACK\EOT#\SUBE The total number of incoming HTLC's that the initiator will accept.\n\
+    \\EOT\EOT\b\STX\v\DC2\EOT\151\ACK\EOT#\SUBE The total number of incoming HTLC's that the initiator will accept.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\v\EOT\DC2\ACK\142\ACK\EOT\139\ACK\SUB\n\
+    \\ENQ\EOT\b\STX\v\EOT\DC2\ACK\151\ACK\EOT\148\ACK\SUB\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\v\ENQ\DC2\EOT\142\ACK\EOT\n\
+    \\ENQ\EOT\b\STX\v\ENQ\DC2\EOT\151\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\v\SOH\DC2\EOT\142\ACK\v\GS\n\
+    \\ENQ\EOT\b\STX\v\SOH\DC2\EOT\151\ACK\v\GS\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\v\ETX\DC2\EOT\142\ACK \"\n\
+    \\ENQ\EOT\b\STX\v\ETX\DC2\EOT\151\ACK \"\n\
     \[\n\
-    \\EOT\EOT\b\STX\f\DC2\EOT\146\ACK\EOT\RS\SUBM A bit-field which the initiator uses to specify proposed channel\n\
+    \\EOT\EOT\b\STX\f\DC2\EOT\155\ACK\EOT\RS\SUBM A bit-field which the initiator uses to specify proposed channel\n\
     \ behavior.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\b\STX\f\EOT\DC2\ACK\146\ACK\EOT\142\ACK#\n\
+    \\ENQ\EOT\b\STX\f\EOT\DC2\ACK\155\ACK\EOT\151\ACK#\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\f\ENQ\DC2\EOT\146\ACK\EOT\n\
+    \\ENQ\EOT\b\STX\f\ENQ\DC2\EOT\155\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\f\SOH\DC2\EOT\146\ACK\v\CAN\n\
+    \\ENQ\EOT\b\STX\f\SOH\DC2\EOT\155\ACK\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\f\ETX\DC2\EOT\146\ACK\ESC\GS\n\
+    \\ENQ\EOT\b\STX\f\ETX\DC2\EOT\155\ACK\ESC\GS\n\
     \\f\n\
-    \\STX\EOT\t\DC2\ACK\149\ACK\NUL\207\ACK\SOH\n\
+    \\STX\EOT\t\DC2\ACK\158\ACK\NUL\216\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT\t\SOH\DC2\EOT\149\ACK\b\GS\n\
+    \\ETX\EOT\t\SOH\DC2\EOT\158\ACK\b\GS\n\
     \>\n\
-    \\EOT\EOT\t\STX\NUL\DC2\EOT\151\ACK\EOT\DC4\SUB0 Whether or not the client accepts the channel.\n\
+    \\EOT\EOT\t\STX\NUL\DC2\EOT\160\ACK\EOT\DC4\SUB0 Whether or not the client accepts the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\t\STX\NUL\EOT\DC2\ACK\151\ACK\EOT\149\ACK\US\n\
+    \\ENQ\EOT\t\STX\NUL\EOT\DC2\ACK\160\ACK\EOT\158\ACK\US\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\NUL\ENQ\DC2\EOT\151\ACK\EOT\b\n\
+    \\ENQ\EOT\t\STX\NUL\ENQ\DC2\EOT\160\ACK\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\NUL\SOH\DC2\EOT\151\ACK\t\SI\n\
+    \\ENQ\EOT\t\STX\NUL\SOH\DC2\EOT\160\ACK\t\SI\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\NUL\ETX\DC2\EOT\151\ACK\DC2\DC3\n\
+    \\ENQ\EOT\t\STX\NUL\ETX\DC2\EOT\160\ACK\DC2\DC3\n\
     \F\n\
-    \\EOT\EOT\t\STX\SOH\DC2\EOT\154\ACK\EOT\RS\SUB8 The pending channel id to which this response applies.\n\
+    \\EOT\EOT\t\STX\SOH\DC2\EOT\163\ACK\EOT\RS\SUB8 The pending channel id to which this response applies.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\t\STX\SOH\EOT\DC2\ACK\154\ACK\EOT\151\ACK\DC4\n\
+    \\ENQ\EOT\t\STX\SOH\EOT\DC2\ACK\163\ACK\EOT\160\ACK\DC4\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\SOH\ENQ\DC2\EOT\154\ACK\EOT\t\n\
+    \\ENQ\EOT\t\STX\SOH\ENQ\DC2\EOT\163\ACK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\SOH\SOH\DC2\EOT\154\ACK\n\
+    \\ENQ\EOT\t\STX\SOH\SOH\DC2\EOT\163\ACK\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\SOH\ETX\DC2\EOT\154\ACK\FS\GS\n\
+    \\ENQ\EOT\t\STX\SOH\ETX\DC2\EOT\163\ACK\FS\GS\n\
     \\138\ETX\n\
-    \\EOT\EOT\t\STX\STX\DC2\EOT\164\ACK\EOT\NAK\SUB\251\STX\n\
+    \\EOT\EOT\t\STX\STX\DC2\EOT\173\ACK\EOT\NAK\SUB\251\STX\n\
     \An optional error to send the initiating party to indicate why the channel\n\
     \was rejected. This field *should not* contain sensitive information, it will\n\
     \be sent to the initiating party. This field should only be set if accept is\n\
@@ -51819,833 +53850,936 @@ packedFileDescriptor
     \characters.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\t\STX\STX\EOT\DC2\ACK\164\ACK\EOT\154\ACK\RS\n\
+    \\ENQ\EOT\t\STX\STX\EOT\DC2\ACK\173\ACK\EOT\163\ACK\RS\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\STX\ENQ\DC2\EOT\164\ACK\EOT\n\
+    \\ENQ\EOT\t\STX\STX\ENQ\DC2\EOT\173\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\STX\SOH\DC2\EOT\164\ACK\v\DLE\n\
+    \\ENQ\EOT\t\STX\STX\SOH\DC2\EOT\173\ACK\v\DLE\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\STX\ETX\DC2\EOT\164\ACK\DC3\DC4\n\
+    \\ENQ\EOT\t\STX\STX\ETX\DC2\EOT\173\ACK\DC3\DC4\n\
     \\140\STX\n\
-    \\EOT\EOT\t\STX\ETX\DC2\EOT\172\ACK\EOT \SUB\253\SOH\n\
+    \\EOT\EOT\t\STX\ETX\DC2\EOT\181\ACK\EOT \SUB\253\SOH\n\
     \The upfront shutdown address to use if the initiating peer supports option\n\
     \upfront shutdown script (see ListPeers for the features supported). Note\n\
     \that the channel open will fail if this value is set for a peer that does\n\
     \not support this feature bit.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\t\STX\ETX\EOT\DC2\ACK\172\ACK\EOT\164\ACK\NAK\n\
+    \\ENQ\EOT\t\STX\ETX\EOT\DC2\ACK\181\ACK\EOT\173\ACK\NAK\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ETX\ENQ\DC2\EOT\172\ACK\EOT\n\
+    \\ENQ\EOT\t\STX\ETX\ENQ\DC2\EOT\181\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ETX\SOH\DC2\EOT\172\ACK\v\ESC\n\
+    \\ENQ\EOT\t\STX\ETX\SOH\DC2\EOT\181\ACK\v\ESC\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ETX\ETX\DC2\EOT\172\ACK\RS\US\n\
+    \\ENQ\EOT\t\STX\ETX\ETX\DC2\EOT\181\ACK\RS\US\n\
     \O\n\
-    \\EOT\EOT\t\STX\EOT\DC2\EOT\177\ACK\EOT\EM\SUBA\n\
+    \\EOT\EOT\t\STX\EOT\DC2\EOT\186\ACK\EOT\EM\SUBA\n\
     \The csv delay (in blocks) that we require for the remote party.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\t\STX\EOT\EOT\DC2\ACK\177\ACK\EOT\172\ACK \n\
+    \\ENQ\EOT\t\STX\EOT\EOT\DC2\ACK\186\ACK\EOT\181\ACK \n\
     \\r\n\
-    \\ENQ\EOT\t\STX\EOT\ENQ\DC2\EOT\177\ACK\EOT\n\
+    \\ENQ\EOT\t\STX\EOT\ENQ\DC2\EOT\186\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\EOT\SOH\DC2\EOT\177\ACK\v\DC4\n\
+    \\ENQ\EOT\t\STX\EOT\SOH\DC2\EOT\186\ACK\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\EOT\ETX\DC2\EOT\177\ACK\ETB\CAN\n\
+    \\ENQ\EOT\t\STX\EOT\ETX\DC2\EOT\186\ACK\ETB\CAN\n\
     \\187\STX\n\
-    \\EOT\EOT\t\STX\ENQ\DC2\EOT\185\ACK\EOT\ESC\SUB\172\STX\n\
+    \\EOT\EOT\t\STX\ENQ\DC2\EOT\194\ACK\EOT\ESC\SUB\172\STX\n\
     \The reserve amount in satoshis that we require the remote peer to adhere to.\n\
     \We require that the remote peer always have some reserve amount allocated to\n\
     \them so that there is always a disincentive to broadcast old state (if they\n\
     \hold 0 sats on their side of the channel, there is nothing to lose).\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\t\STX\ENQ\EOT\DC2\ACK\185\ACK\EOT\177\ACK\EM\n\
+    \\ENQ\EOT\t\STX\ENQ\EOT\DC2\ACK\194\ACK\EOT\186\ACK\EM\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ENQ\ENQ\DC2\EOT\185\ACK\EOT\n\
+    \\ENQ\EOT\t\STX\ENQ\ENQ\DC2\EOT\194\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ENQ\SOH\DC2\EOT\185\ACK\v\SYN\n\
+    \\ENQ\EOT\t\STX\ENQ\SOH\DC2\EOT\194\ACK\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ENQ\ETX\DC2\EOT\185\ACK\EM\SUB\n\
+    \\ENQ\EOT\t\STX\ENQ\ETX\DC2\EOT\194\ACK\EM\SUB\n\
     \x\n\
-    \\EOT\EOT\t\STX\ACK\DC2\EOT\191\ACK\EOT\"\SUBj\n\
+    \\EOT\EOT\t\STX\ACK\DC2\EOT\200\ACK\EOT\"\SUBj\n\
     \The maximum amount of funds in millisatoshis that we allow the remote peer\n\
     \to have in outstanding htlcs.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\t\STX\ACK\EOT\DC2\ACK\191\ACK\EOT\185\ACK\ESC\n\
+    \\ENQ\EOT\t\STX\ACK\EOT\DC2\ACK\200\ACK\EOT\194\ACK\ESC\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ACK\ENQ\DC2\EOT\191\ACK\EOT\n\
+    \\ENQ\EOT\t\STX\ACK\ENQ\DC2\EOT\200\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ACK\SOH\DC2\EOT\191\ACK\v\GS\n\
+    \\ENQ\EOT\t\STX\ACK\SOH\DC2\EOT\200\ACK\v\GS\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ACK\ETX\DC2\EOT\191\ACK !\n\
+    \\ENQ\EOT\t\STX\ACK\ETX\DC2\EOT\200\ACK !\n\
     \N\n\
-    \\EOT\EOT\t\STX\a\DC2\EOT\196\ACK\EOT\RS\SUB@\n\
+    \\EOT\EOT\t\STX\a\DC2\EOT\205\ACK\EOT\RS\SUB@\n\
     \The maximum number of htlcs that the remote peer can offer us.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\t\STX\a\EOT\DC2\ACK\196\ACK\EOT\191\ACK\"\n\
+    \\ENQ\EOT\t\STX\a\EOT\DC2\ACK\205\ACK\EOT\200\ACK\"\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\a\ENQ\DC2\EOT\196\ACK\EOT\n\
+    \\ENQ\EOT\t\STX\a\ENQ\DC2\EOT\205\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\a\SOH\DC2\EOT\196\ACK\v\EM\n\
+    \\ENQ\EOT\t\STX\a\SOH\DC2\EOT\205\ACK\v\EM\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\a\ETX\DC2\EOT\196\ACK\FS\GS\n\
+    \\ENQ\EOT\t\STX\a\ETX\DC2\EOT\205\ACK\FS\GS\n\
     \U\n\
-    \\EOT\EOT\t\STX\b\DC2\EOT\201\ACK\EOT\ESC\SUBG\n\
+    \\EOT\EOT\t\STX\b\DC2\EOT\210\ACK\EOT\ESC\SUBG\n\
     \The minimum value in millisatoshis for incoming htlcs on the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\t\STX\b\EOT\DC2\ACK\201\ACK\EOT\196\ACK\RS\n\
+    \\ENQ\EOT\t\STX\b\EOT\DC2\ACK\210\ACK\EOT\205\ACK\RS\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\b\ENQ\DC2\EOT\201\ACK\EOT\n\
+    \\ENQ\EOT\t\STX\b\ENQ\DC2\EOT\210\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\b\SOH\DC2\EOT\201\ACK\v\SYN\n\
+    \\ENQ\EOT\t\STX\b\SOH\DC2\EOT\210\ACK\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\b\ETX\DC2\EOT\201\ACK\EM\SUB\n\
+    \\ENQ\EOT\t\STX\b\ETX\DC2\EOT\210\ACK\EM\SUB\n\
     \[\n\
-    \\EOT\EOT\t\STX\t\DC2\EOT\206\ACK\EOT!\SUBM\n\
+    \\EOT\EOT\t\STX\t\DC2\EOT\215\ACK\EOT!\SUBM\n\
     \The number of confirmations we require before we consider the channel open.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\t\STX\t\EOT\DC2\ACK\206\ACK\EOT\201\ACK\ESC\n\
+    \\ENQ\EOT\t\STX\t\EOT\DC2\ACK\215\ACK\EOT\210\ACK\ESC\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\t\ENQ\DC2\EOT\206\ACK\EOT\n\
+    \\ENQ\EOT\t\STX\t\ENQ\DC2\EOT\215\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\t\SOH\DC2\EOT\206\ACK\v\ESC\n\
+    \\ENQ\EOT\t\STX\t\SOH\DC2\EOT\215\ACK\v\ESC\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\t\ETX\DC2\EOT\206\ACK\RS \n\
+    \\ENQ\EOT\t\STX\t\ETX\DC2\EOT\215\ACK\RS \n\
     \\f\n\
     \\STX\EOT\n\
-    \\DC2\ACK\209\ACK\NUL\226\ACK\SOH\n\
+    \\DC2\ACK\218\ACK\NUL\235\ACK\SOH\n\
     \\v\n\
     \\ETX\EOT\n\
-    \\SOH\DC2\EOT\209\ACK\b\DC4\n\
+    \\SOH\DC2\EOT\218\ACK\b\DC4\n\
     \\SO\n\
     \\EOT\EOT\n\
-    \\b\NUL\DC2\ACK\210\ACK\EOT\222\ACK\ENQ\n\
+    \\b\NUL\DC2\ACK\219\ACK\EOT\231\ACK\ENQ\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\b\NUL\SOH\DC2\EOT\210\ACK\n\
+    \\b\NUL\SOH\DC2\EOT\219\ACK\n\
     \\SYN\n\
     \g\n\
     \\EOT\EOT\n\
-    \\STX\NUL\DC2\EOT\215\ACK\b%\SUBY\n\
+    \\STX\NUL\DC2\EOT\224\ACK\b%\SUBY\n\
     \Txid of the funding transaction. When using REST, this field must be\n\
     \encoded as base64.\n\
     \\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\NUL\ENQ\DC2\EOT\215\ACK\b\r\n\
+    \\STX\NUL\ENQ\DC2\EOT\224\ACK\b\r\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\NUL\SOH\DC2\EOT\215\ACK\SO \n\
+    \\STX\NUL\SOH\DC2\EOT\224\ACK\SO \n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\NUL\ETX\DC2\EOT\215\ACK#$\n\
+    \\STX\NUL\ETX\DC2\EOT\224\ACK#$\n\
     \b\n\
     \\EOT\EOT\n\
-    \\STX\SOH\DC2\EOT\221\ACK\b$\SUBT\n\
+    \\STX\SOH\DC2\EOT\230\ACK\b$\SUBT\n\
     \Hex-encoded string representing the byte-reversed hash of the funding\n\
     \transaction.\n\
     \\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\SOH\ENQ\DC2\EOT\221\ACK\b\SO\n\
+    \\STX\SOH\ENQ\DC2\EOT\230\ACK\b\SO\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\SOH\SOH\DC2\EOT\221\ACK\SI\US\n\
+    \\STX\SOH\SOH\DC2\EOT\230\ACK\SI\US\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\SOH\ETX\DC2\EOT\221\ACK\"#\n\
+    \\STX\SOH\ETX\DC2\EOT\230\ACK\"#\n\
     \B\n\
     \\EOT\EOT\n\
-    \\STX\STX\DC2\EOT\225\ACK\EOT\FS\SUB4 The index of the output of the funding transaction\n\
+    \\STX\STX\DC2\EOT\234\ACK\EOT\FS\SUB4 The index of the output of the funding transaction\n\
     \\n\
     \\SI\n\
     \\ENQ\EOT\n\
-    \\STX\STX\EOT\DC2\ACK\225\ACK\EOT\222\ACK\ENQ\n\
+    \\STX\STX\EOT\DC2\ACK\234\ACK\EOT\231\ACK\ENQ\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\STX\ENQ\DC2\EOT\225\ACK\EOT\n\
+    \\STX\STX\ENQ\DC2\EOT\234\ACK\EOT\n\
     \\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\STX\SOH\DC2\EOT\225\ACK\v\ETB\n\
+    \\STX\STX\SOH\DC2\EOT\234\ACK\v\ETB\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\STX\ETX\DC2\EOT\225\ACK\SUB\ESC\n\
+    \\STX\STX\ETX\DC2\EOT\234\ACK\SUB\ESC\n\
     \\f\n\
-    \\STX\EOT\v\DC2\ACK\228\ACK\NUL\237\ACK\SOH\n\
+    \\STX\EOT\v\DC2\ACK\237\ACK\NUL\246\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT\v\SOH\DC2\EOT\228\ACK\b\DLE\n\
+    \\ETX\EOT\v\SOH\DC2\EOT\237\ACK\b\DLE\n\
     \:\n\
-    \\EOT\EOT\v\STX\NUL\DC2\EOT\230\ACK\EOT\EM\SUB, Raw bytes representing the transaction id.\n\
+    \\EOT\EOT\v\STX\NUL\DC2\EOT\239\ACK\EOT\EM\SUB, Raw bytes representing the transaction id.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\v\STX\NUL\EOT\DC2\ACK\230\ACK\EOT\228\ACK\DC2\n\
+    \\ENQ\EOT\v\STX\NUL\EOT\DC2\ACK\239\ACK\EOT\237\ACK\DC2\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\NUL\ENQ\DC2\EOT\230\ACK\EOT\t\n\
+    \\ENQ\EOT\v\STX\NUL\ENQ\DC2\EOT\239\ACK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\NUL\SOH\DC2\EOT\230\ACK\n\
+    \\ENQ\EOT\v\STX\NUL\SOH\DC2\EOT\239\ACK\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\NUL\ETX\DC2\EOT\230\ACK\ETB\CAN\n\
+    \\ENQ\EOT\v\STX\NUL\ETX\DC2\EOT\239\ACK\ETB\CAN\n\
     \M\n\
-    \\EOT\EOT\v\STX\SOH\DC2\EOT\233\ACK\EOT\CAN\SUB? Reversed, hex-encoded string representing the transaction id.\n\
+    \\EOT\EOT\v\STX\SOH\DC2\EOT\242\ACK\EOT\CAN\SUB? Reversed, hex-encoded string representing the transaction id.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\v\STX\SOH\EOT\DC2\ACK\233\ACK\EOT\230\ACK\EM\n\
+    \\ENQ\EOT\v\STX\SOH\EOT\DC2\ACK\242\ACK\EOT\239\ACK\EM\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\SOH\ENQ\DC2\EOT\233\ACK\EOT\n\
+    \\ENQ\EOT\v\STX\SOH\ENQ\DC2\EOT\242\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\SOH\SOH\DC2\EOT\233\ACK\v\DC3\n\
+    \\ENQ\EOT\v\STX\SOH\SOH\DC2\EOT\242\ACK\v\DC3\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\SOH\ETX\DC2\EOT\233\ACK\SYN\ETB\n\
+    \\ENQ\EOT\v\STX\SOH\ETX\DC2\EOT\242\ACK\SYN\ETB\n\
     \;\n\
-    \\EOT\EOT\v\STX\STX\DC2\EOT\236\ACK\EOT\FS\SUB- The index of the output on the transaction.\n\
+    \\EOT\EOT\v\STX\STX\DC2\EOT\245\ACK\EOT\FS\SUB- The index of the output on the transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\v\STX\STX\EOT\DC2\ACK\236\ACK\EOT\233\ACK\CAN\n\
+    \\ENQ\EOT\v\STX\STX\EOT\DC2\ACK\245\ACK\EOT\242\ACK\CAN\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\STX\ENQ\DC2\EOT\236\ACK\EOT\n\
+    \\ENQ\EOT\v\STX\STX\ENQ\DC2\EOT\245\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\STX\SOH\DC2\EOT\236\ACK\v\ETB\n\
+    \\ENQ\EOT\v\STX\STX\SOH\DC2\EOT\245\ACK\v\ETB\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\STX\ETX\DC2\EOT\236\ACK\SUB\ESC\n\
+    \\ENQ\EOT\v\STX\STX\ETX\DC2\EOT\245\ACK\SUB\ESC\n\
     \\f\n\
-    \\STX\EOT\f\DC2\ACK\239\ACK\NUL\246\ACK\SOH\n\
+    \\STX\EOT\f\DC2\ACK\248\ACK\NUL\255\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT\f\SOH\DC2\EOT\239\ACK\b\CAN\n\
+    \\ETX\EOT\f\SOH\DC2\EOT\248\ACK\b\CAN\n\
     \9\n\
-    \\EOT\EOT\f\STX\NUL\DC2\EOT\241\ACK\EOT\SYN\SUB+ The identity pubkey of the Lightning node\n\
+    \\EOT\EOT\f\STX\NUL\DC2\EOT\250\ACK\EOT\SYN\SUB+ The identity pubkey of the Lightning node\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\f\STX\NUL\EOT\DC2\ACK\241\ACK\EOT\239\ACK\SUB\n\
+    \\ENQ\EOT\f\STX\NUL\EOT\DC2\ACK\250\ACK\EOT\248\ACK\SUB\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\NUL\ENQ\DC2\EOT\241\ACK\EOT\n\
+    \\ENQ\EOT\f\STX\NUL\ENQ\DC2\EOT\250\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\NUL\SOH\DC2\EOT\241\ACK\v\DC1\n\
+    \\ENQ\EOT\f\STX\NUL\SOH\DC2\EOT\250\ACK\v\DC1\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\NUL\ETX\DC2\EOT\241\ACK\DC4\NAK\n\
+    \\ENQ\EOT\f\STX\NUL\ETX\DC2\EOT\250\ACK\DC4\NAK\n\
     \i\n\
-    \\EOT\EOT\f\STX\SOH\DC2\EOT\245\ACK\EOT\DC4\SUB[ The network location of the lightning node, e.g. `69.69.69.69:1337` or\n\
+    \\EOT\EOT\f\STX\SOH\DC2\EOT\254\ACK\EOT\DC4\SUB[ The network location of the lightning node, e.g. `69.69.69.69:1337` or\n\
     \ `localhost:10011`\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\f\STX\SOH\EOT\DC2\ACK\245\ACK\EOT\241\ACK\SYN\n\
+    \\ENQ\EOT\f\STX\SOH\EOT\DC2\ACK\254\ACK\EOT\250\ACK\SYN\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\SOH\ENQ\DC2\EOT\245\ACK\EOT\n\
+    \\ENQ\EOT\f\STX\SOH\ENQ\DC2\EOT\254\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\SOH\SOH\DC2\EOT\245\ACK\v\SI\n\
+    \\ENQ\EOT\f\STX\SOH\SOH\DC2\EOT\254\ACK\v\SI\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\SOH\ETX\DC2\EOT\245\ACK\DC2\DC3\n\
+    \\ENQ\EOT\f\STX\SOH\ETX\DC2\EOT\254\ACK\DC2\DC3\n\
     \\f\n\
-    \\STX\EOT\r\DC2\ACK\248\ACK\NUL\255\ACK\SOH\n\
+    \\STX\EOT\r\DC2\ACK\129\a\NUL\143\a\SOH\n\
     \\v\n\
-    \\ETX\EOT\r\SOH\DC2\EOT\248\ACK\b\SUB\n\
+    \\ETX\EOT\r\SOH\DC2\EOT\129\a\b\SUB\n\
     \F\n\
-    \\EOT\EOT\r\STX\NUL\DC2\EOT\250\ACK\EOT(\SUB8 The map from addresses to amounts for the transaction.\n\
+    \\EOT\EOT\r\STX\NUL\DC2\EOT\131\a\EOT(\SUB8 The map from addresses to amounts for the transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\r\STX\NUL\EOT\DC2\ACK\250\ACK\EOT\248\ACK\FS\n\
+    \\ENQ\EOT\r\STX\NUL\EOT\DC2\ACK\131\a\EOT\129\a\FS\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\NUL\ACK\DC2\EOT\250\ACK\EOT\SYN\n\
+    \\ENQ\EOT\r\STX\NUL\ACK\DC2\EOT\131\a\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\NUL\SOH\DC2\EOT\250\ACK\ETB#\n\
+    \\ENQ\EOT\r\STX\NUL\SOH\DC2\EOT\131\a\ETB#\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\NUL\ETX\DC2\EOT\250\ACK&'\n\
+    \\ENQ\EOT\r\STX\NUL\ETX\DC2\EOT\131\a&'\n\
     \Z\n\
-    \\EOT\EOT\r\STX\SOH\DC2\EOT\254\ACK\EOT\SUB\SUBL The target number of blocks that this transaction should be confirmed\n\
+    \\EOT\EOT\r\STX\SOH\DC2\EOT\135\a\EOT\SUB\SUBL The target number of blocks that this transaction should be confirmed\n\
     \ by.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\r\STX\SOH\EOT\DC2\ACK\254\ACK\EOT\250\ACK(\n\
+    \\ENQ\EOT\r\STX\SOH\EOT\DC2\ACK\135\a\EOT\131\a(\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\SOH\ENQ\DC2\EOT\254\ACK\EOT\t\n\
+    \\ENQ\EOT\r\STX\SOH\ENQ\DC2\EOT\135\a\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\SOH\SOH\DC2\EOT\254\ACK\n\
+    \\ENQ\EOT\r\STX\SOH\SOH\DC2\EOT\135\a\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\SOH\ETX\DC2\EOT\254\ACK\CAN\EM\n\
-    \\f\n\
-    \\STX\EOT\SO\DC2\ACK\129\a\NUL\135\a\SOH\n\
-    \\v\n\
-    \\ETX\EOT\SO\SOH\DC2\EOT\129\a\b\ESC\n\
-    \*\n\
-    \\EOT\EOT\SO\STX\NUL\DC2\EOT\131\a\EOT\SYN\SUB\FS The total fee in satoshis.\n\
-    \\n\
-    \\SI\n\
-    \\ENQ\EOT\SO\STX\NUL\EOT\DC2\ACK\131\a\EOT\129\a\GS\n\
-    \\r\n\
-    \\ENQ\EOT\SO\STX\NUL\ENQ\DC2\EOT\131\a\EOT\t\n\
-    \\r\n\
-    \\ENQ\EOT\SO\STX\NUL\SOH\DC2\EOT\131\a\n\
-    \\DC1\n\
-    \\r\n\
-    \\ENQ\EOT\SO\STX\NUL\ETX\DC2\EOT\131\a\DC4\NAK\n\
-    \-\n\
-    \\EOT\EOT\SO\STX\SOH\DC2\EOT\134\a\EOT#\SUB\US The fee rate in satoshi/byte.\n\
-    \\n\
-    \\SI\n\
-    \\ENQ\EOT\SO\STX\SOH\EOT\DC2\ACK\134\a\EOT\131\a\SYN\n\
-    \\r\n\
-    \\ENQ\EOT\SO\STX\SOH\ENQ\DC2\EOT\134\a\EOT\t\n\
-    \\r\n\
-    \\ENQ\EOT\SO\STX\SOH\SOH\DC2\EOT\134\a\n\
-    \\RS\n\
-    \\r\n\
-    \\ENQ\EOT\SO\STX\SOH\ETX\DC2\EOT\134\a!\"\n\
-    \\f\n\
-    \\STX\EOT\SI\DC2\ACK\137\a\NUL\158\a\SOH\n\
-    \\v\n\
-    \\ETX\EOT\SI\SOH\DC2\EOT\137\a\b\ETB\n\
-    \1\n\
-    \\EOT\EOT\SI\STX\NUL\DC2\EOT\139\a\EOT(\SUB# The map from addresses to amounts\n\
-    \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\NUL\EOT\DC2\ACK\139\a\EOT\137\a\EM\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\NUL\ACK\DC2\EOT\139\a\EOT\SYN\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\NUL\SOH\DC2\EOT\139\a\ETB#\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\NUL\ETX\DC2\EOT\139\a&'\n\
-    \Z\n\
-    \\EOT\EOT\SI\STX\SOH\DC2\EOT\143\a\EOT\SUB\SUBL The target number of blocks that this transaction should be confirmed\n\
-    \ by.\n\
-    \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\SOH\EOT\DC2\ACK\143\a\EOT\139\a(\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\SOH\ENQ\DC2\EOT\143\a\EOT\t\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\SOH\SOH\DC2\EOT\143\a\n\
-    \\NAK\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\SOH\ETX\DC2\EOT\143\a\CAN\EM\n\
-    \e\n\
-    \\EOT\EOT\SI\STX\STX\DC2\EOT\147\a\EOT\ESC\SUBW A manual fee rate set in sat/byte that should be used when crafting the\n\
-    \ transaction.\n\
-    \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\STX\EOT\DC2\ACK\147\a\EOT\143\a\SUB\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\STX\ENQ\DC2\EOT\147\a\EOT\t\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\STX\SOH\DC2\EOT\147\a\n\
-    \\SYN\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\STX\ETX\DC2\EOT\147\a\EM\SUB\n\
-    \Q\n\
-    \\EOT\EOT\SI\STX\ETX\DC2\EOT\150\a\EOT\NAK\SUBC An optional label for the transaction, limited to 500 characters.\n\
-    \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\ETX\EOT\DC2\ACK\150\a\EOT\147\a\ESC\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\ETX\ENQ\DC2\EOT\150\a\EOT\n\
-    \\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\ETX\SOH\DC2\EOT\150\a\v\DLE\n\
-    \\r\n\
-    \\ENQ\EOT\SI\STX\ETX\ETX\DC2\EOT\150\a\DC3\DC4\n\
+    \\ENQ\EOT\r\STX\SOH\ETX\DC2\EOT\135\a\CAN\EM\n\
     \t\n\
-    \\EOT\EOT\SI\STX\EOT\DC2\EOT\154\a\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
+    \\EOT\EOT\r\STX\STX\DC2\EOT\139\a\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
     \ the transaction must satisfy.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SI\STX\EOT\EOT\DC2\ACK\154\a\EOT\150\a\NAK\n\
+    \\ENQ\EOT\r\STX\STX\EOT\DC2\ACK\139\a\EOT\135\a\SUB\n\
     \\r\n\
-    \\ENQ\EOT\SI\STX\EOT\ENQ\DC2\EOT\154\a\EOT\t\n\
+    \\ENQ\EOT\r\STX\STX\ENQ\DC2\EOT\139\a\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\SI\STX\EOT\SOH\DC2\EOT\154\a\n\
+    \\ENQ\EOT\r\STX\STX\SOH\DC2\EOT\139\a\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT\SI\STX\EOT\ETX\DC2\EOT\154\a\SYN\ETB\n\
+    \\ENQ\EOT\r\STX\STX\ETX\DC2\EOT\139\a\SYN\ETB\n\
     \Y\n\
-    \\EOT\EOT\SI\STX\ENQ\DC2\EOT\157\a\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
+    \\EOT\EOT\r\STX\ETX\DC2\EOT\142\a\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SI\STX\ENQ\EOT\DC2\ACK\157\a\EOT\154\a\CAN\n\
+    \\ENQ\EOT\r\STX\ETX\EOT\DC2\ACK\142\a\EOT\139\a\CAN\n\
     \\r\n\
-    \\ENQ\EOT\SI\STX\ENQ\ENQ\DC2\EOT\157\a\EOT\b\n\
+    \\ENQ\EOT\r\STX\ETX\ENQ\DC2\EOT\142\a\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\SI\STX\ENQ\SOH\DC2\EOT\157\a\t\SUB\n\
+    \\ENQ\EOT\r\STX\ETX\SOH\DC2\EOT\142\a\t\SUB\n\
     \\r\n\
-    \\ENQ\EOT\SI\STX\ENQ\ETX\DC2\EOT\157\a\GS\RS\n\
+    \\ENQ\EOT\r\STX\ETX\ETX\DC2\EOT\142\a\GS\RS\n\
     \\f\n\
-    \\STX\EOT\DLE\DC2\ACK\159\a\NUL\162\a\SOH\n\
+    \\STX\EOT\SO\DC2\ACK\145\a\NUL\155\a\SOH\n\
     \\v\n\
-    \\ETX\EOT\DLE\SOH\DC2\EOT\159\a\b\CAN\n\
-    \)\n\
-    \\EOT\EOT\DLE\STX\NUL\DC2\EOT\161\a\EOT\DC4\SUB\ESC The id of the transaction\n\
+    \\ETX\EOT\SO\SOH\DC2\EOT\145\a\b\ESC\n\
+    \*\n\
+    \\EOT\EOT\SO\STX\NUL\DC2\EOT\147\a\EOT\SYN\SUB\FS The total fee in satoshis.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DLE\STX\NUL\EOT\DC2\ACK\161\a\EOT\159\a\SUB\n\
+    \\ENQ\EOT\SO\STX\NUL\EOT\DC2\ACK\147\a\EOT\145\a\GS\n\
     \\r\n\
-    \\ENQ\EOT\DLE\STX\NUL\ENQ\DC2\EOT\161\a\EOT\n\
-    \\n\
+    \\ENQ\EOT\SO\STX\NUL\ENQ\DC2\EOT\147\a\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DLE\STX\NUL\SOH\DC2\EOT\161\a\v\SI\n\
+    \\ENQ\EOT\SO\STX\NUL\SOH\DC2\EOT\147\a\n\
+    \\DC1\n\
     \\r\n\
-    \\ENQ\EOT\DLE\STX\NUL\ETX\DC2\EOT\161\a\DC2\DC3\n\
-    \\f\n\
-    \\STX\EOT\DC1\DC2\ACK\164\a\NUL\195\a\SOH\n\
-    \\v\n\
-    \\ETX\EOT\DC1\SOH\DC2\EOT\164\a\b\CAN\n\
-    \,\n\
-    \\EOT\EOT\DC1\STX\NUL\DC2\EOT\166\a\EOT\DC4\SUB\RS The address to send coins to\n\
+    \\ENQ\EOT\SO\STX\NUL\ETX\DC2\EOT\147\a\DC4\NAK\n\
+    \N\n\
+    \\EOT\EOT\SO\STX\SOH\DC2\EOT\151\a\EOT7\SUB@ Deprecated, use sat_per_vbyte.\n\
+    \ The fee rate in satoshi/vbyte.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC1\STX\NUL\EOT\DC2\ACK\166\a\EOT\164\a\SUB\n\
+    \\ENQ\EOT\SO\STX\SOH\EOT\DC2\ACK\151\a\EOT\147\a\SYN\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\NUL\ENQ\DC2\EOT\166\a\EOT\n\
-    \\n\
+    \\ENQ\EOT\SO\STX\SOH\ENQ\DC2\EOT\151\a\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\NUL\SOH\DC2\EOT\166\a\v\SI\n\
+    \\ENQ\EOT\SO\STX\SOH\SOH\DC2\EOT\151\a\n\
+    \\RS\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\NUL\ETX\DC2\EOT\166\a\DC2\DC3\n\
+    \\ENQ\EOT\SO\STX\SOH\ETX\DC2\EOT\151\a!\"\n\
+    \\r\n\
+    \\ENQ\EOT\SO\STX\SOH\b\DC2\EOT\151\a#6\n\
+    \\SO\n\
+    \\ACK\EOT\SO\STX\SOH\b\ETX\DC2\EOT\151\a$5\n\
     \.\n\
-    \\EOT\EOT\DC1\STX\SOH\DC2\EOT\169\a\EOT\NAK\SUB  The amount in satoshis to send\n\
+    \\EOT\EOT\SO\STX\STX\DC2\EOT\154\a\EOT\GS\SUB  The fee rate in satoshi/vbyte.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC1\STX\SOH\EOT\DC2\ACK\169\a\EOT\166\a\DC4\n\
+    \\ENQ\EOT\SO\STX\STX\EOT\DC2\ACK\154\a\EOT\151\a7\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\SOH\ENQ\DC2\EOT\169\a\EOT\t\n\
+    \\ENQ\EOT\SO\STX\STX\ENQ\DC2\EOT\154\a\EOT\n\
+    \\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\SOH\SOH\DC2\EOT\169\a\n\
-    \\DLE\n\
+    \\ENQ\EOT\SO\STX\STX\SOH\DC2\EOT\154\a\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\SOH\ETX\DC2\EOT\169\a\DC3\DC4\n\
+    \\ENQ\EOT\SO\STX\STX\ETX\DC2\EOT\154\a\ESC\FS\n\
+    \\f\n\
+    \\STX\EOT\SI\DC2\ACK\157\a\NUL\183\a\SOH\n\
+    \\v\n\
+    \\ETX\EOT\SI\SOH\DC2\EOT\157\a\b\ETB\n\
+    \1\n\
+    \\EOT\EOT\SI\STX\NUL\DC2\EOT\159\a\EOT(\SUB# The map from addresses to amounts\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\SI\STX\NUL\EOT\DC2\ACK\159\a\EOT\157\a\EM\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\NUL\ACK\DC2\EOT\159\a\EOT\SYN\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\NUL\SOH\DC2\EOT\159\a\ETB#\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\NUL\ETX\DC2\EOT\159\a&'\n\
     \Z\n\
-    \\EOT\EOT\DC1\STX\STX\DC2\EOT\173\a\EOT\SUB\SUBL The target number of blocks that this transaction should be confirmed\n\
+    \\EOT\EOT\SI\STX\SOH\DC2\EOT\163\a\EOT\SUB\SUBL The target number of blocks that this transaction should be confirmed\n\
     \ by.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC1\STX\STX\EOT\DC2\ACK\173\a\EOT\169\a\NAK\n\
+    \\ENQ\EOT\SI\STX\SOH\EOT\DC2\ACK\163\a\EOT\159\a(\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\STX\ENQ\DC2\EOT\173\a\EOT\t\n\
+    \\ENQ\EOT\SI\STX\SOH\ENQ\DC2\EOT\163\a\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\STX\SOH\DC2\EOT\173\a\n\
+    \\ENQ\EOT\SI\STX\SOH\SOH\DC2\EOT\163\a\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\STX\ETX\DC2\EOT\173\a\CAN\EM\n\
-    \e\n\
-    \\EOT\EOT\DC1\STX\ETX\DC2\EOT\177\a\EOT\ESC\SUBW A manual fee rate set in sat/byte that should be used when crafting the\n\
+    \\ENQ\EOT\SI\STX\SOH\ETX\DC2\EOT\163\a\CAN\EM\n\
+    \f\n\
+    \\EOT\EOT\SI\STX\STX\DC2\EOT\167\a\EOT\GS\SUBX A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC1\STX\ETX\EOT\DC2\ACK\177\a\EOT\173\a\SUB\n\
+    \\ENQ\EOT\SI\STX\STX\EOT\DC2\ACK\167\a\EOT\163\a\SUB\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\ETX\ENQ\DC2\EOT\177\a\EOT\t\n\
+    \\ENQ\EOT\SI\STX\STX\ENQ\DC2\EOT\167\a\EOT\n\
+    \\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\ETX\SOH\DC2\EOT\177\a\n\
+    \\ENQ\EOT\SI\STX\STX\SOH\DC2\EOT\167\a\v\CAN\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\STX\ETX\DC2\EOT\167\a\ESC\FS\n\
+    \\134\SOH\n\
+    \\EOT\EOT\SI\STX\ETX\DC2\EOT\172\a\EOT/\SUBx Deprecated, use sat_per_vbyte.\n\
+    \ A manual fee rate set in sat/vbyte that should be used when crafting the\n\
+    \ transaction.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\SI\STX\ETX\EOT\DC2\ACK\172\a\EOT\167\a\GS\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\ETX\ENQ\DC2\EOT\172\a\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\ETX\SOH\DC2\EOT\172\a\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\ETX\ETX\DC2\EOT\177\a\EM\SUB\n\
+    \\ENQ\EOT\SI\STX\ETX\ETX\DC2\EOT\172\a\EM\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\ETX\b\DC2\EOT\172\a\ESC.\n\
+    \\SO\n\
+    \\ACK\EOT\SI\STX\ETX\b\ETX\DC2\EOT\172\a\FS-\n\
+    \Q\n\
+    \\EOT\EOT\SI\STX\EOT\DC2\EOT\175\a\EOT\NAK\SUBC An optional label for the transaction, limited to 500 characters.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\SI\STX\EOT\EOT\DC2\ACK\175\a\EOT\172\a/\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\EOT\ENQ\DC2\EOT\175\a\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\EOT\SOH\DC2\EOT\175\a\v\DLE\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\EOT\ETX\DC2\EOT\175\a\DC3\DC4\n\
+    \t\n\
+    \\EOT\EOT\SI\STX\ENQ\DC2\EOT\179\a\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
+    \ the transaction must satisfy.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\SI\STX\ENQ\EOT\DC2\ACK\179\a\EOT\175\a\NAK\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\ENQ\ENQ\DC2\EOT\179\a\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\ENQ\SOH\DC2\EOT\179\a\n\
+    \\DC3\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\ENQ\ETX\DC2\EOT\179\a\SYN\ETB\n\
+    \Y\n\
+    \\EOT\EOT\SI\STX\ACK\DC2\EOT\182\a\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\SI\STX\ACK\EOT\DC2\ACK\182\a\EOT\179\a\CAN\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\ACK\ENQ\DC2\EOT\182\a\EOT\b\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\ACK\SOH\DC2\EOT\182\a\t\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\SI\STX\ACK\ETX\DC2\EOT\182\a\GS\RS\n\
+    \\f\n\
+    \\STX\EOT\DLE\DC2\ACK\184\a\NUL\187\a\SOH\n\
+    \\v\n\
+    \\ETX\EOT\DLE\SOH\DC2\EOT\184\a\b\CAN\n\
+    \)\n\
+    \\EOT\EOT\DLE\STX\NUL\DC2\EOT\186\a\EOT\DC4\SUB\ESC The id of the transaction\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\DLE\STX\NUL\EOT\DC2\ACK\186\a\EOT\184\a\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\DLE\STX\NUL\ENQ\DC2\EOT\186\a\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\DLE\STX\NUL\SOH\DC2\EOT\186\a\v\SI\n\
+    \\r\n\
+    \\ENQ\EOT\DLE\STX\NUL\ETX\DC2\EOT\186\a\DC2\DC3\n\
+    \\f\n\
+    \\STX\EOT\DC1\DC2\ACK\189\a\NUL\225\a\SOH\n\
+    \\v\n\
+    \\ETX\EOT\DC1\SOH\DC2\EOT\189\a\b\CAN\n\
+    \,\n\
+    \\EOT\EOT\DC1\STX\NUL\DC2\EOT\191\a\EOT\DC4\SUB\RS The address to send coins to\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\DC1\STX\NUL\EOT\DC2\ACK\191\a\EOT\189\a\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\NUL\ENQ\DC2\EOT\191\a\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\NUL\SOH\DC2\EOT\191\a\v\SI\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\NUL\ETX\DC2\EOT\191\a\DC2\DC3\n\
+    \.\n\
+    \\EOT\EOT\DC1\STX\SOH\DC2\EOT\194\a\EOT\NAK\SUB  The amount in satoshis to send\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\DC1\STX\SOH\EOT\DC2\ACK\194\a\EOT\191\a\DC4\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\SOH\ENQ\DC2\EOT\194\a\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\SOH\SOH\DC2\EOT\194\a\n\
+    \\DLE\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\SOH\ETX\DC2\EOT\194\a\DC3\DC4\n\
+    \Z\n\
+    \\EOT\EOT\DC1\STX\STX\DC2\EOT\198\a\EOT\SUB\SUBL The target number of blocks that this transaction should be confirmed\n\
+    \ by.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\DC1\STX\STX\EOT\DC2\ACK\198\a\EOT\194\a\NAK\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\STX\ENQ\DC2\EOT\198\a\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\STX\SOH\DC2\EOT\198\a\n\
+    \\NAK\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\STX\ETX\DC2\EOT\198\a\CAN\EM\n\
+    \f\n\
+    \\EOT\EOT\DC1\STX\ETX\DC2\EOT\202\a\EOT\GS\SUBX A manual fee rate set in sat/vbyte that should be used when crafting the\n\
+    \ transaction.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\DC1\STX\ETX\EOT\DC2\ACK\202\a\EOT\198\a\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\ETX\ENQ\DC2\EOT\202\a\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\ETX\SOH\DC2\EOT\202\a\v\CAN\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\ETX\ETX\DC2\EOT\202\a\ESC\FS\n\
+    \\134\SOH\n\
+    \\EOT\EOT\DC1\STX\EOT\DC2\EOT\207\a\EOT/\SUBx Deprecated, use sat_per_vbyte.\n\
+    \ A manual fee rate set in sat/vbyte that should be used when crafting the\n\
+    \ transaction.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\DC1\STX\EOT\EOT\DC2\ACK\207\a\EOT\202\a\GS\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\EOT\ENQ\DC2\EOT\207\a\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\EOT\SOH\DC2\EOT\207\a\n\
+    \\SYN\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\EOT\ETX\DC2\EOT\207\a\EM\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\DC1\STX\EOT\b\DC2\EOT\207\a\ESC.\n\
+    \\SO\n\
+    \\ACK\EOT\DC1\STX\EOT\b\ETX\DC2\EOT\207\a\FS-\n\
     \\169\SOH\n\
-    \\EOT\EOT\DC1\STX\EOT\DC2\EOT\184\a\EOT\SYN\SUB\154\SOH\n\
+    \\EOT\EOT\DC1\STX\ENQ\DC2\EOT\214\a\EOT\SYN\SUB\154\SOH\n\
     \If set, then the amount field will be ignored, and lnd will attempt to\n\
     \send all the coins under control of the internal wallet to the specified\n\
     \address.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC1\STX\EOT\EOT\DC2\ACK\184\a\EOT\177\a\ESC\n\
+    \\ENQ\EOT\DC1\STX\ENQ\EOT\DC2\ACK\214\a\EOT\207\a/\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\EOT\ENQ\DC2\EOT\184\a\EOT\b\n\
+    \\ENQ\EOT\DC1\STX\ENQ\ENQ\DC2\EOT\214\a\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\EOT\SOH\DC2\EOT\184\a\t\DC1\n\
+    \\ENQ\EOT\DC1\STX\ENQ\SOH\DC2\EOT\214\a\t\DC1\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\EOT\ETX\DC2\EOT\184\a\DC4\NAK\n\
+    \\ENQ\EOT\DC1\STX\ENQ\ETX\DC2\EOT\214\a\DC4\NAK\n\
     \Q\n\
-    \\EOT\EOT\DC1\STX\ENQ\DC2\EOT\187\a\EOT\NAK\SUBC An optional label for the transaction, limited to 500 characters.\n\
+    \\EOT\EOT\DC1\STX\ACK\DC2\EOT\217\a\EOT\NAK\SUBC An optional label for the transaction, limited to 500 characters.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC1\STX\ENQ\EOT\DC2\ACK\187\a\EOT\184\a\SYN\n\
+    \\ENQ\EOT\DC1\STX\ACK\EOT\DC2\ACK\217\a\EOT\214\a\SYN\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\ENQ\ENQ\DC2\EOT\187\a\EOT\n\
+    \\ENQ\EOT\DC1\STX\ACK\ENQ\DC2\EOT\217\a\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\ENQ\SOH\DC2\EOT\187\a\v\DLE\n\
+    \\ENQ\EOT\DC1\STX\ACK\SOH\DC2\EOT\217\a\v\DLE\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\ENQ\ETX\DC2\EOT\187\a\DC3\DC4\n\
+    \\ENQ\EOT\DC1\STX\ACK\ETX\DC2\EOT\217\a\DC3\DC4\n\
     \t\n\
-    \\EOT\EOT\DC1\STX\ACK\DC2\EOT\191\a\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
+    \\EOT\EOT\DC1\STX\a\DC2\EOT\221\a\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
     \ the transaction must satisfy.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC1\STX\ACK\EOT\DC2\ACK\191\a\EOT\187\a\NAK\n\
+    \\ENQ\EOT\DC1\STX\a\EOT\DC2\ACK\221\a\EOT\217\a\NAK\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\ACK\ENQ\DC2\EOT\191\a\EOT\t\n\
+    \\ENQ\EOT\DC1\STX\a\ENQ\DC2\EOT\221\a\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\ACK\SOH\DC2\EOT\191\a\n\
+    \\ENQ\EOT\DC1\STX\a\SOH\DC2\EOT\221\a\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\ACK\ETX\DC2\EOT\191\a\SYN\ETB\n\
+    \\ENQ\EOT\DC1\STX\a\ETX\DC2\EOT\221\a\SYN\ETB\n\
     \Y\n\
-    \\EOT\EOT\DC1\STX\a\DC2\EOT\194\a\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
+    \\EOT\EOT\DC1\STX\b\DC2\EOT\224\a\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC1\STX\a\EOT\DC2\ACK\194\a\EOT\191\a\CAN\n\
+    \\ENQ\EOT\DC1\STX\b\EOT\DC2\ACK\224\a\EOT\221\a\CAN\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\a\ENQ\DC2\EOT\194\a\EOT\b\n\
+    \\ENQ\EOT\DC1\STX\b\ENQ\DC2\EOT\224\a\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\a\SOH\DC2\EOT\194\a\t\SUB\n\
+    \\ENQ\EOT\DC1\STX\b\SOH\DC2\EOT\224\a\t\SUB\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\a\ETX\DC2\EOT\194\a\GS\RS\n\
+    \\ENQ\EOT\DC1\STX\b\ETX\DC2\EOT\224\a\GS\RS\n\
     \\f\n\
-    \\STX\EOT\DC2\DC2\ACK\196\a\NUL\199\a\SOH\n\
+    \\STX\EOT\DC2\DC2\ACK\226\a\NUL\229\a\SOH\n\
     \\v\n\
-    \\ETX\EOT\DC2\SOH\DC2\EOT\196\a\b\EM\n\
+    \\ETX\EOT\DC2\SOH\DC2\EOT\226\a\b\EM\n\
     \5\n\
-    \\EOT\EOT\DC2\STX\NUL\DC2\EOT\198\a\EOT\DC4\SUB' The transaction ID of the transaction\n\
+    \\EOT\EOT\DC2\STX\NUL\DC2\EOT\228\a\EOT\DC4\SUB' The transaction ID of the transaction\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC2\STX\NUL\EOT\DC2\ACK\198\a\EOT\196\a\ESC\n\
+    \\ENQ\EOT\DC2\STX\NUL\EOT\DC2\ACK\228\a\EOT\226\a\ESC\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\NUL\ENQ\DC2\EOT\198\a\EOT\n\
+    \\ENQ\EOT\DC2\STX\NUL\ENQ\DC2\EOT\228\a\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\NUL\SOH\DC2\EOT\198\a\v\SI\n\
+    \\ENQ\EOT\DC2\STX\NUL\SOH\DC2\EOT\228\a\v\SI\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\NUL\ETX\DC2\EOT\198\a\DC2\DC3\n\
+    \\ENQ\EOT\DC2\STX\NUL\ETX\DC2\EOT\228\a\DC2\DC3\n\
     \\f\n\
-    \\STX\EOT\DC3\DC2\ACK\201\a\NUL\207\a\SOH\n\
+    \\STX\EOT\DC3\DC2\ACK\231\a\NUL\240\a\SOH\n\
     \\v\n\
-    \\ETX\EOT\DC3\SOH\DC2\EOT\201\a\b\SUB\n\
+    \\ETX\EOT\DC3\SOH\DC2\EOT\231\a\b\SUB\n\
     \C\n\
-    \\EOT\EOT\DC3\STX\NUL\DC2\EOT\203\a\EOT\CAN\SUB5 The minimum number of confirmations to be included.\n\
+    \\EOT\EOT\DC3\STX\NUL\DC2\EOT\233\a\EOT\CAN\SUB5 The minimum number of confirmations to be included.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC3\STX\NUL\EOT\DC2\ACK\203\a\EOT\201\a\FS\n\
+    \\ENQ\EOT\DC3\STX\NUL\EOT\DC2\ACK\233\a\EOT\231\a\FS\n\
     \\r\n\
-    \\ENQ\EOT\DC3\STX\NUL\ENQ\DC2\EOT\203\a\EOT\t\n\
+    \\ENQ\EOT\DC3\STX\NUL\ENQ\DC2\EOT\233\a\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DC3\STX\NUL\SOH\DC2\EOT\203\a\n\
+    \\ENQ\EOT\DC3\STX\NUL\SOH\DC2\EOT\233\a\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT\DC3\STX\NUL\ETX\DC2\EOT\203\a\SYN\ETB\n\
+    \\ENQ\EOT\DC3\STX\NUL\ETX\DC2\EOT\233\a\SYN\ETB\n\
     \C\n\
-    \\EOT\EOT\DC3\STX\SOH\DC2\EOT\206\a\EOT\CAN\SUB5 The maximum number of confirmations to be included.\n\
+    \\EOT\EOT\DC3\STX\SOH\DC2\EOT\236\a\EOT\CAN\SUB5 The maximum number of confirmations to be included.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DC3\STX\SOH\EOT\DC2\ACK\206\a\EOT\203\a\CAN\n\
+    \\ENQ\EOT\DC3\STX\SOH\EOT\DC2\ACK\236\a\EOT\233\a\CAN\n\
     \\r\n\
-    \\ENQ\EOT\DC3\STX\SOH\ENQ\DC2\EOT\206\a\EOT\t\n\
+    \\ENQ\EOT\DC3\STX\SOH\ENQ\DC2\EOT\236\a\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DC3\STX\SOH\SOH\DC2\EOT\206\a\n\
+    \\ENQ\EOT\DC3\STX\SOH\SOH\DC2\EOT\236\a\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT\DC3\STX\SOH\ETX\DC2\EOT\206\a\SYN\ETB\n\
+    \\ENQ\EOT\DC3\STX\SOH\ETX\DC2\EOT\236\a\SYN\ETB\n\
+    \S\n\
+    \\EOT\EOT\DC3\STX\STX\DC2\EOT\239\a\EOT\ETB\SUBE An optional filter to only include outputs belonging to an account.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\DC3\STX\STX\EOT\DC2\ACK\239\a\EOT\236\a\CAN\n\
+    \\r\n\
+    \\ENQ\EOT\DC3\STX\STX\ENQ\DC2\EOT\239\a\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\DC3\STX\STX\SOH\DC2\EOT\239\a\v\DC2\n\
+    \\r\n\
+    \\ENQ\EOT\DC3\STX\STX\ETX\DC2\EOT\239\a\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT\DC4\DC2\ACK\208\a\NUL\211\a\SOH\n\
+    \\STX\EOT\DC4\DC2\ACK\241\a\NUL\244\a\SOH\n\
     \\v\n\
-    \\ETX\EOT\DC4\SOH\DC2\EOT\208\a\b\ESC\n\
+    \\ETX\EOT\DC4\SOH\DC2\EOT\241\a\b\ESC\n\
     \\US\n\
-    \\EOT\EOT\DC4\STX\NUL\DC2\EOT\210\a\EOT\FS\SUB\DC1 A list of utxos\n\
+    \\EOT\EOT\DC4\STX\NUL\DC2\EOT\243\a\EOT\FS\SUB\DC1 A list of utxos\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC4\STX\NUL\EOT\DC2\EOT\210\a\EOT\f\n\
+    \\ENQ\EOT\DC4\STX\NUL\EOT\DC2\EOT\243\a\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\DC4\STX\NUL\ACK\DC2\EOT\210\a\r\DC1\n\
+    \\ENQ\EOT\DC4\STX\NUL\ACK\DC2\EOT\243\a\r\DC1\n\
     \\r\n\
-    \\ENQ\EOT\DC4\STX\NUL\SOH\DC2\EOT\210\a\DC2\ETB\n\
+    \\ENQ\EOT\DC4\STX\NUL\SOH\DC2\EOT\243\a\DC2\ETB\n\
     \\r\n\
-    \\ENQ\EOT\DC4\STX\NUL\ETX\DC2\EOT\210\a\SUB\ESC\n\
+    \\ENQ\EOT\DC4\STX\NUL\ETX\DC2\EOT\243\a\SUB\ESC\n\
     \\182\SOH\n\
-    \\STX\ENQ\NUL\DC2\ACK\219\a\NUL\224\a\SOH\SUB\167\SOH\n\
+    \\STX\ENQ\NUL\DC2\ACK\252\a\NUL\129\b\SOH\SUB\167\SOH\n\
     \`AddressType` has to be one of:\n\
     \\n\
     \- `p2wkh`: Pay to witness key hash (`WITNESS_PUBKEY_HASH` = 0)\n\
     \- `np2wkh`: Pay to nested witness key hash (`NESTED_PUBKEY_HASH` = 1)\n\
     \\n\
     \\v\n\
-    \\ETX\ENQ\NUL\SOH\DC2\EOT\219\a\ENQ\DLE\n\
+    \\ETX\ENQ\NUL\SOH\DC2\EOT\252\a\ENQ\DLE\n\
     \\f\n\
-    \\EOT\ENQ\NUL\STX\NUL\DC2\EOT\220\a\EOT\FS\n\
+    \\EOT\ENQ\NUL\STX\NUL\DC2\EOT\253\a\EOT\FS\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\NUL\SOH\DC2\EOT\220\a\EOT\ETB\n\
+    \\ENQ\ENQ\NUL\STX\NUL\SOH\DC2\EOT\253\a\EOT\ETB\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\NUL\STX\DC2\EOT\220\a\SUB\ESC\n\
+    \\ENQ\ENQ\NUL\STX\NUL\STX\DC2\EOT\253\a\SUB\ESC\n\
     \\f\n\
-    \\EOT\ENQ\NUL\STX\SOH\DC2\EOT\221\a\EOT\ESC\n\
+    \\EOT\ENQ\NUL\STX\SOH\DC2\EOT\254\a\EOT\ESC\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\SOH\SOH\DC2\EOT\221\a\EOT\SYN\n\
+    \\ENQ\ENQ\NUL\STX\SOH\SOH\DC2\EOT\254\a\EOT\SYN\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\SOH\STX\DC2\EOT\221\a\EM\SUB\n\
+    \\ENQ\ENQ\NUL\STX\SOH\STX\DC2\EOT\254\a\EM\SUB\n\
     \\f\n\
-    \\EOT\ENQ\NUL\STX\STX\DC2\EOT\222\a\EOT#\n\
+    \\EOT\ENQ\NUL\STX\STX\DC2\EOT\255\a\EOT#\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\STX\SOH\DC2\EOT\222\a\EOT\RS\n\
+    \\ENQ\ENQ\NUL\STX\STX\SOH\DC2\EOT\255\a\EOT\RS\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\STX\STX\DC2\EOT\222\a!\"\n\
+    \\ENQ\ENQ\NUL\STX\STX\STX\DC2\EOT\255\a!\"\n\
     \\f\n\
-    \\EOT\ENQ\NUL\STX\ETX\DC2\EOT\223\a\EOT\"\n\
+    \\EOT\ENQ\NUL\STX\ETX\DC2\EOT\128\b\EOT\"\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\ETX\SOH\DC2\EOT\223\a\EOT\GS\n\
+    \\ENQ\ENQ\NUL\STX\ETX\SOH\DC2\EOT\128\b\EOT\GS\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\ETX\STX\DC2\EOT\223\a !\n\
+    \\ENQ\ENQ\NUL\STX\ETX\STX\DC2\EOT\128\b !\n\
     \\f\n\
-    \\STX\EOT\NAK\DC2\ACK\226\a\NUL\229\a\SOH\n\
+    \\STX\EOT\NAK\DC2\ACK\131\b\NUL\140\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\NAK\SOH\DC2\EOT\226\a\b\EM\n\
-    \ \n\
-    \\EOT\EOT\NAK\STX\NUL\DC2\EOT\228\a\EOT\EM\SUB\DC2 The address type\n\
+    \\ETX\EOT\NAK\SOH\DC2\EOT\131\b\b\EM\n\
+    \0\n\
+    \\EOT\EOT\NAK\STX\NUL\DC2\EOT\133\b\EOT\EM\SUB\" The type of address to generate.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\NAK\STX\NUL\EOT\DC2\ACK\228\a\EOT\226\a\ESC\n\
+    \\ENQ\EOT\NAK\STX\NUL\EOT\DC2\ACK\133\b\EOT\131\b\ESC\n\
     \\r\n\
-    \\ENQ\EOT\NAK\STX\NUL\ACK\DC2\EOT\228\a\EOT\SI\n\
+    \\ENQ\EOT\NAK\STX\NUL\ACK\DC2\EOT\133\b\EOT\SI\n\
     \\r\n\
-    \\ENQ\EOT\NAK\STX\NUL\SOH\DC2\EOT\228\a\DLE\DC4\n\
+    \\ENQ\EOT\NAK\STX\NUL\SOH\DC2\EOT\133\b\DLE\DC4\n\
     \\r\n\
-    \\ENQ\EOT\NAK\STX\NUL\ETX\DC2\EOT\228\a\ETB\CAN\n\
+    \\ENQ\EOT\NAK\STX\NUL\ETX\DC2\EOT\133\b\ETB\CAN\n\
+    \t\n\
+    \\EOT\EOT\NAK\STX\SOH\DC2\EOT\139\b\EOT\ETB\SUBf\n\
+    \The name of the account to generate a new address for. If empty, the\n\
+    \default wallet account is used.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT\NAK\STX\SOH\EOT\DC2\ACK\139\b\EOT\133\b\EM\n\
+    \\r\n\
+    \\ENQ\EOT\NAK\STX\SOH\ENQ\DC2\EOT\139\b\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\NAK\STX\SOH\SOH\DC2\EOT\139\b\v\DC2\n\
+    \\r\n\
+    \\ENQ\EOT\NAK\STX\SOH\ETX\DC2\EOT\139\b\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT\SYN\DC2\ACK\230\a\NUL\233\a\SOH\n\
+    \\STX\EOT\SYN\DC2\ACK\141\b\NUL\144\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\SYN\SOH\DC2\EOT\230\a\b\SUB\n\
+    \\ETX\EOT\SYN\SOH\DC2\EOT\141\b\b\SUB\n\
     \2\n\
-    \\EOT\EOT\SYN\STX\NUL\DC2\EOT\232\a\EOT\ETB\SUB$ The newly generated wallet address\n\
+    \\EOT\EOT\SYN\STX\NUL\DC2\EOT\143\b\EOT\ETB\SUB$ The newly generated wallet address\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SYN\STX\NUL\EOT\DC2\ACK\232\a\EOT\230\a\FS\n\
+    \\ENQ\EOT\SYN\STX\NUL\EOT\DC2\ACK\143\b\EOT\141\b\FS\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\NUL\ENQ\DC2\EOT\232\a\EOT\n\
+    \\ENQ\EOT\SYN\STX\NUL\ENQ\DC2\EOT\143\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\NUL\SOH\DC2\EOT\232\a\v\DC2\n\
+    \\ENQ\EOT\SYN\STX\NUL\SOH\DC2\EOT\143\b\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\NUL\ETX\DC2\EOT\232\a\NAK\SYN\n\
+    \\ENQ\EOT\SYN\STX\NUL\ETX\DC2\EOT\143\b\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT\ETB\DC2\ACK\235\a\NUL\241\a\SOH\n\
+    \\STX\EOT\ETB\DC2\ACK\146\b\NUL\152\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\ETB\SOH\DC2\EOT\235\a\b\SUB\n\
+    \\ETX\EOT\ETB\SOH\DC2\EOT\146\b\b\SUB\n\
     \`\n\
-    \\EOT\EOT\ETB\STX\NUL\DC2\EOT\240\a\EOT\DC2\SUBR\n\
+    \\EOT\EOT\ETB\STX\NUL\DC2\EOT\151\b\EOT\DC2\SUBR\n\
     \The message to be signed. When using REST, this field must be encoded as\n\
     \base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ETB\STX\NUL\EOT\DC2\ACK\240\a\EOT\235\a\FS\n\
+    \\ENQ\EOT\ETB\STX\NUL\EOT\DC2\ACK\151\b\EOT\146\b\FS\n\
     \\r\n\
-    \\ENQ\EOT\ETB\STX\NUL\ENQ\DC2\EOT\240\a\EOT\t\n\
+    \\ENQ\EOT\ETB\STX\NUL\ENQ\DC2\EOT\151\b\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ETB\STX\NUL\SOH\DC2\EOT\240\a\n\
+    \\ENQ\EOT\ETB\STX\NUL\SOH\DC2\EOT\151\b\n\
     \\r\n\
     \\r\n\
-    \\ENQ\EOT\ETB\STX\NUL\ETX\DC2\EOT\240\a\DLE\DC1\n\
+    \\ENQ\EOT\ETB\STX\NUL\ETX\DC2\EOT\151\b\DLE\DC1\n\
     \\f\n\
-    \\STX\EOT\CAN\DC2\ACK\242\a\NUL\245\a\SOH\n\
+    \\STX\EOT\CAN\DC2\ACK\153\b\NUL\156\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\CAN\SOH\DC2\EOT\242\a\b\ESC\n\
+    \\ETX\EOT\CAN\SOH\DC2\EOT\153\b\b\ESC\n\
     \3\n\
-    \\EOT\EOT\CAN\STX\NUL\DC2\EOT\244\a\EOT\EM\SUB% The signature for the given message\n\
+    \\EOT\EOT\CAN\STX\NUL\DC2\EOT\155\b\EOT\EM\SUB% The signature for the given message\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\CAN\STX\NUL\EOT\DC2\ACK\244\a\EOT\242\a\GS\n\
+    \\ENQ\EOT\CAN\STX\NUL\EOT\DC2\ACK\155\b\EOT\153\b\GS\n\
     \\r\n\
-    \\ENQ\EOT\CAN\STX\NUL\ENQ\DC2\EOT\244\a\EOT\n\
+    \\ENQ\EOT\CAN\STX\NUL\ENQ\DC2\EOT\155\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\CAN\STX\NUL\SOH\DC2\EOT\244\a\v\DC4\n\
+    \\ENQ\EOT\CAN\STX\NUL\SOH\DC2\EOT\155\b\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT\CAN\STX\NUL\ETX\DC2\EOT\244\a\ETB\CAN\n\
+    \\ENQ\EOT\CAN\STX\NUL\ETX\DC2\EOT\155\b\ETB\CAN\n\
     \\f\n\
-    \\STX\EOT\EM\DC2\ACK\247\a\NUL\128\b\SOH\n\
+    \\STX\EOT\EM\DC2\ACK\158\b\NUL\167\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\EM\SOH\DC2\EOT\247\a\b\FS\n\
+    \\ETX\EOT\EM\SOH\DC2\EOT\158\b\b\FS\n\
     \~\n\
-    \\EOT\EOT\EM\STX\NUL\DC2\EOT\252\a\EOT\DC2\SUBp\n\
+    \\EOT\EOT\EM\STX\NUL\DC2\EOT\163\b\EOT\DC2\SUBp\n\
     \The message over which the signature is to be verified. When using REST,\n\
     \this field must be encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\EM\STX\NUL\EOT\DC2\ACK\252\a\EOT\247\a\RS\n\
+    \\ENQ\EOT\EM\STX\NUL\EOT\DC2\ACK\163\b\EOT\158\b\RS\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\NUL\ENQ\DC2\EOT\252\a\EOT\t\n\
+    \\ENQ\EOT\EM\STX\NUL\ENQ\DC2\EOT\163\b\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\NUL\SOH\DC2\EOT\252\a\n\
+    \\ENQ\EOT\EM\STX\NUL\SOH\DC2\EOT\163\b\n\
     \\r\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\NUL\ETX\DC2\EOT\252\a\DLE\DC1\n\
+    \\ENQ\EOT\EM\STX\NUL\ETX\DC2\EOT\163\b\DLE\DC1\n\
     \C\n\
-    \\EOT\EOT\EM\STX\SOH\DC2\EOT\255\a\EOT\EM\SUB5 The signature to be verified over the given message\n\
+    \\EOT\EOT\EM\STX\SOH\DC2\EOT\166\b\EOT\EM\SUB5 The signature to be verified over the given message\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\EM\STX\SOH\EOT\DC2\ACK\255\a\EOT\252\a\DC2\n\
+    \\ENQ\EOT\EM\STX\SOH\EOT\DC2\ACK\166\b\EOT\163\b\DC2\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\SOH\ENQ\DC2\EOT\255\a\EOT\n\
+    \\ENQ\EOT\EM\STX\SOH\ENQ\DC2\EOT\166\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\SOH\SOH\DC2\EOT\255\a\v\DC4\n\
+    \\ENQ\EOT\EM\STX\SOH\SOH\DC2\EOT\166\b\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\SOH\ETX\DC2\EOT\255\a\ETB\CAN\n\
+    \\ENQ\EOT\EM\STX\SOH\ETX\DC2\EOT\166\b\ETB\CAN\n\
     \\f\n\
-    \\STX\EOT\SUB\DC2\ACK\129\b\NUL\135\b\SOH\n\
+    \\STX\EOT\SUB\DC2\ACK\168\b\NUL\174\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\SUB\SOH\DC2\EOT\129\b\b\GS\n\
+    \\ETX\EOT\SUB\SOH\DC2\EOT\168\b\b\GS\n\
     \F\n\
-    \\EOT\EOT\SUB\STX\NUL\DC2\EOT\131\b\EOT\DC3\SUB8 Whether the signature was valid over the given message\n\
+    \\EOT\EOT\SUB\STX\NUL\DC2\EOT\170\b\EOT\DC3\SUB8 Whether the signature was valid over the given message\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SUB\STX\NUL\EOT\DC2\ACK\131\b\EOT\129\b\US\n\
+    \\ENQ\EOT\SUB\STX\NUL\EOT\DC2\ACK\170\b\EOT\168\b\US\n\
     \\r\n\
-    \\ENQ\EOT\SUB\STX\NUL\ENQ\DC2\EOT\131\b\EOT\b\n\
+    \\ENQ\EOT\SUB\STX\NUL\ENQ\DC2\EOT\170\b\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\SUB\STX\NUL\SOH\DC2\EOT\131\b\t\SO\n\
+    \\ENQ\EOT\SUB\STX\NUL\SOH\DC2\EOT\170\b\t\SO\n\
     \\r\n\
-    \\ENQ\EOT\SUB\STX\NUL\ETX\DC2\EOT\131\b\DC1\DC2\n\
+    \\ENQ\EOT\SUB\STX\NUL\ETX\DC2\EOT\170\b\DC1\DC2\n\
     \7\n\
-    \\EOT\EOT\SUB\STX\SOH\DC2\EOT\134\b\EOT\SYN\SUB) The pubkey recovered from the signature\n\
+    \\EOT\EOT\SUB\STX\SOH\DC2\EOT\173\b\EOT\SYN\SUB) The pubkey recovered from the signature\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\SUB\STX\SOH\EOT\DC2\ACK\134\b\EOT\131\b\DC3\n\
+    \\ENQ\EOT\SUB\STX\SOH\EOT\DC2\ACK\173\b\EOT\170\b\DC3\n\
     \\r\n\
-    \\ENQ\EOT\SUB\STX\SOH\ENQ\DC2\EOT\134\b\EOT\n\
+    \\ENQ\EOT\SUB\STX\SOH\ENQ\DC2\EOT\173\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SUB\STX\SOH\SOH\DC2\EOT\134\b\v\DC1\n\
+    \\ENQ\EOT\SUB\STX\SOH\SOH\DC2\EOT\173\b\v\DC1\n\
     \\r\n\
-    \\ENQ\EOT\SUB\STX\SOH\ETX\DC2\EOT\134\b\DC4\NAK\n\
+    \\ENQ\EOT\SUB\STX\SOH\ETX\DC2\EOT\173\b\DC4\NAK\n\
     \\f\n\
-    \\STX\EOT\ESC\DC2\ACK\137\b\NUL\150\b\SOH\n\
+    \\STX\EOT\ESC\DC2\ACK\176\b\NUL\189\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\ESC\SOH\DC2\EOT\137\b\b\SUB\n\
+    \\ETX\EOT\ESC\SOH\DC2\EOT\176\b\b\SUB\n\
     \L\n\
-    \\EOT\EOT\ESC\STX\NUL\DC2\EOT\139\b\EOT\RS\SUB> Lightning address of the peer, in the format `<pubkey>@host`\n\
+    \\EOT\EOT\ESC\STX\NUL\DC2\EOT\178\b\EOT\RS\SUB> Lightning address of the peer, in the format `<pubkey>@host`\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ESC\STX\NUL\EOT\DC2\ACK\139\b\EOT\137\b\FS\n\
+    \\ENQ\EOT\ESC\STX\NUL\EOT\DC2\ACK\178\b\EOT\176\b\FS\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\NUL\ACK\DC2\EOT\139\b\EOT\DC4\n\
+    \\ENQ\EOT\ESC\STX\NUL\ACK\DC2\EOT\178\b\EOT\DC4\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\NUL\SOH\DC2\EOT\139\b\NAK\EM\n\
+    \\ENQ\EOT\ESC\STX\NUL\SOH\DC2\EOT\178\b\NAK\EM\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\NUL\ETX\DC2\EOT\139\b\FS\GS\n\
+    \\ENQ\EOT\ESC\STX\NUL\ETX\DC2\EOT\178\b\FS\GS\n\
     \\133\SOH\n\
-    \\EOT\EOT\ESC\STX\SOH\DC2\EOT\143\b\EOT\DC2\SUBw If set, the daemon will attempt to persistently connect to the target\n\
+    \\EOT\EOT\ESC\STX\SOH\DC2\EOT\182\b\EOT\DC2\SUBw If set, the daemon will attempt to persistently connect to the target\n\
     \ peer. Otherwise, the call will be synchronous. \n\
     \\SI\n\
-    \\ENQ\EOT\ESC\STX\SOH\EOT\DC2\ACK\143\b\EOT\139\b\RS\n\
+    \\ENQ\EOT\ESC\STX\SOH\EOT\DC2\ACK\182\b\EOT\178\b\RS\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\SOH\ENQ\DC2\EOT\143\b\EOT\b\n\
+    \\ENQ\EOT\ESC\STX\SOH\ENQ\DC2\EOT\182\b\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\SOH\SOH\DC2\EOT\143\b\t\r\n\
+    \\ENQ\EOT\ESC\STX\SOH\SOH\DC2\EOT\182\b\t\r\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\SOH\ETX\DC2\EOT\143\b\DLE\DC1\n\
+    \\ENQ\EOT\ESC\STX\SOH\ETX\DC2\EOT\182\b\DLE\DC1\n\
     \k\n\
-    \\EOT\EOT\ESC\STX\STX\DC2\EOT\149\b\EOT\ETB\SUB]\n\
+    \\EOT\EOT\ESC\STX\STX\DC2\EOT\188\b\EOT\ETB\SUB]\n\
     \The connection timeout value (in seconds) for this request. It won't affect\n\
     \other requests.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ESC\STX\STX\EOT\DC2\ACK\149\b\EOT\143\b\DC2\n\
+    \\ENQ\EOT\ESC\STX\STX\EOT\DC2\ACK\188\b\EOT\182\b\DC2\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\STX\ENQ\DC2\EOT\149\b\EOT\n\
+    \\ENQ\EOT\ESC\STX\STX\ENQ\DC2\EOT\188\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\STX\SOH\DC2\EOT\149\b\v\DC2\n\
+    \\ENQ\EOT\ESC\STX\STX\SOH\DC2\EOT\188\b\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\STX\ETX\DC2\EOT\149\b\NAK\SYN\n\
+    \\ENQ\EOT\ESC\STX\STX\ETX\DC2\EOT\188\b\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT\FS\DC2\ACK\151\b\NUL\152\b\SOH\n\
+    \\STX\EOT\FS\DC2\ACK\190\b\NUL\191\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\FS\SOH\DC2\EOT\151\b\b\ESC\n\
+    \\ETX\EOT\FS\SOH\DC2\EOT\190\b\b\ESC\n\
     \\f\n\
-    \\STX\EOT\GS\DC2\ACK\154\b\NUL\157\b\SOH\n\
+    \\STX\EOT\GS\DC2\ACK\193\b\NUL\196\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\GS\SOH\DC2\EOT\154\b\b\GS\n\
+    \\ETX\EOT\GS\SOH\DC2\EOT\193\b\b\GS\n\
     \9\n\
-    \\EOT\EOT\GS\STX\NUL\DC2\EOT\156\b\EOT\ETB\SUB+ The pubkey of the node to disconnect from\n\
+    \\EOT\EOT\GS\STX\NUL\DC2\EOT\195\b\EOT\ETB\SUB+ The pubkey of the node to disconnect from\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\GS\STX\NUL\EOT\DC2\ACK\156\b\EOT\154\b\US\n\
+    \\ENQ\EOT\GS\STX\NUL\EOT\DC2\ACK\195\b\EOT\193\b\US\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\NUL\ENQ\DC2\EOT\156\b\EOT\n\
+    \\ENQ\EOT\GS\STX\NUL\ENQ\DC2\EOT\195\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\NUL\SOH\DC2\EOT\156\b\v\DC2\n\
+    \\ENQ\EOT\GS\STX\NUL\SOH\DC2\EOT\195\b\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\NUL\ETX\DC2\EOT\156\b\NAK\SYN\n\
+    \\ENQ\EOT\GS\STX\NUL\ETX\DC2\EOT\195\b\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT\RS\DC2\ACK\158\b\NUL\159\b\SOH\n\
+    \\STX\EOT\RS\DC2\ACK\197\b\NUL\198\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\RS\SOH\DC2\EOT\158\b\b\RS\n\
+    \\ETX\EOT\RS\SOH\DC2\EOT\197\b\b\RS\n\
     \\f\n\
-    \\STX\EOT\US\DC2\ACK\161\b\NUL\181\b\SOH\n\
+    \\STX\EOT\US\DC2\ACK\200\b\NUL\220\b\SOH\n\
     \\v\n\
-    \\ETX\EOT\US\SOH\DC2\EOT\161\b\b\f\n\
+    \\ETX\EOT\US\SOH\DC2\EOT\200\b\b\f\n\
     \\f\n\
-    \\EOT\EOT\US\STX\NUL\DC2\EOT\162\b\EOT\SYN\n\
+    \\EOT\EOT\US\STX\NUL\DC2\EOT\201\b\EOT\SYN\n\
     \\SI\n\
-    \\ENQ\EOT\US\STX\NUL\EOT\DC2\ACK\162\b\EOT\161\b\SO\n\
+    \\ENQ\EOT\US\STX\NUL\EOT\DC2\ACK\201\b\EOT\200\b\SO\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\NUL\ENQ\DC2\EOT\162\b\EOT\b\n\
+    \\ENQ\EOT\US\STX\NUL\ENQ\DC2\EOT\201\b\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\NUL\SOH\DC2\EOT\162\b\t\DC1\n\
+    \\ENQ\EOT\US\STX\NUL\SOH\DC2\EOT\201\b\t\DC1\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\NUL\ETX\DC2\EOT\162\b\DC4\NAK\n\
+    \\ENQ\EOT\US\STX\NUL\ETX\DC2\EOT\201\b\DC4\NAK\n\
     \\f\n\
-    \\EOT\EOT\US\STX\SOH\DC2\EOT\163\b\EOT\NAK\n\
+    \\EOT\EOT\US\STX\SOH\DC2\EOT\202\b\EOT\NAK\n\
     \\SI\n\
-    \\ENQ\EOT\US\STX\SOH\EOT\DC2\ACK\163\b\EOT\162\b\SYN\n\
+    \\ENQ\EOT\US\STX\SOH\EOT\DC2\ACK\202\b\EOT\201\b\SYN\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\SOH\ENQ\DC2\EOT\163\b\EOT\t\n\
+    \\ENQ\EOT\US\STX\SOH\ENQ\DC2\EOT\202\b\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\SOH\SOH\DC2\EOT\163\b\n\
+    \\ENQ\EOT\US\STX\SOH\SOH\DC2\EOT\202\b\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\SOH\ETX\DC2\EOT\163\b\DC3\DC4\n\
+    \\ENQ\EOT\US\STX\SOH\ETX\DC2\EOT\202\b\DC3\DC4\n\
     \\f\n\
-    \\EOT\EOT\US\STX\STX\DC2\EOT\164\b\EOT\CAN\n\
+    \\EOT\EOT\US\STX\STX\DC2\EOT\203\b\EOT\CAN\n\
     \\SI\n\
-    \\ENQ\EOT\US\STX\STX\EOT\DC2\ACK\164\b\EOT\163\b\NAK\n\
+    \\ENQ\EOT\US\STX\STX\EOT\DC2\ACK\203\b\EOT\202\b\NAK\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\STX\ENQ\DC2\EOT\164\b\EOT\t\n\
+    \\ENQ\EOT\US\STX\STX\ENQ\DC2\EOT\203\b\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\STX\SOH\DC2\EOT\164\b\n\
+    \\ENQ\EOT\US\STX\STX\SOH\DC2\EOT\203\b\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\STX\ETX\DC2\EOT\164\b\SYN\ETB\n\
+    \\ENQ\EOT\US\STX\STX\ETX\DC2\EOT\203\b\SYN\ETB\n\
     \\f\n\
-    \\EOT\EOT\US\STX\ETX\DC2\EOT\165\b\EOT!\n\
+    \\EOT\EOT\US\STX\ETX\DC2\EOT\204\b\EOT!\n\
     \\SI\n\
-    \\ENQ\EOT\US\STX\ETX\EOT\DC2\ACK\165\b\EOT\164\b\CAN\n\
+    \\ENQ\EOT\US\STX\ETX\EOT\DC2\ACK\204\b\EOT\203\b\CAN\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ETX\ENQ\DC2\EOT\165\b\EOT\n\
+    \\ENQ\EOT\US\STX\ETX\ENQ\DC2\EOT\204\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ETX\SOH\DC2\EOT\165\b\v\FS\n\
+    \\ENQ\EOT\US\STX\ETX\SOH\DC2\EOT\204\b\v\FS\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ETX\ETX\DC2\EOT\165\b\US \n\
+    \\ENQ\EOT\US\STX\ETX\ETX\DC2\EOT\204\b\US \n\
     \:\n\
-    \\EOT\EOT\US\STX\EOT\DC2\EOT\168\b\EOT\SUB\SUB, Index identifying the htlc on the channel.\n\
+    \\EOT\EOT\US\STX\EOT\DC2\EOT\207\b\EOT\SUB\SUB, Index identifying the htlc on the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\US\STX\EOT\EOT\DC2\ACK\168\b\EOT\165\b!\n\
+    \\ENQ\EOT\US\STX\EOT\EOT\DC2\ACK\207\b\EOT\204\b!\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\EOT\ENQ\DC2\EOT\168\b\EOT\n\
+    \\ENQ\EOT\US\STX\EOT\ENQ\DC2\EOT\207\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\EOT\SOH\DC2\EOT\168\b\v\NAK\n\
+    \\ENQ\EOT\US\STX\EOT\SOH\DC2\EOT\207\b\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\EOT\ETX\DC2\EOT\168\b\CAN\EM\n\
+    \\ENQ\EOT\US\STX\EOT\ETX\DC2\EOT\207\b\CAN\EM\n\
     \\204\ETX\n\
-    \\EOT\EOT\US\STX\ENQ\DC2\EOT\177\b\EOT\"\SUB\189\ETX If this HTLC is involved in a forwarding operation, this field indicates\n\
+    \\EOT\EOT\US\STX\ENQ\DC2\EOT\216\b\EOT\"\SUB\189\ETX If this HTLC is involved in a forwarding operation, this field indicates\n\
     \ the forwarding channel. For an outgoing htlc, it is the incoming channel.\n\
     \ For an incoming htlc, it is the outgoing channel. When the htlc\n\
     \ originates from this node or this node is the final destination,\n\
@@ -52654,503 +54788,509 @@ packedFileDescriptor
     \ persisted yet.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\US\STX\ENQ\EOT\DC2\ACK\177\b\EOT\168\b\SUB\n\
+    \\ENQ\EOT\US\STX\ENQ\EOT\DC2\ACK\216\b\EOT\207\b\SUB\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ENQ\ENQ\DC2\EOT\177\b\EOT\n\
+    \\ENQ\EOT\US\STX\ENQ\ENQ\DC2\EOT\216\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ENQ\SOH\DC2\EOT\177\b\v\GS\n\
+    \\ENQ\EOT\US\STX\ENQ\SOH\DC2\EOT\216\b\v\GS\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ENQ\ETX\DC2\EOT\177\b !\n\
+    \\ENQ\EOT\US\STX\ENQ\ETX\DC2\EOT\216\b !\n\
     \E\n\
-    \\EOT\EOT\US\STX\ACK\DC2\EOT\180\b\EOT%\SUB7 Index identifying the htlc on the forwarding channel.\n\
+    \\EOT\EOT\US\STX\ACK\DC2\EOT\219\b\EOT%\SUB7 Index identifying the htlc on the forwarding channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\US\STX\ACK\EOT\DC2\ACK\180\b\EOT\177\b\"\n\
+    \\ENQ\EOT\US\STX\ACK\EOT\DC2\ACK\219\b\EOT\216\b\"\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ACK\ENQ\DC2\EOT\180\b\EOT\n\
+    \\ENQ\EOT\US\STX\ACK\ENQ\DC2\EOT\219\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ACK\SOH\DC2\EOT\180\b\v \n\
+    \\ENQ\EOT\US\STX\ACK\SOH\DC2\EOT\219\b\v \n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ACK\ETX\DC2\EOT\180\b#$\n\
+    \\ENQ\EOT\US\STX\ACK\ETX\DC2\EOT\219\b#$\n\
     \\f\n\
-    \\STX\ENQ\SOH\DC2\ACK\183\b\NUL\209\b\SOH\n\
+    \\STX\ENQ\SOH\DC2\ACK\222\b\NUL\248\b\SOH\n\
     \\v\n\
-    \\ETX\ENQ\SOH\SOH\DC2\EOT\183\b\ENQ\DC3\n\
+    \\ETX\ENQ\SOH\SOH\DC2\EOT\222\b\ENQ\DC3\n\
     \[\n\
-    \\EOT\ENQ\SOH\STX\NUL\DC2\EOT\188\b\EOT\SI\SUBM\n\
+    \\EOT\ENQ\SOH\STX\NUL\DC2\EOT\227\b\EOT\SI\SUBM\n\
     \A channel using the legacy commitment format having tweaked to_remote\n\
     \keys.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\NUL\SOH\DC2\EOT\188\b\EOT\n\
+    \\ENQ\ENQ\SOH\STX\NUL\SOH\DC2\EOT\227\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\NUL\STX\DC2\EOT\188\b\r\SO\n\
+    \\ENQ\ENQ\SOH\STX\NUL\STX\DC2\EOT\227\b\r\SO\n\
     \\246\SOH\n\
-    \\EOT\ENQ\SOH\STX\SOH\DC2\EOT\196\b\EOT\SUB\SUB\231\SOH\n\
+    \\EOT\ENQ\SOH\STX\SOH\DC2\EOT\235\b\EOT\SUB\SUB\231\SOH\n\
     \A channel that uses the modern commitment format where the key in the\n\
     \output of the remote party does not change each state. This makes back\n\
     \up and recovery easier as when the channel is closed, the funds go\n\
     \directly to that key.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\SOH\SOH\DC2\EOT\196\b\EOT\NAK\n\
+    \\ENQ\ENQ\SOH\STX\SOH\SOH\DC2\EOT\235\b\EOT\NAK\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\SOH\STX\DC2\EOT\196\b\CAN\EM\n\
+    \\ENQ\ENQ\SOH\STX\SOH\STX\DC2\EOT\235\b\CAN\EM\n\
     \\173\SOH\n\
-    \\EOT\ENQ\SOH\STX\STX\DC2\EOT\203\b\EOT\DLE\SUB\158\SOH\n\
+    \\EOT\ENQ\SOH\STX\STX\DC2\EOT\242\b\EOT\DLE\SUB\158\SOH\n\
     \A channel that uses a commitment format that has anchor outputs on the\n\
     \commitments, allowing fee bumping after a force close transaction has\n\
     \been broadcast.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\STX\SOH\DC2\EOT\203\b\EOT\v\n\
+    \\ENQ\ENQ\SOH\STX\STX\SOH\DC2\EOT\242\b\EOT\v\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\STX\STX\DC2\EOT\203\b\SO\SI\n\
+    \\ENQ\ENQ\SOH\STX\STX\STX\DC2\EOT\242\b\SO\SI\n\
     \M\n\
-    \\EOT\ENQ\SOH\STX\ETX\DC2\EOT\208\b\EOT\"\SUB?\n\
+    \\EOT\ENQ\SOH\STX\ETX\DC2\EOT\247\b\EOT\"\SUB?\n\
     \Returned when the commitment type isn't known or unavailable.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\ETX\SOH\DC2\EOT\208\b\EOT\ESC\n\
+    \\ENQ\ENQ\SOH\STX\ETX\SOH\DC2\EOT\247\b\EOT\ESC\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\ETX\STX\DC2\EOT\208\b\RS!\n\
+    \\ENQ\ENQ\SOH\STX\ETX\STX\DC2\EOT\247\b\RS!\n\
     \\f\n\
-    \\STX\EOT \DC2\ACK\211\b\NUL\233\b\SOH\n\
+    \\STX\EOT \DC2\ACK\250\b\NUL\144\t\SOH\n\
     \\v\n\
-    \\ETX\EOT \SOH\DC2\EOT\211\b\b\SUB\n\
+    \\ETX\EOT \SOH\DC2\EOT\250\b\b\SUB\n\
     \\166\SOH\n\
-    \\EOT\EOT \STX\NUL\DC2\EOT\216\b\EOT\EM\SUB\151\SOH\n\
+    \\EOT\EOT \STX\NUL\DC2\EOT\255\b\EOT\EM\SUB\151\SOH\n\
     \The CSV delay expressed in relative blocks. If the channel is force closed,\n\
     \we will need to wait for this many blocks before we can regain our funds.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT \STX\NUL\EOT\DC2\ACK\216\b\EOT\211\b\FS\n\
+    \\ENQ\EOT \STX\NUL\EOT\DC2\ACK\255\b\EOT\250\b\FS\n\
     \\r\n\
-    \\ENQ\EOT \STX\NUL\ENQ\DC2\EOT\216\b\EOT\n\
+    \\ENQ\EOT \STX\NUL\ENQ\DC2\EOT\255\b\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT \STX\NUL\SOH\DC2\EOT\216\b\v\DC4\n\
+    \\ENQ\EOT \STX\NUL\SOH\DC2\EOT\255\b\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT \STX\NUL\ETX\DC2\EOT\216\b\ETB\CAN\n\
+    \\ENQ\EOT \STX\NUL\ETX\DC2\EOT\255\b\ETB\CAN\n\
     \U\n\
-    \\EOT\EOT \STX\SOH\DC2\EOT\219\b\EOT \SUBG The minimum satoshis this node is required to reserve in its balance.\n\
+    \\EOT\EOT \STX\SOH\DC2\EOT\130\t\EOT \SUBG The minimum satoshis this node is required to reserve in its balance.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT \STX\SOH\EOT\DC2\ACK\219\b\EOT\216\b\EM\n\
+    \\ENQ\EOT \STX\SOH\EOT\DC2\ACK\130\t\EOT\255\b\EM\n\
     \\r\n\
-    \\ENQ\EOT \STX\SOH\ENQ\DC2\EOT\219\b\EOT\n\
+    \\ENQ\EOT \STX\SOH\ENQ\DC2\EOT\130\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT \STX\SOH\SOH\DC2\EOT\219\b\v\ESC\n\
+    \\ENQ\EOT \STX\SOH\SOH\DC2\EOT\130\t\v\ESC\n\
     \\r\n\
-    \\ENQ\EOT \STX\SOH\ETX\DC2\EOT\219\b\RS\US\n\
+    \\ENQ\EOT \STX\SOH\ETX\DC2\EOT\130\t\RS\US\n\
     \N\n\
-    \\EOT\EOT \STX\STX\DC2\EOT\222\b\EOT\RS\SUB@ The dust limit (in satoshis) of the initiator's commitment tx.\n\
+    \\EOT\EOT \STX\STX\DC2\EOT\133\t\EOT\RS\SUB@ The dust limit (in satoshis) of the initiator's commitment tx.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT \STX\STX\EOT\DC2\ACK\222\b\EOT\219\b \n\
+    \\ENQ\EOT \STX\STX\EOT\DC2\ACK\133\t\EOT\130\t \n\
     \\r\n\
-    \\ENQ\EOT \STX\STX\ENQ\DC2\EOT\222\b\EOT\n\
+    \\ENQ\EOT \STX\STX\ENQ\DC2\EOT\133\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT \STX\STX\SOH\DC2\EOT\222\b\v\EM\n\
+    \\ENQ\EOT \STX\STX\SOH\DC2\EOT\133\t\v\EM\n\
     \\r\n\
-    \\ENQ\EOT \STX\STX\ETX\DC2\EOT\222\b\FS\GS\n\
+    \\ENQ\EOT \STX\STX\ETX\DC2\EOT\133\t\FS\GS\n\
     \b\n\
-    \\EOT\EOT \STX\ETX\DC2\EOT\226\b\EOT$\SUBT The maximum amount of coins in millisatoshis that can be pending in this\n\
+    \\EOT\EOT \STX\ETX\DC2\EOT\137\t\EOT$\SUBT The maximum amount of coins in millisatoshis that can be pending in this\n\
     \ channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT \STX\ETX\EOT\DC2\ACK\226\b\EOT\222\b\RS\n\
+    \\ENQ\EOT \STX\ETX\EOT\DC2\ACK\137\t\EOT\133\t\RS\n\
     \\r\n\
-    \\ENQ\EOT \STX\ETX\ENQ\DC2\EOT\226\b\EOT\n\
+    \\ENQ\EOT \STX\ETX\ENQ\DC2\EOT\137\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT \STX\ETX\SOH\DC2\EOT\226\b\v\US\n\
+    \\ENQ\EOT \STX\ETX\SOH\DC2\EOT\137\t\v\US\n\
     \\r\n\
-    \\ENQ\EOT \STX\ETX\ETX\DC2\EOT\226\b\"#\n\
+    \\ENQ\EOT \STX\ETX\ETX\DC2\EOT\137\t\"#\n\
     \R\n\
-    \\EOT\EOT \STX\EOT\DC2\EOT\229\b\EOT\GS\SUBD The smallest HTLC in millisatoshis that the initiator will accept.\n\
+    \\EOT\EOT \STX\EOT\DC2\EOT\140\t\EOT\GS\SUBD The smallest HTLC in millisatoshis that the initiator will accept.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT \STX\EOT\EOT\DC2\ACK\229\b\EOT\226\b$\n\
+    \\ENQ\EOT \STX\EOT\EOT\DC2\ACK\140\t\EOT\137\t$\n\
     \\r\n\
-    \\ENQ\EOT \STX\EOT\ENQ\DC2\EOT\229\b\EOT\n\
+    \\ENQ\EOT \STX\EOT\ENQ\DC2\EOT\140\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT \STX\EOT\SOH\DC2\EOT\229\b\v\CAN\n\
+    \\ENQ\EOT \STX\EOT\SOH\DC2\EOT\140\t\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT \STX\EOT\ETX\DC2\EOT\229\b\ESC\FS\n\
+    \\ENQ\EOT \STX\EOT\ETX\DC2\EOT\140\t\ESC\FS\n\
     \S\n\
-    \\EOT\EOT \STX\ENQ\DC2\EOT\232\b\EOT\"\SUBE The total number of incoming HTLC's that the initiator will accept.\n\
+    \\EOT\EOT \STX\ENQ\DC2\EOT\143\t\EOT\"\SUBE The total number of incoming HTLC's that the initiator will accept.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT \STX\ENQ\EOT\DC2\ACK\232\b\EOT\229\b\GS\n\
+    \\ENQ\EOT \STX\ENQ\EOT\DC2\ACK\143\t\EOT\140\t\GS\n\
     \\r\n\
-    \\ENQ\EOT \STX\ENQ\ENQ\DC2\EOT\232\b\EOT\n\
+    \\ENQ\EOT \STX\ENQ\ENQ\DC2\EOT\143\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT \STX\ENQ\SOH\DC2\EOT\232\b\v\GS\n\
+    \\ENQ\EOT \STX\ENQ\SOH\DC2\EOT\143\t\v\GS\n\
     \\r\n\
-    \\ENQ\EOT \STX\ENQ\ETX\DC2\EOT\232\b !\n\
+    \\ENQ\EOT \STX\ENQ\ETX\DC2\EOT\143\t !\n\
     \\f\n\
-    \\STX\EOT!\DC2\ACK\235\b\NUL\130\n\
+    \\STX\EOT!\DC2\ACK\146\t\NUL\169\n\
     \\SOH\n\
     \\v\n\
-    \\ETX\EOT!\SOH\DC2\EOT\235\b\b\SI\n\
+    \\ETX\EOT!\SOH\DC2\EOT\146\t\b\SI\n\
     \5\n\
-    \\EOT\EOT!\STX\NUL\DC2\EOT\237\b\EOT\DC4\SUB' Whether this channel is active or not\n\
+    \\EOT\EOT!\STX\NUL\DC2\EOT\148\t\EOT\DC4\SUB' Whether this channel is active or not\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\NUL\EOT\DC2\ACK\237\b\EOT\235\b\DC1\n\
+    \\ENQ\EOT!\STX\NUL\EOT\DC2\ACK\148\t\EOT\146\t\DC1\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NUL\ENQ\DC2\EOT\237\b\EOT\b\n\
+    \\ENQ\EOT!\STX\NUL\ENQ\DC2\EOT\148\t\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NUL\SOH\DC2\EOT\237\b\t\SI\n\
+    \\ENQ\EOT!\STX\NUL\SOH\DC2\EOT\148\t\t\SI\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NUL\ETX\DC2\EOT\237\b\DC2\DC3\n\
+    \\ENQ\EOT!\STX\NUL\ETX\DC2\EOT\148\t\DC2\DC3\n\
     \6\n\
-    \\EOT\EOT!\STX\SOH\DC2\EOT\240\b\EOT\GS\SUB( The identity pubkey of the remote node\n\
+    \\EOT\EOT!\STX\SOH\DC2\EOT\151\t\EOT\GS\SUB( The identity pubkey of the remote node\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\SOH\EOT\DC2\ACK\240\b\EOT\237\b\DC4\n\
+    \\ENQ\EOT!\STX\SOH\EOT\DC2\ACK\151\t\EOT\148\t\DC4\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SOH\ENQ\DC2\EOT\240\b\EOT\n\
+    \\ENQ\EOT!\STX\SOH\ENQ\DC2\EOT\151\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SOH\SOH\DC2\EOT\240\b\v\CAN\n\
+    \\ENQ\EOT!\STX\SOH\SOH\DC2\EOT\151\t\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SOH\ETX\DC2\EOT\240\b\ESC\FS\n\
+    \\ENQ\EOT!\STX\SOH\ETX\DC2\EOT\151\t\ESC\FS\n\
     \\179\SOH\n\
-    \\EOT\EOT!\STX\STX\DC2\EOT\247\b\EOT\GS\SUB\164\SOH\n\
+    \\EOT\EOT!\STX\STX\DC2\EOT\158\t\EOT\GS\SUB\164\SOH\n\
     \The outpoint (txid:index) of the funding transaction. With this value, Bob\n\
     \will be able to generate a signature for Alice's version of the commitment\n\
     \transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\STX\EOT\DC2\ACK\247\b\EOT\240\b\GS\n\
+    \\ENQ\EOT!\STX\STX\EOT\DC2\ACK\158\t\EOT\151\t\GS\n\
     \\r\n\
-    \\ENQ\EOT!\STX\STX\ENQ\DC2\EOT\247\b\EOT\n\
+    \\ENQ\EOT!\STX\STX\ENQ\DC2\EOT\158\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\STX\SOH\DC2\EOT\247\b\v\CAN\n\
+    \\ENQ\EOT!\STX\STX\SOH\DC2\EOT\158\t\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\STX\ETX\DC2\EOT\247\b\ESC\FS\n\
+    \\ENQ\EOT!\STX\STX\ETX\DC2\EOT\158\t\ESC\FS\n\
     \\193\SOH\n\
-    \\EOT\EOT!\STX\ETX\DC2\EOT\254\b\EOT,\SUB\178\SOH\n\
+    \\EOT\EOT!\STX\ETX\DC2\EOT\165\t\EOT,\SUB\178\SOH\n\
     \The unique channel ID for the channel. The first 3 bytes are the block\n\
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\ETX\EOT\DC2\ACK\254\b\EOT\247\b\GS\n\
+    \\ENQ\EOT!\STX\ETX\EOT\DC2\ACK\165\t\EOT\158\t\GS\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ETX\ENQ\DC2\EOT\254\b\EOT\n\
+    \\ENQ\EOT!\STX\ETX\ENQ\DC2\EOT\165\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ETX\SOH\DC2\EOT\254\b\v\DC2\n\
+    \\ENQ\EOT!\STX\ETX\SOH\DC2\EOT\165\t\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ETX\ETX\DC2\EOT\254\b\NAK\SYN\n\
+    \\ENQ\EOT!\STX\ETX\ETX\DC2\EOT\165\t\NAK\SYN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ETX\b\DC2\EOT\254\b\ETB+\n\
+    \\ENQ\EOT!\STX\ETX\b\DC2\EOT\165\t\ETB+\n\
     \\SO\n\
-    \\ACK\EOT!\STX\ETX\b\ACK\DC2\EOT\254\b\CAN*\n\
+    \\ACK\EOT!\STX\ETX\b\ACK\DC2\EOT\165\t\CAN*\n\
     \>\n\
-    \\EOT\EOT!\STX\EOT\DC2\EOT\129\t\EOT\ETB\SUB0 The total amount of funds held in this channel\n\
+    \\EOT\EOT!\STX\EOT\DC2\EOT\168\t\EOT\ETB\SUB0 The total amount of funds held in this channel\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\EOT\EOT\DC2\ACK\129\t\EOT\254\b,\n\
+    \\ENQ\EOT!\STX\EOT\EOT\DC2\ACK\168\t\EOT\165\t,\n\
     \\r\n\
-    \\ENQ\EOT!\STX\EOT\ENQ\DC2\EOT\129\t\EOT\t\n\
+    \\ENQ\EOT!\STX\EOT\ENQ\DC2\EOT\168\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\EOT\SOH\DC2\EOT\129\t\n\
+    \\ENQ\EOT!\STX\EOT\SOH\DC2\EOT\168\t\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOT!\STX\EOT\ETX\DC2\EOT\129\t\NAK\SYN\n\
+    \\ENQ\EOT!\STX\EOT\ETX\DC2\EOT\168\t\NAK\SYN\n\
     \;\n\
-    \\EOT\EOT!\STX\ENQ\DC2\EOT\132\t\EOT\FS\SUB- This node's current balance in this channel\n\
+    \\EOT\EOT!\STX\ENQ\DC2\EOT\171\t\EOT\FS\SUB- This node's current balance in this channel\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\ENQ\EOT\DC2\ACK\132\t\EOT\129\t\ETB\n\
+    \\ENQ\EOT!\STX\ENQ\EOT\DC2\ACK\171\t\EOT\168\t\ETB\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ENQ\ENQ\DC2\EOT\132\t\EOT\t\n\
+    \\ENQ\EOT!\STX\ENQ\ENQ\DC2\EOT\171\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ENQ\SOH\DC2\EOT\132\t\n\
+    \\ENQ\EOT!\STX\ENQ\SOH\DC2\EOT\171\t\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ENQ\ETX\DC2\EOT\132\t\SUB\ESC\n\
+    \\ENQ\EOT!\STX\ENQ\ETX\DC2\EOT\171\t\SUB\ESC\n\
     \B\n\
-    \\EOT\EOT!\STX\ACK\DC2\EOT\135\t\EOT\GS\SUB4 The counterparty's current balance in this channel\n\
+    \\EOT\EOT!\STX\ACK\DC2\EOT\174\t\EOT\GS\SUB4 The counterparty's current balance in this channel\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\ACK\EOT\DC2\ACK\135\t\EOT\132\t\FS\n\
+    \\ENQ\EOT!\STX\ACK\EOT\DC2\ACK\174\t\EOT\171\t\FS\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ACK\ENQ\DC2\EOT\135\t\EOT\t\n\
+    \\ENQ\EOT!\STX\ACK\ENQ\DC2\EOT\174\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ACK\SOH\DC2\EOT\135\t\n\
+    \\ENQ\EOT!\STX\ACK\SOH\DC2\EOT\174\t\n\
     \\CAN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ACK\ETX\DC2\EOT\135\t\ESC\FS\n\
+    \\ENQ\EOT!\STX\ACK\ETX\DC2\EOT\174\t\ESC\FS\n\
     \\172\STX\n\
-    \\EOT\EOT!\STX\a\DC2\EOT\143\t\EOT\EM\SUB\157\STX\n\
+    \\EOT\EOT!\STX\a\DC2\EOT\182\t\EOT\EM\SUB\157\STX\n\
     \The amount calculated to be paid in fees for the current set of commitment\n\
     \transactions. The fee amount is persisted with the channel in order to\n\
     \allow the fee amount to be removed and recalculated with each channel state\n\
     \update, including updates that happen after a system restart.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\a\EOT\DC2\ACK\143\t\EOT\135\t\GS\n\
+    \\ENQ\EOT!\STX\a\EOT\DC2\ACK\182\t\EOT\174\t\GS\n\
     \\r\n\
-    \\ENQ\EOT!\STX\a\ENQ\DC2\EOT\143\t\EOT\t\n\
+    \\ENQ\EOT!\STX\a\ENQ\DC2\EOT\182\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\a\SOH\DC2\EOT\143\t\n\
+    \\ENQ\EOT!\STX\a\SOH\DC2\EOT\182\t\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT!\STX\a\ETX\DC2\EOT\143\t\ETB\CAN\n\
+    \\ENQ\EOT!\STX\a\ETX\DC2\EOT\182\t\ETB\CAN\n\
     \8\n\
-    \\EOT\EOT!\STX\b\DC2\EOT\146\t\EOT\FS\SUB* The weight of the commitment transaction\n\
+    \\EOT\EOT!\STX\b\DC2\EOT\185\t\EOT\FS\SUB* The weight of the commitment transaction\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\b\EOT\DC2\ACK\146\t\EOT\143\t\EM\n\
+    \\ENQ\EOT!\STX\b\EOT\DC2\ACK\185\t\EOT\182\t\EM\n\
     \\r\n\
-    \\ENQ\EOT!\STX\b\ENQ\DC2\EOT\146\t\EOT\t\n\
+    \\ENQ\EOT!\STX\b\ENQ\DC2\EOT\185\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\b\SOH\DC2\EOT\146\t\n\
+    \\ENQ\EOT!\STX\b\SOH\DC2\EOT\185\t\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOT!\STX\b\ETX\DC2\EOT\146\t\SUB\ESC\n\
+    \\ENQ\EOT!\STX\b\ETX\DC2\EOT\185\t\SUB\ESC\n\
     \\225\SOH\n\
-    \\EOT\EOT!\STX\t\DC2\EOT\153\t\EOT\SUB\SUB\210\SOH\n\
+    \\EOT\EOT!\STX\t\DC2\EOT\192\t\EOT\SUB\SUB\210\SOH\n\
     \The required number of satoshis per kilo-weight that the requester will pay\n\
     \at all times, for both the funding transaction and commitment transaction.\n\
     \This value can later be updated once the channel is open.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\t\EOT\DC2\ACK\153\t\EOT\146\t\FS\n\
+    \\ENQ\EOT!\STX\t\EOT\DC2\ACK\192\t\EOT\185\t\FS\n\
     \\r\n\
-    \\ENQ\EOT!\STX\t\ENQ\DC2\EOT\153\t\EOT\t\n\
+    \\ENQ\EOT!\STX\t\ENQ\DC2\EOT\192\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\t\SOH\DC2\EOT\153\t\n\
+    \\ENQ\EOT!\STX\t\SOH\DC2\EOT\192\t\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT!\STX\t\ETX\DC2\EOT\153\t\ETB\EM\n\
+    \\ENQ\EOT!\STX\t\ETX\DC2\EOT\192\t\ETB\EM\n\
     \5\n\
     \\EOT\EOT!\STX\n\
-    \\DC2\EOT\156\t\EOT!\SUB' The unsettled balance in this channel\n\
+    \\DC2\EOT\195\t\EOT!\SUB' The unsettled balance in this channel\n\
     \\n\
     \\SI\n\
     \\ENQ\EOT!\STX\n\
-    \\EOT\DC2\ACK\156\t\EOT\153\t\SUB\n\
+    \\EOT\DC2\ACK\195\t\EOT\192\t\SUB\n\
     \\r\n\
     \\ENQ\EOT!\STX\n\
-    \\ENQ\DC2\EOT\156\t\EOT\t\n\
+    \\ENQ\DC2\EOT\195\t\EOT\t\n\
     \\r\n\
     \\ENQ\EOT!\STX\n\
-    \\SOH\DC2\EOT\156\t\n\
+    \\SOH\DC2\EOT\195\t\n\
     \\ESC\n\
     \\r\n\
     \\ENQ\EOT!\STX\n\
-    \\ETX\DC2\EOT\156\t\RS \n\
+    \\ETX\DC2\EOT\195\t\RS \n\
     \L\n\
-    \\EOT\EOT!\STX\v\DC2\EOT\161\t\EOT#\SUB>\n\
+    \\EOT\EOT!\STX\v\DC2\EOT\200\t\EOT#\SUB>\n\
     \The total number of satoshis we've sent within this channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\v\EOT\DC2\ACK\161\t\EOT\156\t!\n\
+    \\ENQ\EOT!\STX\v\EOT\DC2\ACK\200\t\EOT\195\t!\n\
     \\r\n\
-    \\ENQ\EOT!\STX\v\ENQ\DC2\EOT\161\t\EOT\t\n\
+    \\ENQ\EOT!\STX\v\ENQ\DC2\EOT\200\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\v\SOH\DC2\EOT\161\t\n\
+    \\ENQ\EOT!\STX\v\SOH\DC2\EOT\200\t\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOT!\STX\v\ETX\DC2\EOT\161\t \"\n\
+    \\ENQ\EOT!\STX\v\ETX\DC2\EOT\200\t \"\n\
     \P\n\
-    \\EOT\EOT!\STX\f\DC2\EOT\166\t\EOT'\SUBB\n\
+    \\EOT\EOT!\STX\f\DC2\EOT\205\t\EOT'\SUBB\n\
     \The total number of satoshis we've received within this channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\f\EOT\DC2\ACK\166\t\EOT\161\t#\n\
+    \\ENQ\EOT!\STX\f\EOT\DC2\ACK\205\t\EOT\200\t#\n\
     \\r\n\
-    \\ENQ\EOT!\STX\f\ENQ\DC2\EOT\166\t\EOT\t\n\
+    \\ENQ\EOT!\STX\f\ENQ\DC2\EOT\205\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\f\SOH\DC2\EOT\166\t\n\
+    \\ENQ\EOT!\STX\f\SOH\DC2\EOT\205\t\n\
     \!\n\
     \\r\n\
-    \\ENQ\EOT!\STX\f\ETX\DC2\EOT\166\t$&\n\
+    \\ENQ\EOT!\STX\f\ETX\DC2\EOT\205\t$&\n\
     \J\n\
-    \\EOT\EOT!\STX\r\DC2\EOT\171\t\EOT\FS\SUB<\n\
+    \\EOT\EOT!\STX\r\DC2\EOT\210\t\EOT\FS\SUB<\n\
     \The total number of updates conducted within this channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\r\EOT\DC2\ACK\171\t\EOT\166\t'\n\
+    \\ENQ\EOT!\STX\r\EOT\DC2\ACK\210\t\EOT\205\t'\n\
     \\r\n\
-    \\ENQ\EOT!\STX\r\ENQ\DC2\EOT\171\t\EOT\n\
+    \\ENQ\EOT!\STX\r\ENQ\DC2\EOT\210\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\r\SOH\DC2\EOT\171\t\v\SYN\n\
+    \\ENQ\EOT!\STX\r\SOH\DC2\EOT\210\t\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\r\ETX\DC2\EOT\171\t\EM\ESC\n\
+    \\ENQ\EOT!\STX\r\ETX\DC2\EOT\210\t\EM\ESC\n\
     \Y\n\
-    \\EOT\EOT!\STX\SO\DC2\EOT\176\t\EOT%\SUBK\n\
+    \\EOT\EOT!\STX\SO\DC2\EOT\215\t\EOT%\SUBK\n\
     \The list of active, uncleared HTLCs currently pending within the channel.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SO\EOT\DC2\EOT\176\t\EOT\f\n\
+    \\ENQ\EOT!\STX\SO\EOT\DC2\EOT\215\t\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SO\ACK\DC2\EOT\176\t\r\DC1\n\
+    \\ENQ\EOT!\STX\SO\ACK\DC2\EOT\215\t\r\DC1\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SO\SOH\DC2\EOT\176\t\DC2\US\n\
+    \\ENQ\EOT!\STX\SO\SOH\DC2\EOT\215\t\DC2\US\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SO\ETX\DC2\EOT\176\t\"$\n\
+    \\ENQ\EOT!\STX\SO\ETX\DC2\EOT\215\t\"$\n\
     \\178\SOH\n\
-    \\EOT\EOT!\STX\SI\DC2\EOT\183\t\EOT.\SUB\163\SOH\n\
+    \\EOT\EOT!\STX\SI\DC2\EOT\222\t\EOT.\SUB\163\SOH\n\
     \Deprecated. The CSV delay expressed in relative blocks. If the channel is\n\
     \force closed, we will need to wait for this many blocks before we can regain\n\
     \our funds.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\SI\EOT\DC2\ACK\183\t\EOT\176\t%\n\
+    \\ENQ\EOT!\STX\SI\EOT\DC2\ACK\222\t\EOT\215\t%\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SI\ENQ\DC2\EOT\183\t\EOT\n\
+    \\ENQ\EOT!\STX\SI\ENQ\DC2\EOT\222\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SI\SOH\DC2\EOT\183\t\v\DC4\n\
+    \\ENQ\EOT!\STX\SI\SOH\DC2\EOT\222\t\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SI\ETX\DC2\EOT\183\t\ETB\EM\n\
+    \\ENQ\EOT!\STX\SI\ETX\DC2\EOT\222\t\ETB\EM\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SI\b\DC2\EOT\183\t\SUB-\n\
+    \\ENQ\EOT!\STX\SI\b\DC2\EOT\222\t\SUB-\n\
     \\SO\n\
-    \\ACK\EOT!\STX\SI\b\ETX\DC2\EOT\183\t\ESC,\n\
+    \\ACK\EOT!\STX\SI\b\ETX\DC2\EOT\222\t\ESC,\n\
     \I\n\
-    \\EOT\EOT!\STX\DLE\DC2\EOT\186\t\EOT\SYN\SUB; Whether this channel is advertised to the network or not.\n\
+    \\EOT\EOT!\STX\DLE\DC2\EOT\225\t\EOT\SYN\SUB; Whether this channel is advertised to the network or not.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\DLE\EOT\DC2\ACK\186\t\EOT\183\t.\n\
+    \\ENQ\EOT!\STX\DLE\EOT\DC2\ACK\225\t\EOT\222\t.\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DLE\ENQ\DC2\EOT\186\t\EOT\b\n\
+    \\ENQ\EOT!\STX\DLE\ENQ\DC2\EOT\225\t\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DLE\SOH\DC2\EOT\186\t\t\DLE\n\
+    \\ENQ\EOT!\STX\DLE\SOH\DC2\EOT\225\t\t\DLE\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DLE\ETX\DC2\EOT\186\t\DC3\NAK\n\
+    \\ENQ\EOT!\STX\DLE\ETX\DC2\EOT\225\t\DC3\NAK\n\
     \B\n\
-    \\EOT\EOT!\STX\DC1\DC2\EOT\189\t\EOT\CAN\SUB4 True if we were the ones that created the channel.\n\
+    \\EOT\EOT!\STX\DC1\DC2\EOT\228\t\EOT\CAN\SUB4 True if we were the ones that created the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\DC1\EOT\DC2\ACK\189\t\EOT\186\t\SYN\n\
+    \\ENQ\EOT!\STX\DC1\EOT\DC2\ACK\228\t\EOT\225\t\SYN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC1\ENQ\DC2\EOT\189\t\EOT\b\n\
+    \\ENQ\EOT!\STX\DC1\ENQ\DC2\EOT\228\t\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC1\SOH\DC2\EOT\189\t\t\DC2\n\
+    \\ENQ\EOT!\STX\DC1\SOH\DC2\EOT\228\t\t\DC2\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC1\ETX\DC2\EOT\189\t\NAK\ETB\n\
+    \\ENQ\EOT!\STX\DC1\ETX\DC2\EOT\228\t\NAK\ETB\n\
     \H\n\
-    \\EOT\EOT!\STX\DC2\DC2\EOT\192\t\EOT\"\SUB: A set of flags showing the current state of the channel.\n\
+    \\EOT\EOT!\STX\DC2\DC2\EOT\231\t\EOT\"\SUB: A set of flags showing the current state of the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\DC2\EOT\DC2\ACK\192\t\EOT\189\t\CAN\n\
+    \\ENQ\EOT!\STX\DC2\EOT\DC2\ACK\231\t\EOT\228\t\CAN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC2\ENQ\DC2\EOT\192\t\EOT\n\
+    \\ENQ\EOT!\STX\DC2\ENQ\DC2\EOT\231\t\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC2\SOH\DC2\EOT\192\t\v\FS\n\
+    \\ENQ\EOT!\STX\DC2\SOH\DC2\EOT\231\t\v\FS\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC2\ETX\DC2\EOT\192\t\US!\n\
+    \\ENQ\EOT!\STX\DC2\ETX\DC2\EOT\231\t\US!\n\
     \b\n\
-    \\EOT\EOT!\STX\DC3\DC2\EOT\196\t\EOT:\SUBT Deprecated. The minimum satoshis this node is required to reserve in its\n\
+    \\EOT\EOT!\STX\DC3\DC2\EOT\235\t\EOT:\SUBT Deprecated. The minimum satoshis this node is required to reserve in its\n\
     \ balance.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\DC3\EOT\DC2\ACK\196\t\EOT\192\t\"\n\
+    \\ENQ\EOT!\STX\DC3\EOT\DC2\ACK\235\t\EOT\231\t\"\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC3\ENQ\DC2\EOT\196\t\EOT\t\n\
+    \\ENQ\EOT!\STX\DC3\ENQ\DC2\EOT\235\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC3\SOH\DC2\EOT\196\t\n\
+    \\ENQ\EOT!\STX\DC3\SOH\DC2\EOT\235\t\n\
     \ \n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC3\ETX\DC2\EOT\196\t#%\n\
+    \\ENQ\EOT!\STX\DC3\ETX\DC2\EOT\235\t#%\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC3\b\DC2\EOT\196\t&9\n\
+    \\ENQ\EOT!\STX\DC3\b\DC2\EOT\235\t&9\n\
     \\SO\n\
-    \\ACK\EOT!\STX\DC3\b\ETX\DC2\EOT\196\t'8\n\
+    \\ACK\EOT!\STX\DC3\b\ETX\DC2\EOT\235\t'8\n\
     \f\n\
-    \\EOT\EOT!\STX\DC4\DC2\EOT\202\t\EOT;\SUBX\n\
+    \\EOT\EOT!\STX\DC4\DC2\EOT\241\t\EOT;\SUBX\n\
     \Deprecated. The minimum satoshis the other node is required to reserve in\n\
     \its balance.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\DC4\EOT\DC2\ACK\202\t\EOT\196\t:\n\
+    \\ENQ\EOT!\STX\DC4\EOT\DC2\ACK\241\t\EOT\235\t:\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC4\ENQ\DC2\EOT\202\t\EOT\t\n\
+    \\ENQ\EOT!\STX\DC4\ENQ\DC2\EOT\241\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC4\SOH\DC2\EOT\202\t\n\
+    \\ENQ\EOT!\STX\DC4\SOH\DC2\EOT\241\t\n\
     \!\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC4\ETX\DC2\EOT\202\t$&\n\
+    \\ENQ\EOT!\STX\DC4\ETX\DC2\EOT\241\t$&\n\
     \\r\n\
-    \\ENQ\EOT!\STX\DC4\b\DC2\EOT\202\t':\n\
+    \\ENQ\EOT!\STX\DC4\b\DC2\EOT\241\t':\n\
     \\SO\n\
-    \\ACK\EOT!\STX\DC4\b\ETX\DC2\EOT\202\t(9\n\
+    \\ACK\EOT!\STX\DC4\b\ETX\DC2\EOT\241\t(9\n\
     \0\n\
-    \\EOT\EOT!\STX\NAK\DC2\EOT\205\t\EOT4\SUB\" Deprecated. Use commitment_type.\n\
+    \\EOT\EOT!\STX\NAK\DC2\EOT\244\t\EOT4\SUB\" Deprecated. Use commitment_type.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\NAK\EOT\DC2\ACK\205\t\EOT\202\t;\n\
+    \\ENQ\EOT!\STX\NAK\EOT\DC2\ACK\244\t\EOT\241\t;\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NAK\ENQ\DC2\EOT\205\t\EOT\b\n\
+    \\ENQ\EOT!\STX\NAK\ENQ\DC2\EOT\244\t\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NAK\SOH\DC2\EOT\205\t\t\SUB\n\
+    \\ENQ\EOT!\STX\NAK\SOH\DC2\EOT\244\t\t\SUB\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NAK\ETX\DC2\EOT\205\t\GS\US\n\
+    \\ENQ\EOT!\STX\NAK\ETX\DC2\EOT\244\t\GS\US\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NAK\b\DC2\EOT\205\t 3\n\
+    \\ENQ\EOT!\STX\NAK\b\DC2\EOT\244\t 3\n\
     \\SO\n\
-    \\ACK\EOT!\STX\NAK\b\ETX\DC2\EOT\205\t!2\n\
+    \\ACK\EOT!\STX\NAK\b\ETX\DC2\EOT\244\t!2\n\
     \9\n\
-    \\EOT\EOT!\STX\SYN\DC2\EOT\208\t\EOT(\SUB+ The commitment type used by this channel.\n\
+    \\EOT\EOT!\STX\SYN\DC2\EOT\247\t\EOT(\SUB+ The commitment type used by this channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\SYN\EOT\DC2\ACK\208\t\EOT\205\t4\n\
+    \\ENQ\EOT!\STX\SYN\EOT\DC2\ACK\247\t\EOT\244\t4\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SYN\ACK\DC2\EOT\208\t\EOT\DC2\n\
+    \\ENQ\EOT!\STX\SYN\ACK\DC2\EOT\247\t\EOT\DC2\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SYN\SOH\DC2\EOT\208\t\DC3\"\n\
+    \\ENQ\EOT!\STX\SYN\SOH\DC2\EOT\247\t\DC3\"\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SYN\ETX\DC2\EOT\208\t%'\n\
+    \\ENQ\EOT!\STX\SYN\ETX\DC2\EOT\247\t%'\n\
     \\216\SOH\n\
-    \\EOT\EOT!\STX\ETB\DC2\EOT\215\t\EOT\CAN\SUB\201\SOH\n\
+    \\EOT\EOT!\STX\ETB\DC2\EOT\254\t\EOT\CAN\SUB\201\SOH\n\
     \The number of seconds that the channel has been monitored by the channel\n\
     \scoring system. Scores are currently not persisted, so this value may be\n\
     \less than the lifetime of the channel [EXPERIMENTAL].\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\ETB\EOT\DC2\ACK\215\t\EOT\208\t(\n\
+    \\ENQ\EOT!\STX\ETB\EOT\DC2\ACK\254\t\EOT\247\t(\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ETB\ENQ\DC2\EOT\215\t\EOT\t\n\
+    \\ENQ\EOT!\STX\ETB\ENQ\DC2\EOT\254\t\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ETB\SOH\DC2\EOT\215\t\n\
+    \\ENQ\EOT!\STX\ETB\SOH\DC2\EOT\254\t\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ETB\ETX\DC2\EOT\215\t\NAK\ETB\n\
+    \\ENQ\EOT!\STX\ETB\ETX\DC2\EOT\254\t\NAK\ETB\n\
     \\172\SOH\n\
-    \\EOT\EOT!\STX\CAN\DC2\EOT\222\t\EOT\SYN\SUB\157\SOH\n\
+    \\EOT\EOT!\STX\CAN\DC2\EOT\133\n\
+    \\EOT\SYN\SUB\157\SOH\n\
     \The number of seconds that the remote peer has been observed as being online\n\
     \by the channel scoring system over the lifetime of the channel\n\
     \[EXPERIMENTAL].\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\CAN\EOT\DC2\ACK\222\t\EOT\215\t\CAN\n\
+    \\ENQ\EOT!\STX\CAN\EOT\DC2\ACK\133\n\
+    \\EOT\254\t\CAN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\CAN\ENQ\DC2\EOT\222\t\EOT\t\n\
+    \\ENQ\EOT!\STX\CAN\ENQ\DC2\EOT\133\n\
+    \\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT!\STX\CAN\SOH\DC2\EOT\222\t\n\
+    \\ENQ\EOT!\STX\CAN\SOH\DC2\EOT\133\n\
+    \\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOT!\STX\CAN\ETX\DC2\EOT\222\t\DC3\NAK\n\
+    \\ENQ\EOT!\STX\CAN\ETX\DC2\EOT\133\n\
+    \\DC3\NAK\n\
     \\247\STX\n\
-    \\EOT\EOT!\STX\EM\DC2\EOT\231\t\EOT\RS\SUB\232\STX\n\
+    \\EOT\EOT!\STX\EM\DC2\EOT\142\n\
+    \\EOT\RS\SUB\232\STX\n\
     \Close address is the address that we will enforce payout to on cooperative\n\
     \close if the channel was opened utilizing option upfront shutdown. This\n\
     \value can be set on channel open by setting close_address in an open channel\n\
@@ -53158,16 +55298,22 @@ packedFileDescriptor
     \cooperatively closing with the delivery_address field set.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\EM\EOT\DC2\ACK\231\t\EOT\222\t\SYN\n\
+    \\ENQ\EOT!\STX\EM\EOT\DC2\ACK\142\n\
+    \\EOT\133\n\
+    \\SYN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\EM\ENQ\DC2\EOT\231\t\EOT\n\
+    \\ENQ\EOT!\STX\EM\ENQ\DC2\EOT\142\n\
+    \\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\EM\SOH\DC2\EOT\231\t\v\CAN\n\
+    \\ENQ\EOT!\STX\EM\SOH\DC2\EOT\142\n\
+    \\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\EM\ETX\DC2\EOT\231\t\ESC\GS\n\
+    \\ENQ\EOT!\STX\EM\ETX\DC2\EOT\142\n\
+    \\ESC\GS\n\
     \\206\STX\n\
-    \\EOT\EOT!\STX\SUB\DC2\EOT\240\t\EOT \SUB\191\STX\n\
+    \\EOT\EOT!\STX\SUB\DC2\EOT\151\n\
+    \\EOT \SUB\191\STX\n\
     \The amount that the initiator of the channel optionally pushed to the remote\n\
     \party on channel open. This amount will be zero if the channel initiator did\n\
     \not push any funds to the remote peer. If the initiator field is true, we\n\
@@ -53175,16 +55321,22 @@ packedFileDescriptor
     \amount to us.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\SUB\EOT\DC2\ACK\240\t\EOT\231\t\RS\n\
+    \\ENQ\EOT!\STX\SUB\EOT\DC2\ACK\151\n\
+    \\EOT\142\n\
+    \\RS\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SUB\ENQ\DC2\EOT\240\t\EOT\n\
+    \\ENQ\EOT!\STX\SUB\ENQ\DC2\EOT\151\n\
+    \\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SUB\SOH\DC2\EOT\240\t\v\SUB\n\
+    \\ENQ\EOT!\STX\SUB\SOH\DC2\EOT\151\n\
+    \\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SUB\ETX\DC2\EOT\240\t\GS\US\n\
+    \\ENQ\EOT!\STX\SUB\ETX\DC2\EOT\151\n\
+    \\GS\US\n\
     \\243\ETX\n\
-    \\EOT\EOT!\STX\ESC\DC2\EOT\251\t\EOT\FS\SUB\228\ETX\n\
+    \\EOT\EOT!\STX\ESC\DC2\EOT\162\n\
+    \\EOT\FS\SUB\228\ETX\n\
     \This uint32 indicates if this channel is to be considered 'frozen'. A\n\
     \frozen channel doest not allow a cooperative channel close by the\n\
     \initiator. The thaw_height is the height that this restriction stops\n\
@@ -53194,454 +55346,466 @@ packedFileDescriptor
     \less than 500,000, or as an absolute height otherwise.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\ESC\EOT\DC2\ACK\251\t\EOT\240\t \n\
+    \\ENQ\EOT!\STX\ESC\EOT\DC2\ACK\162\n\
+    \\EOT\151\n\
+    \ \n\
     \\r\n\
-    \\ENQ\EOT!\STX\ESC\ENQ\DC2\EOT\251\t\EOT\n\
+    \\ENQ\EOT!\STX\ESC\ENQ\DC2\EOT\162\n\
+    \\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ESC\SOH\DC2\EOT\251\t\v\SYN\n\
+    \\ENQ\EOT!\STX\ESC\SOH\DC2\EOT\162\n\
+    \\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\ESC\ETX\DC2\EOT\251\t\EM\ESC\n\
+    \\ENQ\EOT!\STX\ESC\ETX\DC2\EOT\162\n\
+    \\EM\ESC\n\
     \4\n\
-    \\EOT\EOT!\STX\FS\DC2\EOT\254\t\EOT.\SUB& List constraints for the local node.\n\
+    \\EOT\EOT!\STX\FS\DC2\EOT\165\n\
+    \\EOT.\SUB& List constraints for the local node.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\FS\EOT\DC2\ACK\254\t\EOT\251\t\FS\n\
+    \\ENQ\EOT!\STX\FS\EOT\DC2\ACK\165\n\
+    \\EOT\162\n\
+    \\FS\n\
     \\r\n\
-    \\ENQ\EOT!\STX\FS\ACK\DC2\EOT\254\t\EOT\SYN\n\
+    \\ENQ\EOT!\STX\FS\ACK\DC2\EOT\165\n\
+    \\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\FS\SOH\DC2\EOT\254\t\ETB(\n\
+    \\ENQ\EOT!\STX\FS\SOH\DC2\EOT\165\n\
+    \\ETB(\n\
     \\r\n\
-    \\ENQ\EOT!\STX\FS\ETX\DC2\EOT\254\t+-\n\
+    \\ENQ\EOT!\STX\FS\ETX\DC2\EOT\165\n\
+    \+-\n\
     \5\n\
-    \\EOT\EOT!\STX\GS\DC2\EOT\129\n\
+    \\EOT\EOT!\STX\GS\DC2\EOT\168\n\
     \\EOT/\SUB' List constraints for the remote node.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT!\STX\GS\EOT\DC2\ACK\129\n\
-    \\EOT\254\t.\n\
+    \\ENQ\EOT!\STX\GS\EOT\DC2\ACK\168\n\
+    \\EOT\165\n\
+    \.\n\
     \\r\n\
-    \\ENQ\EOT!\STX\GS\ACK\DC2\EOT\129\n\
+    \\ENQ\EOT!\STX\GS\ACK\DC2\EOT\168\n\
     \\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOT!\STX\GS\SOH\DC2\EOT\129\n\
+    \\ENQ\EOT!\STX\GS\SOH\DC2\EOT\168\n\
     \\ETB)\n\
     \\r\n\
-    \\ENQ\EOT!\STX\GS\ETX\DC2\EOT\129\n\
+    \\ENQ\EOT!\STX\GS\ETX\DC2\EOT\168\n\
     \,.\n\
     \\f\n\
-    \\STX\EOT\"\DC2\ACK\132\n\
-    \\NUL\143\n\
+    \\STX\EOT\"\DC2\ACK\171\n\
+    \\NUL\182\n\
     \\SOH\n\
     \\v\n\
-    \\ETX\EOT\"\SOH\DC2\EOT\132\n\
+    \\ETX\EOT\"\SOH\DC2\EOT\171\n\
     \\b\ESC\n\
     \\f\n\
-    \\EOT\EOT\"\STX\NUL\DC2\EOT\133\n\
+    \\EOT\EOT\"\STX\NUL\DC2\EOT\172\n\
     \\EOT\EM\n\
     \\SI\n\
-    \\ENQ\EOT\"\STX\NUL\EOT\DC2\ACK\133\n\
-    \\EOT\132\n\
+    \\ENQ\EOT\"\STX\NUL\EOT\DC2\ACK\172\n\
+    \\EOT\171\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\NUL\ENQ\DC2\EOT\133\n\
+    \\ENQ\EOT\"\STX\NUL\ENQ\DC2\EOT\172\n\
     \\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\NUL\SOH\DC2\EOT\133\n\
+    \\ENQ\EOT\"\STX\NUL\SOH\DC2\EOT\172\n\
     \\t\DC4\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\NUL\ETX\DC2\EOT\133\n\
+    \\ENQ\EOT\"\STX\NUL\ETX\DC2\EOT\172\n\
     \\ETB\CAN\n\
     \\f\n\
-    \\EOT\EOT\"\STX\SOH\DC2\EOT\134\n\
+    \\EOT\EOT\"\STX\SOH\DC2\EOT\173\n\
     \\EOT\ESC\n\
     \\SI\n\
-    \\ENQ\EOT\"\STX\SOH\EOT\DC2\ACK\134\n\
-    \\EOT\133\n\
+    \\ENQ\EOT\"\STX\SOH\EOT\DC2\ACK\173\n\
+    \\EOT\172\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\SOH\ENQ\DC2\EOT\134\n\
+    \\ENQ\EOT\"\STX\SOH\ENQ\DC2\EOT\173\n\
     \\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\SOH\SOH\DC2\EOT\134\n\
+    \\ENQ\EOT\"\STX\SOH\SOH\DC2\EOT\173\n\
     \\t\SYN\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\SOH\ETX\DC2\EOT\134\n\
+    \\ENQ\EOT\"\STX\SOH\ETX\DC2\EOT\173\n\
     \\EM\SUB\n\
     \\f\n\
-    \\EOT\EOT\"\STX\STX\DC2\EOT\135\n\
+    \\EOT\EOT\"\STX\STX\DC2\EOT\174\n\
     \\EOT\EM\n\
     \\SI\n\
-    \\ENQ\EOT\"\STX\STX\EOT\DC2\ACK\135\n\
-    \\EOT\134\n\
+    \\ENQ\EOT\"\STX\STX\EOT\DC2\ACK\174\n\
+    \\EOT\173\n\
     \\ESC\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\STX\ENQ\DC2\EOT\135\n\
+    \\ENQ\EOT\"\STX\STX\ENQ\DC2\EOT\174\n\
     \\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\STX\SOH\DC2\EOT\135\n\
+    \\ENQ\EOT\"\STX\STX\SOH\DC2\EOT\174\n\
     \\t\DC4\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\STX\ETX\DC2\EOT\135\n\
+    \\ENQ\EOT\"\STX\STX\ETX\DC2\EOT\174\n\
     \\ETB\CAN\n\
     \\f\n\
-    \\EOT\EOT\"\STX\ETX\DC2\EOT\136\n\
+    \\EOT\EOT\"\STX\ETX\DC2\EOT\175\n\
     \\EOT\SUB\n\
     \\SI\n\
-    \\ENQ\EOT\"\STX\ETX\EOT\DC2\ACK\136\n\
-    \\EOT\135\n\
+    \\ENQ\EOT\"\STX\ETX\EOT\DC2\ACK\175\n\
+    \\EOT\174\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\ETX\ENQ\DC2\EOT\136\n\
+    \\ENQ\EOT\"\STX\ETX\ENQ\DC2\EOT\175\n\
     \\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\ETX\SOH\DC2\EOT\136\n\
+    \\ENQ\EOT\"\STX\ETX\SOH\DC2\EOT\175\n\
     \\t\NAK\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\ETX\ETX\DC2\EOT\136\n\
+    \\ENQ\EOT\"\STX\ETX\ETX\DC2\EOT\175\n\
     \\CAN\EM\n\
     \\DEL\n\
-    \\EOT\EOT\"\STX\EOT\DC2\EOT\142\n\
+    \\EOT\EOT\"\STX\EOT\DC2\EOT\181\n\
     \\EOT\DC3\SUBq\n\
     \Filters the response for channels with a target peer's pubkey. If peer is\n\
     \empty, all channels will be returned.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\"\STX\EOT\EOT\DC2\ACK\142\n\
-    \\EOT\136\n\
+    \\ENQ\EOT\"\STX\EOT\EOT\DC2\ACK\181\n\
+    \\EOT\175\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\EOT\ENQ\DC2\EOT\142\n\
+    \\ENQ\EOT\"\STX\EOT\ENQ\DC2\EOT\181\n\
     \\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\EOT\SOH\DC2\EOT\142\n\
+    \\ENQ\EOT\"\STX\EOT\SOH\DC2\EOT\181\n\
     \\n\
     \\SO\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\EOT\ETX\DC2\EOT\142\n\
+    \\ENQ\EOT\"\STX\EOT\ETX\DC2\EOT\181\n\
     \\DC1\DC2\n\
     \\f\n\
-    \\STX\EOT#\DC2\ACK\144\n\
-    \\NUL\147\n\
+    \\STX\EOT#\DC2\ACK\183\n\
+    \\NUL\186\n\
     \\SOH\n\
     \\v\n\
-    \\ETX\EOT#\SOH\DC2\EOT\144\n\
+    \\ETX\EOT#\SOH\DC2\EOT\183\n\
     \\b\FS\n\
     \+\n\
-    \\EOT\EOT#\STX\NUL\DC2\EOT\146\n\
+    \\EOT\EOT#\STX\NUL\DC2\EOT\185\n\
     \\EOT#\SUB\GS The list of active channels\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT#\STX\NUL\EOT\DC2\EOT\146\n\
+    \\ENQ\EOT#\STX\NUL\EOT\DC2\EOT\185\n\
     \\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT#\STX\NUL\ACK\DC2\EOT\146\n\
+    \\ENQ\EOT#\STX\NUL\ACK\DC2\EOT\185\n\
     \\r\DC4\n\
     \\r\n\
-    \\ENQ\EOT#\STX\NUL\SOH\DC2\EOT\146\n\
+    \\ENQ\EOT#\STX\NUL\SOH\DC2\EOT\185\n\
     \\NAK\GS\n\
     \\r\n\
-    \\ENQ\EOT#\STX\NUL\ETX\DC2\EOT\146\n\
+    \\ENQ\EOT#\STX\NUL\ETX\DC2\EOT\185\n\
     \ \"\n\
     \\f\n\
-    \\STX\ENQ\STX\DC2\ACK\149\n\
-    \\NUL\154\n\
+    \\STX\ENQ\STX\DC2\ACK\188\n\
+    \\NUL\193\n\
     \\SOH\n\
     \\v\n\
-    \\ETX\ENQ\STX\SOH\DC2\EOT\149\n\
+    \\ETX\ENQ\STX\SOH\DC2\EOT\188\n\
     \\ENQ\SO\n\
     \\f\n\
-    \\EOT\ENQ\STX\STX\NUL\DC2\EOT\150\n\
+    \\EOT\ENQ\STX\STX\NUL\DC2\EOT\189\n\
     \\EOT\SUB\n\
     \\r\n\
-    \\ENQ\ENQ\STX\STX\NUL\SOH\DC2\EOT\150\n\
+    \\ENQ\ENQ\STX\STX\NUL\SOH\DC2\EOT\189\n\
     \\EOT\NAK\n\
     \\r\n\
-    \\ENQ\ENQ\STX\STX\NUL\STX\DC2\EOT\150\n\
+    \\ENQ\ENQ\STX\STX\NUL\STX\DC2\EOT\189\n\
     \\CAN\EM\n\
     \\f\n\
-    \\EOT\ENQ\STX\STX\SOH\DC2\EOT\151\n\
+    \\EOT\ENQ\STX\STX\SOH\DC2\EOT\190\n\
     \\EOT\CAN\n\
     \\r\n\
-    \\ENQ\ENQ\STX\STX\SOH\SOH\DC2\EOT\151\n\
+    \\ENQ\ENQ\STX\STX\SOH\SOH\DC2\EOT\190\n\
     \\EOT\DC3\n\
     \\r\n\
-    \\ENQ\ENQ\STX\STX\SOH\STX\DC2\EOT\151\n\
+    \\ENQ\ENQ\STX\STX\SOH\STX\DC2\EOT\190\n\
     \\SYN\ETB\n\
     \\f\n\
-    \\EOT\ENQ\STX\STX\STX\DC2\EOT\152\n\
+    \\EOT\ENQ\STX\STX\STX\DC2\EOT\191\n\
     \\EOT\EM\n\
     \\r\n\
-    \\ENQ\ENQ\STX\STX\STX\SOH\DC2\EOT\152\n\
+    \\ENQ\ENQ\STX\STX\STX\SOH\DC2\EOT\191\n\
     \\EOT\DC4\n\
     \\r\n\
-    \\ENQ\ENQ\STX\STX\STX\STX\DC2\EOT\152\n\
+    \\ENQ\ENQ\STX\STX\STX\STX\DC2\EOT\191\n\
     \\ETB\CAN\n\
     \\f\n\
-    \\EOT\ENQ\STX\STX\ETX\DC2\EOT\153\n\
+    \\EOT\ENQ\STX\STX\ETX\DC2\EOT\192\n\
     \\EOT\ETB\n\
     \\r\n\
-    \\ENQ\ENQ\STX\STX\ETX\SOH\DC2\EOT\153\n\
+    \\ENQ\ENQ\STX\STX\ETX\SOH\DC2\EOT\192\n\
     \\EOT\DC2\n\
     \\r\n\
-    \\ENQ\ENQ\STX\STX\ETX\STX\DC2\EOT\153\n\
+    \\ENQ\ENQ\STX\STX\ETX\STX\DC2\EOT\192\n\
     \\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT$\DC2\ACK\156\n\
-    \\NUL\213\n\
+    \\STX\EOT$\DC2\ACK\195\n\
+    \\NUL\252\n\
     \\SOH\n\
     \\v\n\
-    \\ETX\EOT$\SOH\DC2\EOT\156\n\
+    \\ETX\EOT$\SOH\DC2\EOT\195\n\
     \\b\ESC\n\
     \E\n\
-    \\EOT\EOT$\STX\NUL\DC2\EOT\158\n\
+    \\EOT\EOT$\STX\NUL\DC2\EOT\197\n\
     \\EOT\GS\SUB7 The outpoint (txid:index) of the funding transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\NUL\EOT\DC2\ACK\158\n\
-    \\EOT\156\n\
+    \\ENQ\EOT$\STX\NUL\EOT\DC2\ACK\197\n\
+    \\EOT\195\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOT$\STX\NUL\ENQ\DC2\EOT\158\n\
+    \\ENQ\EOT$\STX\NUL\ENQ\DC2\EOT\197\n\
     \\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT$\STX\NUL\SOH\DC2\EOT\158\n\
+    \\ENQ\EOT$\STX\NUL\SOH\DC2\EOT\197\n\
     \\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT$\STX\NUL\ETX\DC2\EOT\158\n\
+    \\ENQ\EOT$\STX\NUL\ETX\DC2\EOT\197\n\
     \\ESC\FS\n\
     \7\n\
-    \\EOT\EOT$\STX\SOH\DC2\EOT\161\n\
+    \\EOT\EOT$\STX\SOH\DC2\EOT\200\n\
     \\EOT,\SUB)  The unique channel ID for the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\SOH\EOT\DC2\ACK\161\n\
-    \\EOT\158\n\
+    \\ENQ\EOT$\STX\SOH\EOT\DC2\ACK\200\n\
+    \\EOT\197\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOT$\STX\SOH\ENQ\DC2\EOT\161\n\
+    \\ENQ\EOT$\STX\SOH\ENQ\DC2\EOT\200\n\
     \\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT$\STX\SOH\SOH\DC2\EOT\161\n\
+    \\ENQ\EOT$\STX\SOH\SOH\DC2\EOT\200\n\
     \\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT$\STX\SOH\ETX\DC2\EOT\161\n\
+    \\ENQ\EOT$\STX\SOH\ETX\DC2\EOT\200\n\
     \\NAK\SYN\n\
     \\r\n\
-    \\ENQ\EOT$\STX\SOH\b\DC2\EOT\161\n\
+    \\ENQ\EOT$\STX\SOH\b\DC2\EOT\200\n\
     \\ETB+\n\
     \\SO\n\
-    \\ACK\EOT$\STX\SOH\b\ACK\DC2\EOT\161\n\
+    \\ACK\EOT$\STX\SOH\b\ACK\DC2\EOT\200\n\
     \\CAN*\n\
     \O\n\
-    \\EOT\EOT$\STX\STX\DC2\EOT\164\n\
+    \\EOT\EOT$\STX\STX\DC2\EOT\203\n\
     \\EOT\SUB\SUBA The hash of the genesis block that this channel resides within.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\STX\EOT\DC2\ACK\164\n\
-    \\EOT\161\n\
+    \\ENQ\EOT$\STX\STX\EOT\DC2\ACK\203\n\
+    \\EOT\200\n\
     \,\n\
     \\r\n\
-    \\ENQ\EOT$\STX\STX\ENQ\DC2\EOT\164\n\
+    \\ENQ\EOT$\STX\STX\ENQ\DC2\EOT\203\n\
     \\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT$\STX\STX\SOH\DC2\EOT\164\n\
+    \\ENQ\EOT$\STX\STX\SOH\DC2\EOT\203\n\
     \\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT$\STX\STX\ETX\DC2\EOT\164\n\
+    \\ENQ\EOT$\STX\STX\ETX\DC2\EOT\203\n\
     \\CAN\EM\n\
     \Q\n\
-    \\EOT\EOT$\STX\ETX\DC2\EOT\167\n\
+    \\EOT\EOT$\STX\ETX\DC2\EOT\206\n\
     \\EOT\US\SUBC The txid of the transaction which ultimately closed this channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\ETX\EOT\DC2\ACK\167\n\
-    \\EOT\164\n\
+    \\ENQ\EOT$\STX\ETX\EOT\DC2\ACK\206\n\
+    \\EOT\203\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOT$\STX\ETX\ENQ\DC2\EOT\167\n\
+    \\ENQ\EOT$\STX\ETX\ENQ\DC2\EOT\206\n\
     \\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT$\STX\ETX\SOH\DC2\EOT\167\n\
+    \\ENQ\EOT$\STX\ETX\SOH\DC2\EOT\206\n\
     \\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT$\STX\ETX\ETX\DC2\EOT\167\n\
+    \\ENQ\EOT$\STX\ETX\ETX\DC2\EOT\206\n\
     \\GS\RS\n\
     \R\n\
-    \\EOT\EOT$\STX\EOT\DC2\EOT\170\n\
+    \\EOT\EOT$\STX\EOT\DC2\EOT\209\n\
     \\EOT\GS\SUBD Public key of the remote peer that we formerly had a channel with.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\EOT\EOT\DC2\ACK\170\n\
-    \\EOT\167\n\
+    \\ENQ\EOT$\STX\EOT\EOT\DC2\ACK\209\n\
+    \\EOT\206\n\
     \\US\n\
     \\r\n\
-    \\ENQ\EOT$\STX\EOT\ENQ\DC2\EOT\170\n\
+    \\ENQ\EOT$\STX\EOT\ENQ\DC2\EOT\209\n\
     \\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT$\STX\EOT\SOH\DC2\EOT\170\n\
+    \\ENQ\EOT$\STX\EOT\SOH\DC2\EOT\209\n\
     \\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT$\STX\EOT\ETX\DC2\EOT\170\n\
+    \\ENQ\EOT$\STX\EOT\ETX\DC2\EOT\209\n\
     \\ESC\FS\n\
     \.\n\
-    \\EOT\EOT$\STX\ENQ\DC2\EOT\173\n\
+    \\EOT\EOT$\STX\ENQ\DC2\EOT\212\n\
     \\EOT\ETB\SUB  Total capacity of the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\ENQ\EOT\DC2\ACK\173\n\
-    \\EOT\170\n\
+    \\ENQ\EOT$\STX\ENQ\EOT\DC2\ACK\212\n\
+    \\EOT\209\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOT$\STX\ENQ\ENQ\DC2\EOT\173\n\
+    \\ENQ\EOT$\STX\ENQ\ENQ\DC2\EOT\212\n\
     \\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT$\STX\ENQ\SOH\DC2\EOT\173\n\
+    \\ENQ\EOT$\STX\ENQ\SOH\DC2\EOT\212\n\
     \\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOT$\STX\ENQ\ETX\DC2\EOT\173\n\
+    \\ENQ\EOT$\STX\ENQ\ETX\DC2\EOT\212\n\
     \\NAK\SYN\n\
     \B\n\
-    \\EOT\EOT$\STX\ACK\DC2\EOT\176\n\
+    \\EOT\EOT$\STX\ACK\DC2\EOT\215\n\
     \\EOT\FS\SUB4 Height at which the funding transaction was spent.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\ACK\EOT\DC2\ACK\176\n\
-    \\EOT\173\n\
+    \\ENQ\EOT$\STX\ACK\EOT\DC2\ACK\215\n\
+    \\EOT\212\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOT$\STX\ACK\ENQ\DC2\EOT\176\n\
+    \\ENQ\EOT$\STX\ACK\ENQ\DC2\EOT\215\n\
     \\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT$\STX\ACK\SOH\DC2\EOT\176\n\
+    \\ENQ\EOT$\STX\ACK\SOH\DC2\EOT\215\n\
     \\v\ETB\n\
     \\r\n\
-    \\ENQ\EOT$\STX\ACK\ETX\DC2\EOT\176\n\
+    \\ENQ\EOT$\STX\ACK\ETX\DC2\EOT\215\n\
     \\SUB\ESC\n\
     \>\n\
-    \\EOT\EOT$\STX\a\DC2\EOT\179\n\
+    \\EOT\EOT$\STX\a\DC2\EOT\218\n\
     \\EOT\RS\SUB0 Settled balance at the time of channel closure\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\a\EOT\DC2\ACK\179\n\
-    \\EOT\176\n\
+    \\ENQ\EOT$\STX\a\EOT\DC2\ACK\218\n\
+    \\EOT\215\n\
     \\FS\n\
     \\r\n\
-    \\ENQ\EOT$\STX\a\ENQ\DC2\EOT\179\n\
+    \\ENQ\EOT$\STX\a\ENQ\DC2\EOT\218\n\
     \\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT$\STX\a\SOH\DC2\EOT\179\n\
+    \\ENQ\EOT$\STX\a\SOH\DC2\EOT\218\n\
     \\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT$\STX\a\ETX\DC2\EOT\179\n\
+    \\ENQ\EOT$\STX\a\ETX\DC2\EOT\218\n\
     \\FS\GS\n\
     \U\n\
-    \\EOT\EOT$\STX\b\DC2\EOT\182\n\
+    \\EOT\EOT$\STX\b\DC2\EOT\221\n\
     \\EOT\"\SUBG The sum of all the time-locked outputs at the time of channel closure\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\b\EOT\DC2\ACK\182\n\
-    \\EOT\179\n\
+    \\ENQ\EOT$\STX\b\EOT\DC2\ACK\221\n\
+    \\EOT\218\n\
     \\RS\n\
     \\r\n\
-    \\ENQ\EOT$\STX\b\ENQ\DC2\EOT\182\n\
+    \\ENQ\EOT$\STX\b\ENQ\DC2\EOT\221\n\
     \\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT$\STX\b\SOH\DC2\EOT\182\n\
+    \\ENQ\EOT$\STX\b\SOH\DC2\EOT\221\n\
     \\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOT$\STX\b\ETX\DC2\EOT\182\n\
+    \\ENQ\EOT$\STX\b\ETX\DC2\EOT\221\n\
     \ !\n\
     \\SO\n\
-    \\EOT\EOT$\EOT\NUL\DC2\ACK\184\n\
-    \\EOT\191\n\
+    \\EOT\EOT$\EOT\NUL\DC2\ACK\223\n\
+    \\EOT\230\n\
     \\ENQ\n\
     \\r\n\
-    \\ENQ\EOT$\EOT\NUL\SOH\DC2\EOT\184\n\
+    \\ENQ\EOT$\EOT\NUL\SOH\DC2\EOT\223\n\
     \\t\DC4\n\
     \\SO\n\
-    \\ACK\EOT$\EOT\NUL\STX\NUL\DC2\EOT\185\n\
+    \\ACK\EOT$\EOT\NUL\STX\NUL\DC2\EOT\224\n\
     \\b\RS\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\NUL\SOH\DC2\EOT\185\n\
+    \\a\EOT$\EOT\NUL\STX\NUL\SOH\DC2\EOT\224\n\
     \\b\EM\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\NUL\STX\DC2\EOT\185\n\
+    \\a\EOT$\EOT\NUL\STX\NUL\STX\DC2\EOT\224\n\
     \\FS\GS\n\
     \\SO\n\
-    \\ACK\EOT$\EOT\NUL\STX\SOH\DC2\EOT\186\n\
+    \\ACK\EOT$\EOT\NUL\STX\SOH\DC2\EOT\225\n\
     \\b\RS\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\SOH\SOH\DC2\EOT\186\n\
+    \\a\EOT$\EOT\NUL\STX\SOH\SOH\DC2\EOT\225\n\
     \\b\EM\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\SOH\STX\DC2\EOT\186\n\
+    \\a\EOT$\EOT\NUL\STX\SOH\STX\DC2\EOT\225\n\
     \\FS\GS\n\
     \\SO\n\
-    \\ACK\EOT$\EOT\NUL\STX\STX\DC2\EOT\187\n\
+    \\ACK\EOT$\EOT\NUL\STX\STX\DC2\EOT\226\n\
     \\b\US\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\STX\SOH\DC2\EOT\187\n\
+    \\a\EOT$\EOT\NUL\STX\STX\SOH\DC2\EOT\226\n\
     \\b\SUB\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\STX\STX\DC2\EOT\187\n\
+    \\a\EOT$\EOT\NUL\STX\STX\STX\DC2\EOT\226\n\
     \\GS\RS\n\
     \\SO\n\
-    \\ACK\EOT$\EOT\NUL\STX\ETX\DC2\EOT\188\n\
+    \\ACK\EOT$\EOT\NUL\STX\ETX\DC2\EOT\227\n\
     \\b\EM\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\ETX\SOH\DC2\EOT\188\n\
+    \\a\EOT$\EOT\NUL\STX\ETX\SOH\DC2\EOT\227\n\
     \\b\DC4\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\ETX\STX\DC2\EOT\188\n\
+    \\a\EOT$\EOT\NUL\STX\ETX\STX\DC2\EOT\227\n\
     \\ETB\CAN\n\
     \\SO\n\
-    \\ACK\EOT$\EOT\NUL\STX\EOT\DC2\EOT\189\n\
+    \\ACK\EOT$\EOT\NUL\STX\EOT\DC2\EOT\228\n\
     \\b\GS\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\EOT\SOH\DC2\EOT\189\n\
+    \\a\EOT$\EOT\NUL\STX\EOT\SOH\DC2\EOT\228\n\
     \\b\CAN\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\EOT\STX\DC2\EOT\189\n\
+    \\a\EOT$\EOT\NUL\STX\EOT\STX\DC2\EOT\228\n\
     \\ESC\FS\n\
     \\SO\n\
-    \\ACK\EOT$\EOT\NUL\STX\ENQ\DC2\EOT\190\n\
+    \\ACK\EOT$\EOT\NUL\STX\ENQ\DC2\EOT\229\n\
     \\b\SYN\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\ENQ\SOH\DC2\EOT\190\n\
+    \\a\EOT$\EOT\NUL\STX\ENQ\SOH\DC2\EOT\229\n\
     \\b\DC1\n\
     \\SI\n\
-    \\a\EOT$\EOT\NUL\STX\ENQ\STX\DC2\EOT\190\n\
+    \\a\EOT$\EOT\NUL\STX\ENQ\STX\DC2\EOT\229\n\
     \\DC4\NAK\n\
     \6\n\
-    \\EOT\EOT$\STX\t\DC2\EOT\194\n\
+    \\EOT\EOT$\STX\t\DC2\EOT\233\n\
     \\EOT \SUB( Details on how the channel was closed.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\t\EOT\DC2\ACK\194\n\
-    \\EOT\191\n\
+    \\ENQ\EOT$\STX\t\EOT\DC2\ACK\233\n\
+    \\EOT\230\n\
     \\ENQ\n\
     \\r\n\
-    \\ENQ\EOT$\STX\t\ACK\DC2\EOT\194\n\
+    \\ENQ\EOT$\STX\t\ACK\DC2\EOT\233\n\
     \\EOT\SI\n\
     \\r\n\
-    \\ENQ\EOT$\STX\t\SOH\DC2\EOT\194\n\
+    \\ENQ\EOT$\STX\t\SOH\DC2\EOT\233\n\
     \\DLE\SUB\n\
     \\r\n\
-    \\ENQ\EOT$\STX\t\ETX\DC2\EOT\194\n\
+    \\ENQ\EOT$\STX\t\ETX\DC2\EOT\233\n\
     \\GS\US\n\
     \\208\SOH\n\
     \\EOT\EOT$\STX\n\
-    \\DC2\EOT\201\n\
+    \\DC2\EOT\240\n\
     \\EOT\"\SUB\193\SOH\n\
     \Open initiator is the party that initiated opening the channel. Note that\n\
     \this value may be unknown if the channel was closed before we migrated to\n\
@@ -53649,23 +55813,23 @@ packedFileDescriptor
     \\n\
     \\SI\n\
     \\ENQ\EOT$\STX\n\
-    \\EOT\DC2\ACK\201\n\
-    \\EOT\194\n\
+    \\EOT\DC2\ACK\240\n\
+    \\EOT\233\n\
     \ \n\
     \\r\n\
     \\ENQ\EOT$\STX\n\
-    \\ACK\DC2\EOT\201\n\
+    \\ACK\DC2\EOT\240\n\
     \\EOT\r\n\
     \\r\n\
     \\ENQ\EOT$\STX\n\
-    \\SOH\DC2\EOT\201\n\
+    \\SOH\DC2\EOT\240\n\
     \\SO\FS\n\
     \\r\n\
     \\ENQ\EOT$\STX\n\
-    \\ETX\DC2\EOT\201\n\
+    \\ETX\DC2\EOT\240\n\
     \\US!\n\
     \\132\ETX\n\
-    \\EOT\EOT$\STX\v\DC2\EOT\210\n\
+    \\EOT\EOT$\STX\v\DC2\EOT\249\n\
     \\EOT#\SUB\245\STX\n\
     \Close initiator indicates which party initiated the close. This value will\n\
     \be unknown for channels that were cooperatively closed before we started\n\
@@ -53674,456 +55838,437 @@ packedFileDescriptor
     \force closes, although only one party's close will be confirmed on chain.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT$\STX\v\EOT\DC2\ACK\210\n\
-    \\EOT\201\n\
+    \\ENQ\EOT$\STX\v\EOT\DC2\ACK\249\n\
+    \\EOT\240\n\
     \\"\n\
     \\r\n\
-    \\ENQ\EOT$\STX\v\ACK\DC2\EOT\210\n\
+    \\ENQ\EOT$\STX\v\ACK\DC2\EOT\249\n\
     \\EOT\r\n\
     \\r\n\
-    \\ENQ\EOT$\STX\v\SOH\DC2\EOT\210\n\
+    \\ENQ\EOT$\STX\v\SOH\DC2\EOT\249\n\
     \\SO\GS\n\
     \\r\n\
-    \\ENQ\EOT$\STX\v\ETX\DC2\EOT\210\n\
+    \\ENQ\EOT$\STX\v\ETX\DC2\EOT\249\n\
     \ \"\n\
     \\f\n\
-    \\EOT\EOT$\STX\f\DC2\EOT\212\n\
+    \\EOT\EOT$\STX\f\DC2\EOT\251\n\
     \\EOT)\n\
     \\r\n\
-    \\ENQ\EOT$\STX\f\EOT\DC2\EOT\212\n\
+    \\ENQ\EOT$\STX\f\EOT\DC2\EOT\251\n\
     \\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT$\STX\f\ACK\DC2\EOT\212\n\
+    \\ENQ\EOT$\STX\f\ACK\DC2\EOT\251\n\
     \\r\ETB\n\
     \\r\n\
-    \\ENQ\EOT$\STX\f\SOH\DC2\EOT\212\n\
+    \\ENQ\EOT$\STX\f\SOH\DC2\EOT\251\n\
     \\CAN#\n\
     \\r\n\
-    \\ENQ\EOT$\STX\f\ETX\DC2\EOT\212\n\
+    \\ENQ\EOT$\STX\f\ETX\DC2\EOT\251\n\
     \&(\n\
     \\f\n\
-    \\STX\ENQ\ETX\DC2\ACK\215\n\
-    \\NUL\237\n\
-    \\SOH\n\
+    \\STX\ENQ\ETX\DC2\ACK\254\n\
+    \\NUL\148\v\SOH\n\
     \\v\n\
-    \\ETX\ENQ\ETX\SOH\DC2\EOT\215\n\
+    \\ETX\ENQ\ETX\SOH\DC2\EOT\254\n\
     \\ENQ\DC3\n\
     \\f\n\
-    \\EOT\ENQ\ETX\STX\NUL\DC2\EOT\216\n\
+    \\EOT\ENQ\ETX\STX\NUL\DC2\EOT\255\n\
     \\EOT\NAK\n\
     \\r\n\
-    \\ENQ\ENQ\ETX\STX\NUL\SOH\DC2\EOT\216\n\
+    \\ENQ\ENQ\ETX\STX\NUL\SOH\DC2\EOT\255\n\
     \\EOT\DLE\n\
     \\r\n\
-    \\ENQ\ENQ\ETX\STX\NUL\STX\DC2\EOT\216\n\
+    \\ENQ\ENQ\ETX\STX\NUL\STX\DC2\EOT\255\n\
     \\DC3\DC4\n\
     \-\n\
-    \\EOT\ENQ\ETX\STX\SOH\DC2\EOT\219\n\
-    \\EOT\SI\SUB\US We resolved an anchor output.\n\
+    \\EOT\ENQ\ETX\STX\SOH\DC2\EOT\130\v\EOT\SI\SUB\US We resolved an anchor output.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\ETX\STX\SOH\SOH\DC2\EOT\219\n\
-    \\EOT\n\
+    \\ENQ\ENQ\ETX\STX\SOH\SOH\DC2\EOT\130\v\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\ETX\STX\SOH\STX\DC2\EOT\219\n\
-    \\r\SO\n\
+    \\ENQ\ENQ\ETX\STX\SOH\STX\DC2\EOT\130\v\r\SO\n\
     \\189\SOH\n\
-    \\EOT\ENQ\ETX\STX\STX\DC2\EOT\226\n\
-    \\EOT\SYN\SUB\174\SOH\n\
+    \\EOT\ENQ\ETX\STX\STX\DC2\EOT\137\v\EOT\SYN\SUB\174\SOH\n\
     \We are resolving an incoming htlc on chain. This if this htlc is\n\
     \claimed, we swept the incoming htlc with the preimage. If it is timed\n\
     \out, our peer swept the timeout path.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\ETX\STX\STX\SOH\DC2\EOT\226\n\
-    \\EOT\DC1\n\
+    \\ENQ\ENQ\ETX\STX\STX\SOH\DC2\EOT\137\v\EOT\DC1\n\
     \\r\n\
-    \\ENQ\ENQ\ETX\STX\STX\STX\DC2\EOT\226\n\
-    \\DC4\NAK\n\
+    \\ENQ\ENQ\ETX\STX\STX\STX\DC2\EOT\137\v\DC4\NAK\n\
     \\191\SOH\n\
-    \\EOT\ENQ\ETX\STX\ETX\DC2\EOT\233\n\
-    \\EOT\SYN\SUB\176\SOH\n\
+    \\EOT\ENQ\ETX\STX\ETX\DC2\EOT\144\v\EOT\SYN\SUB\176\SOH\n\
     \We are resolving an outgoing htlc on chain. If this htlc is claimed,\n\
     \the remote party swept the htlc with the preimage. If it is timed out,\n\
     \we swept it with the timeout path.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\ETX\STX\ETX\SOH\DC2\EOT\233\n\
-    \\EOT\DC1\n\
+    \\ENQ\ENQ\ETX\STX\ETX\SOH\DC2\EOT\144\v\EOT\DC1\n\
     \\r\n\
-    \\ENQ\ENQ\ETX\STX\ETX\STX\DC2\EOT\233\n\
-    \\DC4\NAK\n\
+    \\ENQ\ENQ\ETX\STX\ETX\STX\DC2\EOT\144\v\DC4\NAK\n\
     \T\n\
-    \\EOT\ENQ\ETX\STX\EOT\DC2\EOT\236\n\
-    \\EOT\SI\SUBF We force closed and need to sweep our time locked commitment output.\n\
+    \\EOT\ENQ\ETX\STX\EOT\DC2\EOT\147\v\EOT\SI\SUBF We force closed and need to sweep our time locked commitment output.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\ETX\STX\EOT\SOH\DC2\EOT\236\n\
-    \\EOT\n\
+    \\ENQ\ENQ\ETX\STX\EOT\SOH\DC2\EOT\147\v\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\ETX\STX\EOT\STX\DC2\EOT\236\n\
-    \\r\SO\n\
+    \\ENQ\ENQ\ETX\STX\EOT\STX\DC2\EOT\147\v\r\SO\n\
     \\f\n\
-    \\STX\ENQ\EOT\DC2\ACK\239\n\
-    \\NUL\138\v\SOH\n\
+    \\STX\ENQ\EOT\DC2\ACK\150\v\NUL\177\v\SOH\n\
     \\v\n\
-    \\ETX\ENQ\EOT\SOH\DC2\EOT\239\n\
-    \\ENQ\SYN\n\
+    \\ETX\ENQ\EOT\SOH\DC2\EOT\150\v\ENQ\SYN\n\
     \ \n\
-    \\EOT\ENQ\EOT\STX\NUL\DC2\EOT\241\n\
-    \\EOT\CAN\SUB\DC2 Outcome unknown.\n\
+    \\EOT\ENQ\EOT\STX\NUL\DC2\EOT\152\v\EOT\CAN\SUB\DC2 Outcome unknown.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\NUL\SOH\DC2\EOT\241\n\
-    \\EOT\DC3\n\
+    \\ENQ\ENQ\EOT\STX\NUL\SOH\DC2\EOT\152\v\EOT\DC3\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\NUL\STX\DC2\EOT\241\n\
-    \\SYN\ETB\n\
+    \\ENQ\ENQ\EOT\STX\NUL\STX\DC2\EOT\152\v\SYN\ETB\n\
     \/\n\
-    \\EOT\ENQ\EOT\STX\SOH\DC2\EOT\244\n\
-    \\EOT\DLE\SUB! An output was claimed on chain.\n\
+    \\EOT\ENQ\EOT\STX\SOH\DC2\EOT\155\v\EOT\DLE\SUB! An output was claimed on chain.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\SOH\SOH\DC2\EOT\244\n\
-    \\EOT\v\n\
+    \\ENQ\ENQ\EOT\STX\SOH\SOH\DC2\EOT\155\v\EOT\v\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\SOH\STX\DC2\EOT\244\n\
-    \\SO\SI\n\
+    \\ENQ\ENQ\EOT\STX\SOH\STX\DC2\EOT\155\v\SO\SI\n\
     \6\n\
-    \\EOT\ENQ\EOT\STX\STX\DC2\EOT\247\n\
-    \\EOT\DC2\SUB( An output was left unclaimed on chain.\n\
+    \\EOT\ENQ\EOT\STX\STX\DC2\EOT\158\v\EOT\DC2\SUB( An output was left unclaimed on chain.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\STX\SOH\DC2\EOT\247\n\
-    \\EOT\r\n\
+    \\ENQ\ENQ\EOT\STX\STX\SOH\DC2\EOT\158\v\EOT\r\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\STX\STX\DC2\EOT\247\n\
-    \\DLE\DC1\n\
+    \\ENQ\ENQ\EOT\STX\STX\STX\DC2\EOT\158\v\DLE\DC1\n\
     \\232\SOH\n\
-    \\EOT\ENQ\EOT\STX\ETX\DC2\EOT\255\n\
-    \\EOT\DC2\SUB\217\SOH\n\
+    \\EOT\ENQ\EOT\STX\ETX\DC2\EOT\166\v\EOT\DC2\SUB\217\SOH\n\
     \ResolverOutcomeAbandoned indicates that an output that we did not\n\
     \claim on chain, for example an anchor that we did not sweep and a\n\
     \third party claimed on chain, or a htlc that we could not decode\n\
     \so left unclaimed.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\ETX\SOH\DC2\EOT\255\n\
-    \\EOT\r\n\
+    \\ENQ\ENQ\EOT\STX\ETX\SOH\DC2\EOT\166\v\EOT\r\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\ETX\STX\DC2\EOT\255\n\
-    \\DLE\DC1\n\
+    \\ENQ\ENQ\EOT\STX\ETX\STX\DC2\EOT\166\v\DLE\DC1\n\
     \\197\SOH\n\
-    \\EOT\ENQ\EOT\STX\EOT\DC2\EOT\134\v\EOT\DC4\SUB\182\SOH\n\
+    \\EOT\ENQ\EOT\STX\EOT\DC2\EOT\173\v\EOT\DC4\SUB\182\SOH\n\
     \If we force closed our channel, our htlcs need to be claimed in two\n\
     \stages. This outcome represents the broadcast of a timeout or success\n\
     \transaction for this two stage htlc claim.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\EOT\SOH\DC2\EOT\134\v\EOT\SI\n\
+    \\ENQ\ENQ\EOT\STX\EOT\SOH\DC2\EOT\173\v\EOT\SI\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\EOT\STX\DC2\EOT\134\v\DC2\DC3\n\
+    \\ENQ\ENQ\EOT\STX\EOT\STX\DC2\EOT\173\v\DC2\DC3\n\
     \.\n\
-    \\EOT\ENQ\EOT\STX\ENQ\DC2\EOT\137\v\EOT\DLE\SUB  A htlc was timed out on chain.\n\
+    \\EOT\ENQ\EOT\STX\ENQ\DC2\EOT\176\v\EOT\DLE\SUB  A htlc was timed out on chain.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\ENQ\SOH\DC2\EOT\137\v\EOT\v\n\
+    \\ENQ\ENQ\EOT\STX\ENQ\SOH\DC2\EOT\176\v\EOT\v\n\
     \\r\n\
-    \\ENQ\ENQ\EOT\STX\ENQ\STX\DC2\EOT\137\v\SO\SI\n\
+    \\ENQ\ENQ\EOT\STX\ENQ\STX\DC2\EOT\176\v\SO\SI\n\
     \\f\n\
-    \\STX\EOT%\DC2\ACK\140\v\NUL\156\v\SOH\n\
+    \\STX\EOT%\DC2\ACK\179\v\NUL\195\v\SOH\n\
     \\v\n\
-    \\ETX\EOT%\SOH\DC2\EOT\140\v\b\DC2\n\
+    \\ETX\EOT%\SOH\DC2\EOT\179\v\b\DC2\n\
     \4\n\
-    \\EOT\EOT%\STX\NUL\DC2\EOT\142\v\EOT'\SUB& The type of output we are resolving.\n\
+    \\EOT\EOT%\STX\NUL\DC2\EOT\181\v\EOT'\SUB& The type of output we are resolving.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT%\STX\NUL\EOT\DC2\ACK\142\v\EOT\140\v\DC4\n\
+    \\ENQ\EOT%\STX\NUL\EOT\DC2\ACK\181\v\EOT\179\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT%\STX\NUL\ACK\DC2\EOT\142\v\EOT\DC2\n\
+    \\ENQ\EOT%\STX\NUL\ACK\DC2\EOT\181\v\EOT\DC2\n\
     \\r\n\
-    \\ENQ\EOT%\STX\NUL\SOH\DC2\EOT\142\v\DC3\"\n\
+    \\ENQ\EOT%\STX\NUL\SOH\DC2\EOT\181\v\DC3\"\n\
     \\r\n\
-    \\ENQ\EOT%\STX\NUL\ETX\DC2\EOT\142\v%&\n\
+    \\ENQ\EOT%\STX\NUL\ETX\DC2\EOT\181\v%&\n\
     \N\n\
-    \\EOT\EOT%\STX\SOH\DC2\EOT\145\v\EOT\"\SUB@ The outcome of our on chain action that resolved the outpoint.\n\
+    \\EOT\EOT%\STX\SOH\DC2\EOT\184\v\EOT\"\SUB@ The outcome of our on chain action that resolved the outpoint.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT%\STX\SOH\EOT\DC2\ACK\145\v\EOT\142\v'\n\
+    \\ENQ\EOT%\STX\SOH\EOT\DC2\ACK\184\v\EOT\181\v'\n\
     \\r\n\
-    \\ENQ\EOT%\STX\SOH\ACK\DC2\EOT\145\v\EOT\NAK\n\
+    \\ENQ\EOT%\STX\SOH\ACK\DC2\EOT\184\v\EOT\NAK\n\
     \\r\n\
-    \\ENQ\EOT%\STX\SOH\SOH\DC2\EOT\145\v\SYN\GS\n\
+    \\ENQ\EOT%\STX\SOH\SOH\DC2\EOT\184\v\SYN\GS\n\
     \\r\n\
-    \\ENQ\EOT%\STX\SOH\ETX\DC2\EOT\145\v !\n\
+    \\ENQ\EOT%\STX\SOH\ETX\DC2\EOT\184\v !\n\
     \>\n\
-    \\EOT\EOT%\STX\STX\DC2\EOT\148\v\EOT\SUB\SUB0 The outpoint that was spent by the resolution.\n\
+    \\EOT\EOT%\STX\STX\DC2\EOT\187\v\EOT\SUB\SUB0 The outpoint that was spent by the resolution.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT%\STX\STX\EOT\DC2\ACK\148\v\EOT\145\v\"\n\
+    \\ENQ\EOT%\STX\STX\EOT\DC2\ACK\187\v\EOT\184\v\"\n\
     \\r\n\
-    \\ENQ\EOT%\STX\STX\ACK\DC2\EOT\148\v\EOT\f\n\
+    \\ENQ\EOT%\STX\STX\ACK\DC2\EOT\187\v\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT%\STX\STX\SOH\DC2\EOT\148\v\r\NAK\n\
+    \\ENQ\EOT%\STX\STX\SOH\DC2\EOT\187\v\r\NAK\n\
     \\r\n\
-    \\ENQ\EOT%\STX\STX\ETX\DC2\EOT\148\v\CAN\EM\n\
+    \\ENQ\EOT%\STX\STX\ETX\DC2\EOT\187\v\CAN\EM\n\
     \>\n\
-    \\EOT\EOT%\STX\ETX\DC2\EOT\151\v\EOT\SUB\SUB0 The amount that was claimed by the resolution.\n\
+    \\EOT\EOT%\STX\ETX\DC2\EOT\190\v\EOT\SUB\SUB0 The amount that was claimed by the resolution.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT%\STX\ETX\EOT\DC2\ACK\151\v\EOT\148\v\SUB\n\
+    \\ENQ\EOT%\STX\ETX\EOT\DC2\ACK\190\v\EOT\187\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT%\STX\ETX\ENQ\DC2\EOT\151\v\EOT\n\
+    \\ENQ\EOT%\STX\ETX\ENQ\DC2\EOT\190\v\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT%\STX\ETX\SOH\DC2\EOT\151\v\v\NAK\n\
+    \\ENQ\EOT%\STX\ETX\SOH\DC2\EOT\190\v\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT%\STX\ETX\ETX\DC2\EOT\151\v\CAN\EM\n\
+    \\ENQ\EOT%\STX\ETX\ETX\DC2\EOT\190\v\CAN\EM\n\
     \_\n\
-    \\EOT\EOT%\STX\EOT\DC2\EOT\155\v\EOT\SUB\SUBQ The hex-encoded transaction ID of the sweep transaction that spent the\n\
+    \\EOT\EOT%\STX\EOT\DC2\EOT\194\v\EOT\SUB\SUBQ The hex-encoded transaction ID of the sweep transaction that spent the\n\
     \ output.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT%\STX\EOT\EOT\DC2\ACK\155\v\EOT\151\v\SUB\n\
+    \\ENQ\EOT%\STX\EOT\EOT\DC2\ACK\194\v\EOT\190\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT%\STX\EOT\ENQ\DC2\EOT\155\v\EOT\n\
+    \\ENQ\EOT%\STX\EOT\ENQ\DC2\EOT\194\v\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT%\STX\EOT\SOH\DC2\EOT\155\v\v\NAK\n\
+    \\ENQ\EOT%\STX\EOT\SOH\DC2\EOT\194\v\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT%\STX\EOT\ETX\DC2\EOT\155\v\CAN\EM\n\
+    \\ENQ\EOT%\STX\EOT\ETX\DC2\EOT\194\v\CAN\EM\n\
     \\f\n\
-    \\STX\EOT&\DC2\ACK\158\v\NUL\165\v\SOH\n\
+    \\STX\EOT&\DC2\ACK\197\v\NUL\204\v\SOH\n\
     \\v\n\
-    \\ETX\EOT&\SOH\DC2\EOT\158\v\b\GS\n\
+    \\ETX\EOT&\SOH\DC2\EOT\197\v\b\GS\n\
     \\f\n\
-    \\EOT\EOT&\STX\NUL\DC2\EOT\159\v\EOT\EM\n\
+    \\EOT\EOT&\STX\NUL\DC2\EOT\198\v\EOT\EM\n\
     \\SI\n\
-    \\ENQ\EOT&\STX\NUL\EOT\DC2\ACK\159\v\EOT\158\v\US\n\
+    \\ENQ\EOT&\STX\NUL\EOT\DC2\ACK\198\v\EOT\197\v\US\n\
     \\r\n\
-    \\ENQ\EOT&\STX\NUL\ENQ\DC2\EOT\159\v\EOT\b\n\
+    \\ENQ\EOT&\STX\NUL\ENQ\DC2\EOT\198\v\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT&\STX\NUL\SOH\DC2\EOT\159\v\t\DC4\n\
+    \\ENQ\EOT&\STX\NUL\SOH\DC2\EOT\198\v\t\DC4\n\
     \\r\n\
-    \\ENQ\EOT&\STX\NUL\ETX\DC2\EOT\159\v\ETB\CAN\n\
+    \\ENQ\EOT&\STX\NUL\ETX\DC2\EOT\198\v\ETB\CAN\n\
     \\f\n\
-    \\EOT\EOT&\STX\SOH\DC2\EOT\160\v\EOT\EM\n\
+    \\EOT\EOT&\STX\SOH\DC2\EOT\199\v\EOT\EM\n\
     \\SI\n\
-    \\ENQ\EOT&\STX\SOH\EOT\DC2\ACK\160\v\EOT\159\v\EM\n\
+    \\ENQ\EOT&\STX\SOH\EOT\DC2\ACK\199\v\EOT\198\v\EM\n\
     \\r\n\
-    \\ENQ\EOT&\STX\SOH\ENQ\DC2\EOT\160\v\EOT\b\n\
+    \\ENQ\EOT&\STX\SOH\ENQ\DC2\EOT\199\v\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT&\STX\SOH\SOH\DC2\EOT\160\v\t\DC4\n\
+    \\ENQ\EOT&\STX\SOH\SOH\DC2\EOT\199\v\t\DC4\n\
     \\r\n\
-    \\ENQ\EOT&\STX\SOH\ETX\DC2\EOT\160\v\ETB\CAN\n\
+    \\ENQ\EOT&\STX\SOH\ETX\DC2\EOT\199\v\ETB\CAN\n\
     \\f\n\
-    \\EOT\EOT&\STX\STX\DC2\EOT\161\v\EOT\SUB\n\
+    \\EOT\EOT&\STX\STX\DC2\EOT\200\v\EOT\SUB\n\
     \\SI\n\
-    \\ENQ\EOT&\STX\STX\EOT\DC2\ACK\161\v\EOT\160\v\EM\n\
+    \\ENQ\EOT&\STX\STX\EOT\DC2\ACK\200\v\EOT\199\v\EM\n\
     \\r\n\
-    \\ENQ\EOT&\STX\STX\ENQ\DC2\EOT\161\v\EOT\b\n\
+    \\ENQ\EOT&\STX\STX\ENQ\DC2\EOT\200\v\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT&\STX\STX\SOH\DC2\EOT\161\v\t\NAK\n\
+    \\ENQ\EOT&\STX\STX\SOH\DC2\EOT\200\v\t\NAK\n\
     \\r\n\
-    \\ENQ\EOT&\STX\STX\ETX\DC2\EOT\161\v\CAN\EM\n\
+    \\ENQ\EOT&\STX\STX\ETX\DC2\EOT\200\v\CAN\EM\n\
     \\f\n\
-    \\EOT\EOT&\STX\ETX\DC2\EOT\162\v\EOT\DC4\n\
+    \\EOT\EOT&\STX\ETX\DC2\EOT\201\v\EOT\DC4\n\
     \\SI\n\
-    \\ENQ\EOT&\STX\ETX\EOT\DC2\ACK\162\v\EOT\161\v\SUB\n\
+    \\ENQ\EOT&\STX\ETX\EOT\DC2\ACK\201\v\EOT\200\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT&\STX\ETX\ENQ\DC2\EOT\162\v\EOT\b\n\
+    \\ENQ\EOT&\STX\ETX\ENQ\DC2\EOT\201\v\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT&\STX\ETX\SOH\DC2\EOT\162\v\t\SI\n\
+    \\ENQ\EOT&\STX\ETX\SOH\DC2\EOT\201\v\t\SI\n\
     \\r\n\
-    \\ENQ\EOT&\STX\ETX\ETX\DC2\EOT\162\v\DC2\DC3\n\
+    \\ENQ\EOT&\STX\ETX\ETX\DC2\EOT\201\v\DC2\DC3\n\
     \\f\n\
-    \\EOT\EOT&\STX\EOT\DC2\EOT\163\v\EOT\RS\n\
+    \\EOT\EOT&\STX\EOT\DC2\EOT\202\v\EOT\RS\n\
     \\SI\n\
-    \\ENQ\EOT&\STX\EOT\EOT\DC2\ACK\163\v\EOT\162\v\DC4\n\
+    \\ENQ\EOT&\STX\EOT\EOT\DC2\ACK\202\v\EOT\201\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT&\STX\EOT\ENQ\DC2\EOT\163\v\EOT\b\n\
+    \\ENQ\EOT&\STX\EOT\ENQ\DC2\EOT\202\v\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT&\STX\EOT\SOH\DC2\EOT\163\v\t\EM\n\
+    \\ENQ\EOT&\STX\EOT\SOH\DC2\EOT\202\v\t\EM\n\
     \\r\n\
-    \\ENQ\EOT&\STX\EOT\ETX\DC2\EOT\163\v\FS\GS\n\
+    \\ENQ\EOT&\STX\EOT\ETX\DC2\EOT\202\v\FS\GS\n\
     \\f\n\
-    \\EOT\EOT&\STX\ENQ\DC2\EOT\164\v\EOT\ETB\n\
+    \\EOT\EOT&\STX\ENQ\DC2\EOT\203\v\EOT\ETB\n\
     \\SI\n\
-    \\ENQ\EOT&\STX\ENQ\EOT\DC2\ACK\164\v\EOT\163\v\RS\n\
+    \\ENQ\EOT&\STX\ENQ\EOT\DC2\ACK\203\v\EOT\202\v\RS\n\
     \\r\n\
-    \\ENQ\EOT&\STX\ENQ\ENQ\DC2\EOT\164\v\EOT\b\n\
+    \\ENQ\EOT&\STX\ENQ\ENQ\DC2\EOT\203\v\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT&\STX\ENQ\SOH\DC2\EOT\164\v\t\DC2\n\
+    \\ENQ\EOT&\STX\ENQ\SOH\DC2\EOT\203\v\t\DC2\n\
     \\r\n\
-    \\ENQ\EOT&\STX\ENQ\ETX\DC2\EOT\164\v\NAK\SYN\n\
+    \\ENQ\EOT&\STX\ENQ\ETX\DC2\EOT\203\v\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT'\DC2\ACK\167\v\NUL\169\v\SOH\n\
+    \\STX\EOT'\DC2\ACK\206\v\NUL\208\v\SOH\n\
     \\v\n\
-    \\ETX\EOT'\SOH\DC2\EOT\167\v\b\RS\n\
+    \\ETX\EOT'\SOH\DC2\EOT\206\v\b\RS\n\
     \\f\n\
-    \\EOT\EOT'\STX\NUL\DC2\EOT\168\v\EOT.\n\
+    \\EOT\EOT'\STX\NUL\DC2\EOT\207\v\EOT.\n\
     \\r\n\
-    \\ENQ\EOT'\STX\NUL\EOT\DC2\EOT\168\v\EOT\f\n\
+    \\ENQ\EOT'\STX\NUL\EOT\DC2\EOT\207\v\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT'\STX\NUL\ACK\DC2\EOT\168\v\r \n\
+    \\ENQ\EOT'\STX\NUL\ACK\DC2\EOT\207\v\r \n\
     \\r\n\
-    \\ENQ\EOT'\STX\NUL\SOH\DC2\EOT\168\v!)\n\
+    \\ENQ\EOT'\STX\NUL\SOH\DC2\EOT\207\v!)\n\
     \\r\n\
-    \\ENQ\EOT'\STX\NUL\ETX\DC2\EOT\168\v,-\n\
+    \\ENQ\EOT'\STX\NUL\ETX\DC2\EOT\207\v,-\n\
     \\f\n\
-    \\STX\EOT(\DC2\ACK\171\v\NUL\241\v\SOH\n\
+    \\STX\EOT(\DC2\ACK\210\v\NUL\157\f\SOH\n\
     \\v\n\
-    \\ETX\EOT(\SOH\DC2\EOT\171\v\b\f\n\
+    \\ETX\EOT(\SOH\DC2\EOT\210\v\b\f\n\
     \/\n\
-    \\EOT\EOT(\STX\NUL\DC2\EOT\173\v\EOT\ETB\SUB! The identity pubkey of the peer\n\
+    \\EOT\EOT(\STX\NUL\DC2\EOT\212\v\EOT\ETB\SUB! The identity pubkey of the peer\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\NUL\EOT\DC2\ACK\173\v\EOT\171\v\SO\n\
+    \\ENQ\EOT(\STX\NUL\EOT\DC2\ACK\212\v\EOT\210\v\SO\n\
     \\r\n\
-    \\ENQ\EOT(\STX\NUL\ENQ\DC2\EOT\173\v\EOT\n\
+    \\ENQ\EOT(\STX\NUL\ENQ\DC2\EOT\212\v\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT(\STX\NUL\SOH\DC2\EOT\173\v\v\DC2\n\
+    \\ENQ\EOT(\STX\NUL\SOH\DC2\EOT\212\v\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT(\STX\NUL\ETX\DC2\EOT\173\v\NAK\SYN\n\
+    \\ENQ\EOT(\STX\NUL\ETX\DC2\EOT\212\v\NAK\SYN\n\
     \A\n\
-    \\EOT\EOT(\STX\SOH\DC2\EOT\176\v\EOT\ETB\SUB3 Network address of the peer; eg `127.0.0.1:10011`\n\
+    \\EOT\EOT(\STX\SOH\DC2\EOT\215\v\EOT\ETB\SUB3 Network address of the peer; eg `127.0.0.1:10011`\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\SOH\EOT\DC2\ACK\176\v\EOT\173\v\ETB\n\
+    \\ENQ\EOT(\STX\SOH\EOT\DC2\ACK\215\v\EOT\212\v\ETB\n\
     \\r\n\
-    \\ENQ\EOT(\STX\SOH\ENQ\DC2\EOT\176\v\EOT\n\
+    \\ENQ\EOT(\STX\SOH\ENQ\DC2\EOT\215\v\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT(\STX\SOH\SOH\DC2\EOT\176\v\v\DC2\n\
+    \\ENQ\EOT(\STX\SOH\SOH\DC2\EOT\215\v\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT(\STX\SOH\ETX\DC2\EOT\176\v\NAK\SYN\n\
+    \\ENQ\EOT(\STX\SOH\ETX\DC2\EOT\215\v\NAK\SYN\n\
     \6\n\
-    \\EOT\EOT(\STX\STX\DC2\EOT\179\v\EOT\SUB\SUB( Bytes of data transmitted to this peer\n\
+    \\EOT\EOT(\STX\STX\DC2\EOT\218\v\EOT\SUB\SUB( Bytes of data transmitted to this peer\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\STX\EOT\DC2\ACK\179\v\EOT\176\v\ETB\n\
+    \\ENQ\EOT(\STX\STX\EOT\DC2\ACK\218\v\EOT\215\v\ETB\n\
     \\r\n\
-    \\ENQ\EOT(\STX\STX\ENQ\DC2\EOT\179\v\EOT\n\
+    \\ENQ\EOT(\STX\STX\ENQ\DC2\EOT\218\v\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT(\STX\STX\SOH\DC2\EOT\179\v\v\NAK\n\
+    \\ENQ\EOT(\STX\STX\SOH\DC2\EOT\218\v\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT(\STX\STX\ETX\DC2\EOT\179\v\CAN\EM\n\
+    \\ENQ\EOT(\STX\STX\ETX\DC2\EOT\218\v\CAN\EM\n\
     \8\n\
-    \\EOT\EOT(\STX\ETX\DC2\EOT\182\v\EOT\SUB\SUB* Bytes of data transmitted from this peer\n\
+    \\EOT\EOT(\STX\ETX\DC2\EOT\221\v\EOT\SUB\SUB* Bytes of data transmitted from this peer\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\ETX\EOT\DC2\ACK\182\v\EOT\179\v\SUB\n\
+    \\ENQ\EOT(\STX\ETX\EOT\DC2\ACK\221\v\EOT\218\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT(\STX\ETX\ENQ\DC2\EOT\182\v\EOT\n\
+    \\ENQ\EOT(\STX\ETX\ENQ\DC2\EOT\221\v\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT(\STX\ETX\SOH\DC2\EOT\182\v\v\NAK\n\
+    \\ENQ\EOT(\STX\ETX\SOH\DC2\EOT\221\v\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT(\STX\ETX\ETX\DC2\EOT\182\v\CAN\EM\n\
+    \\ENQ\EOT(\STX\ETX\ETX\DC2\EOT\221\v\CAN\EM\n\
     \*\n\
-    \\EOT\EOT(\STX\EOT\DC2\EOT\185\v\EOT\ETB\SUB\FS Satoshis sent to this peer\n\
+    \\EOT\EOT(\STX\EOT\DC2\EOT\224\v\EOT\ETB\SUB\FS Satoshis sent to this peer\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\EOT\EOT\DC2\ACK\185\v\EOT\182\v\SUB\n\
+    \\ENQ\EOT(\STX\EOT\EOT\DC2\ACK\224\v\EOT\221\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT(\STX\EOT\ENQ\DC2\EOT\185\v\EOT\t\n\
+    \\ENQ\EOT(\STX\EOT\ENQ\DC2\EOT\224\v\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT(\STX\EOT\SOH\DC2\EOT\185\v\n\
+    \\ENQ\EOT(\STX\EOT\SOH\DC2\EOT\224\v\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOT(\STX\EOT\ETX\DC2\EOT\185\v\NAK\SYN\n\
+    \\ENQ\EOT(\STX\EOT\ETX\DC2\EOT\224\v\NAK\SYN\n\
     \0\n\
-    \\EOT\EOT(\STX\ENQ\DC2\EOT\188\v\EOT\ETB\SUB\" Satoshis received from this peer\n\
+    \\EOT\EOT(\STX\ENQ\DC2\EOT\227\v\EOT\ETB\SUB\" Satoshis received from this peer\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\ENQ\EOT\DC2\ACK\188\v\EOT\185\v\ETB\n\
+    \\ENQ\EOT(\STX\ENQ\EOT\DC2\ACK\227\v\EOT\224\v\ETB\n\
     \\r\n\
-    \\ENQ\EOT(\STX\ENQ\ENQ\DC2\EOT\188\v\EOT\t\n\
+    \\ENQ\EOT(\STX\ENQ\ENQ\DC2\EOT\227\v\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT(\STX\ENQ\SOH\DC2\EOT\188\v\n\
+    \\ENQ\EOT(\STX\ENQ\SOH\DC2\EOT\227\v\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOT(\STX\ENQ\ETX\DC2\EOT\188\v\NAK\SYN\n\
+    \\ENQ\EOT(\STX\ENQ\ETX\DC2\EOT\227\v\NAK\SYN\n\
     \N\n\
-    \\EOT\EOT(\STX\ACK\DC2\EOT\191\v\EOT\NAK\SUB@ A channel is inbound if the counterparty initiated the channel\n\
+    \\EOT\EOT(\STX\ACK\DC2\EOT\230\v\EOT\NAK\SUB@ A channel is inbound if the counterparty initiated the channel\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\ACK\EOT\DC2\ACK\191\v\EOT\188\v\ETB\n\
+    \\ENQ\EOT(\STX\ACK\EOT\DC2\ACK\230\v\EOT\227\v\ETB\n\
     \\r\n\
-    \\ENQ\EOT(\STX\ACK\ENQ\DC2\EOT\191\v\EOT\b\n\
+    \\ENQ\EOT(\STX\ACK\ENQ\DC2\EOT\230\v\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT(\STX\ACK\SOH\DC2\EOT\191\v\t\DLE\n\
+    \\ENQ\EOT(\STX\ACK\SOH\DC2\EOT\230\v\t\DLE\n\
     \\r\n\
-    \\ENQ\EOT(\STX\ACK\ETX\DC2\EOT\191\v\DC3\DC4\n\
+    \\ENQ\EOT(\STX\ACK\ETX\DC2\EOT\230\v\DC3\DC4\n\
     \&\n\
-    \\EOT\EOT(\STX\a\DC2\EOT\194\v\EOT\CAN\SUB\CAN Ping time to this peer\n\
+    \\EOT\EOT(\STX\a\DC2\EOT\233\v\EOT\CAN\SUB\CAN Ping time to this peer\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\a\EOT\DC2\ACK\194\v\EOT\191\v\NAK\n\
+    \\ENQ\EOT(\STX\a\EOT\DC2\ACK\233\v\EOT\230\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT(\STX\a\ENQ\DC2\EOT\194\v\EOT\t\n\
+    \\ENQ\EOT(\STX\a\ENQ\DC2\EOT\233\v\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT(\STX\a\SOH\DC2\EOT\194\v\n\
+    \\ENQ\EOT(\STX\a\SOH\DC2\EOT\233\v\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT(\STX\a\ETX\DC2\EOT\194\v\SYN\ETB\n\
+    \\ENQ\EOT(\STX\a\ETX\DC2\EOT\233\v\SYN\ETB\n\
     \\SO\n\
-    \\EOT\EOT(\EOT\NUL\DC2\ACK\196\v\EOT\211\v\ENQ\n\
+    \\EOT\EOT(\EOT\NUL\DC2\ACK\235\v\EOT\255\v\ENQ\n\
     \\r\n\
-    \\ENQ\EOT(\EOT\NUL\SOH\DC2\EOT\196\v\t\DC1\n\
+    \\ENQ\EOT(\EOT\NUL\SOH\DC2\EOT\235\v\t\DC1\n\
     \P\n\
-    \\ACK\EOT(\EOT\NUL\STX\NUL\DC2\EOT\200\v\b\EM\SUB@\n\
+    \\ACK\EOT(\EOT\NUL\STX\NUL\DC2\EOT\239\v\b\EM\SUB@\n\
     \Denotes that we cannot determine the peer's current sync type.\n\
     \\n\
     \\SI\n\
-    \\a\EOT(\EOT\NUL\STX\NUL\SOH\DC2\EOT\200\v\b\DC4\n\
+    \\a\EOT(\EOT\NUL\STX\NUL\SOH\DC2\EOT\239\v\b\DC4\n\
     \\SI\n\
-    \\a\EOT(\EOT\NUL\STX\NUL\STX\DC2\EOT\200\v\ETB\CAN\n\
+    \\a\EOT(\EOT\NUL\STX\NUL\STX\DC2\EOT\239\v\ETB\CAN\n\
     \Y\n\
-    \\ACK\EOT(\EOT\NUL\STX\SOH\DC2\EOT\205\v\b\CAN\SUBI\n\
+    \\ACK\EOT(\EOT\NUL\STX\SOH\DC2\EOT\244\v\b\CAN\SUBI\n\
     \Denotes that we are actively receiving new graph updates from the peer.\n\
     \\n\
     \\SI\n\
-    \\a\EOT(\EOT\NUL\STX\SOH\SOH\DC2\EOT\205\v\b\DC3\n\
+    \\a\EOT(\EOT\NUL\STX\SOH\SOH\DC2\EOT\244\v\b\DC3\n\
     \\SI\n\
-    \\a\EOT(\EOT\NUL\STX\SOH\STX\DC2\EOT\205\v\SYN\ETB\n\
+    \\a\EOT(\EOT\NUL\STX\SOH\STX\DC2\EOT\244\v\SYN\ETB\n\
     \T\n\
-    \\ACK\EOT(\EOT\NUL\STX\STX\DC2\EOT\210\v\b\EM\SUBD\n\
+    \\ACK\EOT(\EOT\NUL\STX\STX\DC2\EOT\249\v\b\EM\SUBD\n\
     \Denotes that we are not receiving new graph updates from the peer.\n\
     \\n\
     \\SI\n\
-    \\a\EOT(\EOT\NUL\STX\STX\SOH\DC2\EOT\210\v\b\DC4\n\
+    \\a\EOT(\EOT\NUL\STX\STX\SOH\DC2\EOT\249\v\b\DC4\n\
     \\SI\n\
-    \\a\EOT(\EOT\NUL\STX\STX\STX\DC2\EOT\210\v\ETB\CAN\n\
+    \\a\EOT(\EOT\NUL\STX\STX\STX\DC2\EOT\249\v\ETB\CAN\n\
+    \G\n\
+    \\ACK\EOT(\EOT\NUL\STX\ETX\DC2\EOT\254\v\b\CAN\SUB7\n\
+    \Denotes that this peer is pinned into an active sync.\n\
+    \\n\
+    \\SI\n\
+    \\a\EOT(\EOT\NUL\STX\ETX\SOH\DC2\EOT\254\v\b\DC3\n\
+    \\SI\n\
+    \\a\EOT(\EOT\NUL\STX\ETX\STX\DC2\EOT\254\v\SYN\ETB\n\
     \L\n\
-    \\EOT\EOT(\STX\b\DC2\EOT\214\v\EOT\FS\SUB> The type of sync we are currently performing with this peer.\n\
+    \\EOT\EOT(\STX\b\DC2\EOT\130\f\EOT\FS\SUB> The type of sync we are currently performing with this peer.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\b\EOT\DC2\ACK\214\v\EOT\211\v\ENQ\n\
+    \\ENQ\EOT(\STX\b\EOT\DC2\ACK\130\f\EOT\255\v\ENQ\n\
     \\r\n\
-    \\ENQ\EOT(\STX\b\ACK\DC2\EOT\214\v\EOT\f\n\
+    \\ENQ\EOT(\STX\b\ACK\DC2\EOT\130\f\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT(\STX\b\SOH\DC2\EOT\214\v\r\SYN\n\
+    \\ENQ\EOT(\STX\b\SOH\DC2\EOT\130\f\r\SYN\n\
     \\r\n\
-    \\ENQ\EOT(\STX\b\ETX\DC2\EOT\214\v\EM\ESC\n\
+    \\ENQ\EOT(\STX\b\ETX\DC2\EOT\130\f\EM\ESC\n\
     \M\n\
-    \\EOT\EOT(\STX\t\DC2\EOT\217\v\EOT'\SUB? Features advertised by the remote peer in their init message.\n\
+    \\EOT\EOT(\STX\t\DC2\EOT\133\f\EOT'\SUB? Features advertised by the remote peer in their init message.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\t\EOT\DC2\ACK\217\v\EOT\214\v\FS\n\
+    \\ENQ\EOT(\STX\t\EOT\DC2\ACK\133\f\EOT\130\f\FS\n\
     \\r\n\
-    \\ENQ\EOT(\STX\t\ACK\DC2\EOT\217\v\EOT\CAN\n\
+    \\ENQ\EOT(\STX\t\ACK\DC2\EOT\133\f\EOT\CAN\n\
     \\r\n\
-    \\ENQ\EOT(\STX\t\SOH\DC2\EOT\217\v\EM!\n\
+    \\ENQ\EOT(\STX\t\SOH\DC2\EOT\133\f\EM!\n\
     \\r\n\
-    \\ENQ\EOT(\STX\t\ETX\DC2\EOT\217\v$&\n\
+    \\ENQ\EOT(\STX\t\ETX\DC2\EOT\133\f$&\n\
     \\217\STX\n\
     \\EOT\EOT(\STX\n\
-    \\DC2\EOT\226\v\EOT*\SUB\202\STX\n\
+    \\DC2\EOT\142\f\EOT*\SUB\202\STX\n\
     \The latest errors received from our peer with timestamps, limited to the 10\n\
     \most recent errors. These errors are tracked across peer connections, but\n\
     \are not persisted across lnd restarts. Note that these errors are only\n\
@@ -54132,866 +56277,902 @@ packedFileDescriptor
     \\n\
     \\r\n\
     \\ENQ\EOT(\STX\n\
-    \\EOT\DC2\EOT\226\v\EOT\f\n\
+    \\EOT\DC2\EOT\142\f\EOT\f\n\
     \\r\n\
     \\ENQ\EOT(\STX\n\
-    \\ACK\DC2\EOT\226\v\r\GS\n\
+    \\ACK\DC2\EOT\142\f\r\GS\n\
     \\r\n\
     \\ENQ\EOT(\STX\n\
-    \\SOH\DC2\EOT\226\v\RS$\n\
+    \\SOH\DC2\EOT\142\f\RS$\n\
     \\r\n\
     \\ENQ\EOT(\STX\n\
-    \\ETX\DC2\EOT\226\v')\n\
+    \\ETX\DC2\EOT\142\f')\n\
     \\140\STX\n\
-    \\EOT\EOT(\STX\v\DC2\EOT\234\v\EOT\SUB\SUB\253\SOH\n\
+    \\EOT\EOT(\STX\v\DC2\EOT\150\f\EOT\SUB\SUB\253\SOH\n\
     \The number of times we have recorded this peer going offline or coming\n\
     \online, recorded across restarts. Note that this value is decreased over\n\
     \time if the peer has not recently flapped, so that we can forgive peers\n\
     \with historically high flap counts.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\v\EOT\DC2\ACK\234\v\EOT\226\v*\n\
+    \\ENQ\EOT(\STX\v\EOT\DC2\ACK\150\f\EOT\142\f*\n\
     \\r\n\
-    \\ENQ\EOT(\STX\v\ENQ\DC2\EOT\234\v\EOT\t\n\
+    \\ENQ\EOT(\STX\v\ENQ\DC2\EOT\150\f\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT(\STX\v\SOH\DC2\EOT\234\v\n\
+    \\ENQ\EOT(\STX\v\SOH\DC2\EOT\150\f\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT(\STX\v\ETX\DC2\EOT\234\v\ETB\EM\n\
+    \\ENQ\EOT(\STX\v\ETX\DC2\EOT\150\f\ETB\EM\n\
     \\143\SOH\n\
-    \\EOT\EOT(\STX\f\DC2\EOT\240\v\EOT\FS\SUB\128\SOH\n\
+    \\EOT\EOT(\STX\f\DC2\EOT\156\f\EOT\FS\SUB\128\SOH\n\
     \The timestamp of the last flap we observed for this peer. If this value is\n\
     \zero, we have not observed any flaps for this peer.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT(\STX\f\EOT\DC2\ACK\240\v\EOT\234\v\SUB\n\
+    \\ENQ\EOT(\STX\f\EOT\DC2\ACK\156\f\EOT\150\f\SUB\n\
     \\r\n\
-    \\ENQ\EOT(\STX\f\ENQ\DC2\EOT\240\v\EOT\t\n\
+    \\ENQ\EOT(\STX\f\ENQ\DC2\EOT\156\f\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT(\STX\f\SOH\DC2\EOT\240\v\n\
+    \\ENQ\EOT(\STX\f\SOH\DC2\EOT\156\f\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT(\STX\f\ETX\DC2\EOT\240\v\EM\ESC\n\
+    \\ENQ\EOT(\STX\f\ETX\DC2\EOT\156\f\EM\ESC\n\
     \\f\n\
-    \\STX\EOT)\DC2\ACK\243\v\NUL\249\v\SOH\n\
+    \\STX\EOT)\DC2\ACK\159\f\NUL\165\f\SOH\n\
     \\v\n\
-    \\ETX\EOT)\SOH\DC2\EOT\243\v\b\CAN\n\
+    \\ETX\EOT)\SOH\DC2\EOT\159\f\b\CAN\n\
     \F\n\
-    \\EOT\EOT)\STX\NUL\DC2\EOT\245\v\EOT\EM\SUB8 The unix timestamp in seconds when the error occurred.\n\
+    \\EOT\EOT)\STX\NUL\DC2\EOT\161\f\EOT\EM\SUB8 The unix timestamp in seconds when the error occurred.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT)\STX\NUL\EOT\DC2\ACK\245\v\EOT\243\v\SUB\n\
+    \\ENQ\EOT)\STX\NUL\EOT\DC2\ACK\161\f\EOT\159\f\SUB\n\
     \\r\n\
-    \\ENQ\EOT)\STX\NUL\ENQ\DC2\EOT\245\v\EOT\n\
+    \\ENQ\EOT)\STX\NUL\ENQ\DC2\EOT\161\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT)\STX\NUL\SOH\DC2\EOT\245\v\v\DC4\n\
+    \\ENQ\EOT)\STX\NUL\SOH\DC2\EOT\161\f\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT)\STX\NUL\ETX\DC2\EOT\245\v\ETB\CAN\n\
+    \\ENQ\EOT)\STX\NUL\ETX\DC2\EOT\161\f\ETB\CAN\n\
     \H\n\
-    \\EOT\EOT)\STX\SOH\DC2\EOT\248\v\EOT\NAK\SUB: The string representation of the error sent by our peer.\n\
+    \\EOT\EOT)\STX\SOH\DC2\EOT\164\f\EOT\NAK\SUB: The string representation of the error sent by our peer.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT)\STX\SOH\EOT\DC2\ACK\248\v\EOT\245\v\EM\n\
+    \\ENQ\EOT)\STX\SOH\EOT\DC2\ACK\164\f\EOT\161\f\EM\n\
     \\r\n\
-    \\ENQ\EOT)\STX\SOH\ENQ\DC2\EOT\248\v\EOT\n\
+    \\ENQ\EOT)\STX\SOH\ENQ\DC2\EOT\164\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT)\STX\SOH\SOH\DC2\EOT\248\v\v\DLE\n\
+    \\ENQ\EOT)\STX\SOH\SOH\DC2\EOT\164\f\v\DLE\n\
     \\r\n\
-    \\ENQ\EOT)\STX\SOH\ETX\DC2\EOT\248\v\DC3\DC4\n\
+    \\ENQ\EOT)\STX\SOH\ETX\DC2\EOT\164\f\DC3\DC4\n\
     \\f\n\
-    \\STX\EOT*\DC2\ACK\251\v\NUL\130\f\SOH\n\
+    \\STX\EOT*\DC2\ACK\167\f\NUL\174\f\SOH\n\
     \\v\n\
-    \\ETX\EOT*\SOH\DC2\EOT\251\v\b\CAN\n\
+    \\ETX\EOT*\SOH\DC2\EOT\167\f\b\CAN\n\
     \\173\SOH\n\
-    \\EOT\EOT*\STX\NUL\DC2\EOT\129\f\EOT\SUB\SUB\158\SOH\n\
+    \\EOT\EOT*\STX\NUL\DC2\EOT\173\f\EOT\SUB\SUB\158\SOH\n\
     \If true, only the last error that our peer sent us will be returned with\n\
     \the peer's information, rather than the full set of historic errors we have\n\
     \stored.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT*\STX\NUL\EOT\DC2\ACK\129\f\EOT\251\v\SUB\n\
+    \\ENQ\EOT*\STX\NUL\EOT\DC2\ACK\173\f\EOT\167\f\SUB\n\
     \\r\n\
-    \\ENQ\EOT*\STX\NUL\ENQ\DC2\EOT\129\f\EOT\b\n\
+    \\ENQ\EOT*\STX\NUL\ENQ\DC2\EOT\173\f\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT*\STX\NUL\SOH\DC2\EOT\129\f\t\NAK\n\
+    \\ENQ\EOT*\STX\NUL\SOH\DC2\EOT\173\f\t\NAK\n\
     \\r\n\
-    \\ENQ\EOT*\STX\NUL\ETX\DC2\EOT\129\f\CAN\EM\n\
+    \\ENQ\EOT*\STX\NUL\ETX\DC2\EOT\173\f\CAN\EM\n\
     \\f\n\
-    \\STX\EOT+\DC2\ACK\131\f\NUL\134\f\SOH\n\
+    \\STX\EOT+\DC2\ACK\175\f\NUL\178\f\SOH\n\
     \\v\n\
-    \\ETX\EOT+\SOH\DC2\EOT\131\f\b\EM\n\
+    \\ETX\EOT+\SOH\DC2\EOT\175\f\b\EM\n\
     \5\n\
-    \\EOT\EOT+\STX\NUL\DC2\EOT\133\f\EOT\FS\SUB' The list of currently connected peers\n\
+    \\EOT\EOT+\STX\NUL\DC2\EOT\177\f\EOT\FS\SUB' The list of currently connected peers\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT+\STX\NUL\EOT\DC2\EOT\133\f\EOT\f\n\
+    \\ENQ\EOT+\STX\NUL\EOT\DC2\EOT\177\f\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT+\STX\NUL\ACK\DC2\EOT\133\f\r\DC1\n\
+    \\ENQ\EOT+\STX\NUL\ACK\DC2\EOT\177\f\r\DC1\n\
     \\r\n\
-    \\ENQ\EOT+\STX\NUL\SOH\DC2\EOT\133\f\DC2\ETB\n\
+    \\ENQ\EOT+\STX\NUL\SOH\DC2\EOT\177\f\DC2\ETB\n\
     \\r\n\
-    \\ENQ\EOT+\STX\NUL\ETX\DC2\EOT\133\f\SUB\ESC\n\
+    \\ENQ\EOT+\STX\NUL\ETX\DC2\EOT\177\f\SUB\ESC\n\
     \\f\n\
-    \\STX\EOT,\DC2\ACK\136\f\NUL\137\f\SOH\n\
+    \\STX\EOT,\DC2\ACK\180\f\NUL\181\f\SOH\n\
     \\v\n\
-    \\ETX\EOT,\SOH\DC2\EOT\136\f\b\GS\n\
+    \\ETX\EOT,\SOH\DC2\EOT\180\f\b\GS\n\
     \\f\n\
-    \\STX\EOT-\DC2\ACK\139\f\NUL\149\f\SOH\n\
+    \\STX\EOT-\DC2\ACK\183\f\NUL\193\f\SOH\n\
     \\v\n\
-    \\ETX\EOT-\SOH\DC2\EOT\139\f\b\DC1\n\
+    \\ETX\EOT-\SOH\DC2\EOT\183\f\b\DC1\n\
     \0\n\
-    \\EOT\EOT-\STX\NUL\DC2\EOT\141\f\EOT\ETB\SUB\" The identity pubkey of the peer.\n\
+    \\EOT\EOT-\STX\NUL\DC2\EOT\185\f\EOT\ETB\SUB\" The identity pubkey of the peer.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT-\STX\NUL\EOT\DC2\ACK\141\f\EOT\139\f\DC3\n\
+    \\ENQ\EOT-\STX\NUL\EOT\DC2\ACK\185\f\EOT\183\f\DC3\n\
     \\r\n\
-    \\ENQ\EOT-\STX\NUL\ENQ\DC2\EOT\141\f\EOT\n\
+    \\ENQ\EOT-\STX\NUL\ENQ\DC2\EOT\185\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT-\STX\NUL\SOH\DC2\EOT\141\f\v\DC2\n\
+    \\ENQ\EOT-\STX\NUL\SOH\DC2\EOT\185\f\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT-\STX\NUL\ETX\DC2\EOT\141\f\NAK\SYN\n\
+    \\ENQ\EOT-\STX\NUL\ETX\DC2\EOT\185\f\NAK\SYN\n\
     \\SO\n\
-    \\EOT\EOT-\EOT\NUL\DC2\ACK\143\f\EOT\146\f\ENQ\n\
+    \\EOT\EOT-\EOT\NUL\DC2\ACK\187\f\EOT\190\f\ENQ\n\
     \\r\n\
-    \\ENQ\EOT-\EOT\NUL\SOH\DC2\EOT\143\f\t\DC2\n\
+    \\ENQ\EOT-\EOT\NUL\SOH\DC2\EOT\187\f\t\DC2\n\
     \\SO\n\
-    \\ACK\EOT-\EOT\NUL\STX\NUL\DC2\EOT\144\f\b\CAN\n\
+    \\ACK\EOT-\EOT\NUL\STX\NUL\DC2\EOT\188\f\b\CAN\n\
     \\SI\n\
-    \\a\EOT-\EOT\NUL\STX\NUL\SOH\DC2\EOT\144\f\b\DC3\n\
+    \\a\EOT-\EOT\NUL\STX\NUL\SOH\DC2\EOT\188\f\b\DC3\n\
     \\SI\n\
-    \\a\EOT-\EOT\NUL\STX\NUL\STX\DC2\EOT\144\f\SYN\ETB\n\
+    \\a\EOT-\EOT\NUL\STX\NUL\STX\DC2\EOT\188\f\SYN\ETB\n\
     \\SO\n\
-    \\ACK\EOT-\EOT\NUL\STX\SOH\DC2\EOT\145\f\b\EM\n\
+    \\ACK\EOT-\EOT\NUL\STX\SOH\DC2\EOT\189\f\b\EM\n\
     \\SI\n\
-    \\a\EOT-\EOT\NUL\STX\SOH\SOH\DC2\EOT\145\f\b\DC4\n\
+    \\a\EOT-\EOT\NUL\STX\SOH\SOH\DC2\EOT\189\f\b\DC4\n\
     \\SI\n\
-    \\a\EOT-\EOT\NUL\STX\SOH\STX\DC2\EOT\145\f\ETB\CAN\n\
+    \\a\EOT-\EOT\NUL\STX\SOH\STX\DC2\EOT\189\f\ETB\CAN\n\
     \\f\n\
-    \\EOT\EOT-\STX\SOH\DC2\EOT\148\f\EOT\ETB\n\
+    \\EOT\EOT-\STX\SOH\DC2\EOT\192\f\EOT\ETB\n\
     \\SI\n\
-    \\ENQ\EOT-\STX\SOH\EOT\DC2\ACK\148\f\EOT\146\f\ENQ\n\
+    \\ENQ\EOT-\STX\SOH\EOT\DC2\ACK\192\f\EOT\190\f\ENQ\n\
     \\r\n\
-    \\ENQ\EOT-\STX\SOH\ACK\DC2\EOT\148\f\EOT\r\n\
+    \\ENQ\EOT-\STX\SOH\ACK\DC2\EOT\192\f\EOT\r\n\
     \\r\n\
-    \\ENQ\EOT-\STX\SOH\SOH\DC2\EOT\148\f\SO\DC2\n\
+    \\ENQ\EOT-\STX\SOH\SOH\DC2\EOT\192\f\SO\DC2\n\
     \\r\n\
-    \\ENQ\EOT-\STX\SOH\ETX\DC2\EOT\148\f\NAK\SYN\n\
+    \\ENQ\EOT-\STX\SOH\ETX\DC2\EOT\192\f\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT.\DC2\ACK\151\f\NUL\152\f\SOH\n\
+    \\STX\EOT.\DC2\ACK\195\f\NUL\196\f\SOH\n\
     \\v\n\
-    \\ETX\EOT.\SOH\DC2\EOT\151\f\b\SYN\n\
+    \\ETX\EOT.\SOH\DC2\EOT\195\f\b\SYN\n\
     \\f\n\
-    \\STX\EOT/\DC2\ACK\153\f\NUL\215\f\SOH\n\
+    \\STX\EOT/\DC2\ACK\197\f\NUL\131\r\SOH\n\
     \\v\n\
-    \\ETX\EOT/\SOH\DC2\EOT\153\f\b\ETB\n\
+    \\ETX\EOT/\SOH\DC2\EOT\197\f\b\ETB\n\
     \I\n\
-    \\EOT\EOT/\STX\NUL\DC2\EOT\155\f\EOT\CAN\SUB; The version of the LND software that the node is running.\n\
+    \\EOT\EOT/\STX\NUL\DC2\EOT\199\f\EOT\CAN\SUB; The version of the LND software that the node is running.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\NUL\EOT\DC2\ACK\155\f\EOT\153\f\EM\n\
+    \\ENQ\EOT/\STX\NUL\EOT\DC2\ACK\199\f\EOT\197\f\EM\n\
     \\r\n\
-    \\ENQ\EOT/\STX\NUL\ENQ\DC2\EOT\155\f\EOT\n\
+    \\ENQ\EOT/\STX\NUL\ENQ\DC2\EOT\199\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\NUL\SOH\DC2\EOT\155\f\v\DC2\n\
+    \\ENQ\EOT/\STX\NUL\SOH\DC2\EOT\199\f\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT/\STX\NUL\ETX\DC2\EOT\155\f\NAK\ETB\n\
+    \\ENQ\EOT/\STX\NUL\ETX\DC2\EOT\199\f\NAK\ETB\n\
     \F\n\
-    \\EOT\EOT/\STX\SOH\DC2\EOT\158\f\EOT\FS\SUB8 The SHA1 commit hash that the daemon is compiled with.\n\
+    \\EOT\EOT/\STX\SOH\DC2\EOT\202\f\EOT\FS\SUB8 The SHA1 commit hash that the daemon is compiled with.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\SOH\EOT\DC2\ACK\158\f\EOT\155\f\CAN\n\
+    \\ENQ\EOT/\STX\SOH\EOT\DC2\ACK\202\f\EOT\199\f\CAN\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SOH\ENQ\DC2\EOT\158\f\EOT\n\
+    \\ENQ\EOT/\STX\SOH\ENQ\DC2\EOT\202\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SOH\SOH\DC2\EOT\158\f\v\SYN\n\
+    \\ENQ\EOT/\STX\SOH\SOH\DC2\EOT\202\f\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SOH\ETX\DC2\EOT\158\f\EM\ESC\n\
+    \\ENQ\EOT/\STX\SOH\ETX\DC2\EOT\202\f\EM\ESC\n\
     \8\n\
-    \\EOT\EOT/\STX\STX\DC2\EOT\161\f\EOT\US\SUB* The identity pubkey of the current node.\n\
+    \\EOT\EOT/\STX\STX\DC2\EOT\205\f\EOT\US\SUB* The identity pubkey of the current node.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\STX\EOT\DC2\ACK\161\f\EOT\158\f\FS\n\
+    \\ENQ\EOT/\STX\STX\EOT\DC2\ACK\205\f\EOT\202\f\FS\n\
     \\r\n\
-    \\ENQ\EOT/\STX\STX\ENQ\DC2\EOT\161\f\EOT\n\
+    \\ENQ\EOT/\STX\STX\ENQ\DC2\EOT\205\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\STX\SOH\DC2\EOT\161\f\v\SUB\n\
+    \\ENQ\EOT/\STX\STX\SOH\DC2\EOT\205\f\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT/\STX\STX\ETX\DC2\EOT\161\f\GS\RS\n\
+    \\ENQ\EOT/\STX\STX\ETX\DC2\EOT\205\f\GS\RS\n\
     \H\n\
-    \\EOT\EOT/\STX\ETX\DC2\EOT\164\f\EOT\NAK\SUB: If applicable, the alias of the current node, e.g. \"bob\"\n\
+    \\EOT\EOT/\STX\ETX\DC2\EOT\208\f\EOT\NAK\SUB: If applicable, the alias of the current node, e.g. \"bob\"\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\ETX\EOT\DC2\ACK\164\f\EOT\161\f\US\n\
+    \\ENQ\EOT/\STX\ETX\EOT\DC2\ACK\208\f\EOT\205\f\US\n\
     \\r\n\
-    \\ENQ\EOT/\STX\ETX\ENQ\DC2\EOT\164\f\EOT\n\
+    \\ENQ\EOT/\STX\ETX\ENQ\DC2\EOT\208\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\ETX\SOH\DC2\EOT\164\f\v\DLE\n\
+    \\ENQ\EOT/\STX\ETX\SOH\DC2\EOT\208\f\v\DLE\n\
     \\r\n\
-    \\ENQ\EOT/\STX\ETX\ETX\DC2\EOT\164\f\DC3\DC4\n\
+    \\ENQ\EOT/\STX\ETX\ETX\DC2\EOT\208\f\DC3\DC4\n\
     \@\n\
-    \\EOT\EOT/\STX\EOT\DC2\EOT\167\f\EOT\SYN\SUB2 The color of the current node in hex code format\n\
+    \\EOT\EOT/\STX\EOT\DC2\EOT\211\f\EOT\SYN\SUB2 The color of the current node in hex code format\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\EOT\EOT\DC2\ACK\167\f\EOT\164\f\NAK\n\
+    \\ENQ\EOT/\STX\EOT\EOT\DC2\ACK\211\f\EOT\208\f\NAK\n\
     \\r\n\
-    \\ENQ\EOT/\STX\EOT\ENQ\DC2\EOT\167\f\EOT\n\
+    \\ENQ\EOT/\STX\EOT\ENQ\DC2\EOT\211\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\EOT\SOH\DC2\EOT\167\f\v\DLE\n\
+    \\ENQ\EOT/\STX\EOT\SOH\DC2\EOT\211\f\v\DLE\n\
     \\r\n\
-    \\ENQ\EOT/\STX\EOT\ETX\DC2\EOT\167\f\DC3\NAK\n\
+    \\ENQ\EOT/\STX\EOT\ETX\DC2\EOT\211\f\DC3\NAK\n\
     \*\n\
-    \\EOT\EOT/\STX\ENQ\DC2\EOT\170\f\EOT$\SUB\FS Number of pending channels\n\
+    \\EOT\EOT/\STX\ENQ\DC2\EOT\214\f\EOT$\SUB\FS Number of pending channels\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\ENQ\EOT\DC2\ACK\170\f\EOT\167\f\SYN\n\
+    \\ENQ\EOT/\STX\ENQ\EOT\DC2\ACK\214\f\EOT\211\f\SYN\n\
     \\r\n\
-    \\ENQ\EOT/\STX\ENQ\ENQ\DC2\EOT\170\f\EOT\n\
+    \\ENQ\EOT/\STX\ENQ\ENQ\DC2\EOT\214\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\ENQ\SOH\DC2\EOT\170\f\v\US\n\
+    \\ENQ\EOT/\STX\ENQ\SOH\DC2\EOT\214\f\v\US\n\
     \\r\n\
-    \\ENQ\EOT/\STX\ENQ\ETX\DC2\EOT\170\f\"#\n\
+    \\ENQ\EOT/\STX\ENQ\ETX\DC2\EOT\214\f\"#\n\
     \)\n\
-    \\EOT\EOT/\STX\ACK\DC2\EOT\173\f\EOT#\SUB\ESC Number of active channels\n\
+    \\EOT\EOT/\STX\ACK\DC2\EOT\217\f\EOT#\SUB\ESC Number of active channels\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\ACK\EOT\DC2\ACK\173\f\EOT\170\f$\n\
+    \\ENQ\EOT/\STX\ACK\EOT\DC2\ACK\217\f\EOT\214\f$\n\
     \\r\n\
-    \\ENQ\EOT/\STX\ACK\ENQ\DC2\EOT\173\f\EOT\n\
+    \\ENQ\EOT/\STX\ACK\ENQ\DC2\EOT\217\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\ACK\SOH\DC2\EOT\173\f\v\RS\n\
+    \\ENQ\EOT/\STX\ACK\SOH\DC2\EOT\217\f\v\RS\n\
     \\r\n\
-    \\ENQ\EOT/\STX\ACK\ETX\DC2\EOT\173\f!\"\n\
+    \\ENQ\EOT/\STX\ACK\ETX\DC2\EOT\217\f!\"\n\
     \+\n\
-    \\EOT\EOT/\STX\a\DC2\EOT\176\f\EOT&\SUB\GS Number of inactive channels\n\
+    \\EOT\EOT/\STX\a\DC2\EOT\220\f\EOT&\SUB\GS Number of inactive channels\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\a\EOT\DC2\ACK\176\f\EOT\173\f#\n\
+    \\ENQ\EOT/\STX\a\EOT\DC2\ACK\220\f\EOT\217\f#\n\
     \\r\n\
-    \\ENQ\EOT/\STX\a\ENQ\DC2\EOT\176\f\EOT\n\
+    \\ENQ\EOT/\STX\a\ENQ\DC2\EOT\220\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\a\SOH\DC2\EOT\176\f\v \n\
+    \\ENQ\EOT/\STX\a\SOH\DC2\EOT\220\f\v \n\
     \\r\n\
-    \\ENQ\EOT/\STX\a\ETX\DC2\EOT\176\f#%\n\
+    \\ENQ\EOT/\STX\a\ETX\DC2\EOT\220\f#%\n\
     \\US\n\
-    \\EOT\EOT/\STX\b\DC2\EOT\179\f\EOT\EM\SUB\DC1 Number of peers\n\
+    \\EOT\EOT/\STX\b\DC2\EOT\223\f\EOT\EM\SUB\DC1 Number of peers\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\b\EOT\DC2\ACK\179\f\EOT\176\f&\n\
+    \\ENQ\EOT/\STX\b\EOT\DC2\ACK\223\f\EOT\220\f&\n\
     \\r\n\
-    \\ENQ\EOT/\STX\b\ENQ\DC2\EOT\179\f\EOT\n\
+    \\ENQ\EOT/\STX\b\ENQ\DC2\EOT\223\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\b\SOH\DC2\EOT\179\f\v\DC4\n\
+    \\ENQ\EOT/\STX\b\SOH\DC2\EOT\223\f\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT/\STX\b\ETX\DC2\EOT\179\f\ETB\CAN\n\
+    \\ENQ\EOT/\STX\b\ETX\DC2\EOT\223\f\ETB\CAN\n\
     \G\n\
-    \\EOT\EOT/\STX\t\DC2\EOT\182\f\EOT\FS\SUB9 The node's current view of the height of the best block\n\
+    \\EOT\EOT/\STX\t\DC2\EOT\226\f\EOT\FS\SUB9 The node's current view of the height of the best block\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\t\EOT\DC2\ACK\182\f\EOT\179\f\EM\n\
+    \\ENQ\EOT/\STX\t\EOT\DC2\ACK\226\f\EOT\223\f\EM\n\
     \\r\n\
-    \\ENQ\EOT/\STX\t\ENQ\DC2\EOT\182\f\EOT\n\
+    \\ENQ\EOT/\STX\t\ENQ\DC2\EOT\226\f\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\t\SOH\DC2\EOT\182\f\v\ETB\n\
+    \\ENQ\EOT/\STX\t\SOH\DC2\EOT\226\f\v\ETB\n\
     \\r\n\
-    \\ENQ\EOT/\STX\t\ETX\DC2\EOT\182\f\SUB\ESC\n\
+    \\ENQ\EOT/\STX\t\ETX\DC2\EOT\226\f\SUB\ESC\n\
     \E\n\
     \\EOT\EOT/\STX\n\
-    \\DC2\EOT\185\f\EOT\SUB\SUB7 The node's current view of the hash of the best block\n\
+    \\DC2\EOT\229\f\EOT\SUB\SUB7 The node's current view of the hash of the best block\n\
     \\n\
     \\SI\n\
     \\ENQ\EOT/\STX\n\
-    \\EOT\DC2\ACK\185\f\EOT\182\f\FS\n\
+    \\EOT\DC2\ACK\229\f\EOT\226\f\FS\n\
     \\r\n\
     \\ENQ\EOT/\STX\n\
-    \\ENQ\DC2\EOT\185\f\EOT\n\
+    \\ENQ\DC2\EOT\229\f\EOT\n\
     \\n\
     \\r\n\
     \\ENQ\EOT/\STX\n\
-    \\SOH\DC2\EOT\185\f\v\NAK\n\
+    \\SOH\DC2\EOT\229\f\v\NAK\n\
     \\r\n\
     \\ENQ\EOT/\STX\n\
-    \\ETX\DC2\EOT\185\f\CAN\EM\n\
+    \\ETX\DC2\EOT\229\f\CAN\EM\n\
     \?\n\
-    \\EOT\EOT/\STX\v\DC2\EOT\188\f\EOT%\SUB1 Timestamp of the block best known to the wallet\n\
+    \\EOT\EOT/\STX\v\DC2\EOT\232\f\EOT%\SUB1 Timestamp of the block best known to the wallet\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\v\EOT\DC2\ACK\188\f\EOT\185\f\SUB\n\
+    \\ENQ\EOT/\STX\v\EOT\DC2\ACK\232\f\EOT\229\f\SUB\n\
     \\r\n\
-    \\ENQ\EOT/\STX\v\ENQ\DC2\EOT\188\f\EOT\t\n\
+    \\ENQ\EOT/\STX\v\ENQ\DC2\EOT\232\f\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT/\STX\v\SOH\DC2\EOT\188\f\n\
+    \\ENQ\EOT/\STX\v\SOH\DC2\EOT\232\f\n\
     \\US\n\
     \\r\n\
-    \\ENQ\EOT/\STX\v\ETX\DC2\EOT\188\f\"$\n\
+    \\ENQ\EOT/\STX\v\ETX\DC2\EOT\232\f\"$\n\
     \E\n\
-    \\EOT\EOT/\STX\f\DC2\EOT\191\f\EOT\GS\SUB7 Whether the wallet's view is synced to the main chain\n\
+    \\EOT\EOT/\STX\f\DC2\EOT\235\f\EOT\GS\SUB7 Whether the wallet's view is synced to the main chain\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\f\EOT\DC2\ACK\191\f\EOT\188\f%\n\
+    \\ENQ\EOT/\STX\f\EOT\DC2\ACK\235\f\EOT\232\f%\n\
     \\r\n\
-    \\ENQ\EOT/\STX\f\ENQ\DC2\EOT\191\f\EOT\b\n\
+    \\ENQ\EOT/\STX\f\ENQ\DC2\EOT\235\f\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT/\STX\f\SOH\DC2\EOT\191\f\t\CAN\n\
+    \\ENQ\EOT/\STX\f\SOH\DC2\EOT\235\f\t\CAN\n\
     \\r\n\
-    \\ENQ\EOT/\STX\f\ETX\DC2\EOT\191\f\ESC\FS\n\
+    \\ENQ\EOT/\STX\f\ETX\DC2\EOT\235\f\ESC\FS\n\
     \S\n\
-    \\EOT\EOT/\STX\r\DC2\EOT\194\f\EOT\RS\SUBE Whether we consider ourselves synced with the public channel graph.\n\
+    \\EOT\EOT/\STX\r\DC2\EOT\238\f\EOT\RS\SUBE Whether we consider ourselves synced with the public channel graph.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\r\EOT\DC2\ACK\194\f\EOT\191\f\GS\n\
+    \\ENQ\EOT/\STX\r\EOT\DC2\ACK\238\f\EOT\235\f\GS\n\
     \\r\n\
-    \\ENQ\EOT/\STX\r\ENQ\DC2\EOT\194\f\EOT\b\n\
+    \\ENQ\EOT/\STX\r\ENQ\DC2\EOT\238\f\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT/\STX\r\SOH\DC2\EOT\194\f\t\CAN\n\
+    \\ENQ\EOT/\STX\r\SOH\DC2\EOT\238\f\t\CAN\n\
     \\r\n\
-    \\ENQ\EOT/\STX\r\ETX\DC2\EOT\194\f\ESC\GS\n\
+    \\ENQ\EOT/\STX\r\ETX\DC2\EOT\238\f\ESC\GS\n\
     \\135\SOH\n\
-    \\EOT\EOT/\STX\SO\DC2\EOT\200\f\EOT*\SUBy\n\
+    \\EOT\EOT/\STX\SO\DC2\EOT\244\f\EOT*\SUBy\n\
     \Whether the current node is connected to testnet. This field is\n\
     \deprecated and the network field should be used instead\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\SO\EOT\DC2\ACK\200\f\EOT\194\f\RS\n\
+    \\ENQ\EOT/\STX\SO\EOT\DC2\ACK\244\f\EOT\238\f\RS\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SO\ENQ\DC2\EOT\200\f\EOT\b\n\
+    \\ENQ\EOT/\STX\SO\ENQ\DC2\EOT\244\f\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SO\SOH\DC2\EOT\200\f\t\DLE\n\
+    \\ENQ\EOT/\STX\SO\SOH\DC2\EOT\244\f\t\DLE\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SO\ETX\DC2\EOT\200\f\DC3\NAK\n\
+    \\ENQ\EOT/\STX\SO\ETX\DC2\EOT\244\f\DC3\NAK\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SO\b\DC2\EOT\200\f\SYN)\n\
+    \\ENQ\EOT/\STX\SO\b\DC2\EOT\244\f\SYN)\n\
     \\SO\n\
-    \\ACK\EOT/\STX\SO\b\ETX\DC2\EOT\200\f\ETB(\n\
+    \\ACK\EOT/\STX\SO\b\ETX\DC2\EOT\244\f\ETB(\n\
     \\v\n\
-    \\ETX\EOT/\t\DC2\EOT\202\f\EOT\DLE\n\
+    \\ETX\EOT/\t\DC2\EOT\246\f\EOT\DLE\n\
     \\f\n\
-    \\EOT\EOT/\t\NUL\DC2\EOT\202\f\r\SI\n\
+    \\EOT\EOT/\t\NUL\DC2\EOT\246\f\r\SI\n\
     \\r\n\
-    \\ENQ\EOT/\t\NUL\SOH\DC2\EOT\202\f\r\SI\n\
+    \\ENQ\EOT/\t\NUL\SOH\DC2\EOT\246\f\r\SI\n\
     \\r\n\
-    \\ENQ\EOT/\t\NUL\STX\DC2\EOT\202\f\r\SI\n\
+    \\ENQ\EOT/\t\NUL\STX\DC2\EOT\246\f\r\SI\n\
     \@\n\
-    \\EOT\EOT/\STX\SI\DC2\EOT\205\f\EOT\US\SUB2 A list of active chains the node is connected to\n\
+    \\EOT\EOT/\STX\SI\DC2\EOT\249\f\EOT\US\SUB2 A list of active chains the node is connected to\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SI\EOT\DC2\EOT\205\f\EOT\f\n\
+    \\ENQ\EOT/\STX\SI\EOT\DC2\EOT\249\f\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SI\ACK\DC2\EOT\205\f\r\DC2\n\
+    \\ENQ\EOT/\STX\SI\ACK\DC2\EOT\249\f\r\DC2\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SI\SOH\DC2\EOT\205\f\DC3\EM\n\
+    \\ENQ\EOT/\STX\SI\SOH\DC2\EOT\249\f\DC3\EM\n\
     \\r\n\
-    \\ENQ\EOT/\STX\SI\ETX\DC2\EOT\205\f\FS\RS\n\
+    \\ENQ\EOT/\STX\SI\ETX\DC2\EOT\249\f\FS\RS\n\
     \-\n\
-    \\EOT\EOT/\STX\DLE\DC2\EOT\208\f\EOT\RS\SUB\US The URIs of the current node.\n\
+    \\EOT\EOT/\STX\DLE\DC2\EOT\252\f\EOT\RS\SUB\US The URIs of the current node.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT/\STX\DLE\EOT\DC2\EOT\208\f\EOT\f\n\
+    \\ENQ\EOT/\STX\DLE\EOT\DC2\EOT\252\f\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT/\STX\DLE\ENQ\DC2\EOT\208\f\r\DC3\n\
+    \\ENQ\EOT/\STX\DLE\ENQ\DC2\EOT\252\f\r\DC3\n\
     \\r\n\
-    \\ENQ\EOT/\STX\DLE\SOH\DC2\EOT\208\f\DC4\CAN\n\
+    \\ENQ\EOT/\STX\DLE\SOH\DC2\EOT\252\f\DC4\CAN\n\
     \\r\n\
-    \\ENQ\EOT/\STX\DLE\ETX\DC2\EOT\208\f\ESC\GS\n\
+    \\ENQ\EOT/\STX\DLE\ETX\DC2\EOT\252\f\ESC\GS\n\
     \k\n\
-    \\EOT\EOT/\STX\DC1\DC2\EOT\214\f\EOT'\SUB]\n\
+    \\EOT\EOT/\STX\DC1\DC2\EOT\130\r\EOT'\SUB]\n\
     \Features that our node has advertised in our init message, node\n\
     \announcements and invoices.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT/\STX\DC1\EOT\DC2\ACK\214\f\EOT\208\f\RS\n\
+    \\ENQ\EOT/\STX\DC1\EOT\DC2\ACK\130\r\EOT\252\f\RS\n\
     \\r\n\
-    \\ENQ\EOT/\STX\DC1\ACK\DC2\EOT\214\f\EOT\CAN\n\
+    \\ENQ\EOT/\STX\DC1\ACK\DC2\EOT\130\r\EOT\CAN\n\
     \\r\n\
-    \\ENQ\EOT/\STX\DC1\SOH\DC2\EOT\214\f\EM!\n\
+    \\ENQ\EOT/\STX\DC1\SOH\DC2\EOT\130\r\EM!\n\
     \\r\n\
-    \\ENQ\EOT/\STX\DC1\ETX\DC2\EOT\214\f$&\n\
+    \\ENQ\EOT/\STX\DC1\ETX\DC2\EOT\130\r$&\n\
     \\f\n\
-    \\STX\EOT0\DC2\ACK\217\f\NUL\218\f\SOH\n\
+    \\STX\EOT0\DC2\ACK\133\r\NUL\134\r\SOH\n\
     \\v\n\
-    \\ETX\EOT0\SOH\DC2\EOT\217\f\b\RS\n\
+    \\ETX\EOT0\SOH\DC2\EOT\133\r\b\RS\n\
     \\f\n\
-    \\STX\EOT1\DC2\ACK\219\f\NUL\228\f\SOH\n\
+    \\STX\EOT1\DC2\ACK\135\r\NUL\144\r\SOH\n\
     \\v\n\
-    \\ETX\EOT1\SOH\DC2\EOT\219\f\b\US\n\
+    \\ETX\EOT1\SOH\DC2\EOT\135\r\b\US\n\
     \6\n\
-    \\EOT\EOT1\STX\NUL\DC2\EOT\221\f\EOT\ESC\SUB( Whether the wallet is in recovery mode\n\
+    \\EOT\EOT1\STX\NUL\DC2\EOT\137\r\EOT\ESC\SUB( Whether the wallet is in recovery mode\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT1\STX\NUL\EOT\DC2\ACK\221\f\EOT\219\f!\n\
+    \\ENQ\EOT1\STX\NUL\EOT\DC2\ACK\137\r\EOT\135\r!\n\
     \\r\n\
-    \\ENQ\EOT1\STX\NUL\ENQ\DC2\EOT\221\f\EOT\b\n\
+    \\ENQ\EOT1\STX\NUL\ENQ\DC2\EOT\137\r\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT1\STX\NUL\SOH\DC2\EOT\221\f\t\SYN\n\
+    \\ENQ\EOT1\STX\NUL\SOH\DC2\EOT\137\r\t\SYN\n\
     \\r\n\
-    \\ENQ\EOT1\STX\NUL\ETX\DC2\EOT\221\f\EM\SUB\n\
+    \\ENQ\EOT1\STX\NUL\ETX\DC2\EOT\137\r\EM\SUB\n\
     \@\n\
-    \\EOT\EOT1\STX\SOH\DC2\EOT\224\f\EOT\US\SUB2 Whether the wallet recovery progress is finished\n\
+    \\EOT\EOT1\STX\SOH\DC2\EOT\140\r\EOT\US\SUB2 Whether the wallet recovery progress is finished\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT1\STX\SOH\EOT\DC2\ACK\224\f\EOT\221\f\ESC\n\
+    \\ENQ\EOT1\STX\SOH\EOT\DC2\ACK\140\r\EOT\137\r\ESC\n\
     \\r\n\
-    \\ENQ\EOT1\STX\SOH\ENQ\DC2\EOT\224\f\EOT\b\n\
+    \\ENQ\EOT1\STX\SOH\ENQ\DC2\EOT\140\r\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT1\STX\SOH\SOH\DC2\EOT\224\f\t\SUB\n\
+    \\ENQ\EOT1\STX\SOH\SOH\DC2\EOT\140\r\t\SUB\n\
     \\r\n\
-    \\ENQ\EOT1\STX\SOH\ETX\DC2\EOT\224\f\GS\RS\n\
+    \\ENQ\EOT1\STX\SOH\ETX\DC2\EOT\140\r\GS\RS\n\
     \;\n\
-    \\EOT\EOT1\STX\STX\DC2\EOT\227\f\EOT\CAN\SUB- The recovery progress, ranging from 0 to 1.\n\
+    \\EOT\EOT1\STX\STX\DC2\EOT\143\r\EOT\CAN\SUB- The recovery progress, ranging from 0 to 1.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT1\STX\STX\EOT\DC2\ACK\227\f\EOT\224\f\US\n\
+    \\ENQ\EOT1\STX\STX\EOT\DC2\ACK\143\r\EOT\140\r\US\n\
     \\r\n\
-    \\ENQ\EOT1\STX\STX\ENQ\DC2\EOT\227\f\EOT\n\
+    \\ENQ\EOT1\STX\STX\ENQ\DC2\EOT\143\r\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT1\STX\STX\SOH\DC2\EOT\227\f\v\DC3\n\
+    \\ENQ\EOT1\STX\STX\SOH\DC2\EOT\143\r\v\DC3\n\
     \\r\n\
-    \\ENQ\EOT1\STX\STX\ETX\DC2\EOT\227\f\SYN\ETB\n\
+    \\ENQ\EOT1\STX\STX\ETX\DC2\EOT\143\r\SYN\ETB\n\
     \\f\n\
-    \\STX\EOT2\DC2\ACK\230\f\NUL\236\f\SOH\n\
+    \\STX\EOT2\DC2\ACK\146\r\NUL\152\r\SOH\n\
     \\v\n\
-    \\ETX\EOT2\SOH\DC2\EOT\230\f\b\r\n\
+    \\ETX\EOT2\SOH\DC2\EOT\146\r\b\r\n\
     \D\n\
-    \\EOT\EOT2\STX\NUL\DC2\EOT\232\f\EOT\NAK\SUB6 The blockchain the node is on (eg bitcoin, litecoin)\n\
+    \\EOT\EOT2\STX\NUL\DC2\EOT\148\r\EOT\NAK\SUB6 The blockchain the node is on (eg bitcoin, litecoin)\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT2\STX\NUL\EOT\DC2\ACK\232\f\EOT\230\f\SI\n\
+    \\ENQ\EOT2\STX\NUL\EOT\DC2\ACK\148\r\EOT\146\r\SI\n\
     \\r\n\
-    \\ENQ\EOT2\STX\NUL\ENQ\DC2\EOT\232\f\EOT\n\
+    \\ENQ\EOT2\STX\NUL\ENQ\DC2\EOT\148\r\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT2\STX\NUL\SOH\DC2\EOT\232\f\v\DLE\n\
+    \\ENQ\EOT2\STX\NUL\SOH\DC2\EOT\148\r\v\DLE\n\
     \\r\n\
-    \\ENQ\EOT2\STX\NUL\ETX\DC2\EOT\232\f\DC3\DC4\n\
+    \\ENQ\EOT2\STX\NUL\ETX\DC2\EOT\148\r\DC3\DC4\n\
     \I\n\
-    \\EOT\EOT2\STX\SOH\DC2\EOT\235\f\EOT\ETB\SUB; The network the node is on (eg regtest, testnet, mainnet)\n\
+    \\EOT\EOT2\STX\SOH\DC2\EOT\151\r\EOT\ETB\SUB; The network the node is on (eg regtest, testnet, mainnet)\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT2\STX\SOH\EOT\DC2\ACK\235\f\EOT\232\f\NAK\n\
+    \\ENQ\EOT2\STX\SOH\EOT\DC2\ACK\151\r\EOT\148\r\NAK\n\
     \\r\n\
-    \\ENQ\EOT2\STX\SOH\ENQ\DC2\EOT\235\f\EOT\n\
+    \\ENQ\EOT2\STX\SOH\ENQ\DC2\EOT\151\r\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT2\STX\SOH\SOH\DC2\EOT\235\f\v\DC2\n\
+    \\ENQ\EOT2\STX\SOH\SOH\DC2\EOT\151\r\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT2\STX\SOH\ETX\DC2\EOT\235\f\NAK\SYN\n\
+    \\ENQ\EOT2\STX\SOH\ETX\DC2\EOT\151\r\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT3\DC2\ACK\238\f\NUL\243\f\SOH\n\
+    \\STX\EOT3\DC2\ACK\154\r\NUL\159\r\SOH\n\
     \\v\n\
-    \\ETX\EOT3\SOH\DC2\EOT\238\f\b\SUB\n\
+    \\ETX\EOT3\SOH\DC2\EOT\154\r\b\SUB\n\
     \\f\n\
-    \\EOT\EOT3\STX\NUL\DC2\EOT\239\f\EOT\CAN\n\
+    \\EOT\EOT3\STX\NUL\DC2\EOT\155\r\EOT\CAN\n\
     \\SI\n\
-    \\ENQ\EOT3\STX\NUL\EOT\DC2\ACK\239\f\EOT\238\f\FS\n\
+    \\ENQ\EOT3\STX\NUL\EOT\DC2\ACK\155\r\EOT\154\r\FS\n\
     \\r\n\
-    \\ENQ\EOT3\STX\NUL\ENQ\DC2\EOT\239\f\EOT\t\n\
+    \\ENQ\EOT3\STX\NUL\ENQ\DC2\EOT\155\r\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT3\STX\NUL\SOH\DC2\EOT\239\f\n\
+    \\ENQ\EOT3\STX\NUL\SOH\DC2\EOT\155\r\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT3\STX\NUL\ETX\DC2\EOT\239\f\SYN\ETB\n\
+    \\ENQ\EOT3\STX\NUL\ETX\DC2\EOT\155\r\SYN\ETB\n\
     \\f\n\
-    \\EOT\EOT3\STX\SOH\DC2\EOT\240\f\EOT\ESC\n\
+    \\EOT\EOT3\STX\SOH\DC2\EOT\156\r\EOT\ESC\n\
     \\SI\n\
-    \\ENQ\EOT3\STX\SOH\EOT\DC2\ACK\240\f\EOT\239\f\CAN\n\
+    \\ENQ\EOT3\STX\SOH\EOT\DC2\ACK\156\r\EOT\155\r\CAN\n\
     \\r\n\
-    \\ENQ\EOT3\STX\SOH\ENQ\DC2\EOT\240\f\EOT\t\n\
+    \\ENQ\EOT3\STX\SOH\ENQ\DC2\EOT\156\r\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT3\STX\SOH\SOH\DC2\EOT\240\f\n\
+    \\ENQ\EOT3\STX\SOH\SOH\DC2\EOT\156\r\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT3\STX\SOH\ETX\DC2\EOT\240\f\EM\SUB\n\
+    \\ENQ\EOT3\STX\SOH\ETX\DC2\EOT\156\r\EM\SUB\n\
     \\f\n\
-    \\EOT\EOT3\STX\STX\DC2\EOT\242\f\EOT\RS\n\
+    \\EOT\EOT3\STX\STX\DC2\EOT\158\r\EOT\RS\n\
     \\SI\n\
-    \\ENQ\EOT3\STX\STX\EOT\DC2\ACK\242\f\EOT\240\f\ESC\n\
+    \\ENQ\EOT3\STX\STX\EOT\DC2\ACK\158\r\EOT\156\r\ESC\n\
     \\r\n\
-    \\ENQ\EOT3\STX\STX\ENQ\DC2\EOT\242\f\EOT\n\
+    \\ENQ\EOT3\STX\STX\ENQ\DC2\EOT\158\r\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT3\STX\STX\SOH\DC2\EOT\242\f\v\EM\n\
+    \\ENQ\EOT3\STX\STX\SOH\DC2\EOT\158\r\v\EM\n\
     \\r\n\
-    \\ENQ\EOT3\STX\STX\ETX\DC2\EOT\242\f\FS\GS\n\
+    \\ENQ\EOT3\STX\STX\ETX\DC2\EOT\158\r\FS\GS\n\
     \\f\n\
-    \\STX\EOT4\DC2\ACK\245\f\NUL\247\f\SOH\n\
+    \\STX\EOT4\DC2\ACK\161\r\NUL\163\r\SOH\n\
     \\v\n\
-    \\ETX\EOT4\SOH\DC2\EOT\245\f\b\EM\n\
+    \\ETX\EOT4\SOH\DC2\EOT\161\r\b\EM\n\
     \\f\n\
-    \\EOT\EOT4\STX\NUL\DC2\EOT\246\f\EOT#\n\
+    \\EOT\EOT4\STX\NUL\DC2\EOT\162\r\EOT#\n\
     \\SI\n\
-    \\ENQ\EOT4\STX\NUL\EOT\DC2\ACK\246\f\EOT\245\f\ESC\n\
+    \\ENQ\EOT4\STX\NUL\EOT\DC2\ACK\162\r\EOT\161\r\ESC\n\
     \\r\n\
-    \\ENQ\EOT4\STX\NUL\ACK\DC2\EOT\246\f\EOT\DLE\n\
+    \\ENQ\EOT4\STX\NUL\ACK\DC2\EOT\162\r\EOT\DLE\n\
     \\r\n\
-    \\ENQ\EOT4\STX\NUL\SOH\DC2\EOT\246\f\DC1\RS\n\
+    \\ENQ\EOT4\STX\NUL\SOH\DC2\EOT\162\r\DC1\RS\n\
     \\r\n\
-    \\ENQ\EOT4\STX\NUL\ETX\DC2\EOT\246\f!\"\n\
+    \\ENQ\EOT4\STX\NUL\ETX\DC2\EOT\162\r!\"\n\
     \\f\n\
-    \\STX\EOT5\DC2\ACK\249\f\NUL\253\f\SOH\n\
+    \\STX\EOT5\DC2\ACK\165\r\NUL\169\r\SOH\n\
     \\v\n\
-    \\ETX\EOT5\SOH\DC2\EOT\249\f\b\SUB\n\
+    \\ETX\EOT5\SOH\DC2\EOT\165\r\b\SUB\n\
     \\f\n\
-    \\EOT\EOT5\STX\NUL\DC2\EOT\250\f\EOT\ESC\n\
+    \\EOT\EOT5\STX\NUL\DC2\EOT\166\r\EOT\ESC\n\
     \\SI\n\
-    \\ENQ\EOT5\STX\NUL\EOT\DC2\ACK\250\f\EOT\249\f\FS\n\
+    \\ENQ\EOT5\STX\NUL\EOT\DC2\ACK\166\r\EOT\165\r\FS\n\
     \\r\n\
-    \\ENQ\EOT5\STX\NUL\ENQ\DC2\EOT\250\f\EOT\t\n\
+    \\ENQ\EOT5\STX\NUL\ENQ\DC2\EOT\166\r\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT5\STX\NUL\SOH\DC2\EOT\250\f\n\
+    \\ENQ\EOT5\STX\NUL\SOH\DC2\EOT\166\r\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT5\STX\NUL\ETX\DC2\EOT\250\f\EM\SUB\n\
+    \\ENQ\EOT5\STX\NUL\ETX\DC2\EOT\166\r\EM\SUB\n\
     \\f\n\
-    \\EOT\EOT5\STX\SOH\DC2\EOT\252\f\EOT\NAK\n\
+    \\EOT\EOT5\STX\SOH\DC2\EOT\168\r\EOT\NAK\n\
     \\SI\n\
-    \\ENQ\EOT5\STX\SOH\EOT\DC2\ACK\252\f\EOT\250\f\ESC\n\
+    \\ENQ\EOT5\STX\SOH\EOT\DC2\ACK\168\r\EOT\166\r\ESC\n\
     \\r\n\
-    \\ENQ\EOT5\STX\SOH\ENQ\DC2\EOT\252\f\EOT\b\n\
+    \\ENQ\EOT5\STX\SOH\ENQ\DC2\EOT\168\r\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT5\STX\SOH\SOH\DC2\EOT\252\f\t\DLE\n\
+    \\ENQ\EOT5\STX\SOH\SOH\DC2\EOT\168\r\t\DLE\n\
     \\r\n\
-    \\ENQ\EOT5\STX\SOH\ETX\DC2\EOT\252\f\DC3\DC4\n\
+    \\ENQ\EOT5\STX\SOH\ETX\DC2\EOT\168\r\DC3\DC4\n\
     \\f\n\
-    \\STX\EOT6\DC2\ACK\255\f\NUL\154\r\SOH\n\
+    \\STX\EOT6\DC2\ACK\171\r\NUL\203\r\SOH\n\
     \\v\n\
-    \\ETX\EOT6\SOH\DC2\EOT\255\f\b\ESC\n\
+    \\ETX\EOT6\SOH\DC2\EOT\171\r\b\ESC\n\
     \\179\SOH\n\
-    \\EOT\EOT6\STX\NUL\DC2\EOT\133\r\EOT#\SUB\164\SOH\n\
+    \\EOT\EOT6\STX\NUL\DC2\EOT\177\r\EOT#\SUB\164\SOH\n\
     \The outpoint (txid:index) of the funding transaction. With this value, Bob\n\
     \will be able to generate a signature for Alice's version of the commitment\n\
     \transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT6\STX\NUL\EOT\DC2\ACK\133\r\EOT\255\f\GS\n\
+    \\ENQ\EOT6\STX\NUL\EOT\DC2\ACK\177\r\EOT\171\r\GS\n\
     \\r\n\
-    \\ENQ\EOT6\STX\NUL\ACK\DC2\EOT\133\r\EOT\DLE\n\
+    \\ENQ\EOT6\STX\NUL\ACK\DC2\EOT\177\r\EOT\DLE\n\
     \\r\n\
-    \\ENQ\EOT6\STX\NUL\SOH\DC2\EOT\133\r\DC1\RS\n\
+    \\ENQ\EOT6\STX\NUL\SOH\DC2\EOT\177\r\DC1\RS\n\
     \\r\n\
-    \\ENQ\EOT6\STX\NUL\ETX\DC2\EOT\133\r!\"\n\
+    \\ENQ\EOT6\STX\NUL\ETX\DC2\EOT\177\r!\"\n\
     \\144\SOH\n\
-    \\EOT\EOT6\STX\SOH\DC2\EOT\137\r\EOT\DC3\SUB\129\SOH If true, then the channel will be closed forcibly. This means the\n\
+    \\EOT\EOT6\STX\SOH\DC2\EOT\181\r\EOT\DC3\SUB\129\SOH If true, then the channel will be closed forcibly. This means the\n\
     \ current commitment transaction will be signed and broadcast.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT6\STX\SOH\EOT\DC2\ACK\137\r\EOT\133\r#\n\
+    \\ENQ\EOT6\STX\SOH\EOT\DC2\ACK\181\r\EOT\177\r#\n\
     \\r\n\
-    \\ENQ\EOT6\STX\SOH\ENQ\DC2\EOT\137\r\EOT\b\n\
+    \\ENQ\EOT6\STX\SOH\ENQ\DC2\EOT\181\r\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT6\STX\SOH\SOH\DC2\EOT\137\r\t\SO\n\
+    \\ENQ\EOT6\STX\SOH\SOH\DC2\EOT\181\r\t\SO\n\
     \\r\n\
-    \\ENQ\EOT6\STX\SOH\ETX\DC2\EOT\137\r\DC1\DC2\n\
+    \\ENQ\EOT6\STX\SOH\ETX\DC2\EOT\181\r\DC1\DC2\n\
     \a\n\
-    \\EOT\EOT6\STX\STX\DC2\EOT\141\r\EOT\SUB\SUBS The target number of blocks that the closure transaction should be\n\
+    \\EOT\EOT6\STX\STX\DC2\EOT\185\r\EOT\SUB\SUBS The target number of blocks that the closure transaction should be\n\
     \ confirmed by.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT6\STX\STX\EOT\DC2\ACK\141\r\EOT\137\r\DC3\n\
+    \\ENQ\EOT6\STX\STX\EOT\DC2\ACK\185\r\EOT\181\r\DC3\n\
     \\r\n\
-    \\ENQ\EOT6\STX\STX\ENQ\DC2\EOT\141\r\EOT\t\n\
+    \\ENQ\EOT6\STX\STX\ENQ\DC2\EOT\185\r\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT6\STX\STX\SOH\DC2\EOT\141\r\n\
+    \\ENQ\EOT6\STX\STX\SOH\DC2\EOT\185\r\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOT6\STX\STX\ETX\DC2\EOT\141\r\CAN\EM\n\
-    \m\n\
-    \\EOT\EOT6\STX\ETX\DC2\EOT\145\r\EOT\ESC\SUB_ A manual fee rate set in sat/byte that should be used when crafting the\n\
+    \\ENQ\EOT6\STX\STX\ETX\DC2\EOT\185\r\CAN\EM\n\
+    \\143\SOH\n\
+    \\EOT\EOT6\STX\ETX\DC2\EOT\190\r\EOT/\SUB\128\SOH Deprecated, use sat_per_vbyte.\n\
+    \ A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ closure transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT6\STX\ETX\EOT\DC2\ACK\145\r\EOT\141\r\SUB\n\
+    \\ENQ\EOT6\STX\ETX\EOT\DC2\ACK\190\r\EOT\185\r\SUB\n\
     \\r\n\
-    \\ENQ\EOT6\STX\ETX\ENQ\DC2\EOT\145\r\EOT\t\n\
+    \\ENQ\EOT6\STX\ETX\ENQ\DC2\EOT\190\r\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT6\STX\ETX\SOH\DC2\EOT\145\r\n\
+    \\ENQ\EOT6\STX\ETX\SOH\DC2\EOT\190\r\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT6\STX\ETX\ETX\DC2\EOT\145\r\EM\SUB\n\
+    \\ENQ\EOT6\STX\ETX\ETX\DC2\EOT\190\r\EM\SUB\n\
+    \\r\n\
+    \\ENQ\EOT6\STX\ETX\b\DC2\EOT\190\r\ESC.\n\
+    \\SO\n\
+    \\ACK\EOT6\STX\ETX\b\ETX\DC2\EOT\190\r\FS-\n\
     \\140\STX\n\
-    \\EOT\EOT6\STX\EOT\DC2\EOT\153\r\EOT \SUB\253\SOH\n\
+    \\EOT\EOT6\STX\EOT\DC2\EOT\198\r\EOT \SUB\253\SOH\n\
     \An optional address to send funds to in the case of a cooperative close.\n\
     \If the channel was opened with an upfront shutdown script and this field\n\
     \is set, the request to close will fail because the channel must pay out\n\
     \to the upfront shutdown addresss.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT6\STX\EOT\EOT\DC2\ACK\153\r\EOT\145\r\ESC\n\
+    \\ENQ\EOT6\STX\EOT\EOT\DC2\ACK\198\r\EOT\190\r/\n\
     \\r\n\
-    \\ENQ\EOT6\STX\EOT\ENQ\DC2\EOT\153\r\EOT\n\
+    \\ENQ\EOT6\STX\EOT\ENQ\DC2\EOT\198\r\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT6\STX\EOT\SOH\DC2\EOT\153\r\v\ESC\n\
+    \\ENQ\EOT6\STX\EOT\SOH\DC2\EOT\198\r\v\ESC\n\
     \\r\n\
-    \\ENQ\EOT6\STX\EOT\ETX\DC2\EOT\153\r\RS\US\n\
+    \\ENQ\EOT6\STX\EOT\ETX\DC2\EOT\198\r\RS\US\n\
+    \n\n\
+    \\EOT\EOT6\STX\ENQ\DC2\EOT\202\r\EOT\GS\SUB` A manual fee rate set in sat/vbyte that should be used when crafting the\n\
+    \ closure transaction.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT6\STX\ENQ\EOT\DC2\ACK\202\r\EOT\198\r \n\
+    \\r\n\
+    \\ENQ\EOT6\STX\ENQ\ENQ\DC2\EOT\202\r\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT6\STX\ENQ\SOH\DC2\EOT\202\r\v\CAN\n\
+    \\r\n\
+    \\ENQ\EOT6\STX\ENQ\ETX\DC2\EOT\202\r\ESC\FS\n\
     \\f\n\
-    \\STX\EOT7\DC2\ACK\156\r\NUL\161\r\SOH\n\
+    \\STX\EOT7\DC2\ACK\205\r\NUL\210\r\SOH\n\
     \\v\n\
-    \\ETX\EOT7\SOH\DC2\EOT\156\r\b\EM\n\
+    \\ETX\EOT7\SOH\DC2\EOT\205\r\b\EM\n\
     \\SO\n\
-    \\EOT\EOT7\b\NUL\DC2\ACK\157\r\EOT\160\r\ENQ\n\
+    \\EOT\EOT7\b\NUL\DC2\ACK\206\r\EOT\209\r\ENQ\n\
     \\r\n\
-    \\ENQ\EOT7\b\NUL\SOH\DC2\EOT\157\r\n\
+    \\ENQ\EOT7\b\NUL\SOH\DC2\EOT\206\r\n\
     \\DLE\n\
     \\f\n\
-    \\EOT\EOT7\STX\NUL\DC2\EOT\158\r\b(\n\
+    \\EOT\EOT7\STX\NUL\DC2\EOT\207\r\b(\n\
     \\r\n\
-    \\ENQ\EOT7\STX\NUL\ACK\DC2\EOT\158\r\b\NAK\n\
+    \\ENQ\EOT7\STX\NUL\ACK\DC2\EOT\207\r\b\NAK\n\
     \\r\n\
-    \\ENQ\EOT7\STX\NUL\SOH\DC2\EOT\158\r\SYN#\n\
+    \\ENQ\EOT7\STX\NUL\SOH\DC2\EOT\207\r\SYN#\n\
     \\r\n\
-    \\ENQ\EOT7\STX\NUL\ETX\DC2\EOT\158\r&'\n\
+    \\ENQ\EOT7\STX\NUL\ETX\DC2\EOT\207\r&'\n\
     \\f\n\
-    \\EOT\EOT7\STX\SOH\DC2\EOT\159\r\b*\n\
+    \\EOT\EOT7\STX\SOH\DC2\EOT\208\r\b*\n\
     \\r\n\
-    \\ENQ\EOT7\STX\SOH\ACK\DC2\EOT\159\r\b\SUB\n\
+    \\ENQ\EOT7\STX\SOH\ACK\DC2\EOT\208\r\b\SUB\n\
     \\r\n\
-    \\ENQ\EOT7\STX\SOH\SOH\DC2\EOT\159\r\ESC%\n\
+    \\ENQ\EOT7\STX\SOH\SOH\DC2\EOT\208\r\ESC%\n\
     \\r\n\
-    \\ENQ\EOT7\STX\SOH\ETX\DC2\EOT\159\r()\n\
+    \\ENQ\EOT7\STX\SOH\ETX\DC2\EOT\208\r()\n\
     \\f\n\
-    \\STX\EOT8\DC2\ACK\163\r\NUL\166\r\SOH\n\
+    \\STX\EOT8\DC2\ACK\212\r\NUL\215\r\SOH\n\
     \\v\n\
-    \\ETX\EOT8\SOH\DC2\EOT\163\r\b\NAK\n\
+    \\ETX\EOT8\SOH\DC2\EOT\212\r\b\NAK\n\
     \\f\n\
-    \\EOT\EOT8\STX\NUL\DC2\EOT\164\r\EOT\DC3\n\
+    \\EOT\EOT8\STX\NUL\DC2\EOT\213\r\EOT\DC3\n\
     \\SI\n\
-    \\ENQ\EOT8\STX\NUL\EOT\DC2\ACK\164\r\EOT\163\r\ETB\n\
+    \\ENQ\EOT8\STX\NUL\EOT\DC2\ACK\213\r\EOT\212\r\ETB\n\
     \\r\n\
-    \\ENQ\EOT8\STX\NUL\ENQ\DC2\EOT\164\r\EOT\t\n\
+    \\ENQ\EOT8\STX\NUL\ENQ\DC2\EOT\213\r\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT8\STX\NUL\SOH\DC2\EOT\164\r\n\
+    \\ENQ\EOT8\STX\NUL\SOH\DC2\EOT\213\r\n\
     \\SO\n\
     \\r\n\
-    \\ENQ\EOT8\STX\NUL\ETX\DC2\EOT\164\r\DC1\DC2\n\
+    \\ENQ\EOT8\STX\NUL\ETX\DC2\EOT\213\r\DC1\DC2\n\
     \\f\n\
-    \\EOT\EOT8\STX\SOH\DC2\EOT\165\r\EOT\FS\n\
+    \\EOT\EOT8\STX\SOH\DC2\EOT\214\r\EOT\FS\n\
     \\SI\n\
-    \\ENQ\EOT8\STX\SOH\EOT\DC2\ACK\165\r\EOT\164\r\DC3\n\
+    \\ENQ\EOT8\STX\SOH\EOT\DC2\ACK\214\r\EOT\213\r\DC3\n\
     \\r\n\
-    \\ENQ\EOT8\STX\SOH\ENQ\DC2\EOT\165\r\EOT\n\
+    \\ENQ\EOT8\STX\SOH\ENQ\DC2\EOT\214\r\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT8\STX\SOH\SOH\DC2\EOT\165\r\v\ETB\n\
+    \\ENQ\EOT8\STX\SOH\SOH\DC2\EOT\214\r\v\ETB\n\
     \\r\n\
-    \\ENQ\EOT8\STX\SOH\ETX\DC2\EOT\165\r\SUB\ESC\n\
+    \\ENQ\EOT8\STX\SOH\ETX\DC2\EOT\214\r\SUB\ESC\n\
     \\f\n\
-    \\STX\EOT9\DC2\ACK\168\r\NUL\188\r\SOH\n\
+    \\STX\EOT9\DC2\ACK\217\r\NUL\237\r\SOH\n\
     \\v\n\
-    \\ETX\EOT9\SOH\DC2\EOT\168\r\b\ESC\n\
+    \\ETX\EOT9\SOH\DC2\EOT\217\r\b\ESC\n\
     \\138\SOH\n\
-    \\EOT\EOT9\STX\NUL\DC2\EOT\173\r\EOT\US\SUB|\n\
+    \\EOT\EOT9\STX\NUL\DC2\EOT\222\r\EOT\US\SUB|\n\
     \The P2WSH address of the channel funding multisig address that the below\n\
     \specified amount in satoshis needs to be sent to.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT9\STX\NUL\EOT\DC2\ACK\173\r\EOT\168\r\GS\n\
+    \\ENQ\EOT9\STX\NUL\EOT\DC2\ACK\222\r\EOT\217\r\GS\n\
     \\r\n\
-    \\ENQ\EOT9\STX\NUL\ENQ\DC2\EOT\173\r\EOT\n\
+    \\ENQ\EOT9\STX\NUL\ENQ\DC2\EOT\222\r\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT9\STX\NUL\SOH\DC2\EOT\173\r\v\SUB\n\
+    \\ENQ\EOT9\STX\NUL\SOH\DC2\EOT\222\r\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT9\STX\NUL\ETX\DC2\EOT\173\r\GS\RS\n\
+    \\ENQ\EOT9\STX\NUL\ETX\DC2\EOT\222\r\GS\RS\n\
     \t\n\
-    \\EOT\EOT9\STX\SOH\DC2\EOT\179\r\EOT\GS\SUBf\n\
+    \\EOT\EOT9\STX\SOH\DC2\EOT\228\r\EOT\GS\SUBf\n\
     \The exact amount in satoshis that needs to be sent to the above address to\n\
     \fund the pending channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT9\STX\SOH\EOT\DC2\ACK\179\r\EOT\173\r\US\n\
+    \\ENQ\EOT9\STX\SOH\EOT\DC2\ACK\228\r\EOT\222\r\US\n\
     \\r\n\
-    \\ENQ\EOT9\STX\SOH\ENQ\DC2\EOT\179\r\EOT\t\n\
+    \\ENQ\EOT9\STX\SOH\ENQ\DC2\EOT\228\r\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT9\STX\SOH\SOH\DC2\EOT\179\r\n\
+    \\ENQ\EOT9\STX\SOH\SOH\DC2\EOT\228\r\n\
     \\CAN\n\
     \\r\n\
-    \\ENQ\EOT9\STX\SOH\ETX\DC2\EOT\179\r\ESC\FS\n\
+    \\ENQ\EOT9\STX\SOH\ETX\DC2\EOT\228\r\ESC\FS\n\
     \\252\SOH\n\
-    \\EOT\EOT9\STX\STX\DC2\EOT\187\r\EOT\DC3\SUB\237\SOH\n\
+    \\EOT\EOT9\STX\STX\DC2\EOT\236\r\EOT\DC3\SUB\237\SOH\n\
     \A raw PSBT that contains the pending channel output. If a base PSBT was\n\
     \provided in the PsbtShim, this is the base PSBT with one additional output.\n\
     \If no base PSBT was specified, this is an otherwise empty PSBT with exactly\n\
     \one output.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT9\STX\STX\EOT\DC2\ACK\187\r\EOT\179\r\GS\n\
+    \\ENQ\EOT9\STX\STX\EOT\DC2\ACK\236\r\EOT\228\r\GS\n\
     \\r\n\
-    \\ENQ\EOT9\STX\STX\ENQ\DC2\EOT\187\r\EOT\t\n\
+    \\ENQ\EOT9\STX\STX\ENQ\DC2\EOT\236\r\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT9\STX\STX\SOH\DC2\EOT\187\r\n\
+    \\ENQ\EOT9\STX\STX\SOH\DC2\EOT\236\r\n\
     \\SO\n\
     \\r\n\
-    \\ENQ\EOT9\STX\STX\ETX\DC2\EOT\187\r\DC1\DC2\n\
+    \\ENQ\EOT9\STX\STX\ETX\DC2\EOT\236\r\DC1\DC2\n\
     \\f\n\
-    \\STX\EOT:\DC2\ACK\190\r\NUL\148\SO\SOH\n\
+    \\STX\EOT:\DC2\ACK\239\r\NUL\202\SO\SOH\n\
     \\v\n\
-    \\ETX\EOT:\SOH\DC2\EOT\190\r\b\SUB\n\
+    \\ETX\EOT:\SOH\DC2\EOT\239\r\b\SUB\n\
+    \n\n\
+    \\EOT\EOT:\STX\NUL\DC2\EOT\242\r\EOT\GS\SUB` A manual fee rate set in sat/vbyte that should be used when crafting the\n\
+    \ funding transaction.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT:\STX\NUL\EOT\DC2\ACK\242\r\EOT\239\r\FS\n\
+    \\r\n\
+    \\ENQ\EOT:\STX\NUL\ENQ\DC2\EOT\242\r\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT:\STX\NUL\SOH\DC2\EOT\242\r\v\CAN\n\
+    \\r\n\
+    \\ENQ\EOT:\STX\NUL\ETX\DC2\EOT\242\r\ESC\FS\n\
     \u\n\
-    \\EOT\EOT:\STX\NUL\DC2\EOT\195\r\EOT\SUB\SUBg\n\
+    \\EOT\EOT:\STX\SOH\DC2\EOT\248\r\EOT\SUB\SUBg\n\
     \The pubkey of the node to open a channel with. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\NUL\EOT\DC2\ACK\195\r\EOT\190\r\FS\n\
+    \\ENQ\EOT:\STX\SOH\EOT\DC2\ACK\248\r\EOT\242\r\GS\n\
     \\r\n\
-    \\ENQ\EOT:\STX\NUL\ENQ\DC2\EOT\195\r\EOT\t\n\
+    \\ENQ\EOT:\STX\SOH\ENQ\DC2\EOT\248\r\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT:\STX\NUL\SOH\DC2\EOT\195\r\n\
+    \\ENQ\EOT:\STX\SOH\SOH\DC2\EOT\248\r\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOT:\STX\NUL\ETX\DC2\EOT\195\r\CAN\EM\n\
+    \\ENQ\EOT:\STX\SOH\ETX\DC2\EOT\248\r\CAN\EM\n\
     \\154\SOH\n\
-    \\EOT\EOT:\STX\SOH\DC2\EOT\201\r\EOT6\SUB\139\SOH\n\
+    \\EOT\EOT:\STX\STX\DC2\EOT\254\r\EOT6\SUB\139\SOH\n\
     \The hex encoded pubkey of the node to open a channel with. Deprecated now\n\
     \that the REST gateway supports base64 encoding of bytes fields.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\SOH\EOT\DC2\ACK\201\r\EOT\195\r\SUB\n\
+    \\ENQ\EOT:\STX\STX\EOT\DC2\ACK\254\r\EOT\248\r\SUB\n\
     \\r\n\
-    \\ENQ\EOT:\STX\SOH\ENQ\DC2\EOT\201\r\EOT\n\
+    \\ENQ\EOT:\STX\STX\ENQ\DC2\EOT\254\r\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT:\STX\SOH\SOH\DC2\EOT\201\r\v\GS\n\
+    \\ENQ\EOT:\STX\STX\SOH\DC2\EOT\254\r\v\GS\n\
     \\r\n\
-    \\ENQ\EOT:\STX\SOH\ETX\DC2\EOT\201\r !\n\
+    \\ENQ\EOT:\STX\STX\ETX\DC2\EOT\254\r !\n\
     \\r\n\
-    \\ENQ\EOT:\STX\SOH\b\DC2\EOT\201\r\"5\n\
+    \\ENQ\EOT:\STX\STX\b\DC2\EOT\254\r\"5\n\
     \\SO\n\
-    \\ACK\EOT:\STX\SOH\b\ETX\DC2\EOT\201\r#4\n\
+    \\ACK\EOT:\STX\STX\b\ETX\DC2\EOT\254\r#4\n\
     \N\n\
-    \\EOT\EOT:\STX\STX\DC2\EOT\204\r\EOT#\SUB@ The number of satoshis the wallet should commit to the channel\n\
+    \\EOT\EOT:\STX\ETX\DC2\EOT\129\SO\EOT#\SUB@ The number of satoshis the wallet should commit to the channel\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\STX\EOT\DC2\ACK\204\r\EOT\201\r6\n\
+    \\ENQ\EOT:\STX\ETX\EOT\DC2\ACK\129\SO\EOT\254\r6\n\
     \\r\n\
-    \\ENQ\EOT:\STX\STX\ENQ\DC2\EOT\204\r\EOT\t\n\
+    \\ENQ\EOT:\STX\ETX\ENQ\DC2\EOT\129\SO\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT:\STX\STX\SOH\DC2\EOT\204\r\n\
+    \\ENQ\EOT:\STX\ETX\SOH\DC2\EOT\129\SO\n\
     \\RS\n\
     \\r\n\
-    \\ENQ\EOT:\STX\STX\ETX\DC2\EOT\204\r!\"\n\
+    \\ENQ\EOT:\STX\ETX\ETX\DC2\EOT\129\SO!\"\n\
     \j\n\
-    \\EOT\EOT:\STX\ETX\DC2\EOT\208\r\EOT\ETB\SUB\\ The number of satoshis to push to the remote side as part of the initial\n\
+    \\EOT\EOT:\STX\EOT\DC2\EOT\133\SO\EOT\ETB\SUB\\ The number of satoshis to push to the remote side as part of the initial\n\
     \ commitment state\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\ETX\EOT\DC2\ACK\208\r\EOT\204\r#\n\
+    \\ENQ\EOT:\STX\EOT\EOT\DC2\ACK\133\SO\EOT\129\SO#\n\
     \\r\n\
-    \\ENQ\EOT:\STX\ETX\ENQ\DC2\EOT\208\r\EOT\t\n\
+    \\ENQ\EOT:\STX\EOT\ENQ\DC2\EOT\133\SO\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT:\STX\ETX\SOH\DC2\EOT\208\r\n\
+    \\ENQ\EOT:\STX\EOT\SOH\DC2\EOT\133\SO\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOT:\STX\ETX\ETX\DC2\EOT\208\r\NAK\SYN\n\
+    \\ENQ\EOT:\STX\EOT\ETX\DC2\EOT\133\SO\NAK\SYN\n\
     \a\n\
-    \\EOT\EOT:\STX\EOT\DC2\EOT\212\r\EOT\SUB\SUBS The target number of blocks that the funding transaction should be\n\
+    \\EOT\EOT:\STX\ENQ\DC2\EOT\137\SO\EOT\SUB\SUBS The target number of blocks that the funding transaction should be\n\
     \ confirmed by.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\EOT\EOT\DC2\ACK\212\r\EOT\208\r\ETB\n\
+    \\ENQ\EOT:\STX\ENQ\EOT\DC2\ACK\137\SO\EOT\133\SO\ETB\n\
     \\r\n\
-    \\ENQ\EOT:\STX\EOT\ENQ\DC2\EOT\212\r\EOT\t\n\
+    \\ENQ\EOT:\STX\ENQ\ENQ\DC2\EOT\137\SO\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT:\STX\EOT\SOH\DC2\EOT\212\r\n\
+    \\ENQ\EOT:\STX\ENQ\SOH\DC2\EOT\137\SO\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOT:\STX\EOT\ETX\DC2\EOT\212\r\CAN\EM\n\
-    \m\n\
-    \\EOT\EOT:\STX\ENQ\DC2\EOT\216\r\EOT\ESC\SUB_ A manual fee rate set in sat/byte that should be used when crafting the\n\
+    \\ENQ\EOT:\STX\ENQ\ETX\DC2\EOT\137\SO\CAN\EM\n\
+    \\143\SOH\n\
+    \\EOT\EOT:\STX\ACK\DC2\EOT\142\SO\EOT/\SUB\128\SOH Deprecated, use sat_per_vbyte.\n\
+    \ A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ funding transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\ENQ\EOT\DC2\ACK\216\r\EOT\212\r\SUB\n\
+    \\ENQ\EOT:\STX\ACK\EOT\DC2\ACK\142\SO\EOT\137\SO\SUB\n\
     \\r\n\
-    \\ENQ\EOT:\STX\ENQ\ENQ\DC2\EOT\216\r\EOT\t\n\
+    \\ENQ\EOT:\STX\ACK\ENQ\DC2\EOT\142\SO\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT:\STX\ENQ\SOH\DC2\EOT\216\r\n\
+    \\ENQ\EOT:\STX\ACK\SOH\DC2\EOT\142\SO\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT:\STX\ENQ\ETX\DC2\EOT\216\r\EM\SUB\n\
+    \\ENQ\EOT:\STX\ACK\ETX\DC2\EOT\142\SO\EM\SUB\n\
+    \\r\n\
+    \\ENQ\EOT:\STX\ACK\b\DC2\EOT\142\SO\ESC.\n\
+    \\SO\n\
+    \\ACK\EOT:\STX\ACK\b\ETX\DC2\EOT\142\SO\FS-\n\
     \^\n\
-    \\EOT\EOT:\STX\ACK\DC2\EOT\220\r\EOT\NAK\SUBP Whether this channel should be private, not announced to the greater\n\
+    \\EOT\EOT:\STX\a\DC2\EOT\146\SO\EOT\NAK\SUBP Whether this channel should be private, not announced to the greater\n\
     \ network.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\ACK\EOT\DC2\ACK\220\r\EOT\216\r\ESC\n\
+    \\ENQ\EOT:\STX\a\EOT\DC2\ACK\146\SO\EOT\142\SO/\n\
     \\r\n\
-    \\ENQ\EOT:\STX\ACK\ENQ\DC2\EOT\220\r\EOT\b\n\
+    \\ENQ\EOT:\STX\a\ENQ\DC2\EOT\146\SO\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT:\STX\ACK\SOH\DC2\EOT\220\r\t\DLE\n\
+    \\ENQ\EOT:\STX\a\SOH\DC2\EOT\146\SO\t\DLE\n\
     \\r\n\
-    \\ENQ\EOT:\STX\ACK\ETX\DC2\EOT\220\r\DC3\DC4\n\
+    \\ENQ\EOT:\STX\a\ETX\DC2\EOT\146\SO\DC3\DC4\n\
     \e\n\
-    \\EOT\EOT:\STX\a\DC2\EOT\224\r\EOT\FS\SUBW The minimum value in millisatoshi we will require for incoming HTLCs on\n\
+    \\EOT\EOT:\STX\b\DC2\EOT\150\SO\EOT\FS\SUBW The minimum value in millisatoshi we will require for incoming HTLCs on\n\
     \ the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\a\EOT\DC2\ACK\224\r\EOT\220\r\NAK\n\
+    \\ENQ\EOT:\STX\b\EOT\DC2\ACK\150\SO\EOT\146\SO\NAK\n\
     \\r\n\
-    \\ENQ\EOT:\STX\a\ENQ\DC2\EOT\224\r\EOT\t\n\
+    \\ENQ\EOT:\STX\b\ENQ\DC2\EOT\150\SO\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT:\STX\a\SOH\DC2\EOT\224\r\n\
+    \\ENQ\EOT:\STX\b\SOH\DC2\EOT\150\SO\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOT:\STX\a\ETX\DC2\EOT\224\r\SUB\ESC\n\
+    \\ENQ\EOT:\STX\b\ETX\DC2\EOT\150\SO\SUB\ESC\n\
     \\153\SOH\n\
-    \\EOT\EOT:\STX\b\DC2\EOT\228\r\EOT!\SUB\138\SOH The delay we require on the remote's commitment transaction. If this is\n\
+    \\EOT\EOT:\STX\t\DC2\EOT\154\SO\EOT!\SUB\138\SOH The delay we require on the remote's commitment transaction. If this is\n\
     \ not set, it will be scaled automatically with the channel size.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\b\EOT\DC2\ACK\228\r\EOT\224\r\FS\n\
+    \\ENQ\EOT:\STX\t\EOT\DC2\ACK\154\SO\EOT\150\SO\FS\n\
     \\r\n\
-    \\ENQ\EOT:\STX\b\ENQ\DC2\EOT\228\r\EOT\n\
+    \\ENQ\EOT:\STX\t\ENQ\DC2\EOT\154\SO\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT:\STX\b\SOH\DC2\EOT\228\r\v\ESC\n\
+    \\ENQ\EOT:\STX\t\SOH\DC2\EOT\154\SO\v\ESC\n\
     \\r\n\
-    \\ENQ\EOT:\STX\b\ETX\DC2\EOT\228\r\RS \n\
+    \\ENQ\EOT:\STX\t\ETX\DC2\EOT\154\SO\RS \n\
     \|\n\
-    \\EOT\EOT:\STX\t\DC2\EOT\232\r\EOT\EM\SUBn The minimum number of confirmations each one of your outputs used for\n\
+    \\EOT\EOT:\STX\n\
+    \\DC2\EOT\158\SO\EOT\EM\SUBn The minimum number of confirmations each one of your outputs used for\n\
     \ the funding transaction must satisfy.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\t\EOT\DC2\ACK\232\r\EOT\228\r!\n\
+    \\ENQ\EOT:\STX\n\
+    \\EOT\DC2\ACK\158\SO\EOT\154\SO!\n\
     \\r\n\
-    \\ENQ\EOT:\STX\t\ENQ\DC2\EOT\232\r\EOT\t\n\
+    \\ENQ\EOT:\STX\n\
+    \\ENQ\DC2\EOT\158\SO\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT:\STX\t\SOH\DC2\EOT\232\r\n\
+    \\ENQ\EOT:\STX\n\
+    \\SOH\DC2\EOT\158\SO\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT:\STX\t\ETX\DC2\EOT\232\r\SYN\CAN\n\
+    \\ENQ\EOT:\STX\n\
+    \\ETX\DC2\EOT\158\SO\SYN\CAN\n\
     \b\n\
-    \\EOT\EOT:\STX\n\
-    \\DC2\EOT\236\r\EOT \SUBT Whether unconfirmed outputs should be used as inputs for the funding\n\
+    \\EOT\EOT:\STX\v\DC2\EOT\162\SO\EOT \SUBT Whether unconfirmed outputs should be used as inputs for the funding\n\
     \ transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\n\
-    \\EOT\DC2\ACK\236\r\EOT\232\r\EM\n\
+    \\ENQ\EOT:\STX\v\EOT\DC2\ACK\162\SO\EOT\158\SO\EM\n\
     \\r\n\
-    \\ENQ\EOT:\STX\n\
-    \\ENQ\DC2\EOT\236\r\EOT\b\n\
+    \\ENQ\EOT:\STX\v\ENQ\DC2\EOT\162\SO\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT:\STX\n\
-    \\SOH\DC2\EOT\236\r\t\SUB\n\
+    \\ENQ\EOT:\STX\v\SOH\DC2\EOT\162\SO\t\SUB\n\
     \\r\n\
-    \\ENQ\EOT:\STX\n\
-    \\ETX\DC2\EOT\236\r\GS\US\n\
+    \\ENQ\EOT:\STX\v\ETX\DC2\EOT\162\SO\GS\US\n\
     \\197\ETX\n\
-    \\EOT\EOT:\STX\v\DC2\EOT\248\r\EOT\RS\SUB\182\ETX\n\
+    \\EOT\EOT:\STX\f\DC2\EOT\174\SO\EOT\RS\SUB\182\ETX\n\
     \Close address is an optional address which specifies the address to which\n\
     \funds should be paid out to upon cooperative close. This field may only be\n\
     \set if the peer supports the option upfront feature bit (call listpeers\n\
@@ -55002,16 +57183,16 @@ packedFileDescriptor
     \cooperatively close out to a different address.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\v\EOT\DC2\ACK\248\r\EOT\236\r \n\
+    \\ENQ\EOT:\STX\f\EOT\DC2\ACK\174\SO\EOT\162\SO \n\
     \\r\n\
-    \\ENQ\EOT:\STX\v\ENQ\DC2\EOT\248\r\EOT\n\
+    \\ENQ\EOT:\STX\f\ENQ\DC2\EOT\174\SO\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT:\STX\v\SOH\DC2\EOT\248\r\v\CAN\n\
+    \\ENQ\EOT:\STX\f\SOH\DC2\EOT\174\SO\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT:\STX\v\ETX\DC2\EOT\248\r\ESC\GS\n\
+    \\ENQ\EOT:\STX\f\ETX\DC2\EOT\174\SO\ESC\GS\n\
     \\236\STX\n\
-    \\EOT\EOT:\STX\f\DC2\EOT\129\SO\EOT\"\SUB\221\STX\n\
+    \\EOT\EOT:\STX\r\DC2\EOT\183\SO\EOT\"\SUB\221\STX\n\
     \Funding shims are an optional argument that allow the caller to intercept\n\
     \certain funding functionality. For example, a shim can be provided to use a\n\
     \particular key for the commitment key (ideally cold) rather than use one\n\
@@ -55019,238 +57200,238 @@ packedFileDescriptor
     \carried out in an interactive manner (PSBT based).\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\f\EOT\DC2\ACK\129\SO\EOT\248\r\RS\n\
+    \\ENQ\EOT:\STX\r\EOT\DC2\ACK\183\SO\EOT\174\SO\RS\n\
     \\r\n\
-    \\ENQ\EOT:\STX\f\ACK\DC2\EOT\129\SO\EOT\SI\n\
+    \\ENQ\EOT:\STX\r\ACK\DC2\EOT\183\SO\EOT\SI\n\
     \\r\n\
-    \\ENQ\EOT:\STX\f\SOH\DC2\EOT\129\SO\DLE\FS\n\
+    \\ENQ\EOT:\STX\r\SOH\DC2\EOT\183\SO\DLE\FS\n\
     \\r\n\
-    \\ENQ\EOT:\STX\f\ETX\DC2\EOT\129\SO\US!\n\
+    \\ENQ\EOT:\STX\r\ETX\DC2\EOT\183\SO\US!\n\
     \\136\SOH\n\
-    \\EOT\EOT:\STX\r\DC2\EOT\135\SO\EOT0\SUBz\n\
+    \\EOT\EOT:\STX\SO\DC2\EOT\189\SO\EOT0\SUBz\n\
     \The maximum amount of coins in millisatoshi that can be pending within\n\
     \the channel. It only applies to the remote party.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\r\EOT\DC2\ACK\135\SO\EOT\129\SO\"\n\
+    \\ENQ\EOT:\STX\SO\EOT\DC2\ACK\189\SO\EOT\183\SO\"\n\
     \\r\n\
-    \\ENQ\EOT:\STX\r\ENQ\DC2\EOT\135\SO\EOT\n\
+    \\ENQ\EOT:\STX\SO\ENQ\DC2\EOT\189\SO\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT:\STX\r\SOH\DC2\EOT\135\SO\v*\n\
+    \\ENQ\EOT:\STX\SO\SOH\DC2\EOT\189\SO\v*\n\
     \\r\n\
-    \\ENQ\EOT:\STX\r\ETX\DC2\EOT\135\SO-/\n\
+    \\ENQ\EOT:\STX\SO\ETX\DC2\EOT\189\SO-/\n\
     \{\n\
-    \\EOT\EOT:\STX\SO\DC2\EOT\141\SO\EOT!\SUBm\n\
+    \\EOT\EOT:\STX\SI\DC2\EOT\195\SO\EOT!\SUBm\n\
     \The maximum number of concurrent HTLCs we will allow the remote party to add\n\
     \to the commitment transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\SO\EOT\DC2\ACK\141\SO\EOT\135\SO0\n\
+    \\ENQ\EOT:\STX\SI\EOT\DC2\ACK\195\SO\EOT\189\SO0\n\
     \\r\n\
-    \\ENQ\EOT:\STX\SO\ENQ\DC2\EOT\141\SO\EOT\n\
+    \\ENQ\EOT:\STX\SI\ENQ\DC2\EOT\195\SO\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT:\STX\SO\SOH\DC2\EOT\141\SO\v\ESC\n\
+    \\ENQ\EOT:\STX\SI\SOH\DC2\EOT\195\SO\v\ESC\n\
     \\r\n\
-    \\ENQ\EOT:\STX\SO\ETX\DC2\EOT\141\SO\RS \n\
+    \\ENQ\EOT:\STX\SI\ETX\DC2\EOT\195\SO\RS \n\
     \h\n\
-    \\EOT\EOT:\STX\SI\DC2\EOT\147\SO\EOT\RS\SUBZ\n\
+    \\EOT\EOT:\STX\DLE\DC2\EOT\201\SO\EOT\RS\SUBZ\n\
     \Max local csv is the maximum csv delay we will allow for our own commitment\n\
     \transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT:\STX\SI\EOT\DC2\ACK\147\SO\EOT\141\SO!\n\
+    \\ENQ\EOT:\STX\DLE\EOT\DC2\ACK\201\SO\EOT\195\SO!\n\
     \\r\n\
-    \\ENQ\EOT:\STX\SI\ENQ\DC2\EOT\147\SO\EOT\n\
+    \\ENQ\EOT:\STX\DLE\ENQ\DC2\EOT\201\SO\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT:\STX\SI\SOH\DC2\EOT\147\SO\v\CAN\n\
+    \\ENQ\EOT:\STX\DLE\SOH\DC2\EOT\201\SO\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT:\STX\SI\ETX\DC2\EOT\147\SO\ESC\GS\n\
+    \\ENQ\EOT:\STX\DLE\ETX\DC2\EOT\201\SO\ESC\GS\n\
     \\f\n\
-    \\STX\EOT;\DC2\ACK\149\SO\NUL\175\SO\SOH\n\
+    \\STX\EOT;\DC2\ACK\203\SO\NUL\229\SO\SOH\n\
     \\v\n\
-    \\ETX\EOT;\SOH\DC2\EOT\149\SO\b\CAN\n\
+    \\ETX\EOT;\SOH\DC2\EOT\203\SO\b\CAN\n\
     \\SO\n\
-    \\EOT\EOT;\b\NUL\DC2\ACK\150\SO\EOT\168\SO\ENQ\n\
+    \\EOT\EOT;\b\NUL\DC2\ACK\204\SO\EOT\222\SO\ENQ\n\
     \\r\n\
-    \\ENQ\EOT;\b\NUL\SOH\DC2\EOT\150\SO\n\
+    \\ENQ\EOT;\b\NUL\SOH\DC2\EOT\204\SO\n\
     \\DLE\n\
     \g\n\
-    \\EOT\EOT;\STX\NUL\DC2\EOT\155\SO\b'\SUBY\n\
+    \\EOT\EOT;\STX\NUL\DC2\EOT\209\SO\b'\SUBY\n\
     \Signals that the channel is now fully negotiated and the funding\n\
     \transaction published.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT;\STX\NUL\ACK\DC2\EOT\155\SO\b\NAK\n\
+    \\ENQ\EOT;\STX\NUL\ACK\DC2\EOT\209\SO\b\NAK\n\
     \\r\n\
-    \\ENQ\EOT;\STX\NUL\SOH\DC2\EOT\155\SO\SYN\"\n\
+    \\ENQ\EOT;\STX\NUL\SOH\DC2\EOT\209\SO\SYN\"\n\
     \\r\n\
-    \\ENQ\EOT;\STX\NUL\ETX\DC2\EOT\155\SO%&\n\
+    \\ENQ\EOT;\STX\NUL\ETX\DC2\EOT\209\SO%&\n\
     \\141\SOH\n\
-    \\EOT\EOT;\STX\SOH\DC2\EOT\161\SO\b(\SUB\DEL\n\
+    \\EOT\EOT;\STX\SOH\DC2\EOT\215\SO\b(\SUB\DEL\n\
     \Signals that the channel's funding transaction has now reached the\n\
     \required number of confirmations on chain and can be used.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT;\STX\SOH\ACK\DC2\EOT\161\SO\b\EM\n\
+    \\ENQ\EOT;\STX\SOH\ACK\DC2\EOT\215\SO\b\EM\n\
     \\r\n\
-    \\ENQ\EOT;\STX\SOH\SOH\DC2\EOT\161\SO\SUB#\n\
+    \\ENQ\EOT;\STX\SOH\SOH\DC2\EOT\215\SO\SUB#\n\
     \\r\n\
-    \\ENQ\EOT;\STX\SOH\ETX\DC2\EOT\161\SO&'\n\
+    \\ENQ\EOT;\STX\SOH\ETX\DC2\EOT\215\SO&'\n\
     \\149\SOH\n\
-    \\EOT\EOT;\STX\STX\DC2\EOT\167\SO\b*\SUB\134\SOH\n\
+    \\EOT\EOT;\STX\STX\DC2\EOT\221\SO\b*\SUB\134\SOH\n\
     \Signals that the funding process has been suspended and the construction\n\
     \of a PSBT that funds the channel PK script is now required.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT;\STX\STX\ACK\DC2\EOT\167\SO\b\ESC\n\
+    \\ENQ\EOT;\STX\STX\ACK\DC2\EOT\221\SO\b\ESC\n\
     \\r\n\
-    \\ENQ\EOT;\STX\STX\SOH\DC2\EOT\167\SO\FS%\n\
+    \\ENQ\EOT;\STX\STX\SOH\DC2\EOT\221\SO\FS%\n\
     \\r\n\
-    \\ENQ\EOT;\STX\STX\ETX\DC2\EOT\167\SO()\n\
+    \\ENQ\EOT;\STX\STX\ETX\DC2\EOT\221\SO()\n\
     \\156\SOH\n\
-    \\EOT\EOT;\STX\ETX\DC2\EOT\174\SO\EOT\RS\SUB\141\SOH\n\
+    \\EOT\EOT;\STX\ETX\DC2\EOT\228\SO\EOT\RS\SUB\141\SOH\n\
     \The pending channel ID of the created channel. This value may be used to\n\
     \further the funding flow manually via the FundingStateStep method.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT;\STX\ETX\EOT\DC2\ACK\174\SO\EOT\168\SO\ENQ\n\
+    \\ENQ\EOT;\STX\ETX\EOT\DC2\ACK\228\SO\EOT\222\SO\ENQ\n\
     \\r\n\
-    \\ENQ\EOT;\STX\ETX\ENQ\DC2\EOT\174\SO\EOT\t\n\
+    \\ENQ\EOT;\STX\ETX\ENQ\DC2\EOT\228\SO\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT;\STX\ETX\SOH\DC2\EOT\174\SO\n\
+    \\ENQ\EOT;\STX\ETX\SOH\DC2\EOT\228\SO\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT;\STX\ETX\ETX\DC2\EOT\174\SO\FS\GS\n\
+    \\ENQ\EOT;\STX\ETX\ETX\DC2\EOT\228\SO\FS\GS\n\
     \\f\n\
-    \\STX\EOT<\DC2\ACK\177\SO\NUL\183\SO\SOH\n\
+    \\STX\EOT<\DC2\ACK\231\SO\NUL\237\SO\SOH\n\
     \\v\n\
-    \\ETX\EOT<\SOH\DC2\EOT\177\SO\b\DC2\n\
+    \\ETX\EOT<\SOH\DC2\EOT\231\SO\b\DC2\n\
     \3\n\
-    \\EOT\EOT<\STX\NUL\DC2\EOT\179\SO\EOT\EM\SUB% The family of key being identified.\n\
+    \\EOT\EOT<\STX\NUL\DC2\EOT\233\SO\EOT\EM\SUB% The family of key being identified.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT<\STX\NUL\EOT\DC2\ACK\179\SO\EOT\177\SO\DC4\n\
+    \\ENQ\EOT<\STX\NUL\EOT\DC2\ACK\233\SO\EOT\231\SO\DC4\n\
     \\r\n\
-    \\ENQ\EOT<\STX\NUL\ENQ\DC2\EOT\179\SO\EOT\t\n\
+    \\ENQ\EOT<\STX\NUL\ENQ\DC2\EOT\233\SO\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT<\STX\NUL\SOH\DC2\EOT\179\SO\n\
+    \\ENQ\EOT<\STX\NUL\SOH\DC2\EOT\233\SO\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT<\STX\NUL\ETX\DC2\EOT\179\SO\ETB\CAN\n\
+    \\ENQ\EOT<\STX\NUL\ETX\DC2\EOT\233\SO\ETB\CAN\n\
     \>\n\
-    \\EOT\EOT<\STX\SOH\DC2\EOT\182\SO\EOT\CAN\SUB0 The precise index of the key being identified.\n\
+    \\EOT\EOT<\STX\SOH\DC2\EOT\236\SO\EOT\CAN\SUB0 The precise index of the key being identified.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT<\STX\SOH\EOT\DC2\ACK\182\SO\EOT\179\SO\EM\n\
+    \\ENQ\EOT<\STX\SOH\EOT\DC2\ACK\236\SO\EOT\233\SO\EM\n\
     \\r\n\
-    \\ENQ\EOT<\STX\SOH\ENQ\DC2\EOT\182\SO\EOT\t\n\
+    \\ENQ\EOT<\STX\SOH\ENQ\DC2\EOT\236\SO\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT<\STX\SOH\SOH\DC2\EOT\182\SO\n\
+    \\ENQ\EOT<\STX\SOH\SOH\DC2\EOT\236\SO\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT<\STX\SOH\ETX\DC2\EOT\182\SO\SYN\ETB\n\
+    \\ENQ\EOT<\STX\SOH\ETX\DC2\EOT\236\SO\SYN\ETB\n\
     \\f\n\
-    \\STX\EOT=\DC2\ACK\185\SO\NUL\195\SO\SOH\n\
+    \\STX\EOT=\DC2\ACK\239\SO\NUL\249\SO\SOH\n\
     \\v\n\
-    \\ETX\EOT=\SOH\DC2\EOT\185\SO\b\NAK\n\
+    \\ETX\EOT=\SOH\DC2\EOT\239\SO\b\NAK\n\
     \:\n\
-    \\EOT\EOT=\STX\NUL\DC2\EOT\189\SO\EOT\FS\SUB,\n\
+    \\EOT\EOT=\STX\NUL\DC2\EOT\243\SO\EOT\FS\SUB,\n\
     \The raw bytes of the key being identified.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT=\STX\NUL\EOT\DC2\ACK\189\SO\EOT\185\SO\ETB\n\
+    \\ENQ\EOT=\STX\NUL\EOT\DC2\ACK\243\SO\EOT\239\SO\ETB\n\
     \\r\n\
-    \\ENQ\EOT=\STX\NUL\ENQ\DC2\EOT\189\SO\EOT\t\n\
+    \\ENQ\EOT=\STX\NUL\ENQ\DC2\EOT\243\SO\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT=\STX\NUL\SOH\DC2\EOT\189\SO\n\
+    \\ENQ\EOT=\STX\NUL\SOH\DC2\EOT\243\SO\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOT=\STX\NUL\ETX\DC2\EOT\189\SO\SUB\ESC\n\
+    \\ENQ\EOT=\STX\NUL\ETX\DC2\EOT\243\SO\SUB\ESC\n\
     \M\n\
-    \\EOT\EOT=\STX\SOH\DC2\EOT\194\SO\EOT\ESC\SUB?\n\
+    \\EOT\EOT=\STX\SOH\DC2\EOT\248\SO\EOT\ESC\SUB?\n\
     \The key locator that identifies which key to use for signing.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT=\STX\SOH\EOT\DC2\ACK\194\SO\EOT\189\SO\FS\n\
+    \\ENQ\EOT=\STX\SOH\EOT\DC2\ACK\248\SO\EOT\243\SO\FS\n\
     \\r\n\
-    \\ENQ\EOT=\STX\SOH\ACK\DC2\EOT\194\SO\EOT\SO\n\
+    \\ENQ\EOT=\STX\SOH\ACK\DC2\EOT\248\SO\EOT\SO\n\
     \\r\n\
-    \\ENQ\EOT=\STX\SOH\SOH\DC2\EOT\194\SO\SI\SYN\n\
+    \\ENQ\EOT=\STX\SOH\SOH\DC2\EOT\248\SO\SI\SYN\n\
     \\r\n\
-    \\ENQ\EOT=\STX\SOH\ETX\DC2\EOT\194\SO\EM\SUB\n\
+    \\ENQ\EOT=\STX\SOH\ETX\DC2\EOT\248\SO\EM\SUB\n\
     \\f\n\
-    \\STX\EOT>\DC2\ACK\197\SO\NUL\229\SO\SOH\n\
+    \\STX\EOT>\DC2\ACK\251\SO\NUL\155\SI\SOH\n\
     \\v\n\
-    \\ETX\EOT>\SOH\DC2\EOT\197\SO\b\NAK\n\
+    \\ETX\EOT>\SOH\DC2\EOT\251\SO\b\NAK\n\
     \l\n\
-    \\EOT\EOT>\STX\NUL\DC2\EOT\202\SO\EOT\DC2\SUB^\n\
+    \\EOT\EOT>\STX\NUL\DC2\EOT\128\SI\EOT\DC2\SUB^\n\
     \The size of the pre-crafted output to be used as the channel point for this\n\
     \channel funding.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT>\STX\NUL\EOT\DC2\ACK\202\SO\EOT\197\SO\ETB\n\
+    \\ENQ\EOT>\STX\NUL\EOT\DC2\ACK\128\SI\EOT\251\SO\ETB\n\
     \\r\n\
-    \\ENQ\EOT>\STX\NUL\ENQ\DC2\EOT\202\SO\EOT\t\n\
+    \\ENQ\EOT>\STX\NUL\ENQ\DC2\EOT\128\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT>\STX\NUL\SOH\DC2\EOT\202\SO\n\
+    \\ENQ\EOT>\STX\NUL\SOH\DC2\EOT\128\SI\n\
     \\r\n\
     \\r\n\
-    \\ENQ\EOT>\STX\NUL\ETX\DC2\EOT\202\SO\DLE\DC1\n\
+    \\ENQ\EOT>\STX\NUL\ETX\DC2\EOT\128\SI\DLE\DC1\n\
     \X\n\
-    \\EOT\EOT>\STX\SOH\DC2\EOT\205\SO\EOT \SUBJ The target channel point to refrence in created commitment transactions.\n\
+    \\EOT\EOT>\STX\SOH\DC2\EOT\131\SI\EOT \SUBJ The target channel point to refrence in created commitment transactions.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT>\STX\SOH\EOT\DC2\ACK\205\SO\EOT\202\SO\DC2\n\
+    \\ENQ\EOT>\STX\SOH\EOT\DC2\ACK\131\SI\EOT\128\SI\DC2\n\
     \\r\n\
-    \\ENQ\EOT>\STX\SOH\ACK\DC2\EOT\205\SO\EOT\DLE\n\
+    \\ENQ\EOT>\STX\SOH\ACK\DC2\EOT\131\SI\EOT\DLE\n\
     \\r\n\
-    \\ENQ\EOT>\STX\SOH\SOH\DC2\EOT\205\SO\DC1\ESC\n\
+    \\ENQ\EOT>\STX\SOH\SOH\DC2\EOT\131\SI\DC1\ESC\n\
     \\r\n\
-    \\ENQ\EOT>\STX\SOH\ETX\DC2\EOT\205\SO\RS\US\n\
+    \\ENQ\EOT>\STX\SOH\ETX\DC2\EOT\131\SI\RS\US\n\
     \H\n\
-    \\EOT\EOT>\STX\STX\DC2\EOT\208\SO\EOT \SUB: Our local key to use when creating the multi-sig output.\n\
+    \\EOT\EOT>\STX\STX\DC2\EOT\134\SI\EOT \SUB: Our local key to use when creating the multi-sig output.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT>\STX\STX\EOT\DC2\ACK\208\SO\EOT\205\SO \n\
+    \\ENQ\EOT>\STX\STX\EOT\DC2\ACK\134\SI\EOT\131\SI \n\
     \\r\n\
-    \\ENQ\EOT>\STX\STX\ACK\DC2\EOT\208\SO\EOT\DC1\n\
+    \\ENQ\EOT>\STX\STX\ACK\DC2\EOT\134\SI\EOT\DC1\n\
     \\r\n\
-    \\ENQ\EOT>\STX\STX\SOH\DC2\EOT\208\SO\DC2\ESC\n\
+    \\ENQ\EOT>\STX\STX\SOH\DC2\EOT\134\SI\DC2\ESC\n\
     \\r\n\
-    \\ENQ\EOT>\STX\STX\ETX\DC2\EOT\208\SO\RS\US\n\
+    \\ENQ\EOT>\STX\STX\ETX\DC2\EOT\134\SI\RS\US\n\
     \V\n\
-    \\EOT\EOT>\STX\ETX\DC2\EOT\211\SO\EOT\EM\SUBH The key of the remote party to use when creating the multi-sig output.\n\
+    \\EOT\EOT>\STX\ETX\DC2\EOT\137\SI\EOT\EM\SUBH The key of the remote party to use when creating the multi-sig output.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT>\STX\ETX\EOT\DC2\ACK\211\SO\EOT\208\SO \n\
+    \\ENQ\EOT>\STX\ETX\EOT\DC2\ACK\137\SI\EOT\134\SI \n\
     \\r\n\
-    \\ENQ\EOT>\STX\ETX\ENQ\DC2\EOT\211\SO\EOT\t\n\
+    \\ENQ\EOT>\STX\ETX\ENQ\DC2\EOT\137\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT>\STX\ETX\SOH\DC2\EOT\211\SO\n\
+    \\ENQ\EOT>\STX\ETX\SOH\DC2\EOT\137\SI\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT>\STX\ETX\ETX\DC2\EOT\211\SO\ETB\CAN\n\
+    \\ENQ\EOT>\STX\ETX\ETX\DC2\EOT\137\SI\ETB\CAN\n\
     \\250\SOH\n\
-    \\EOT\EOT>\STX\EOT\DC2\EOT\219\SO\EOT\RS\SUB\235\SOH\n\
+    \\EOT\EOT>\STX\EOT\DC2\EOT\145\SI\EOT\RS\SUB\235\SOH\n\
     \If non-zero, then this will be used as the pending channel ID on the wire\n\
     \protocol to initate the funding request. This is an optional field, and\n\
     \should only be set if the responder is already expecting a specific pending\n\
     \channel ID.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT>\STX\EOT\EOT\DC2\ACK\219\SO\EOT\211\SO\EM\n\
+    \\ENQ\EOT>\STX\EOT\EOT\DC2\ACK\145\SI\EOT\137\SI\EM\n\
     \\r\n\
-    \\ENQ\EOT>\STX\EOT\ENQ\DC2\EOT\219\SO\EOT\t\n\
+    \\ENQ\EOT>\STX\EOT\ENQ\DC2\EOT\145\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT>\STX\EOT\SOH\DC2\EOT\219\SO\n\
+    \\ENQ\EOT>\STX\EOT\SOH\DC2\EOT\145\SI\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT>\STX\EOT\ETX\DC2\EOT\219\SO\FS\GS\n\
+    \\ENQ\EOT>\STX\EOT\ETX\DC2\EOT\145\SI\FS\GS\n\
     \\252\STX\n\
-    \\EOT\EOT>\STX\ENQ\DC2\EOT\228\SO\EOT\ESC\SUB\237\STX\n\
+    \\EOT\EOT>\STX\ENQ\DC2\EOT\154\SI\EOT\ESC\SUB\237\STX\n\
     \This uint32 indicates if this channel is to be considered 'frozen'. A frozen\n\
     \channel does not allow a cooperative channel close by the initiator. The\n\
     \thaw_height is the height that this restriction stops applying to the\n\
@@ -55258,49 +57439,49 @@ packedFileDescriptor
     \the value is less than 500,000, or as an absolute height otherwise.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT>\STX\ENQ\EOT\DC2\ACK\228\SO\EOT\219\SO\RS\n\
+    \\ENQ\EOT>\STX\ENQ\EOT\DC2\ACK\154\SI\EOT\145\SI\RS\n\
     \\r\n\
-    \\ENQ\EOT>\STX\ENQ\ENQ\DC2\EOT\228\SO\EOT\n\
+    \\ENQ\EOT>\STX\ENQ\ENQ\DC2\EOT\154\SI\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT>\STX\ENQ\SOH\DC2\EOT\228\SO\v\SYN\n\
+    \\ENQ\EOT>\STX\ENQ\SOH\DC2\EOT\154\SI\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT>\STX\ENQ\ETX\DC2\EOT\228\SO\EM\SUB\n\
+    \\ENQ\EOT>\STX\ENQ\ETX\DC2\EOT\154\SI\EM\SUB\n\
     \\f\n\
-    \\STX\EOT?\DC2\ACK\231\SO\NUL\254\SO\SOH\n\
+    \\STX\EOT?\DC2\ACK\157\SI\NUL\180\SI\SOH\n\
     \\v\n\
-    \\ETX\EOT?\SOH\DC2\EOT\231\SO\b\DLE\n\
+    \\ETX\EOT?\SOH\DC2\EOT\157\SI\b\DLE\n\
     \\217\SOH\n\
-    \\EOT\EOT?\STX\NUL\DC2\EOT\237\SO\EOT\RS\SUB\202\SOH\n\
+    \\EOT\EOT?\STX\NUL\DC2\EOT\163\SI\EOT\RS\SUB\202\SOH\n\
     \A unique identifier of 32 random bytes that will be used as the pending\n\
     \channel ID to identify the PSBT state machine when interacting with it and\n\
     \on the wire protocol to initiate the funding request.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT?\STX\NUL\EOT\DC2\ACK\237\SO\EOT\231\SO\DC2\n\
+    \\ENQ\EOT?\STX\NUL\EOT\DC2\ACK\163\SI\EOT\157\SI\DC2\n\
     \\r\n\
-    \\ENQ\EOT?\STX\NUL\ENQ\DC2\EOT\237\SO\EOT\t\n\
+    \\ENQ\EOT?\STX\NUL\ENQ\DC2\EOT\163\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT?\STX\NUL\SOH\DC2\EOT\237\SO\n\
+    \\ENQ\EOT?\STX\NUL\SOH\DC2\EOT\163\SI\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT?\STX\NUL\ETX\DC2\EOT\237\SO\FS\GS\n\
+    \\ENQ\EOT?\STX\NUL\ETX\DC2\EOT\163\SI\FS\GS\n\
     \\137\SOH\n\
-    \\EOT\EOT?\STX\SOH\DC2\EOT\243\SO\EOT\CAN\SUB{\n\
+    \\EOT\EOT?\STX\SOH\DC2\EOT\169\SI\EOT\CAN\SUB{\n\
     \An optional base PSBT the new channel output will be added to. If this is\n\
     \non-empty, it must be a binary serialized PSBT.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT?\STX\SOH\EOT\DC2\ACK\243\SO\EOT\237\SO\RS\n\
+    \\ENQ\EOT?\STX\SOH\EOT\DC2\ACK\169\SI\EOT\163\SI\RS\n\
     \\r\n\
-    \\ENQ\EOT?\STX\SOH\ENQ\DC2\EOT\243\SO\EOT\t\n\
+    \\ENQ\EOT?\STX\SOH\ENQ\DC2\EOT\169\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT?\STX\SOH\SOH\DC2\EOT\243\SO\n\
+    \\ENQ\EOT?\STX\SOH\SOH\DC2\EOT\169\SI\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT?\STX\SOH\ETX\DC2\EOT\243\SO\SYN\ETB\n\
+    \\ENQ\EOT?\STX\SOH\ETX\DC2\EOT\169\SI\SYN\ETB\n\
     \\197\ETX\n\
-    \\EOT\EOT?\STX\STX\DC2\EOT\253\SO\EOT\CAN\SUB\182\ETX\n\
+    \\EOT\EOT?\STX\STX\DC2\EOT\179\SI\EOT\CAN\SUB\182\ETX\n\
     \If a channel should be part of a batch (multiple channel openings in one\n\
     \transaction), it can be dangerous if the whole batch transaction is\n\
     \published too early before all channel opening negotiations are completed.\n\
@@ -55309,411 +57490,411 @@ packedFileDescriptor
     \this flag should be set to true for every channel but the very last.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT?\STX\STX\EOT\DC2\ACK\253\SO\EOT\243\SO\CAN\n\
+    \\ENQ\EOT?\STX\STX\EOT\DC2\ACK\179\SI\EOT\169\SI\CAN\n\
     \\r\n\
-    \\ENQ\EOT?\STX\STX\ENQ\DC2\EOT\253\SO\EOT\b\n\
+    \\ENQ\EOT?\STX\STX\ENQ\DC2\EOT\179\SI\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT?\STX\STX\SOH\DC2\EOT\253\SO\t\DC3\n\
+    \\ENQ\EOT?\STX\STX\SOH\DC2\EOT\179\SI\t\DC3\n\
     \\r\n\
-    \\ENQ\EOT?\STX\STX\ETX\DC2\EOT\253\SO\SYN\ETB\n\
+    \\ENQ\EOT?\STX\STX\ETX\DC2\EOT\179\SI\SYN\ETB\n\
     \\f\n\
-    \\STX\EOT@\DC2\ACK\128\SI\NUL\142\SI\SOH\n\
+    \\STX\EOT@\DC2\ACK\182\SI\NUL\196\SI\SOH\n\
     \\v\n\
-    \\ETX\EOT@\SOH\DC2\EOT\128\SI\b\DC3\n\
+    \\ETX\EOT@\SOH\DC2\EOT\182\SI\b\DC3\n\
     \\SO\n\
-    \\EOT\EOT@\b\NUL\DC2\ACK\129\SI\EOT\141\SI\ENQ\n\
+    \\EOT\EOT@\b\NUL\DC2\ACK\183\SI\EOT\195\SI\ENQ\n\
     \\r\n\
-    \\ENQ\EOT@\b\NUL\SOH\DC2\EOT\129\SI\n\
+    \\ENQ\EOT@\b\NUL\SOH\DC2\EOT\183\SI\n\
     \\SO\n\
     \\149\SOH\n\
-    \\EOT\EOT@\STX\NUL\DC2\EOT\134\SI\b*\SUB\134\SOH\n\
+    \\EOT\EOT@\STX\NUL\DC2\EOT\188\SI\b*\SUB\134\SOH\n\
     \A channel shim where the channel point was fully constructed outside\n\
     \of lnd's wallet and the transaction might already be published.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT@\STX\NUL\ACK\DC2\EOT\134\SI\b\NAK\n\
+    \\ENQ\EOT@\STX\NUL\ACK\DC2\EOT\188\SI\b\NAK\n\
     \\r\n\
-    \\ENQ\EOT@\STX\NUL\SOH\DC2\EOT\134\SI\SYN%\n\
+    \\ENQ\EOT@\STX\NUL\SOH\DC2\EOT\188\SI\SYN%\n\
     \\r\n\
-    \\ENQ\EOT@\STX\NUL\ETX\DC2\EOT\134\SI()\n\
+    \\ENQ\EOT@\STX\NUL\ETX\DC2\EOT\188\SI()\n\
     \a\n\
-    \\EOT\EOT@\STX\SOH\DC2\EOT\140\SI\b\US\SUBS\n\
+    \\EOT\EOT@\STX\SOH\DC2\EOT\194\SI\b\US\SUBS\n\
     \A channel shim that uses a PSBT to fund and sign the channel funding\n\
     \transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT@\STX\SOH\ACK\DC2\EOT\140\SI\b\DLE\n\
+    \\ENQ\EOT@\STX\SOH\ACK\DC2\EOT\194\SI\b\DLE\n\
     \\r\n\
-    \\ENQ\EOT@\STX\SOH\SOH\DC2\EOT\140\SI\DC1\SUB\n\
+    \\ENQ\EOT@\STX\SOH\SOH\DC2\EOT\194\SI\DC1\SUB\n\
     \\r\n\
-    \\ENQ\EOT@\STX\SOH\ETX\DC2\EOT\140\SI\GS\RS\n\
+    \\ENQ\EOT@\STX\SOH\ETX\DC2\EOT\194\SI\GS\RS\n\
     \\f\n\
-    \\STX\EOTA\DC2\ACK\144\SI\NUL\147\SI\SOH\n\
+    \\STX\EOTA\DC2\ACK\198\SI\NUL\201\SI\SOH\n\
     \\v\n\
-    \\ETX\EOTA\SOH\DC2\EOT\144\SI\b\EM\n\
+    \\ETX\EOTA\SOH\DC2\EOT\198\SI\b\EM\n\
     \U\n\
-    \\EOT\EOTA\STX\NUL\DC2\EOT\146\SI\EOT\RS\SUBG The pending channel ID of the channel to cancel the funding shim for.\n\
+    \\EOT\EOTA\STX\NUL\DC2\EOT\200\SI\EOT\RS\SUBG The pending channel ID of the channel to cancel the funding shim for.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTA\STX\NUL\EOT\DC2\ACK\146\SI\EOT\144\SI\ESC\n\
+    \\ENQ\EOTA\STX\NUL\EOT\DC2\ACK\200\SI\EOT\198\SI\ESC\n\
     \\r\n\
-    \\ENQ\EOTA\STX\NUL\ENQ\DC2\EOT\146\SI\EOT\t\n\
+    \\ENQ\EOTA\STX\NUL\ENQ\DC2\EOT\200\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTA\STX\NUL\SOH\DC2\EOT\146\SI\n\
+    \\ENQ\EOTA\STX\NUL\SOH\DC2\EOT\200\SI\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOTA\STX\NUL\ETX\DC2\EOT\146\SI\FS\GS\n\
+    \\ENQ\EOTA\STX\NUL\ETX\DC2\EOT\200\SI\FS\GS\n\
     \\f\n\
-    \\STX\EOTB\DC2\ACK\149\SI\NUL\159\SI\SOH\n\
+    \\STX\EOTB\DC2\ACK\203\SI\NUL\213\SI\SOH\n\
     \\v\n\
-    \\ETX\EOTB\SOH\DC2\EOT\149\SI\b\EM\n\
+    \\ETX\EOTB\SOH\DC2\EOT\203\SI\b\EM\n\
     \\170\SOH\n\
-    \\EOT\EOTB\STX\NUL\DC2\EOT\155\SI\EOT\SUB\SUB\155\SOH\n\
+    \\EOT\EOTB\STX\NUL\DC2\EOT\209\SI\EOT\SUB\SUB\155\SOH\n\
     \The funded but not yet signed PSBT that sends the exact channel capacity\n\
     \amount to the PK script returned in the open channel message in a previous\n\
     \step.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTB\STX\NUL\EOT\DC2\ACK\155\SI\EOT\149\SI\ESC\n\
+    \\ENQ\EOTB\STX\NUL\EOT\DC2\ACK\209\SI\EOT\203\SI\ESC\n\
     \\r\n\
-    \\ENQ\EOTB\STX\NUL\ENQ\DC2\EOT\155\SI\EOT\t\n\
+    \\ENQ\EOTB\STX\NUL\ENQ\DC2\EOT\209\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTB\STX\NUL\SOH\DC2\EOT\155\SI\n\
+    \\ENQ\EOTB\STX\NUL\SOH\DC2\EOT\209\SI\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOTB\STX\NUL\ETX\DC2\EOT\155\SI\CAN\EM\n\
+    \\ENQ\EOTB\STX\NUL\ETX\DC2\EOT\209\SI\CAN\EM\n\
     \J\n\
-    \\EOT\EOTB\STX\SOH\DC2\EOT\158\SI\EOT\RS\SUB< The pending channel ID of the channel to get the PSBT for.\n\
+    \\EOT\EOTB\STX\SOH\DC2\EOT\212\SI\EOT\RS\SUB< The pending channel ID of the channel to get the PSBT for.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTB\STX\SOH\EOT\DC2\ACK\158\SI\EOT\155\SI\SUB\n\
+    \\ENQ\EOTB\STX\SOH\EOT\DC2\ACK\212\SI\EOT\209\SI\SUB\n\
     \\r\n\
-    \\ENQ\EOTB\STX\SOH\ENQ\DC2\EOT\158\SI\EOT\t\n\
+    \\ENQ\EOTB\STX\SOH\ENQ\DC2\EOT\212\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTB\STX\SOH\SOH\DC2\EOT\158\SI\n\
+    \\ENQ\EOTB\STX\SOH\SOH\DC2\EOT\212\SI\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOTB\STX\SOH\ETX\DC2\EOT\158\SI\FS\GS\n\
+    \\ENQ\EOTB\STX\SOH\ETX\DC2\EOT\212\SI\FS\GS\n\
     \\f\n\
-    \\STX\EOTC\DC2\ACK\161\SI\NUL\178\SI\SOH\n\
+    \\STX\EOTC\DC2\ACK\215\SI\NUL\232\SI\SOH\n\
     \\v\n\
-    \\ETX\EOTC\SOH\DC2\EOT\161\SI\b\ESC\n\
+    \\ETX\EOTC\SOH\DC2\EOT\215\SI\b\ESC\n\
     \\227\SOH\n\
-    \\EOT\EOTC\STX\NUL\DC2\EOT\167\SI\EOT\SUB\SUB\212\SOH\n\
+    \\EOT\EOTC\STX\NUL\DC2\EOT\221\SI\EOT\SUB\SUB\212\SOH\n\
     \The funded PSBT that contains all witness data to send the exact channel\n\
     \capacity amount to the PK script returned in the open channel message in a\n\
     \previous step. Cannot be set at the same time as final_raw_tx.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTC\STX\NUL\EOT\DC2\ACK\167\SI\EOT\161\SI\GS\n\
+    \\ENQ\EOTC\STX\NUL\EOT\DC2\ACK\221\SI\EOT\215\SI\GS\n\
     \\r\n\
-    \\ENQ\EOTC\STX\NUL\ENQ\DC2\EOT\167\SI\EOT\t\n\
+    \\ENQ\EOTC\STX\NUL\ENQ\DC2\EOT\221\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTC\STX\NUL\SOH\DC2\EOT\167\SI\n\
+    \\ENQ\EOTC\STX\NUL\SOH\DC2\EOT\221\SI\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOTC\STX\NUL\ETX\DC2\EOT\167\SI\CAN\EM\n\
+    \\ENQ\EOTC\STX\NUL\ETX\DC2\EOT\221\SI\CAN\EM\n\
     \J\n\
-    \\EOT\EOTC\STX\SOH\DC2\EOT\170\SI\EOT\RS\SUB< The pending channel ID of the channel to get the PSBT for.\n\
+    \\EOT\EOTC\STX\SOH\DC2\EOT\224\SI\EOT\RS\SUB< The pending channel ID of the channel to get the PSBT for.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTC\STX\SOH\EOT\DC2\ACK\170\SI\EOT\167\SI\SUB\n\
+    \\ENQ\EOTC\STX\SOH\EOT\DC2\ACK\224\SI\EOT\221\SI\SUB\n\
     \\r\n\
-    \\ENQ\EOTC\STX\SOH\ENQ\DC2\EOT\170\SI\EOT\t\n\
+    \\ENQ\EOTC\STX\SOH\ENQ\DC2\EOT\224\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTC\STX\SOH\SOH\DC2\EOT\170\SI\n\
+    \\ENQ\EOTC\STX\SOH\SOH\DC2\EOT\224\SI\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOTC\STX\SOH\ETX\DC2\EOT\170\SI\FS\GS\n\
+    \\ENQ\EOTC\STX\SOH\ETX\DC2\EOT\224\SI\FS\GS\n\
     \\193\SOH\n\
-    \\EOT\EOTC\STX\STX\DC2\EOT\177\SI\EOT\ESC\SUB\178\SOH\n\
+    \\EOT\EOTC\STX\STX\DC2\EOT\231\SI\EOT\ESC\SUB\178\SOH\n\
     \As an alternative to the signed PSBT with all witness data, the final raw\n\
     \wire format transaction can also be specified directly. Cannot be set at the\n\
     \same time as signed_psbt.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTC\STX\STX\EOT\DC2\ACK\177\SI\EOT\170\SI\RS\n\
+    \\ENQ\EOTC\STX\STX\EOT\DC2\ACK\231\SI\EOT\224\SI\RS\n\
     \\r\n\
-    \\ENQ\EOTC\STX\STX\ENQ\DC2\EOT\177\SI\EOT\t\n\
+    \\ENQ\EOTC\STX\STX\ENQ\DC2\EOT\231\SI\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTC\STX\STX\SOH\DC2\EOT\177\SI\n\
+    \\ENQ\EOTC\STX\STX\SOH\DC2\EOT\231\SI\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOTC\STX\STX\ETX\DC2\EOT\177\SI\EM\SUB\n\
+    \\ENQ\EOTC\STX\STX\ETX\DC2\EOT\231\SI\EM\SUB\n\
     \\f\n\
-    \\STX\EOTD\DC2\ACK\180\SI\NUL\207\SI\SOH\n\
+    \\STX\EOTD\DC2\ACK\234\SI\NUL\133\DLE\SOH\n\
     \\v\n\
-    \\ETX\EOTD\SOH\DC2\EOT\180\SI\b\FS\n\
+    \\ETX\EOTD\SOH\DC2\EOT\234\SI\b\FS\n\
     \\SO\n\
-    \\EOT\EOTD\b\NUL\DC2\ACK\181\SI\EOT\206\SI\ENQ\n\
+    \\EOT\EOTD\b\NUL\DC2\ACK\235\SI\EOT\132\DLE\ENQ\n\
     \\r\n\
-    \\ENQ\EOTD\b\NUL\SOH\DC2\EOT\181\SI\n\
+    \\ENQ\EOTD\b\NUL\SOH\DC2\EOT\235\SI\n\
     \\DC1\n\
     \\194\SOH\n\
-    \\EOT\EOTD\STX\NUL\DC2\EOT\187\SI\b&\SUB\179\SOH\n\
+    \\EOT\EOTD\STX\NUL\DC2\EOT\241\SI\b&\SUB\179\SOH\n\
     \The funding shim to register. This should be used before any\n\
     \channel funding has began by the remote party, as it is intended as a\n\
     \preparatory step for the full channel funding.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTD\STX\NUL\ACK\DC2\EOT\187\SI\b\DC3\n\
+    \\ENQ\EOTD\STX\NUL\ACK\DC2\EOT\241\SI\b\DC3\n\
     \\r\n\
-    \\ENQ\EOTD\STX\NUL\SOH\DC2\EOT\187\SI\DC4!\n\
+    \\ENQ\EOTD\STX\NUL\SOH\DC2\EOT\241\SI\DC4!\n\
     \\r\n\
-    \\ENQ\EOTD\STX\NUL\ETX\DC2\EOT\187\SI$%\n\
+    \\ENQ\EOTD\STX\NUL\ETX\DC2\EOT\241\SI$%\n\
     \C\n\
-    \\EOT\EOTD\STX\SOH\DC2\EOT\190\SI\b*\SUB5 Used to cancel an existing registered funding shim.\n\
+    \\EOT\EOTD\STX\SOH\DC2\EOT\244\SI\b*\SUB5 Used to cancel an existing registered funding shim.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTD\STX\SOH\ACK\DC2\EOT\190\SI\b\EM\n\
+    \\ENQ\EOTD\STX\SOH\ACK\DC2\EOT\244\SI\b\EM\n\
     \\r\n\
-    \\ENQ\EOTD\STX\SOH\SOH\DC2\EOT\190\SI\SUB%\n\
+    \\ENQ\EOTD\STX\SOH\SOH\DC2\EOT\244\SI\SUB%\n\
     \\r\n\
-    \\ENQ\EOTD\STX\SOH\ETX\DC2\EOT\190\SI()\n\
+    \\ENQ\EOTD\STX\SOH\ETX\DC2\EOT\244\SI()\n\
     \\181\SOH\n\
-    \\EOT\EOTD\STX\STX\DC2\EOT\197\SI\b*\SUB\166\SOH\n\
+    \\EOT\EOTD\STX\STX\DC2\EOT\251\SI\b*\SUB\166\SOH\n\
     \Used to continue a funding flow that was initiated to be executed\n\
     \through a PSBT. This step verifies that the PSBT contains the correct\n\
     \outputs to fund the channel.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTD\STX\STX\ACK\DC2\EOT\197\SI\b\EM\n\
+    \\ENQ\EOTD\STX\STX\ACK\DC2\EOT\251\SI\b\EM\n\
     \\r\n\
-    \\ENQ\EOTD\STX\STX\SOH\DC2\EOT\197\SI\SUB%\n\
+    \\ENQ\EOTD\STX\STX\SOH\DC2\EOT\251\SI\SUB%\n\
     \\r\n\
-    \\ENQ\EOTD\STX\STX\ETX\DC2\EOT\197\SI()\n\
+    \\ENQ\EOTD\STX\STX\ETX\DC2\EOT\251\SI()\n\
     \\238\SOH\n\
-    \\EOT\EOTD\STX\ETX\DC2\EOT\205\SI\b.\SUB\223\SOH\n\
+    \\EOT\EOTD\STX\ETX\DC2\EOT\131\DLE\b.\SUB\223\SOH\n\
     \Used to continue a funding flow that was initiated to be executed\n\
     \through a PSBT. This step finalizes the funded and signed PSBT, finishes\n\
     \negotiation with the peer and finally publishes the resulting funding\n\
     \transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTD\STX\ETX\ACK\DC2\EOT\205\SI\b\ESC\n\
+    \\ENQ\EOTD\STX\ETX\ACK\DC2\EOT\131\DLE\b\ESC\n\
     \\r\n\
-    \\ENQ\EOTD\STX\ETX\SOH\DC2\EOT\205\SI\FS)\n\
+    \\ENQ\EOTD\STX\ETX\SOH\DC2\EOT\131\DLE\FS)\n\
     \\r\n\
-    \\ENQ\EOTD\STX\ETX\ETX\DC2\EOT\205\SI,-\n\
+    \\ENQ\EOTD\STX\ETX\ETX\DC2\EOT\131\DLE,-\n\
     \\f\n\
-    \\STX\EOTE\DC2\ACK\209\SI\NUL\210\SI\SOH\n\
+    \\STX\EOTE\DC2\ACK\135\DLE\NUL\136\DLE\SOH\n\
     \\v\n\
-    \\ETX\EOTE\SOH\DC2\EOT\209\SI\b\FS\n\
+    \\ETX\EOTE\SOH\DC2\EOT\135\DLE\b\FS\n\
     \\f\n\
-    \\STX\EOTF\DC2\ACK\212\SI\NUL\234\SI\SOH\n\
+    \\STX\EOTF\DC2\ACK\138\DLE\NUL\160\DLE\SOH\n\
     \\v\n\
-    \\ETX\EOTF\SOH\DC2\EOT\212\SI\b\DC3\n\
+    \\ETX\EOTF\SOH\DC2\EOT\138\DLE\b\DC3\n\
     \G\n\
-    \\EOT\EOTF\STX\NUL\DC2\EOT\214\SI\EOT\SYN\SUB9 The direction within the channel that the htlc was sent\n\
+    \\EOT\EOTF\STX\NUL\DC2\EOT\140\DLE\EOT\SYN\SUB9 The direction within the channel that the htlc was sent\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTF\STX\NUL\EOT\DC2\ACK\214\SI\EOT\212\SI\NAK\n\
+    \\ENQ\EOTF\STX\NUL\EOT\DC2\ACK\140\DLE\EOT\138\DLE\NAK\n\
     \\r\n\
-    \\ENQ\EOTF\STX\NUL\ENQ\DC2\EOT\214\SI\EOT\b\n\
+    \\ENQ\EOTF\STX\NUL\ENQ\DC2\EOT\140\DLE\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTF\STX\NUL\SOH\DC2\EOT\214\SI\t\DC1\n\
+    \\ENQ\EOTF\STX\NUL\SOH\DC2\EOT\140\DLE\t\DC1\n\
     \\r\n\
-    \\ENQ\EOTF\STX\NUL\ETX\DC2\EOT\214\SI\DC4\NAK\n\
+    \\ENQ\EOTF\STX\NUL\ETX\DC2\EOT\140\DLE\DC4\NAK\n\
     \+\n\
-    \\EOT\EOTF\STX\SOH\DC2\EOT\217\SI\EOT\NAK\SUB\GS The total value of the htlc\n\
+    \\EOT\EOTF\STX\SOH\DC2\EOT\143\DLE\EOT\NAK\SUB\GS The total value of the htlc\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTF\STX\SOH\EOT\DC2\ACK\217\SI\EOT\214\SI\SYN\n\
+    \\ENQ\EOTF\STX\SOH\EOT\DC2\ACK\143\DLE\EOT\140\DLE\SYN\n\
     \\r\n\
-    \\ENQ\EOTF\STX\SOH\ENQ\DC2\EOT\217\SI\EOT\t\n\
+    \\ENQ\EOTF\STX\SOH\ENQ\DC2\EOT\143\DLE\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTF\STX\SOH\SOH\DC2\EOT\217\SI\n\
+    \\ENQ\EOTF\STX\SOH\SOH\DC2\EOT\143\DLE\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOTF\STX\SOH\ETX\DC2\EOT\217\SI\DC3\DC4\n\
+    \\ENQ\EOTF\STX\SOH\ETX\DC2\EOT\143\DLE\DC3\DC4\n\
     \F\n\
-    \\EOT\EOTF\STX\STX\DC2\EOT\220\SI\EOT\CAN\SUB8 The final output to be swept back to the user's wallet\n\
+    \\EOT\EOTF\STX\STX\DC2\EOT\146\DLE\EOT\CAN\SUB8 The final output to be swept back to the user's wallet\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTF\STX\STX\EOT\DC2\ACK\220\SI\EOT\217\SI\NAK\n\
+    \\ENQ\EOTF\STX\STX\EOT\DC2\ACK\146\DLE\EOT\143\DLE\NAK\n\
     \\r\n\
-    \\ENQ\EOTF\STX\STX\ENQ\DC2\EOT\220\SI\EOT\n\
+    \\ENQ\EOTF\STX\STX\ENQ\DC2\EOT\146\DLE\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTF\STX\STX\SOH\DC2\EOT\220\SI\v\DC3\n\
+    \\ENQ\EOTF\STX\STX\SOH\DC2\EOT\146\DLE\v\DC3\n\
     \\r\n\
-    \\ENQ\EOTF\STX\STX\ETX\DC2\EOT\220\SI\SYN\ETB\n\
+    \\ENQ\EOTF\STX\STX\ETX\DC2\EOT\146\DLE\SYN\ETB\n\
     \M\n\
-    \\EOT\EOTF\STX\ETX\DC2\EOT\223\SI\EOT\US\SUB? The next block height at which we can spend the current stage\n\
+    \\EOT\EOTF\STX\ETX\DC2\EOT\149\DLE\EOT\US\SUB? The next block height at which we can spend the current stage\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTF\STX\ETX\EOT\DC2\ACK\223\SI\EOT\220\SI\CAN\n\
+    \\ENQ\EOTF\STX\ETX\EOT\DC2\ACK\149\DLE\EOT\146\DLE\CAN\n\
     \\r\n\
-    \\ENQ\EOTF\STX\ETX\ENQ\DC2\EOT\223\SI\EOT\n\
+    \\ENQ\EOTF\STX\ETX\ENQ\DC2\EOT\149\DLE\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTF\STX\ETX\SOH\DC2\EOT\223\SI\v\SUB\n\
+    \\ENQ\EOTF\STX\ETX\SOH\DC2\EOT\149\DLE\v\SUB\n\
     \\r\n\
-    \\ENQ\EOTF\STX\ETX\ETX\DC2\EOT\223\SI\GS\RS\n\
+    \\ENQ\EOTF\STX\ETX\ETX\DC2\EOT\149\DLE\GS\RS\n\
     \\161\SOH\n\
-    \\EOT\EOTF\STX\EOT\DC2\EOT\230\SI\EOT\"\SUB\146\SOH\n\
+    \\EOT\EOTF\STX\EOT\DC2\EOT\156\DLE\EOT\"\SUB\146\SOH\n\
     \The number of blocks remaining until the current stage can be swept.\n\
     \Negative values indicate how many blocks have passed since becoming\n\
     \mature.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTF\STX\EOT\EOT\DC2\ACK\230\SI\EOT\223\SI\US\n\
+    \\ENQ\EOTF\STX\EOT\EOT\DC2\ACK\156\DLE\EOT\149\DLE\US\n\
     \\r\n\
-    \\ENQ\EOTF\STX\EOT\ENQ\DC2\EOT\230\SI\EOT\t\n\
+    \\ENQ\EOTF\STX\EOT\ENQ\DC2\EOT\156\DLE\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTF\STX\EOT\SOH\DC2\EOT\230\SI\n\
+    \\ENQ\EOTF\STX\EOT\SOH\DC2\EOT\156\DLE\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOTF\STX\EOT\ETX\DC2\EOT\230\SI !\n\
+    \\ENQ\EOTF\STX\EOT\ETX\DC2\EOT\156\DLE !\n\
     \V\n\
-    \\EOT\EOTF\STX\ENQ\DC2\EOT\233\SI\EOT\NAK\SUBH Indicates whether the htlc is in its first or second stage of recovery\n\
+    \\EOT\EOTF\STX\ENQ\DC2\EOT\159\DLE\EOT\NAK\SUBH Indicates whether the htlc is in its first or second stage of recovery\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTF\STX\ENQ\EOT\DC2\ACK\233\SI\EOT\230\SI\"\n\
+    \\ENQ\EOTF\STX\ENQ\EOT\DC2\ACK\159\DLE\EOT\156\DLE\"\n\
     \\r\n\
-    \\ENQ\EOTF\STX\ENQ\ENQ\DC2\EOT\233\SI\EOT\n\
+    \\ENQ\EOTF\STX\ENQ\ENQ\DC2\EOT\159\DLE\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTF\STX\ENQ\SOH\DC2\EOT\233\SI\v\DLE\n\
+    \\ENQ\EOTF\STX\ENQ\SOH\DC2\EOT\159\DLE\v\DLE\n\
     \\r\n\
-    \\ENQ\EOTF\STX\ENQ\ETX\DC2\EOT\233\SI\DC3\DC4\n\
+    \\ENQ\EOTF\STX\ENQ\ETX\DC2\EOT\159\DLE\DC3\DC4\n\
     \\f\n\
-    \\STX\EOTG\DC2\ACK\236\SI\NUL\237\SI\SOH\n\
+    \\STX\EOTG\DC2\ACK\162\DLE\NUL\163\DLE\SOH\n\
     \\v\n\
-    \\ETX\EOTG\SOH\DC2\EOT\236\SI\b\RS\n\
+    \\ETX\EOTG\SOH\DC2\EOT\162\DLE\b\RS\n\
     \\f\n\
-    \\STX\EOTH\DC2\ACK\238\SI\NUL\139\DC1\SOH\n\
+    \\STX\EOTH\DC2\ACK\164\DLE\NUL\193\DC1\SOH\n\
     \\v\n\
-    \\ETX\EOTH\SOH\DC2\EOT\238\SI\b\US\n\
+    \\ETX\EOTH\SOH\DC2\EOT\164\DLE\b\US\n\
     \\SO\n\
-    \\EOT\EOTH\ETX\NUL\DC2\ACK\239\SI\EOT\135\DLE\ENQ\n\
+    \\EOT\EOTH\ETX\NUL\DC2\ACK\165\DLE\EOT\189\DLE\ENQ\n\
     \\r\n\
-    \\ENQ\EOTH\ETX\NUL\SOH\DC2\EOT\239\SI\f\SUB\n\
+    \\ENQ\EOTH\ETX\NUL\SOH\DC2\EOT\165\DLE\f\SUB\n\
     \\SO\n\
-    \\ACK\EOTH\ETX\NUL\STX\NUL\DC2\EOT\240\SI\b#\n\
+    \\ACK\EOTH\ETX\NUL\STX\NUL\DC2\EOT\166\DLE\b#\n\
     \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\NUL\EOT\DC2\ACK\240\SI\b\239\SI\FS\n\
+    \\a\EOTH\ETX\NUL\STX\NUL\EOT\DC2\ACK\166\DLE\b\165\DLE\FS\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\NUL\ENQ\DC2\EOT\240\SI\b\SO\n\
+    \\a\EOTH\ETX\NUL\STX\NUL\ENQ\DC2\EOT\166\DLE\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\NUL\SOH\DC2\EOT\240\SI\SI\RS\n\
+    \\a\EOTH\ETX\NUL\STX\NUL\SOH\DC2\EOT\166\DLE\SI\RS\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\NUL\ETX\DC2\EOT\240\SI!\"\n\
+    \\a\EOTH\ETX\NUL\STX\NUL\ETX\DC2\EOT\166\DLE!\"\n\
     \\SO\n\
-    \\ACK\EOTH\ETX\NUL\STX\SOH\DC2\EOT\241\SI\b!\n\
+    \\ACK\EOTH\ETX\NUL\STX\SOH\DC2\EOT\167\DLE\b!\n\
     \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\SOH\EOT\DC2\ACK\241\SI\b\240\SI#\n\
+    \\a\EOTH\ETX\NUL\STX\SOH\EOT\DC2\ACK\167\DLE\b\166\DLE#\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\SOH\ENQ\DC2\EOT\241\SI\b\SO\n\
+    \\a\EOTH\ETX\NUL\STX\SOH\ENQ\DC2\EOT\167\DLE\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\SOH\SOH\DC2\EOT\241\SI\SI\FS\n\
+    \\a\EOTH\ETX\NUL\STX\SOH\SOH\DC2\EOT\167\DLE\SI\FS\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\SOH\ETX\DC2\EOT\241\SI\US \n\
+    \\a\EOTH\ETX\NUL\STX\SOH\ETX\DC2\EOT\167\DLE\US \n\
     \\SO\n\
-    \\ACK\EOTH\ETX\NUL\STX\STX\DC2\EOT\243\SI\b\ESC\n\
+    \\ACK\EOTH\ETX\NUL\STX\STX\DC2\EOT\169\DLE\b\ESC\n\
     \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\STX\EOT\DC2\ACK\243\SI\b\241\SI!\n\
+    \\a\EOTH\ETX\NUL\STX\STX\EOT\DC2\ACK\169\DLE\b\167\DLE!\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\STX\ENQ\DC2\EOT\243\SI\b\r\n\
+    \\a\EOTH\ETX\NUL\STX\STX\ENQ\DC2\EOT\169\DLE\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\STX\SOH\DC2\EOT\243\SI\SO\SYN\n\
+    \\a\EOTH\ETX\NUL\STX\STX\SOH\DC2\EOT\169\DLE\SO\SYN\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\STX\ETX\DC2\EOT\243\SI\EM\SUB\n\
+    \\a\EOTH\ETX\NUL\STX\STX\ETX\DC2\EOT\169\DLE\EM\SUB\n\
     \\SO\n\
-    \\ACK\EOTH\ETX\NUL\STX\ETX\DC2\EOT\245\SI\b \n\
+    \\ACK\EOTH\ETX\NUL\STX\ETX\DC2\EOT\171\DLE\b \n\
     \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\ETX\EOT\DC2\ACK\245\SI\b\243\SI\ESC\n\
+    \\a\EOTH\ETX\NUL\STX\ETX\EOT\DC2\ACK\171\DLE\b\169\DLE\ESC\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\ETX\ENQ\DC2\EOT\245\SI\b\r\n\
+    \\a\EOTH\ETX\NUL\STX\ETX\ENQ\DC2\EOT\171\DLE\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\ETX\SOH\DC2\EOT\245\SI\SO\ESC\n\
+    \\a\EOTH\ETX\NUL\STX\ETX\SOH\DC2\EOT\171\DLE\SO\ESC\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\ETX\ETX\DC2\EOT\245\SI\RS\US\n\
+    \\a\EOTH\ETX\NUL\STX\ETX\ETX\DC2\EOT\171\DLE\RS\US\n\
     \\SO\n\
-    \\ACK\EOTH\ETX\NUL\STX\EOT\DC2\EOT\246\SI\b!\n\
+    \\ACK\EOTH\ETX\NUL\STX\EOT\DC2\EOT\172\DLE\b!\n\
     \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\EOT\EOT\DC2\ACK\246\SI\b\245\SI \n\
+    \\a\EOTH\ETX\NUL\STX\EOT\EOT\DC2\ACK\172\DLE\b\171\DLE \n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\EOT\ENQ\DC2\EOT\246\SI\b\r\n\
+    \\a\EOTH\ETX\NUL\STX\EOT\ENQ\DC2\EOT\172\DLE\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\EOT\SOH\DC2\EOT\246\SI\SO\FS\n\
+    \\a\EOTH\ETX\NUL\STX\EOT\SOH\DC2\EOT\172\DLE\SO\FS\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\EOT\ETX\DC2\EOT\246\SI\US \n\
+    \\a\EOTH\ETX\NUL\STX\EOT\ETX\DC2\EOT\172\DLE\US \n\
     \X\n\
-    \\ACK\EOTH\ETX\NUL\STX\ENQ\DC2\EOT\250\SI\b)\SUBH The minimum satoshis this node is required to reserve in its\n\
+    \\ACK\EOTH\ETX\NUL\STX\ENQ\DC2\EOT\176\DLE\b)\SUBH The minimum satoshis this node is required to reserve in its\n\
     \ balance.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\ENQ\EOT\DC2\ACK\250\SI\b\246\SI!\n\
+    \\a\EOTH\ETX\NUL\STX\ENQ\EOT\DC2\ACK\176\DLE\b\172\DLE!\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\ENQ\ENQ\DC2\EOT\250\SI\b\r\n\
+    \\a\EOTH\ETX\NUL\STX\ENQ\ENQ\DC2\EOT\176\DLE\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\ENQ\SOH\DC2\EOT\250\SI\SO$\n\
+    \\a\EOTH\ETX\NUL\STX\ENQ\SOH\DC2\EOT\176\DLE\SO$\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\ENQ\ETX\DC2\EOT\250\SI'(\n\
+    \\a\EOTH\ETX\NUL\STX\ENQ\ETX\DC2\EOT\176\DLE'(\n\
     \\\\n\
-    \\ACK\EOTH\ETX\NUL\STX\ACK\DC2\EOT\128\DLE\b*\SUBL\n\
+    \\ACK\EOTH\ETX\NUL\STX\ACK\DC2\EOT\182\DLE\b*\SUBL\n\
     \The minimum satoshis the other node is required to reserve in its\n\
     \balance.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\ACK\EOT\DC2\ACK\128\DLE\b\250\SI)\n\
+    \\a\EOTH\ETX\NUL\STX\ACK\EOT\DC2\ACK\182\DLE\b\176\DLE)\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\ACK\ENQ\DC2\EOT\128\DLE\b\r\n\
+    \\a\EOTH\ETX\NUL\STX\ACK\ENQ\DC2\EOT\182\DLE\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\ACK\SOH\DC2\EOT\128\DLE\SO%\n\
+    \\a\EOTH\ETX\NUL\STX\ACK\SOH\DC2\EOT\182\DLE\SO%\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\ACK\ETX\DC2\EOT\128\DLE()\n\
+    \\a\EOTH\ETX\NUL\STX\ACK\ETX\DC2\EOT\182\DLE()\n\
     \?\n\
-    \\ACK\EOTH\ETX\NUL\STX\a\DC2\EOT\131\DLE\b \SUB/ The party that initiated opening the channel.\n\
+    \\ACK\EOTH\ETX\NUL\STX\a\DC2\EOT\185\DLE\b \SUB/ The party that initiated opening the channel.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\a\EOT\DC2\ACK\131\DLE\b\128\DLE*\n\
+    \\a\EOTH\ETX\NUL\STX\a\EOT\DC2\ACK\185\DLE\b\182\DLE*\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\a\ACK\DC2\EOT\131\DLE\b\DC1\n\
+    \\a\EOTH\ETX\NUL\STX\a\ACK\DC2\EOT\185\DLE\b\DC1\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\a\SOH\DC2\EOT\131\DLE\DC2\ESC\n\
+    \\a\EOTH\ETX\NUL\STX\a\SOH\DC2\EOT\185\DLE\DC2\ESC\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\a\ETX\DC2\EOT\131\DLE\RS\US\n\
+    \\a\EOTH\ETX\NUL\STX\a\ETX\DC2\EOT\185\DLE\RS\US\n\
     \;\n\
-    \\ACK\EOTH\ETX\NUL\STX\b\DC2\EOT\134\DLE\b+\SUB+ The commitment type used by this channel.\n\
+    \\ACK\EOTH\ETX\NUL\STX\b\DC2\EOT\188\DLE\b+\SUB+ The commitment type used by this channel.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\b\EOT\DC2\ACK\134\DLE\b\131\DLE \n\
+    \\a\EOTH\ETX\NUL\STX\b\EOT\DC2\ACK\188\DLE\b\185\DLE \n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\b\ACK\DC2\EOT\134\DLE\b\SYN\n\
+    \\a\EOTH\ETX\NUL\STX\b\ACK\DC2\EOT\188\DLE\b\SYN\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\b\SOH\DC2\EOT\134\DLE\ETB&\n\
+    \\a\EOTH\ETX\NUL\STX\b\SOH\DC2\EOT\188\DLE\ETB&\n\
     \\SI\n\
-    \\a\EOTH\ETX\NUL\STX\b\ETX\DC2\EOT\134\DLE)*\n\
+    \\a\EOTH\ETX\NUL\STX\b\ETX\DC2\EOT\188\DLE)*\n\
     \\SO\n\
-    \\EOT\EOTH\ETX\SOH\DC2\ACK\137\DLE\EOT\162\DLE\ENQ\n\
+    \\EOT\EOTH\ETX\SOH\DC2\ACK\191\DLE\EOT\216\DLE\ENQ\n\
     \\r\n\
-    \\ENQ\EOTH\ETX\SOH\SOH\DC2\EOT\137\DLE\f\RS\n\
+    \\ENQ\EOTH\ETX\SOH\SOH\DC2\EOT\191\DLE\f\RS\n\
     \%\n\
-    \\ACK\EOTH\ETX\SOH\STX\NUL\DC2\EOT\139\DLE\b#\SUB\NAK The pending channel\n\
+    \\ACK\EOTH\ETX\SOH\STX\NUL\DC2\EOT\193\DLE\b#\SUB\NAK The pending channel\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\SOH\STX\NUL\EOT\DC2\ACK\139\DLE\b\137\DLE \n\
+    \\a\EOTH\ETX\SOH\STX\NUL\EOT\DC2\ACK\193\DLE\b\191\DLE \n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\NUL\ACK\DC2\EOT\139\DLE\b\SYN\n\
+    \\a\EOTH\ETX\SOH\STX\NUL\ACK\DC2\EOT\193\DLE\b\SYN\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\NUL\SOH\DC2\EOT\139\DLE\ETB\RS\n\
+    \\a\EOTH\ETX\SOH\STX\NUL\SOH\DC2\EOT\193\DLE\ETB\RS\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\NUL\ETX\DC2\EOT\139\DLE!\"\n\
+    \\a\EOTH\ETX\SOH\STX\NUL\ETX\DC2\EOT\193\DLE!\"\n\
     \D\n\
-    \\ACK\EOTH\ETX\SOH\STX\SOH\DC2\EOT\142\DLE\b'\SUB4 The height at which this channel will be confirmed\n\
+    \\ACK\EOTH\ETX\SOH\STX\SOH\DC2\EOT\196\DLE\b'\SUB4 The height at which this channel will be confirmed\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\SOH\STX\SOH\EOT\DC2\ACK\142\DLE\b\139\DLE#\n\
+    \\a\EOTH\ETX\SOH\STX\SOH\EOT\DC2\ACK\196\DLE\b\193\DLE#\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\SOH\ENQ\DC2\EOT\142\DLE\b\SO\n\
+    \\a\EOTH\ETX\SOH\STX\SOH\ENQ\DC2\EOT\196\DLE\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\SOH\SOH\DC2\EOT\142\DLE\SI\"\n\
+    \\a\EOTH\ETX\SOH\STX\SOH\SOH\DC2\EOT\196\DLE\SI\"\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\SOH\ETX\DC2\EOT\142\DLE%&\n\
+    \\a\EOTH\ETX\SOH\STX\SOH\ETX\DC2\EOT\196\DLE%&\n\
     \\174\STX\n\
-    \\ACK\EOTH\ETX\SOH\STX\STX\DC2\EOT\151\DLE\b\GS\SUB\157\STX\n\
+    \\ACK\EOTH\ETX\SOH\STX\STX\DC2\EOT\205\DLE\b\GS\SUB\157\STX\n\
     \The amount calculated to be paid in fees for the current set of\n\
     \commitment transactions. The fee amount is persisted with the channel\n\
     \in order to allow the fee amount to be removed and recalculated with\n\
@@ -55721,694 +57902,733 @@ packedFileDescriptor
     \restart.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\SOH\STX\STX\EOT\DC2\ACK\151\DLE\b\142\DLE'\n\
+    \\a\EOTH\ETX\SOH\STX\STX\EOT\DC2\ACK\205\DLE\b\196\DLE'\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\STX\ENQ\DC2\EOT\151\DLE\b\r\n\
+    \\a\EOTH\ETX\SOH\STX\STX\ENQ\DC2\EOT\205\DLE\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\STX\SOH\DC2\EOT\151\DLE\SO\CAN\n\
+    \\a\EOTH\ETX\SOH\STX\STX\SOH\DC2\EOT\205\DLE\SO\CAN\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\STX\ETX\DC2\EOT\151\DLE\ESC\FS\n\
+    \\a\EOTH\ETX\SOH\STX\STX\ETX\DC2\EOT\205\DLE\ESC\FS\n\
     \:\n\
-    \\ACK\EOTH\ETX\SOH\STX\ETX\DC2\EOT\154\DLE\b \SUB* The weight of the commitment transaction\n\
+    \\ACK\EOTH\ETX\SOH\STX\ETX\DC2\EOT\208\DLE\b \SUB* The weight of the commitment transaction\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\SOH\STX\ETX\EOT\DC2\ACK\154\DLE\b\151\DLE\GS\n\
+    \\a\EOTH\ETX\SOH\STX\ETX\EOT\DC2\ACK\208\DLE\b\205\DLE\GS\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\ETX\ENQ\DC2\EOT\154\DLE\b\r\n\
+    \\a\EOTH\ETX\SOH\STX\ETX\ENQ\DC2\EOT\208\DLE\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\ETX\SOH\DC2\EOT\154\DLE\SO\ESC\n\
+    \\a\EOTH\ETX\SOH\STX\ETX\SOH\DC2\EOT\208\DLE\SO\ESC\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\ETX\ETX\DC2\EOT\154\DLE\RS\US\n\
+    \\a\EOTH\ETX\SOH\STX\ETX\ETX\DC2\EOT\208\DLE\RS\US\n\
     \\227\SOH\n\
-    \\ACK\EOTH\ETX\SOH\STX\EOT\DC2\EOT\161\DLE\b\GS\SUB\210\SOH\n\
+    \\ACK\EOTH\ETX\SOH\STX\EOT\DC2\EOT\215\DLE\b\GS\SUB\210\SOH\n\
     \The required number of satoshis per kilo-weight that the requester will\n\
     \pay at all times, for both the funding transaction and commitment\n\
     \transaction. This value can later be updated once the channel is open.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\SOH\STX\EOT\EOT\DC2\ACK\161\DLE\b\154\DLE \n\
+    \\a\EOTH\ETX\SOH\STX\EOT\EOT\DC2\ACK\215\DLE\b\208\DLE \n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\EOT\ENQ\DC2\EOT\161\DLE\b\r\n\
+    \\a\EOTH\ETX\SOH\STX\EOT\ENQ\DC2\EOT\215\DLE\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\EOT\SOH\DC2\EOT\161\DLE\SO\CAN\n\
+    \\a\EOTH\ETX\SOH\STX\EOT\SOH\DC2\EOT\215\DLE\SO\CAN\n\
     \\SI\n\
-    \\a\EOTH\ETX\SOH\STX\EOT\ETX\DC2\EOT\161\DLE\ESC\FS\n\
+    \\a\EOTH\ETX\SOH\STX\EOT\ETX\DC2\EOT\215\DLE\ESC\FS\n\
     \\SO\n\
-    \\EOT\EOTH\ETX\STX\DC2\ACK\164\DLE\EOT\176\DLE\ENQ\n\
+    \\EOT\EOTH\ETX\STX\DC2\ACK\218\DLE\EOT\230\DLE\ENQ\n\
     \\r\n\
-    \\ENQ\EOTH\ETX\STX\SOH\DC2\EOT\164\DLE\f\US\n\
+    \\ENQ\EOTH\ETX\STX\SOH\DC2\EOT\218\DLE\f\US\n\
     \G\n\
-    \\ACK\EOTH\ETX\STX\STX\NUL\DC2\EOT\166\DLE\b#\SUB7 The pending channel waiting for closing tx to confirm\n\
+    \\ACK\EOTH\ETX\STX\STX\NUL\DC2\EOT\220\DLE\b#\SUB7 The pending channel waiting for closing tx to confirm\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\STX\STX\NUL\EOT\DC2\ACK\166\DLE\b\164\DLE!\n\
+    \\a\EOTH\ETX\STX\STX\NUL\EOT\DC2\ACK\220\DLE\b\218\DLE!\n\
     \\SI\n\
-    \\a\EOTH\ETX\STX\STX\NUL\ACK\DC2\EOT\166\DLE\b\SYN\n\
+    \\a\EOTH\ETX\STX\STX\NUL\ACK\DC2\EOT\220\DLE\b\SYN\n\
     \\SI\n\
-    \\a\EOTH\ETX\STX\STX\NUL\SOH\DC2\EOT\166\DLE\ETB\RS\n\
+    \\a\EOTH\ETX\STX\STX\NUL\SOH\DC2\EOT\220\DLE\ETB\RS\n\
     \\SI\n\
-    \\a\EOTH\ETX\STX\STX\NUL\ETX\DC2\EOT\166\DLE!\"\n\
+    \\a\EOTH\ETX\STX\STX\NUL\ETX\DC2\EOT\220\DLE!\"\n\
     \D\n\
-    \\ACK\EOTH\ETX\STX\STX\SOH\DC2\EOT\169\DLE\b \SUB4 The balance in satoshis encumbered in this channel\n\
+    \\ACK\EOTH\ETX\STX\STX\SOH\DC2\EOT\223\DLE\b \SUB4 The balance in satoshis encumbered in this channel\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\STX\STX\SOH\EOT\DC2\ACK\169\DLE\b\166\DLE#\n\
+    \\a\EOTH\ETX\STX\STX\SOH\EOT\DC2\ACK\223\DLE\b\220\DLE#\n\
     \\SI\n\
-    \\a\EOTH\ETX\STX\STX\SOH\ENQ\DC2\EOT\169\DLE\b\r\n\
+    \\a\EOTH\ETX\STX\STX\SOH\ENQ\DC2\EOT\223\DLE\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\STX\STX\SOH\SOH\DC2\EOT\169\DLE\SO\ESC\n\
+    \\a\EOTH\ETX\STX\STX\SOH\SOH\DC2\EOT\223\DLE\SO\ESC\n\
     \\SI\n\
-    \\a\EOTH\ETX\STX\STX\SOH\ETX\DC2\EOT\169\DLE\RS\US\n\
+    \\a\EOTH\ETX\STX\STX\SOH\ETX\DC2\EOT\223\DLE\RS\US\n\
     \b\n\
-    \\ACK\EOTH\ETX\STX\STX\STX\DC2\EOT\175\DLE\b$\SUBR\n\
+    \\ACK\EOTH\ETX\STX\STX\STX\DC2\EOT\229\DLE\b$\SUBR\n\
     \A list of valid commitment transactions. Any of these can confirm at\n\
     \this point.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\STX\STX\STX\EOT\DC2\ACK\175\DLE\b\169\DLE \n\
+    \\a\EOTH\ETX\STX\STX\STX\EOT\DC2\ACK\229\DLE\b\223\DLE \n\
     \\SI\n\
-    \\a\EOTH\ETX\STX\STX\STX\ACK\DC2\EOT\175\DLE\b\DC3\n\
+    \\a\EOTH\ETX\STX\STX\STX\ACK\DC2\EOT\229\DLE\b\DC3\n\
     \\SI\n\
-    \\a\EOTH\ETX\STX\STX\STX\SOH\DC2\EOT\175\DLE\DC4\US\n\
+    \\a\EOTH\ETX\STX\STX\STX\SOH\DC2\EOT\229\DLE\DC4\US\n\
     \\SI\n\
-    \\a\EOTH\ETX\STX\STX\STX\ETX\DC2\EOT\175\DLE\"#\n\
+    \\a\EOTH\ETX\STX\STX\STX\ETX\DC2\EOT\229\DLE\"#\n\
     \\SO\n\
-    \\EOT\EOTH\ETX\ETX\DC2\ACK\178\DLE\EOT\205\DLE\ENQ\n\
+    \\EOT\EOTH\ETX\ETX\DC2\ACK\232\DLE\EOT\131\DC1\ENQ\n\
     \\r\n\
-    \\ENQ\EOTH\ETX\ETX\SOH\DC2\EOT\178\DLE\f\ETB\n\
+    \\ENQ\EOTH\ETX\ETX\SOH\DC2\EOT\232\DLE\f\ETB\n\
     \A\n\
-    \\ACK\EOTH\ETX\ETX\STX\NUL\DC2\EOT\180\DLE\b\RS\SUB1 Hash of the local version of the commitment tx.\n\
+    \\ACK\EOTH\ETX\ETX\STX\NUL\DC2\EOT\234\DLE\b\RS\SUB1 Hash of the local version of the commitment tx.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\NUL\EOT\DC2\ACK\180\DLE\b\178\DLE\EM\n\
+    \\a\EOTH\ETX\ETX\STX\NUL\EOT\DC2\ACK\234\DLE\b\232\DLE\EM\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\NUL\ENQ\DC2\EOT\180\DLE\b\SO\n\
+    \\a\EOTH\ETX\ETX\STX\NUL\ENQ\DC2\EOT\234\DLE\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\NUL\SOH\DC2\EOT\180\DLE\SI\EM\n\
+    \\a\EOTH\ETX\ETX\STX\NUL\SOH\DC2\EOT\234\DLE\SI\EM\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\NUL\ETX\DC2\EOT\180\DLE\FS\GS\n\
+    \\a\EOTH\ETX\ETX\STX\NUL\ETX\DC2\EOT\234\DLE\FS\GS\n\
     \B\n\
-    \\ACK\EOTH\ETX\ETX\STX\SOH\DC2\EOT\183\DLE\b\US\SUB2 Hash of the remote version of the commitment tx.\n\
+    \\ACK\EOTH\ETX\ETX\STX\SOH\DC2\EOT\237\DLE\b\US\SUB2 Hash of the remote version of the commitment tx.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\SOH\EOT\DC2\ACK\183\DLE\b\180\DLE\RS\n\
+    \\a\EOTH\ETX\ETX\STX\SOH\EOT\DC2\ACK\237\DLE\b\234\DLE\RS\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\SOH\ENQ\DC2\EOT\183\DLE\b\SO\n\
+    \\a\EOTH\ETX\ETX\STX\SOH\ENQ\DC2\EOT\237\DLE\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\SOH\SOH\DC2\EOT\183\DLE\SI\SUB\n\
+    \\a\EOTH\ETX\ETX\STX\SOH\SOH\DC2\EOT\237\DLE\SI\SUB\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\SOH\ETX\DC2\EOT\183\DLE\GS\RS\n\
+    \\a\EOTH\ETX\ETX\STX\SOH\ETX\DC2\EOT\237\DLE\GS\RS\n\
     \J\n\
-    \\ACK\EOTH\ETX\ETX\STX\STX\DC2\EOT\186\DLE\b'\SUB: Hash of the remote pending version of the commitment tx.\n\
+    \\ACK\EOTH\ETX\ETX\STX\STX\DC2\EOT\240\DLE\b'\SUB: Hash of the remote pending version of the commitment tx.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\STX\EOT\DC2\ACK\186\DLE\b\183\DLE\US\n\
+    \\a\EOTH\ETX\ETX\STX\STX\EOT\DC2\ACK\240\DLE\b\237\DLE\US\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\STX\ENQ\DC2\EOT\186\DLE\b\SO\n\
+    \\a\EOTH\ETX\ETX\STX\STX\ENQ\DC2\EOT\240\DLE\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\STX\SOH\DC2\EOT\186\DLE\SI\"\n\
+    \\a\EOTH\ETX\ETX\STX\STX\SOH\DC2\EOT\240\DLE\SI\"\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\STX\ETX\DC2\EOT\186\DLE%&\n\
+    \\a\EOTH\ETX\ETX\STX\STX\ETX\DC2\EOT\240\DLE%&\n\
     \`\n\
-    \\ACK\EOTH\ETX\ETX\STX\ETX\DC2\EOT\192\DLE\b(\SUBP\n\
+    \\ACK\EOTH\ETX\ETX\STX\ETX\DC2\EOT\246\DLE\b(\SUBP\n\
     \The amount in satoshis calculated to be paid in fees for the local\n\
     \commitment.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\ETX\EOT\DC2\ACK\192\DLE\b\186\DLE'\n\
+    \\a\EOTH\ETX\ETX\STX\ETX\EOT\DC2\ACK\246\DLE\b\240\DLE'\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\ETX\ENQ\DC2\EOT\192\DLE\b\SO\n\
+    \\a\EOTH\ETX\ETX\STX\ETX\ENQ\DC2\EOT\246\DLE\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\ETX\SOH\DC2\EOT\192\DLE\SI#\n\
+    \\a\EOTH\ETX\ETX\STX\ETX\SOH\DC2\EOT\246\DLE\SI#\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\ETX\ETX\DC2\EOT\192\DLE&'\n\
+    \\a\EOTH\ETX\ETX\STX\ETX\ETX\DC2\EOT\246\DLE&'\n\
     \a\n\
-    \\ACK\EOTH\ETX\ETX\STX\EOT\DC2\EOT\198\DLE\b)\SUBQ\n\
+    \\ACK\EOTH\ETX\ETX\STX\EOT\DC2\EOT\252\DLE\b)\SUBQ\n\
     \The amount in satoshis calculated to be paid in fees for the remote\n\
     \commitment.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\EOT\EOT\DC2\ACK\198\DLE\b\192\DLE(\n\
+    \\a\EOTH\ETX\ETX\STX\EOT\EOT\DC2\ACK\252\DLE\b\246\DLE(\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\EOT\ENQ\DC2\EOT\198\DLE\b\SO\n\
+    \\a\EOTH\ETX\ETX\STX\EOT\ENQ\DC2\EOT\252\DLE\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\EOT\SOH\DC2\EOT\198\DLE\SI$\n\
+    \\a\EOTH\ETX\ETX\STX\EOT\SOH\DC2\EOT\252\DLE\SI$\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\EOT\ETX\DC2\EOT\198\DLE'(\n\
+    \\a\EOTH\ETX\ETX\STX\EOT\ETX\DC2\EOT\252\DLE'(\n\
     \i\n\
-    \\ACK\EOTH\ETX\ETX\STX\ENQ\DC2\EOT\204\DLE\b1\SUBY\n\
+    \\ACK\EOTH\ETX\ETX\STX\ENQ\DC2\EOT\130\DC1\b1\SUBY\n\
     \The amount in satoshis calculated to be paid in fees for the remote\n\
     \pending commitment.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\ENQ\EOT\DC2\ACK\204\DLE\b\198\DLE)\n\
+    \\a\EOTH\ETX\ETX\STX\ENQ\EOT\DC2\ACK\130\DC1\b\252\DLE)\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\ENQ\ENQ\DC2\EOT\204\DLE\b\SO\n\
+    \\a\EOTH\ETX\ETX\STX\ENQ\ENQ\DC2\EOT\130\DC1\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\ENQ\SOH\DC2\EOT\204\DLE\SI,\n\
+    \\a\EOTH\ETX\ETX\STX\ENQ\SOH\DC2\EOT\130\DC1\SI,\n\
     \\SI\n\
-    \\a\EOTH\ETX\ETX\STX\ENQ\ETX\DC2\EOT\204\DLE/0\n\
+    \\a\EOTH\ETX\ETX\STX\ENQ\ETX\DC2\EOT\130\DC1/0\n\
     \\SO\n\
-    \\EOT\EOTH\ETX\EOT\DC2\ACK\207\DLE\EOT\213\DLE\ENQ\n\
+    \\EOT\EOTH\ETX\EOT\DC2\ACK\133\DC1\EOT\139\DC1\ENQ\n\
     \\r\n\
-    \\ENQ\EOTH\ETX\EOT\SOH\DC2\EOT\207\DLE\f\EM\n\
+    \\ENQ\EOTH\ETX\EOT\SOH\DC2\EOT\133\DC1\f\EM\n\
     \2\n\
-    \\ACK\EOTH\ETX\EOT\STX\NUL\DC2\EOT\209\DLE\b#\SUB\" The pending channel to be closed\n\
+    \\ACK\EOTH\ETX\EOT\STX\NUL\DC2\EOT\135\DC1\b#\SUB\" The pending channel to be closed\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\EOT\STX\NUL\EOT\DC2\ACK\209\DLE\b\207\DLE\ESC\n\
+    \\a\EOTH\ETX\EOT\STX\NUL\EOT\DC2\ACK\135\DC1\b\133\DC1\ESC\n\
     \\SI\n\
-    \\a\EOTH\ETX\EOT\STX\NUL\ACK\DC2\EOT\209\DLE\b\SYN\n\
+    \\a\EOTH\ETX\EOT\STX\NUL\ACK\DC2\EOT\135\DC1\b\SYN\n\
     \\SI\n\
-    \\a\EOTH\ETX\EOT\STX\NUL\SOH\DC2\EOT\209\DLE\ETB\RS\n\
+    \\a\EOTH\ETX\EOT\STX\NUL\SOH\DC2\EOT\135\DC1\ETB\RS\n\
     \\SI\n\
-    \\a\EOTH\ETX\EOT\STX\NUL\ETX\DC2\EOT\209\DLE!\"\n\
+    \\a\EOTH\ETX\EOT\STX\NUL\ETX\DC2\EOT\135\DC1!\"\n\
     \?\n\
-    \\ACK\EOTH\ETX\EOT\STX\SOH\DC2\EOT\212\DLE\b \SUB/ The transaction id of the closing transaction\n\
+    \\ACK\EOTH\ETX\EOT\STX\SOH\DC2\EOT\138\DC1\b \SUB/ The transaction id of the closing transaction\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\EOT\STX\SOH\EOT\DC2\ACK\212\DLE\b\209\DLE#\n\
+    \\a\EOTH\ETX\EOT\STX\SOH\EOT\DC2\ACK\138\DC1\b\135\DC1#\n\
     \\SI\n\
-    \\a\EOTH\ETX\EOT\STX\SOH\ENQ\DC2\EOT\212\DLE\b\SO\n\
+    \\a\EOTH\ETX\EOT\STX\SOH\ENQ\DC2\EOT\138\DC1\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\EOT\STX\SOH\SOH\DC2\EOT\212\DLE\SI\ESC\n\
+    \\a\EOTH\ETX\EOT\STX\SOH\SOH\DC2\EOT\138\DC1\SI\ESC\n\
     \\SI\n\
-    \\a\EOTH\ETX\EOT\STX\SOH\ETX\DC2\EOT\212\DLE\RS\US\n\
+    \\a\EOTH\ETX\EOT\STX\SOH\ETX\DC2\EOT\138\DC1\RS\US\n\
     \\SO\n\
-    \\EOT\EOTH\ETX\ENQ\DC2\ACK\215\DLE\EOT\247\DLE\ENQ\n\
+    \\EOT\EOTH\ETX\ENQ\DC2\ACK\141\DC1\EOT\173\DC1\ENQ\n\
     \\r\n\
-    \\ENQ\EOTH\ETX\ENQ\SOH\DC2\EOT\215\DLE\f\RS\n\
+    \\ENQ\EOTH\ETX\ENQ\SOH\DC2\EOT\141\DC1\f\RS\n\
     \8\n\
-    \\ACK\EOTH\ETX\ENQ\STX\NUL\DC2\EOT\217\DLE\b#\SUB( The pending channel to be force closed\n\
+    \\ACK\EOTH\ETX\ENQ\STX\NUL\DC2\EOT\143\DC1\b#\SUB( The pending channel to be force closed\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\NUL\EOT\DC2\ACK\217\DLE\b\215\DLE \n\
+    \\a\EOTH\ETX\ENQ\STX\NUL\EOT\DC2\ACK\143\DC1\b\141\DC1 \n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\NUL\ACK\DC2\EOT\217\DLE\b\SYN\n\
+    \\a\EOTH\ETX\ENQ\STX\NUL\ACK\DC2\EOT\143\DC1\b\SYN\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\NUL\SOH\DC2\EOT\217\DLE\ETB\RS\n\
+    \\a\EOTH\ETX\ENQ\STX\NUL\SOH\DC2\EOT\143\DC1\ETB\RS\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\NUL\ETX\DC2\EOT\217\DLE!\"\n\
+    \\a\EOTH\ETX\ENQ\STX\NUL\ETX\DC2\EOT\143\DC1!\"\n\
     \?\n\
-    \\ACK\EOTH\ETX\ENQ\STX\SOH\DC2\EOT\220\DLE\b \SUB/ The transaction id of the closing transaction\n\
+    \\ACK\EOTH\ETX\ENQ\STX\SOH\DC2\EOT\146\DC1\b \SUB/ The transaction id of the closing transaction\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\SOH\EOT\DC2\ACK\220\DLE\b\217\DLE#\n\
+    \\a\EOTH\ETX\ENQ\STX\SOH\EOT\DC2\ACK\146\DC1\b\143\DC1#\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\SOH\ENQ\DC2\EOT\220\DLE\b\SO\n\
+    \\a\EOTH\ETX\ENQ\STX\SOH\ENQ\DC2\EOT\146\DC1\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\SOH\SOH\DC2\EOT\220\DLE\SI\ESC\n\
+    \\a\EOTH\ETX\ENQ\STX\SOH\SOH\DC2\EOT\146\DC1\SI\ESC\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\SOH\ETX\DC2\EOT\220\DLE\RS\US\n\
+    \\a\EOTH\ETX\ENQ\STX\SOH\ETX\DC2\EOT\146\DC1\RS\US\n\
     \L\n\
-    \\ACK\EOTH\ETX\ENQ\STX\STX\DC2\EOT\223\DLE\b \SUB< The balance in satoshis encumbered in this pending channel\n\
+    \\ACK\EOTH\ETX\ENQ\STX\STX\DC2\EOT\149\DC1\b \SUB< The balance in satoshis encumbered in this pending channel\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\STX\EOT\DC2\ACK\223\DLE\b\220\DLE \n\
+    \\a\EOTH\ETX\ENQ\STX\STX\EOT\DC2\ACK\149\DC1\b\146\DC1 \n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\STX\ENQ\DC2\EOT\223\DLE\b\r\n\
+    \\a\EOTH\ETX\ENQ\STX\STX\ENQ\DC2\EOT\149\DC1\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\STX\SOH\DC2\EOT\223\DLE\SO\ESC\n\
+    \\a\EOTH\ETX\ENQ\STX\STX\SOH\DC2\EOT\149\DC1\SO\ESC\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\STX\ETX\DC2\EOT\223\DLE\RS\US\n\
+    \\a\EOTH\ETX\ENQ\STX\STX\ETX\DC2\EOT\149\DC1\RS\US\n\
     \H\n\
-    \\ACK\EOTH\ETX\ENQ\STX\ETX\DC2\EOT\226\DLE\b#\SUB8 The height at which funds can be swept into the wallet\n\
+    \\ACK\EOTH\ETX\ENQ\STX\ETX\DC2\EOT\152\DC1\b#\SUB8 The height at which funds can be swept into the wallet\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\ETX\EOT\DC2\ACK\226\DLE\b\223\DLE \n\
+    \\a\EOTH\ETX\ENQ\STX\ETX\EOT\DC2\ACK\152\DC1\b\149\DC1 \n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\ETX\ENQ\DC2\EOT\226\DLE\b\SO\n\
+    \\a\EOTH\ETX\ENQ\STX\ETX\ENQ\DC2\EOT\152\DC1\b\SO\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\ETX\SOH\DC2\EOT\226\DLE\SI\RS\n\
+    \\a\EOTH\ETX\ENQ\STX\ETX\SOH\DC2\EOT\152\DC1\SI\RS\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\ETX\ETX\DC2\EOT\226\DLE!\"\n\
+    \\a\EOTH\ETX\ENQ\STX\ETX\ETX\DC2\EOT\152\DC1!\"\n\
     \\158\SOH\n\
-    \\ACK\EOTH\ETX\ENQ\STX\EOT\DC2\EOT\233\DLE\b&\SUB\141\SOH\n\
+    \\ACK\EOTH\ETX\ENQ\STX\EOT\DC2\EOT\159\DC1\b&\SUB\141\SOH\n\
     \Remaining # of blocks until the commitment output can be swept.\n\
     \Negative values indicate how many blocks have passed since becoming\n\
     \mature.\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\EOT\EOT\DC2\ACK\233\DLE\b\226\DLE#\n\
+    \\a\EOTH\ETX\ENQ\STX\EOT\EOT\DC2\ACK\159\DC1\b\152\DC1#\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\EOT\ENQ\DC2\EOT\233\DLE\b\r\n\
+    \\a\EOTH\ETX\ENQ\STX\EOT\ENQ\DC2\EOT\159\DC1\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\EOT\SOH\DC2\EOT\233\DLE\SO!\n\
+    \\a\EOTH\ETX\ENQ\STX\EOT\SOH\DC2\EOT\159\DC1\SO!\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\EOT\ETX\DC2\EOT\233\DLE$%\n\
+    \\a\EOTH\ETX\ENQ\STX\EOT\ETX\DC2\EOT\159\DC1$%\n\
     \S\n\
-    \\ACK\EOTH\ETX\ENQ\STX\ENQ\DC2\EOT\236\DLE\b$\SUBC The total value of funds successfully recovered from this channel\n\
+    \\ACK\EOTH\ETX\ENQ\STX\ENQ\DC2\EOT\162\DC1\b$\SUBC The total value of funds successfully recovered from this channel\n\
     \\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\ENQ\EOT\DC2\ACK\236\DLE\b\233\DLE&\n\
+    \\a\EOTH\ETX\ENQ\STX\ENQ\EOT\DC2\ACK\162\DC1\b\159\DC1&\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\ENQ\ENQ\DC2\EOT\236\DLE\b\r\n\
+    \\a\EOTH\ETX\ENQ\STX\ENQ\ENQ\DC2\EOT\162\DC1\b\r\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\ENQ\SOH\DC2\EOT\236\DLE\SO\US\n\
+    \\a\EOTH\ETX\ENQ\STX\ENQ\SOH\DC2\EOT\162\DC1\SO\US\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\ENQ\ETX\DC2\EOT\236\DLE\"#\n\
+    \\a\EOTH\ETX\ENQ\STX\ENQ\ETX\DC2\EOT\162\DC1\"#\n\
     \\SO\n\
-    \\ACK\EOTH\ETX\ENQ\STX\ACK\DC2\EOT\238\DLE\b/\n\
+    \\ACK\EOTH\ETX\ENQ\STX\ACK\DC2\EOT\164\DC1\b/\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\ACK\EOT\DC2\EOT\238\DLE\b\DLE\n\
+    \\a\EOTH\ETX\ENQ\STX\ACK\EOT\DC2\EOT\164\DC1\b\DLE\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\ACK\ACK\DC2\EOT\238\DLE\DC1\FS\n\
+    \\a\EOTH\ETX\ENQ\STX\ACK\ACK\DC2\EOT\164\DC1\DC1\FS\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\ACK\SOH\DC2\EOT\238\DLE\GS*\n\
+    \\a\EOTH\ETX\ENQ\STX\ACK\SOH\DC2\EOT\164\DC1\GS*\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\ACK\ETX\DC2\EOT\238\DLE-.\n\
+    \\a\EOTH\ETX\ENQ\STX\ACK\ETX\DC2\EOT\164\DC1-.\n\
     \\DLE\n\
-    \\ACK\EOTH\ETX\ENQ\EOT\NUL\DC2\ACK\240\DLE\b\244\DLE\t\n\
+    \\ACK\EOTH\ETX\ENQ\EOT\NUL\DC2\ACK\166\DC1\b\170\DC1\t\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\EOT\NUL\SOH\DC2\EOT\240\DLE\r\CAN\n\
+    \\a\EOTH\ETX\ENQ\EOT\NUL\SOH\DC2\EOT\166\DC1\r\CAN\n\
     \\DLE\n\
-    \\b\EOTH\ETX\ENQ\EOT\NUL\STX\NUL\DC2\EOT\241\DLE\f\SYN\n\
+    \\b\EOTH\ETX\ENQ\EOT\NUL\STX\NUL\DC2\EOT\167\DC1\f\SYN\n\
     \\DC1\n\
-    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\NUL\SOH\DC2\EOT\241\DLE\f\DC1\n\
+    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\NUL\SOH\DC2\EOT\167\DC1\f\DC1\n\
     \\DC1\n\
-    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\NUL\STX\DC2\EOT\241\DLE\DC4\NAK\n\
+    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\NUL\STX\DC2\EOT\167\DC1\DC4\NAK\n\
     \\DLE\n\
-    \\b\EOTH\ETX\ENQ\EOT\NUL\STX\SOH\DC2\EOT\242\DLE\f\SUB\n\
+    \\b\EOTH\ETX\ENQ\EOT\NUL\STX\SOH\DC2\EOT\168\DC1\f\SUB\n\
     \\DC1\n\
-    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\SOH\SOH\DC2\EOT\242\DLE\f\NAK\n\
+    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\SOH\SOH\DC2\EOT\168\DC1\f\NAK\n\
     \\DC1\n\
-    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\SOH\STX\DC2\EOT\242\DLE\CAN\EM\n\
+    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\SOH\STX\DC2\EOT\168\DC1\CAN\EM\n\
     \\DLE\n\
-    \\b\EOTH\ETX\ENQ\EOT\NUL\STX\STX\DC2\EOT\243\DLE\f\NAK\n\
+    \\b\EOTH\ETX\ENQ\EOT\NUL\STX\STX\DC2\EOT\169\DC1\f\NAK\n\
     \\DC1\n\
-    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\STX\SOH\DC2\EOT\243\DLE\f\DLE\n\
+    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\STX\SOH\DC2\EOT\169\DC1\f\DLE\n\
     \\DC1\n\
-    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\STX\STX\DC2\EOT\243\DLE\DC3\DC4\n\
+    \\t\EOTH\ETX\ENQ\EOT\NUL\STX\STX\STX\DC2\EOT\169\DC1\DC3\DC4\n\
     \\SO\n\
-    \\ACK\EOTH\ETX\ENQ\STX\a\DC2\EOT\246\DLE\b\US\n\
+    \\ACK\EOTH\ETX\ENQ\STX\a\DC2\EOT\172\DC1\b\US\n\
     \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\a\EOT\DC2\ACK\246\DLE\b\244\DLE\t\n\
+    \\a\EOTH\ETX\ENQ\STX\a\EOT\DC2\ACK\172\DC1\b\170\DC1\t\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\a\ACK\DC2\EOT\246\DLE\b\DC3\n\
+    \\a\EOTH\ETX\ENQ\STX\a\ACK\DC2\EOT\172\DC1\b\DC3\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\a\SOH\DC2\EOT\246\DLE\DC4\SUB\n\
+    \\a\EOTH\ETX\ENQ\STX\a\SOH\DC2\EOT\172\DC1\DC4\SUB\n\
     \\SI\n\
-    \\a\EOTH\ETX\ENQ\STX\a\ETX\DC2\EOT\246\DLE\GS\RS\n\
+    \\a\EOTH\ETX\ENQ\STX\a\ETX\DC2\EOT\172\DC1\GS\RS\n\
     \F\n\
-    \\EOT\EOTH\STX\NUL\DC2\EOT\250\DLE\EOT\"\SUB8 The balance in satoshis encumbered in pending channels\n\
+    \\EOT\EOTH\STX\NUL\DC2\EOT\176\DC1\EOT\"\SUB8 The balance in satoshis encumbered in pending channels\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTH\STX\NUL\EOT\DC2\ACK\250\DLE\EOT\247\DLE\ENQ\n\
+    \\ENQ\EOTH\STX\NUL\EOT\DC2\ACK\176\DC1\EOT\173\DC1\ENQ\n\
     \\r\n\
-    \\ENQ\EOTH\STX\NUL\ENQ\DC2\EOT\250\DLE\EOT\t\n\
+    \\ENQ\EOTH\STX\NUL\ENQ\DC2\EOT\176\DC1\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTH\STX\NUL\SOH\DC2\EOT\250\DLE\n\
+    \\ENQ\EOTH\STX\NUL\SOH\DC2\EOT\176\DC1\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOTH\STX\NUL\ETX\DC2\EOT\250\DLE !\n\
+    \\ENQ\EOTH\STX\NUL\ETX\DC2\EOT\176\DC1 !\n\
     \(\n\
-    \\EOT\EOTH\STX\SOH\DC2\EOT\253\DLE\EOT:\SUB\SUB Channels pending opening\n\
+    \\EOT\EOTH\STX\SOH\DC2\EOT\179\DC1\EOT:\SUB\SUB Channels pending opening\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTH\STX\SOH\EOT\DC2\EOT\253\DLE\EOT\f\n\
+    \\ENQ\EOTH\STX\SOH\EOT\DC2\EOT\179\DC1\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTH\STX\SOH\ACK\DC2\EOT\253\DLE\r\US\n\
+    \\ENQ\EOTH\STX\SOH\ACK\DC2\EOT\179\DC1\r\US\n\
     \\r\n\
-    \\ENQ\EOTH\STX\SOH\SOH\DC2\EOT\253\DLE 5\n\
+    \\ENQ\EOTH\STX\SOH\SOH\DC2\EOT\179\DC1 5\n\
     \\r\n\
-    \\ENQ\EOTH\STX\SOH\ETX\DC2\EOT\253\DLE89\n\
+    \\ENQ\EOTH\STX\SOH\ETX\DC2\EOT\179\DC189\n\
     \\209\SOH\n\
-    \\EOT\EOTH\STX\STX\DC2\EOT\132\DC1\EOTL\SUB\194\SOH\n\
+    \\EOT\EOTH\STX\STX\DC2\EOT\186\DC1\EOTL\SUB\194\SOH\n\
     \Deprecated: Channels pending closing previously contained cooperatively\n\
     \closed channels with a single confirmation. These channels are now\n\
     \considered closed from the time we see them on chain.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTH\STX\STX\EOT\DC2\EOT\132\DC1\EOT\f\n\
+    \\ENQ\EOTH\STX\STX\EOT\DC2\EOT\186\DC1\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTH\STX\STX\ACK\DC2\EOT\132\DC1\r\SUB\n\
+    \\ENQ\EOTH\STX\STX\ACK\DC2\EOT\186\DC1\r\SUB\n\
     \\r\n\
-    \\ENQ\EOTH\STX\STX\SOH\DC2\EOT\132\DC1\ESC3\n\
+    \\ENQ\EOTH\STX\STX\SOH\DC2\EOT\186\DC1\ESC3\n\
     \\r\n\
-    \\ENQ\EOTH\STX\STX\ETX\DC2\EOT\132\DC167\n\
+    \\ENQ\EOTH\STX\STX\ETX\DC2\EOT\186\DC167\n\
     \\r\n\
-    \\ENQ\EOTH\STX\STX\b\DC2\EOT\132\DC18K\n\
+    \\ENQ\EOTH\STX\STX\b\DC2\EOT\186\DC18K\n\
     \\SO\n\
-    \\ACK\EOTH\STX\STX\b\ETX\DC2\EOT\132\DC19J\n\
+    \\ACK\EOTH\STX\STX\b\ETX\DC2\EOT\186\DC19J\n\
     \.\n\
-    \\EOT\EOTH\STX\ETX\DC2\EOT\135\DC1\EOTC\SUB  Channels pending force closing\n\
+    \\EOT\EOTH\STX\ETX\DC2\EOT\189\DC1\EOTC\SUB  Channels pending force closing\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTH\STX\ETX\EOT\DC2\EOT\135\DC1\EOT\f\n\
+    \\ENQ\EOTH\STX\ETX\EOT\DC2\EOT\189\DC1\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTH\STX\ETX\ACK\DC2\EOT\135\DC1\r\US\n\
+    \\ENQ\EOTH\STX\ETX\ACK\DC2\EOT\189\DC1\r\US\n\
     \\r\n\
-    \\ENQ\EOTH\STX\ETX\SOH\DC2\EOT\135\DC1 >\n\
+    \\ENQ\EOTH\STX\ETX\SOH\DC2\EOT\189\DC1 >\n\
     \\r\n\
-    \\ENQ\EOTH\STX\ETX\ETX\DC2\EOT\135\DC1AB\n\
+    \\ENQ\EOTH\STX\ETX\ETX\DC2\EOT\189\DC1AB\n\
     \:\n\
-    \\EOT\EOTH\STX\EOT\DC2\EOT\138\DC1\EOT<\SUB, Channels waiting for closing tx to confirm\n\
+    \\EOT\EOTH\STX\EOT\DC2\EOT\192\DC1\EOT<\SUB, Channels waiting for closing tx to confirm\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTH\STX\EOT\EOT\DC2\EOT\138\DC1\EOT\f\n\
+    \\ENQ\EOTH\STX\EOT\EOT\DC2\EOT\192\DC1\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTH\STX\EOT\ACK\DC2\EOT\138\DC1\r \n\
+    \\ENQ\EOTH\STX\EOT\ACK\DC2\EOT\192\DC1\r \n\
     \\r\n\
-    \\ENQ\EOTH\STX\EOT\SOH\DC2\EOT\138\DC1!7\n\
+    \\ENQ\EOTH\STX\EOT\SOH\DC2\EOT\192\DC1!7\n\
     \\r\n\
-    \\ENQ\EOTH\STX\EOT\ETX\DC2\EOT\138\DC1:;\n\
+    \\ENQ\EOTH\STX\EOT\ETX\DC2\EOT\192\DC1:;\n\
     \\f\n\
-    \\STX\EOTI\DC2\ACK\141\DC1\NUL\142\DC1\SOH\n\
+    \\STX\EOTI\DC2\ACK\195\DC1\NUL\196\DC1\SOH\n\
     \\v\n\
-    \\ETX\EOTI\SOH\DC2\EOT\141\DC1\b \n\
+    \\ETX\EOTI\SOH\DC2\EOT\195\DC1\b \n\
     \\f\n\
-    \\STX\EOTJ\DC2\ACK\144\DC1\NUL\162\DC1\SOH\n\
+    \\STX\EOTJ\DC2\ACK\198\DC1\NUL\216\DC1\SOH\n\
     \\v\n\
-    \\ETX\EOTJ\SOH\DC2\EOT\144\DC1\b\SUB\n\
+    \\ETX\EOTJ\SOH\DC2\EOT\198\DC1\b\SUB\n\
     \\SO\n\
-    \\EOT\EOTJ\b\NUL\DC2\ACK\145\DC1\EOT\151\DC1\ENQ\n\
+    \\EOT\EOTJ\b\NUL\DC2\ACK\199\DC1\EOT\205\DC1\ENQ\n\
     \\r\n\
-    \\ENQ\EOTJ\b\NUL\SOH\DC2\EOT\145\DC1\n\
+    \\ENQ\EOTJ\b\NUL\SOH\DC2\EOT\199\DC1\n\
     \\DC1\n\
     \\f\n\
-    \\EOT\EOTJ\STX\NUL\DC2\EOT\146\DC1\b!\n\
+    \\EOT\EOTJ\STX\NUL\DC2\EOT\200\DC1\b!\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\NUL\ACK\DC2\EOT\146\DC1\b\SI\n\
+    \\ENQ\EOTJ\STX\NUL\ACK\DC2\EOT\200\DC1\b\SI\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\NUL\SOH\DC2\EOT\146\DC1\DLE\FS\n\
+    \\ENQ\EOTJ\STX\NUL\SOH\DC2\EOT\200\DC1\DLE\FS\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\NUL\ETX\DC2\EOT\146\DC1\US \n\
+    \\ENQ\EOTJ\STX\NUL\ETX\DC2\EOT\200\DC1\US \n\
     \\f\n\
-    \\EOT\EOTJ\STX\SOH\DC2\EOT\147\DC1\b/\n\
+    \\EOT\EOTJ\STX\SOH\DC2\EOT\201\DC1\b/\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\SOH\ACK\DC2\EOT\147\DC1\b\ESC\n\
+    \\ENQ\EOTJ\STX\SOH\ACK\DC2\EOT\201\DC1\b\ESC\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\SOH\SOH\DC2\EOT\147\DC1\FS*\n\
+    \\ENQ\EOTJ\STX\SOH\SOH\DC2\EOT\201\DC1\FS*\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\SOH\ETX\DC2\EOT\147\DC1-.\n\
+    \\ENQ\EOTJ\STX\SOH\ETX\DC2\EOT\201\DC1-.\n\
     \\f\n\
-    \\EOT\EOTJ\STX\STX\DC2\EOT\148\DC1\b(\n\
+    \\EOT\EOTJ\STX\STX\DC2\EOT\202\DC1\b(\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\STX\ACK\DC2\EOT\148\DC1\b\DC4\n\
+    \\ENQ\EOTJ\STX\STX\ACK\DC2\EOT\202\DC1\b\DC4\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\STX\SOH\DC2\EOT\148\DC1\NAK#\n\
+    \\ENQ\EOTJ\STX\STX\SOH\DC2\EOT\202\DC1\NAK#\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\STX\ETX\DC2\EOT\148\DC1&'\n\
+    \\ENQ\EOTJ\STX\STX\ETX\DC2\EOT\202\DC1&'\n\
     \\f\n\
-    \\EOT\EOTJ\STX\ETX\DC2\EOT\149\DC1\b*\n\
+    \\EOT\EOTJ\STX\ETX\DC2\EOT\203\DC1\b*\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\ETX\ACK\DC2\EOT\149\DC1\b\DC4\n\
+    \\ENQ\EOTJ\STX\ETX\ACK\DC2\EOT\203\DC1\b\DC4\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\ETX\SOH\DC2\EOT\149\DC1\NAK%\n\
+    \\ENQ\EOTJ\STX\ETX\SOH\DC2\EOT\203\DC1\NAK%\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\ETX\ETX\DC2\EOT\149\DC1()\n\
+    \\ENQ\EOTJ\STX\ETX\ETX\DC2\EOT\203\DC1()\n\
     \\f\n\
-    \\EOT\EOTJ\STX\EOT\DC2\EOT\150\DC1\b/\n\
+    \\EOT\EOTJ\STX\EOT\DC2\EOT\204\DC1\b/\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\EOT\ACK\DC2\EOT\150\DC1\b\NAK\n\
+    \\ENQ\EOTJ\STX\EOT\ACK\DC2\EOT\204\DC1\b\NAK\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\EOT\SOH\DC2\EOT\150\DC1\SYN*\n\
+    \\ENQ\EOTJ\STX\EOT\SOH\DC2\EOT\204\DC1\SYN*\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\EOT\ETX\DC2\EOT\150\DC1-.\n\
+    \\ENQ\EOTJ\STX\EOT\ETX\DC2\EOT\204\DC1-.\n\
     \\SO\n\
-    \\EOT\EOTJ\EOT\NUL\DC2\ACK\153\DC1\EOT\159\DC1\ENQ\n\
+    \\EOT\EOTJ\EOT\NUL\DC2\ACK\207\DC1\EOT\213\DC1\ENQ\n\
     \\r\n\
-    \\ENQ\EOTJ\EOT\NUL\SOH\DC2\EOT\153\DC1\t\DC3\n\
+    \\ENQ\EOTJ\EOT\NUL\SOH\DC2\EOT\207\DC1\t\DC3\n\
     \\SO\n\
-    \\ACK\EOTJ\EOT\NUL\STX\NUL\DC2\EOT\154\DC1\b\EM\n\
+    \\ACK\EOTJ\EOT\NUL\STX\NUL\DC2\EOT\208\DC1\b\EM\n\
     \\SI\n\
-    \\a\EOTJ\EOT\NUL\STX\NUL\SOH\DC2\EOT\154\DC1\b\DC4\n\
+    \\a\EOTJ\EOT\NUL\STX\NUL\SOH\DC2\EOT\208\DC1\b\DC4\n\
     \\SI\n\
-    \\a\EOTJ\EOT\NUL\STX\NUL\STX\DC2\EOT\154\DC1\ETB\CAN\n\
+    \\a\EOTJ\EOT\NUL\STX\NUL\STX\DC2\EOT\208\DC1\ETB\CAN\n\
     \\SO\n\
-    \\ACK\EOTJ\EOT\NUL\STX\SOH\DC2\EOT\155\DC1\b\ESC\n\
+    \\ACK\EOTJ\EOT\NUL\STX\SOH\DC2\EOT\209\DC1\b\ESC\n\
     \\SI\n\
-    \\a\EOTJ\EOT\NUL\STX\SOH\SOH\DC2\EOT\155\DC1\b\SYN\n\
+    \\a\EOTJ\EOT\NUL\STX\SOH\SOH\DC2\EOT\209\DC1\b\SYN\n\
     \\SI\n\
-    \\a\EOTJ\EOT\NUL\STX\SOH\STX\DC2\EOT\155\DC1\EM\SUB\n\
+    \\a\EOTJ\EOT\NUL\STX\SOH\STX\DC2\EOT\209\DC1\EM\SUB\n\
     \\SO\n\
-    \\ACK\EOTJ\EOT\NUL\STX\STX\DC2\EOT\156\DC1\b\ESC\n\
+    \\ACK\EOTJ\EOT\NUL\STX\STX\DC2\EOT\210\DC1\b\ESC\n\
     \\SI\n\
-    \\a\EOTJ\EOT\NUL\STX\STX\SOH\DC2\EOT\156\DC1\b\SYN\n\
+    \\a\EOTJ\EOT\NUL\STX\STX\SOH\DC2\EOT\210\DC1\b\SYN\n\
     \\SI\n\
-    \\a\EOTJ\EOT\NUL\STX\STX\STX\DC2\EOT\156\DC1\EM\SUB\n\
+    \\a\EOTJ\EOT\NUL\STX\STX\STX\DC2\EOT\210\DC1\EM\SUB\n\
     \\SO\n\
-    \\ACK\EOTJ\EOT\NUL\STX\ETX\DC2\EOT\157\DC1\b\GS\n\
+    \\ACK\EOTJ\EOT\NUL\STX\ETX\DC2\EOT\211\DC1\b\GS\n\
     \\SI\n\
-    \\a\EOTJ\EOT\NUL\STX\ETX\SOH\DC2\EOT\157\DC1\b\CAN\n\
+    \\a\EOTJ\EOT\NUL\STX\ETX\SOH\DC2\EOT\211\DC1\b\CAN\n\
     \\SI\n\
-    \\a\EOTJ\EOT\NUL\STX\ETX\STX\DC2\EOT\157\DC1\ESC\FS\n\
+    \\a\EOTJ\EOT\NUL\STX\ETX\STX\DC2\EOT\211\DC1\ESC\FS\n\
     \\SO\n\
-    \\ACK\EOTJ\EOT\NUL\STX\EOT\DC2\EOT\158\DC1\b!\n\
+    \\ACK\EOTJ\EOT\NUL\STX\EOT\DC2\EOT\212\DC1\b!\n\
     \\SI\n\
-    \\a\EOTJ\EOT\NUL\STX\EOT\SOH\DC2\EOT\158\DC1\b\FS\n\
+    \\a\EOTJ\EOT\NUL\STX\EOT\SOH\DC2\EOT\212\DC1\b\FS\n\
     \\SI\n\
-    \\a\EOTJ\EOT\NUL\STX\EOT\STX\DC2\EOT\158\DC1\US \n\
+    \\a\EOTJ\EOT\NUL\STX\EOT\STX\DC2\EOT\212\DC1\US \n\
     \\f\n\
-    \\EOT\EOTJ\STX\ENQ\DC2\EOT\161\DC1\EOT\CAN\n\
+    \\EOT\EOTJ\STX\ENQ\DC2\EOT\215\DC1\EOT\CAN\n\
     \\SI\n\
-    \\ENQ\EOTJ\STX\ENQ\EOT\DC2\ACK\161\DC1\EOT\159\DC1\ENQ\n\
+    \\ENQ\EOTJ\STX\ENQ\EOT\DC2\ACK\215\DC1\EOT\213\DC1\ENQ\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\ENQ\ACK\DC2\EOT\161\DC1\EOT\SO\n\
+    \\ENQ\EOTJ\STX\ENQ\ACK\DC2\EOT\215\DC1\EOT\SO\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\ENQ\SOH\DC2\EOT\161\DC1\SI\DC3\n\
+    \\ENQ\EOTJ\STX\ENQ\SOH\DC2\EOT\215\DC1\SI\DC3\n\
     \\r\n\
-    \\ENQ\EOTJ\STX\ENQ\ETX\DC2\EOT\161\DC1\SYN\ETB\n\
+    \\ENQ\EOTJ\STX\ENQ\ETX\DC2\EOT\215\DC1\SYN\ETB\n\
     \\f\n\
-    \\STX\EOTK\DC2\ACK\164\DC1\NUL\165\DC1\SOH\n\
+    \\STX\EOTK\DC2\ACK\218\DC1\NUL\224\DC1\SOH\n\
     \\v\n\
-    \\ETX\EOTK\SOH\DC2\EOT\164\DC1\b\FS\n\
-    \\f\n\
-    \\STX\EOTL\DC2\ACK\166\DC1\NUL\175\DC1\SOH\n\
-    \\v\n\
-    \\ETX\EOTL\SOH\DC2\EOT\166\DC1\b\GS\n\
-    \)\n\
-    \\EOT\EOTL\STX\NUL\DC2\EOT\168\DC1\EOT\FS\SUB\ESC The balance of the wallet\n\
+    \\ETX\EOTK\SOH\DC2\EOT\218\DC1\b\FS\n\
+    \O\n\
+    \\EOT\EOTK\STX\NUL\DC2\EOT\220\DC1\EOT \SUBA The confirmed balance of the account (with >= 1 confirmations).\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTL\STX\NUL\EOT\DC2\ACK\168\DC1\EOT\166\DC1\US\n\
+    \\ENQ\EOTK\STX\NUL\EOT\DC2\ACK\220\DC1\EOT\218\DC1\RS\n\
     \\r\n\
-    \\ENQ\EOTL\STX\NUL\ENQ\DC2\EOT\168\DC1\EOT\t\n\
+    \\ENQ\EOTK\STX\NUL\ENQ\DC2\EOT\220\DC1\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTL\STX\NUL\SOH\DC2\EOT\168\DC1\n\
-    \\ETB\n\
-    \\r\n\
-    \\ENQ\EOTL\STX\NUL\ETX\DC2\EOT\168\DC1\SUB\ESC\n\
-    \J\n\
-    \\EOT\EOTL\STX\SOH\DC2\EOT\171\DC1\EOT \SUB< The confirmed balance of a wallet(with >= 1 confirmations)\n\
-    \\n\
-    \\SI\n\
-    \\ENQ\EOTL\STX\SOH\EOT\DC2\ACK\171\DC1\EOT\168\DC1\FS\n\
-    \\r\n\
-    \\ENQ\EOTL\STX\SOH\ENQ\DC2\EOT\171\DC1\EOT\t\n\
-    \\r\n\
-    \\ENQ\EOTL\STX\SOH\SOH\DC2\EOT\171\DC1\n\
+    \\ENQ\EOTK\STX\NUL\SOH\DC2\EOT\220\DC1\n\
     \\ESC\n\
     \\r\n\
-    \\ENQ\EOTL\STX\SOH\ETX\DC2\EOT\171\DC1\RS\US\n\
-    \I\n\
-    \\EOT\EOTL\STX\STX\DC2\EOT\174\DC1\EOT\"\SUB; The unconfirmed balance of a wallet(with 0 confirmations)\n\
+    \\ENQ\EOTK\STX\NUL\ETX\DC2\EOT\220\DC1\RS\US\n\
+    \N\n\
+    \\EOT\EOTK\STX\SOH\DC2\EOT\223\DC1\EOT\"\SUB@ The unconfirmed balance of the account (with 0 confirmations).\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTL\STX\STX\EOT\DC2\ACK\174\DC1\EOT\171\DC1 \n\
+    \\ENQ\EOTK\STX\SOH\EOT\DC2\ACK\223\DC1\EOT\220\DC1 \n\
     \\r\n\
-    \\ENQ\EOTL\STX\STX\ENQ\DC2\EOT\174\DC1\EOT\t\n\
+    \\ENQ\EOTK\STX\SOH\ENQ\DC2\EOT\223\DC1\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTL\STX\STX\SOH\DC2\EOT\174\DC1\n\
+    \\ENQ\EOTK\STX\SOH\SOH\DC2\EOT\223\DC1\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOTL\STX\STX\ETX\DC2\EOT\174\DC1 !\n\
+    \\ENQ\EOTK\STX\SOH\ETX\DC2\EOT\223\DC1 !\n\
     \\f\n\
-    \\STX\EOTM\DC2\ACK\177\DC1\NUL\183\DC1\SOH\n\
+    \\STX\EOTL\DC2\ACK\226\DC1\NUL\227\DC1\SOH\n\
     \\v\n\
-    \\ETX\EOTM\SOH\DC2\EOT\177\DC1\b\SO\n\
+    \\ETX\EOTL\SOH\DC2\EOT\226\DC1\b\FS\n\
+    \\f\n\
+    \\STX\EOTM\DC2\ACK\229\DC1\NUL\241\DC1\SOH\n\
+    \\v\n\
+    \\ETX\EOTM\SOH\DC2\EOT\229\DC1\b\GS\n\
+    \)\n\
+    \\EOT\EOTM\STX\NUL\DC2\EOT\231\DC1\EOT\FS\SUB\ESC The balance of the wallet\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTM\STX\NUL\EOT\DC2\ACK\231\DC1\EOT\229\DC1\US\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\NUL\ENQ\DC2\EOT\231\DC1\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\NUL\SOH\DC2\EOT\231\DC1\n\
+    \\ETB\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\NUL\ETX\DC2\EOT\231\DC1\SUB\ESC\n\
+    \J\n\
+    \\EOT\EOTM\STX\SOH\DC2\EOT\234\DC1\EOT \SUB< The confirmed balance of a wallet(with >= 1 confirmations)\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTM\STX\SOH\EOT\DC2\ACK\234\DC1\EOT\231\DC1\FS\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\SOH\ENQ\DC2\EOT\234\DC1\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\SOH\SOH\DC2\EOT\234\DC1\n\
+    \\ESC\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\SOH\ETX\DC2\EOT\234\DC1\RS\US\n\
+    \I\n\
+    \\EOT\EOTM\STX\STX\DC2\EOT\237\DC1\EOT\"\SUB; The unconfirmed balance of a wallet(with 0 confirmations)\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTM\STX\STX\EOT\DC2\ACK\237\DC1\EOT\234\DC1 \n\
+    \\r\n\
+    \\ENQ\EOTM\STX\STX\ENQ\DC2\EOT\237\DC1\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\STX\SOH\DC2\EOT\237\DC1\n\
+    \\GS\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\STX\ETX\DC2\EOT\237\DC1 !\n\
+    \G\n\
+    \\EOT\EOTM\STX\ETX\DC2\EOT\240\DC1\EOT:\SUB9 A mapping of each wallet account's name to its balance.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTM\STX\ETX\EOT\DC2\ACK\240\DC1\EOT\237\DC1\"\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\ETX\ACK\DC2\EOT\240\DC1\EOT%\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\ETX\SOH\DC2\EOT\240\DC1&5\n\
+    \\r\n\
+    \\ENQ\EOTM\STX\ETX\ETX\DC2\EOT\240\DC189\n\
+    \\f\n\
+    \\STX\EOTN\DC2\ACK\243\DC1\NUL\249\DC1\SOH\n\
+    \\v\n\
+    \\ETX\EOTN\SOH\DC2\EOT\243\DC1\b\SO\n\
     \.\n\
-    \\EOT\EOTM\STX\NUL\DC2\EOT\179\DC1\EOT\DC3\SUB  Value denominated in satoshis.\n\
+    \\EOT\EOTN\STX\NUL\DC2\EOT\245\DC1\EOT\DC3\SUB  Value denominated in satoshis.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTM\STX\NUL\EOT\DC2\ACK\179\DC1\EOT\177\DC1\DLE\n\
+    \\ENQ\EOTN\STX\NUL\EOT\DC2\ACK\245\DC1\EOT\243\DC1\DLE\n\
     \\r\n\
-    \\ENQ\EOTM\STX\NUL\ENQ\DC2\EOT\179\DC1\EOT\n\
+    \\ENQ\EOTN\STX\NUL\ENQ\DC2\EOT\245\DC1\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTM\STX\NUL\SOH\DC2\EOT\179\DC1\v\SO\n\
+    \\ENQ\EOTN\STX\NUL\SOH\DC2\EOT\245\DC1\v\SO\n\
     \\r\n\
-    \\ENQ\EOTM\STX\NUL\ETX\DC2\EOT\179\DC1\DC1\DC2\n\
+    \\ENQ\EOTN\STX\NUL\ETX\DC2\EOT\245\DC1\DC1\DC2\n\
     \4\n\
-    \\EOT\EOTM\STX\SOH\DC2\EOT\182\DC1\EOT\DC4\SUB& Value denominated in milli-satoshis.\n\
+    \\EOT\EOTN\STX\SOH\DC2\EOT\248\DC1\EOT\DC4\SUB& Value denominated in milli-satoshis.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTM\STX\SOH\EOT\DC2\ACK\182\DC1\EOT\179\DC1\DC3\n\
+    \\ENQ\EOTN\STX\SOH\EOT\DC2\ACK\248\DC1\EOT\245\DC1\DC3\n\
     \\r\n\
-    \\ENQ\EOTM\STX\SOH\ENQ\DC2\EOT\182\DC1\EOT\n\
+    \\ENQ\EOTN\STX\SOH\ENQ\DC2\EOT\248\DC1\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTM\STX\SOH\SOH\DC2\EOT\182\DC1\v\SI\n\
+    \\ENQ\EOTN\STX\SOH\SOH\DC2\EOT\248\DC1\v\SI\n\
     \\r\n\
-    \\ENQ\EOTM\STX\SOH\ETX\DC2\EOT\182\DC1\DC2\DC3\n\
+    \\ENQ\EOTN\STX\SOH\ETX\DC2\EOT\248\DC1\DC2\DC3\n\
     \\f\n\
-    \\STX\EOTN\DC2\ACK\185\DC1\NUL\186\DC1\SOH\n\
+    \\STX\EOTO\DC2\ACK\251\DC1\NUL\252\DC1\SOH\n\
     \\v\n\
-    \\ETX\EOTN\SOH\DC2\EOT\185\DC1\b\GS\n\
+    \\ETX\EOTO\SOH\DC2\EOT\251\DC1\b\GS\n\
     \\f\n\
-    \\STX\EOTO\DC2\ACK\187\DC1\NUL\211\DC1\SOH\n\
+    \\STX\EOTP\DC2\ACK\253\DC1\NUL\149\DC2\SOH\n\
     \\v\n\
-    \\ETX\EOTO\SOH\DC2\EOT\187\DC1\b\RS\n\
+    \\ETX\EOTP\SOH\DC2\EOT\253\DC1\b\RS\n\
     \L\n\
-    \\EOT\EOTO\STX\NUL\DC2\EOT\189\DC1\EOT*\SUB> Deprecated. Sum of channels balances denominated in satoshis\n\
+    \\EOT\EOTP\STX\NUL\DC2\EOT\255\DC1\EOT*\SUB> Deprecated. Sum of channels balances denominated in satoshis\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTO\STX\NUL\EOT\DC2\ACK\189\DC1\EOT\187\DC1 \n\
+    \\ENQ\EOTP\STX\NUL\EOT\DC2\ACK\255\DC1\EOT\253\DC1 \n\
     \\r\n\
-    \\ENQ\EOTO\STX\NUL\ENQ\DC2\EOT\189\DC1\EOT\t\n\
+    \\ENQ\EOTP\STX\NUL\ENQ\DC2\EOT\255\DC1\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTO\STX\NUL\SOH\DC2\EOT\189\DC1\n\
+    \\ENQ\EOTP\STX\NUL\SOH\DC2\EOT\255\DC1\n\
     \\DC1\n\
     \\r\n\
-    \\ENQ\EOTO\STX\NUL\ETX\DC2\EOT\189\DC1\DC4\NAK\n\
+    \\ENQ\EOTP\STX\NUL\ETX\DC2\EOT\255\DC1\DC4\NAK\n\
     \\r\n\
-    \\ENQ\EOTO\STX\NUL\b\DC2\EOT\189\DC1\SYN)\n\
+    \\ENQ\EOTP\STX\NUL\b\DC2\EOT\255\DC1\SYN)\n\
     \\SO\n\
-    \\ACK\EOTO\STX\NUL\b\ETX\DC2\EOT\189\DC1\ETB(\n\
+    \\ACK\EOTP\STX\NUL\b\ETX\DC2\EOT\255\DC1\ETB(\n\
     \T\n\
-    \\EOT\EOTO\STX\SOH\DC2\EOT\192\DC1\EOT7\SUBF Deprecated. Sum of channels pending balances denominated in satoshis\n\
+    \\EOT\EOTP\STX\SOH\DC2\EOT\130\DC2\EOT7\SUBF Deprecated. Sum of channels pending balances denominated in satoshis\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTO\STX\SOH\EOT\DC2\ACK\192\DC1\EOT\189\DC1*\n\
+    \\ENQ\EOTP\STX\SOH\EOT\DC2\ACK\130\DC2\EOT\255\DC1*\n\
     \\r\n\
-    \\ENQ\EOTO\STX\SOH\ENQ\DC2\EOT\192\DC1\EOT\t\n\
+    \\ENQ\EOTP\STX\SOH\ENQ\DC2\EOT\130\DC2\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTO\STX\SOH\SOH\DC2\EOT\192\DC1\n\
+    \\ENQ\EOTP\STX\SOH\SOH\DC2\EOT\130\DC2\n\
     \\RS\n\
     \\r\n\
-    \\ENQ\EOTO\STX\SOH\ETX\DC2\EOT\192\DC1!\"\n\
+    \\ENQ\EOTP\STX\SOH\ETX\DC2\EOT\130\DC2!\"\n\
     \\r\n\
-    \\ENQ\EOTO\STX\SOH\b\DC2\EOT\192\DC1#6\n\
+    \\ENQ\EOTP\STX\SOH\b\DC2\EOT\130\DC2#6\n\
     \\SO\n\
-    \\ACK\EOTO\STX\SOH\b\ETX\DC2\EOT\192\DC1$5\n\
+    \\ACK\EOTP\STX\SOH\b\ETX\DC2\EOT\130\DC2$5\n\
     \/\n\
-    \\EOT\EOTO\STX\STX\DC2\EOT\195\DC1\EOT\GS\SUB! Sum of channels local balances.\n\
+    \\EOT\EOTP\STX\STX\DC2\EOT\133\DC2\EOT\GS\SUB! Sum of channels local balances.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTO\STX\STX\EOT\DC2\ACK\195\DC1\EOT\192\DC17\n\
+    \\ENQ\EOTP\STX\STX\EOT\DC2\ACK\133\DC2\EOT\130\DC27\n\
     \\r\n\
-    \\ENQ\EOTO\STX\STX\ACK\DC2\EOT\195\DC1\EOT\n\
+    \\ENQ\EOTP\STX\STX\ACK\DC2\EOT\133\DC2\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTO\STX\STX\SOH\DC2\EOT\195\DC1\v\CAN\n\
+    \\ENQ\EOTP\STX\STX\SOH\DC2\EOT\133\DC2\v\CAN\n\
     \\r\n\
-    \\ENQ\EOTO\STX\STX\ETX\DC2\EOT\195\DC1\ESC\FS\n\
+    \\ENQ\EOTP\STX\STX\ETX\DC2\EOT\133\DC2\ESC\FS\n\
     \0\n\
-    \\EOT\EOTO\STX\ETX\DC2\EOT\198\DC1\EOT\RS\SUB\" Sum of channels remote balances.\n\
+    \\EOT\EOTP\STX\ETX\DC2\EOT\136\DC2\EOT\RS\SUB\" Sum of channels remote balances.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTO\STX\ETX\EOT\DC2\ACK\198\DC1\EOT\195\DC1\GS\n\
+    \\ENQ\EOTP\STX\ETX\EOT\DC2\ACK\136\DC2\EOT\133\DC2\GS\n\
     \\r\n\
-    \\ENQ\EOTO\STX\ETX\ACK\DC2\EOT\198\DC1\EOT\n\
+    \\ENQ\EOTP\STX\ETX\ACK\DC2\EOT\136\DC2\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTO\STX\ETX\SOH\DC2\EOT\198\DC1\v\EM\n\
+    \\ENQ\EOTP\STX\ETX\SOH\DC2\EOT\136\DC2\v\EM\n\
     \\r\n\
-    \\ENQ\EOTO\STX\ETX\ETX\DC2\EOT\198\DC1\FS\GS\n\
+    \\ENQ\EOTP\STX\ETX\ETX\DC2\EOT\136\DC2\FS\GS\n\
     \9\n\
-    \\EOT\EOTO\STX\EOT\DC2\EOT\201\DC1\EOT'\SUB+ Sum of channels local unsettled balances.\n\
+    \\EOT\EOTP\STX\EOT\DC2\EOT\139\DC2\EOT'\SUB+ Sum of channels local unsettled balances.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTO\STX\EOT\EOT\DC2\ACK\201\DC1\EOT\198\DC1\RS\n\
+    \\ENQ\EOTP\STX\EOT\EOT\DC2\ACK\139\DC2\EOT\136\DC2\RS\n\
     \\r\n\
-    \\ENQ\EOTO\STX\EOT\ACK\DC2\EOT\201\DC1\EOT\n\
+    \\ENQ\EOTP\STX\EOT\ACK\DC2\EOT\139\DC2\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTO\STX\EOT\SOH\DC2\EOT\201\DC1\v\"\n\
+    \\ENQ\EOTP\STX\EOT\SOH\DC2\EOT\139\DC2\v\"\n\
     \\r\n\
-    \\ENQ\EOTO\STX\EOT\ETX\DC2\EOT\201\DC1%&\n\
+    \\ENQ\EOTP\STX\EOT\ETX\DC2\EOT\139\DC2%&\n\
     \:\n\
-    \\EOT\EOTO\STX\ENQ\DC2\EOT\204\DC1\EOT(\SUB, Sum of channels remote unsettled balances.\n\
+    \\EOT\EOTP\STX\ENQ\DC2\EOT\142\DC2\EOT(\SUB, Sum of channels remote unsettled balances.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTO\STX\ENQ\EOT\DC2\ACK\204\DC1\EOT\201\DC1'\n\
+    \\ENQ\EOTP\STX\ENQ\EOT\DC2\ACK\142\DC2\EOT\139\DC2'\n\
     \\r\n\
-    \\ENQ\EOTO\STX\ENQ\ACK\DC2\EOT\204\DC1\EOT\n\
+    \\ENQ\EOTP\STX\ENQ\ACK\DC2\EOT\142\DC2\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTO\STX\ENQ\SOH\DC2\EOT\204\DC1\v#\n\
+    \\ENQ\EOTP\STX\ENQ\SOH\DC2\EOT\142\DC2\v#\n\
     \\r\n\
-    \\ENQ\EOTO\STX\ENQ\ETX\DC2\EOT\204\DC1&'\n\
+    \\ENQ\EOTP\STX\ENQ\ETX\DC2\EOT\142\DC2&'\n\
     \7\n\
-    \\EOT\EOTO\STX\ACK\DC2\EOT\207\DC1\EOT*\SUB) Sum of channels pending local balances.\n\
+    \\EOT\EOTP\STX\ACK\DC2\EOT\145\DC2\EOT*\SUB) Sum of channels pending local balances.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTO\STX\ACK\EOT\DC2\ACK\207\DC1\EOT\204\DC1(\n\
+    \\ENQ\EOTP\STX\ACK\EOT\DC2\ACK\145\DC2\EOT\142\DC2(\n\
     \\r\n\
-    \\ENQ\EOTO\STX\ACK\ACK\DC2\EOT\207\DC1\EOT\n\
+    \\ENQ\EOTP\STX\ACK\ACK\DC2\EOT\145\DC2\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTO\STX\ACK\SOH\DC2\EOT\207\DC1\v%\n\
+    \\ENQ\EOTP\STX\ACK\SOH\DC2\EOT\145\DC2\v%\n\
     \\r\n\
-    \\ENQ\EOTO\STX\ACK\ETX\DC2\EOT\207\DC1()\n\
+    \\ENQ\EOTP\STX\ACK\ETX\DC2\EOT\145\DC2()\n\
     \8\n\
-    \\EOT\EOTO\STX\a\DC2\EOT\210\DC1\EOT+\SUB* Sum of channels pending remote balances.\n\
+    \\EOT\EOTP\STX\a\DC2\EOT\148\DC2\EOT+\SUB* Sum of channels pending remote balances.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTO\STX\a\EOT\DC2\ACK\210\DC1\EOT\207\DC1*\n\
+    \\ENQ\EOTP\STX\a\EOT\DC2\ACK\148\DC2\EOT\145\DC2*\n\
     \\r\n\
-    \\ENQ\EOTO\STX\a\ACK\DC2\EOT\210\DC1\EOT\n\
+    \\ENQ\EOTP\STX\a\ACK\DC2\EOT\148\DC2\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTO\STX\a\SOH\DC2\EOT\210\DC1\v&\n\
+    \\ENQ\EOTP\STX\a\SOH\DC2\EOT\148\DC2\v&\n\
     \\r\n\
-    \\ENQ\EOTO\STX\a\ETX\DC2\EOT\210\DC1)*\n\
+    \\ENQ\EOTP\STX\a\ETX\DC2\EOT\148\DC2)*\n\
     \\f\n\
-    \\STX\EOTP\DC2\ACK\213\DC1\NUL\191\DC2\SOH\n\
+    \\STX\EOTQ\DC2\ACK\151\DC2\NUL\129\DC3\SOH\n\
     \\v\n\
-    \\ETX\EOTP\SOH\DC2\EOT\213\DC1\b\SUB\n\
+    \\ETX\EOTQ\SOH\DC2\EOT\151\DC2\b\SUB\n\
     \N\n\
-    \\EOT\EOTP\STX\NUL\DC2\EOT\215\DC1\EOT\ETB\SUB@ The 33-byte hex-encoded public key for the payment destination\n\
+    \\EOT\EOTQ\STX\NUL\DC2\EOT\153\DC2\EOT\ETB\SUB@ The 33-byte hex-encoded public key for the payment destination\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\NUL\EOT\DC2\ACK\215\DC1\EOT\213\DC1\FS\n\
+    \\ENQ\EOTQ\STX\NUL\EOT\DC2\ACK\153\DC2\EOT\151\DC2\FS\n\
     \\r\n\
-    \\ENQ\EOTP\STX\NUL\ENQ\DC2\EOT\215\DC1\EOT\n\
+    \\ENQ\EOTQ\STX\NUL\ENQ\DC2\EOT\153\DC2\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTP\STX\NUL\SOH\DC2\EOT\215\DC1\v\DC2\n\
+    \\ENQ\EOTQ\STX\NUL\SOH\DC2\EOT\153\DC2\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTP\STX\NUL\ETX\DC2\EOT\215\DC1\NAK\SYN\n\
+    \\ENQ\EOTQ\STX\NUL\ETX\DC2\EOT\153\DC2\NAK\SYN\n\
     \n\n\
-    \\EOT\EOTP\STX\SOH\DC2\EOT\222\DC1\EOT\DC2\SUB`\n\
+    \\EOT\EOTQ\STX\SOH\DC2\EOT\160\DC2\EOT\DC2\SUB`\n\
     \The amount to send expressed in satoshis.\n\
     \\n\
     \The fields amt and amt_msat are mutually exclusive.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\SOH\EOT\DC2\ACK\222\DC1\EOT\215\DC1\ETB\n\
+    \\ENQ\EOTQ\STX\SOH\EOT\DC2\ACK\160\DC2\EOT\153\DC2\ETB\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SOH\ENQ\DC2\EOT\222\DC1\EOT\t\n\
+    \\ENQ\EOTQ\STX\SOH\ENQ\DC2\EOT\160\DC2\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SOH\SOH\DC2\EOT\222\DC1\n\
+    \\ENQ\EOTQ\STX\SOH\SOH\DC2\EOT\160\DC2\n\
     \\r\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SOH\ETX\DC2\EOT\222\DC1\DLE\DC1\n\
+    \\ENQ\EOTQ\STX\SOH\ETX\DC2\EOT\160\DC2\DLE\DC1\n\
     \s\n\
-    \\EOT\EOTP\STX\STX\DC2\EOT\229\DC1\EOT\CAN\SUBe\n\
+    \\EOT\EOTQ\STX\STX\DC2\EOT\167\DC2\EOT\CAN\SUBe\n\
     \The amount to send expressed in millisatoshis.\n\
     \\n\
     \The fields amt and amt_msat are mutually exclusive.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\STX\EOT\DC2\ACK\229\DC1\EOT\222\DC1\DC2\n\
+    \\ENQ\EOTQ\STX\STX\EOT\DC2\ACK\167\DC2\EOT\160\DC2\DC2\n\
     \\r\n\
-    \\ENQ\EOTP\STX\STX\ENQ\DC2\EOT\229\DC1\EOT\t\n\
+    \\ENQ\EOTQ\STX\STX\ENQ\DC2\EOT\167\DC2\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTP\STX\STX\SOH\DC2\EOT\229\DC1\n\
+    \\ENQ\EOTQ\STX\STX\SOH\DC2\EOT\167\DC2\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOTP\STX\STX\ETX\DC2\EOT\229\DC1\NAK\ETB\n\
+    \\ENQ\EOTQ\STX\STX\ETX\DC2\EOT\167\DC2\NAK\ETB\n\
     \\v\n\
-    \\ETX\EOTP\t\DC2\EOT\231\DC1\EOT\SI\n\
+    \\ETX\EOTQ\t\DC2\EOT\169\DC2\EOT\SI\n\
     \\f\n\
-    \\EOT\EOTP\t\NUL\DC2\EOT\231\DC1\r\SO\n\
+    \\EOT\EOTQ\t\NUL\DC2\EOT\169\DC2\r\SO\n\
     \\r\n\
-    \\ENQ\EOTP\t\NUL\SOH\DC2\EOT\231\DC1\r\SO\n\
+    \\ENQ\EOTQ\t\NUL\SOH\DC2\EOT\169\DC2\r\SO\n\
     \\r\n\
-    \\ENQ\EOTP\t\NUL\STX\DC2\EOT\231\DC1\r\SO\n\
+    \\ENQ\EOTQ\t\NUL\STX\DC2\EOT\169\DC2\r\SO\n\
     \\245\STX\n\
-    \\EOT\EOTP\STX\ETX\DC2\EOT\240\DC1\EOT\US\SUB\230\STX\n\
+    \\EOT\EOTQ\STX\ETX\DC2\EOT\178\DC2\EOT\US\SUB\230\STX\n\
     \An optional CLTV delta from the current height that should be used for the\n\
     \timelock of the final hop. Note that unlike SendPayment, QueryRoutes does\n\
     \not add any additional block padding on top of final_ctlv_delta. This\n\
@@ -56416,119 +58636,119 @@ packedFileDescriptor
     \happen when a block comes in while the payment is in flight.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\ETX\EOT\DC2\ACK\240\DC1\EOT\231\DC1\SI\n\
+    \\ENQ\EOTQ\STX\ETX\EOT\DC2\ACK\178\DC2\EOT\169\DC2\SI\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ETX\ENQ\DC2\EOT\240\DC1\EOT\t\n\
+    \\ENQ\EOTQ\STX\ETX\ENQ\DC2\EOT\178\DC2\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ETX\SOH\DC2\EOT\240\DC1\n\
+    \\ENQ\EOTQ\STX\ETX\SOH\DC2\EOT\178\DC2\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ETX\ETX\DC2\EOT\240\DC1\GS\RS\n\
+    \\ENQ\EOTQ\STX\ETX\ETX\DC2\EOT\178\DC2\GS\RS\n\
     \\130\STX\n\
-    \\EOT\EOTP\STX\EOT\DC2\EOT\248\DC1\EOT\ESC\SUB\243\SOH\n\
+    \\EOT\EOTQ\STX\EOT\DC2\EOT\186\DC2\EOT\ESC\SUB\243\SOH\n\
     \The maximum number of satoshis that will be paid as a fee of the payment.\n\
     \This value can be represented either as a percentage of the amount being\n\
     \sent, or as a fixed amount of the maximum fee the user is willing the pay to\n\
     \send the payment.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\EOT\EOT\DC2\ACK\248\DC1\EOT\240\DC1\US\n\
+    \\ENQ\EOTQ\STX\EOT\EOT\DC2\ACK\186\DC2\EOT\178\DC2\US\n\
     \\r\n\
-    \\ENQ\EOTP\STX\EOT\ACK\DC2\EOT\248\DC1\EOT\f\n\
+    \\ENQ\EOTQ\STX\EOT\ACK\DC2\EOT\186\DC2\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTP\STX\EOT\SOH\DC2\EOT\248\DC1\r\SYN\n\
+    \\ENQ\EOTQ\STX\EOT\SOH\DC2\EOT\186\DC2\r\SYN\n\
     \\r\n\
-    \\ENQ\EOTP\STX\EOT\ETX\DC2\EOT\248\DC1\EM\SUB\n\
+    \\ENQ\EOTQ\STX\EOT\ETX\DC2\EOT\186\DC2\EM\SUB\n\
     \w\n\
-    \\EOT\EOTP\STX\ENQ\DC2\EOT\254\DC1\EOT%\SUBi\n\
+    \\EOT\EOTQ\STX\ENQ\DC2\EOT\192\DC2\EOT%\SUBi\n\
     \A list of nodes to ignore during path finding. When using REST, these fields\n\
     \must be encoded as base64.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ENQ\EOT\DC2\EOT\254\DC1\EOT\f\n\
+    \\ENQ\EOTQ\STX\ENQ\EOT\DC2\EOT\192\DC2\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ENQ\ENQ\DC2\EOT\254\DC1\r\DC2\n\
+    \\ENQ\EOTQ\STX\ENQ\ENQ\DC2\EOT\192\DC2\r\DC2\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ENQ\SOH\DC2\EOT\254\DC1\DC3 \n\
+    \\ENQ\EOTQ\STX\ENQ\SOH\DC2\EOT\192\DC2\DC3 \n\
     \\r\n\
-    \\ENQ\EOTP\STX\ENQ\ETX\DC2\EOT\254\DC1#$\n\
+    \\ENQ\EOTQ\STX\ENQ\ETX\DC2\EOT\192\DC2#$\n\
     \J\n\
-    \\EOT\EOTP\STX\ACK\DC2\EOT\131\DC2\EOT?\SUB<\n\
+    \\EOT\EOTQ\STX\ACK\DC2\EOT\197\DC2\EOT?\SUB<\n\
     \Deprecated. A list of edges to ignore during path finding.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ACK\EOT\DC2\EOT\131\DC2\EOT\f\n\
+    \\ENQ\EOTQ\STX\ACK\EOT\DC2\EOT\197\DC2\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ACK\ACK\DC2\EOT\131\DC2\r\CAN\n\
+    \\ENQ\EOTQ\STX\ACK\ACK\DC2\EOT\197\DC2\r\CAN\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ACK\SOH\DC2\EOT\131\DC2\EM&\n\
+    \\ENQ\EOTQ\STX\ACK\SOH\DC2\EOT\197\DC2\EM&\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ACK\ETX\DC2\EOT\131\DC2)*\n\
+    \\ENQ\EOTQ\STX\ACK\ETX\DC2\EOT\197\DC2)*\n\
     \\r\n\
-    \\ENQ\EOTP\STX\ACK\b\DC2\EOT\131\DC2+>\n\
+    \\ENQ\EOTQ\STX\ACK\b\DC2\EOT\197\DC2+>\n\
     \\SO\n\
-    \\ACK\EOTP\STX\ACK\b\ETX\DC2\EOT\131\DC2,=\n\
+    \\ACK\EOTQ\STX\ACK\b\ETX\DC2\EOT\197\DC2,=\n\
     \j\n\
-    \\EOT\EOTP\STX\a\DC2\EOT\137\DC2\EOT\RS\SUB\\\n\
+    \\EOT\EOTQ\STX\a\DC2\EOT\203\DC2\EOT\RS\SUB\\\n\
     \The source node where the request route should originated from. If empty,\n\
     \self is assumed.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\a\EOT\DC2\ACK\137\DC2\EOT\131\DC2?\n\
+    \\ENQ\EOTQ\STX\a\EOT\DC2\ACK\203\DC2\EOT\197\DC2?\n\
     \\r\n\
-    \\ENQ\EOTP\STX\a\ENQ\DC2\EOT\137\DC2\EOT\n\
+    \\ENQ\EOTQ\STX\a\ENQ\DC2\EOT\203\DC2\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTP\STX\a\SOH\DC2\EOT\137\DC2\v\EM\n\
+    \\ENQ\EOTQ\STX\a\SOH\DC2\EOT\203\DC2\v\EM\n\
     \\r\n\
-    \\ENQ\EOTP\STX\a\ETX\DC2\EOT\137\DC2\FS\GS\n\
+    \\ENQ\EOTQ\STX\a\ETX\DC2\EOT\203\DC2\FS\GS\n\
     \n\n\
-    \\EOT\EOTP\STX\b\DC2\EOT\143\DC2\EOT!\SUB`\n\
+    \\EOT\EOTQ\STX\b\DC2\EOT\209\DC2\EOT!\SUB`\n\
     \If set to true, edge probabilities from mission control will be used to get\n\
     \the optimal route.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\b\EOT\DC2\ACK\143\DC2\EOT\137\DC2\RS\n\
+    \\ENQ\EOTQ\STX\b\EOT\DC2\ACK\209\DC2\EOT\203\DC2\RS\n\
     \\r\n\
-    \\ENQ\EOTP\STX\b\ENQ\DC2\EOT\143\DC2\EOT\b\n\
+    \\ENQ\EOTQ\STX\b\ENQ\DC2\EOT\209\DC2\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTP\STX\b\SOH\DC2\EOT\143\DC2\t\FS\n\
+    \\ENQ\EOTQ\STX\b\SOH\DC2\EOT\209\DC2\t\FS\n\
     \\r\n\
-    \\ENQ\EOTP\STX\b\ETX\DC2\EOT\143\DC2\US \n\
+    \\ENQ\EOTQ\STX\b\ETX\DC2\EOT\209\DC2\US \n\
     \W\n\
-    \\EOT\EOTP\STX\t\DC2\EOT\148\DC2\EOT)\SUBI\n\
+    \\EOT\EOTQ\STX\t\DC2\EOT\214\DC2\EOT)\SUBI\n\
     \A list of directed node pairs that will be ignored during path finding.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTP\STX\t\EOT\DC2\EOT\148\DC2\EOT\f\n\
+    \\ENQ\EOTQ\STX\t\EOT\DC2\EOT\214\DC2\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTP\STX\t\ACK\DC2\EOT\148\DC2\r\NAK\n\
+    \\ENQ\EOTQ\STX\t\ACK\DC2\EOT\214\DC2\r\NAK\n\
     \\r\n\
-    \\ENQ\EOTP\STX\t\SOH\DC2\EOT\148\DC2\SYN#\n\
+    \\ENQ\EOTQ\STX\t\SOH\DC2\EOT\214\DC2\SYN#\n\
     \\r\n\
-    \\ENQ\EOTP\STX\t\ETX\DC2\EOT\148\DC2&(\n\
+    \\ENQ\EOTQ\STX\t\ETX\DC2\EOT\214\DC2&(\n\
     \\231\SOH\n\
-    \\EOT\EOTP\STX\n\
-    \\DC2\EOT\155\DC2\EOT\ESC\SUB\216\SOH\n\
+    \\EOT\EOTQ\STX\n\
+    \\DC2\EOT\221\DC2\EOT\ESC\SUB\216\SOH\n\
     \An optional maximum total time lock for the route. If the source is empty or\n\
     \ourselves, this should not exceed lnd's `--max-cltv-expiry` setting. If\n\
     \zero, then the value of `--max-cltv-expiry` is used as the limit.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\n\
-    \\EOT\DC2\ACK\155\DC2\EOT\148\DC2)\n\
+    \\ENQ\EOTQ\STX\n\
+    \\EOT\DC2\ACK\221\DC2\EOT\214\DC2)\n\
     \\r\n\
-    \\ENQ\EOTP\STX\n\
-    \\ENQ\DC2\EOT\155\DC2\EOT\n\
+    \\ENQ\EOTQ\STX\n\
+    \\ENQ\DC2\EOT\221\DC2\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTP\STX\n\
-    \\SOH\DC2\EOT\155\DC2\v\NAK\n\
+    \\ENQ\EOTQ\STX\n\
+    \\SOH\DC2\EOT\221\DC2\v\NAK\n\
     \\r\n\
-    \\ENQ\EOTP\STX\n\
-    \\ETX\DC2\EOT\155\DC2\CAN\SUB\n\
+    \\ENQ\EOTQ\STX\n\
+    \\ETX\DC2\EOT\221\DC2\CAN\SUB\n\
     \\163\ETX\n\
-    \\EOT\EOTP\STX\v\DC2\EOT\165\DC2\EOT0\SUB\148\ETX\n\
+    \\EOT\EOTQ\STX\v\DC2\EOT\231\DC2\EOT0\SUB\148\ETX\n\
     \An optional field that can be used to pass an arbitrary set of TLV records\n\
     \to a peer which understands the new records. This can be used to pass\n\
     \application specific data during the payment attempt. If the destination\n\
@@ -56537,58 +58757,58 @@ packedFileDescriptor
     \REST, the values must be encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\v\EOT\DC2\ACK\165\DC2\EOT\155\DC2\ESC\n\
+    \\ENQ\EOTQ\STX\v\EOT\DC2\ACK\231\DC2\EOT\221\DC2\ESC\n\
     \\r\n\
-    \\ENQ\EOTP\STX\v\ACK\DC2\EOT\165\DC2\EOT\SYN\n\
+    \\ENQ\EOTQ\STX\v\ACK\DC2\EOT\231\DC2\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOTP\STX\v\SOH\DC2\EOT\165\DC2\ETB*\n\
+    \\ENQ\EOTQ\STX\v\SOH\DC2\EOT\231\DC2\ETB*\n\
     \\r\n\
-    \\ENQ\EOTP\STX\v\ETX\DC2\EOT\165\DC2-/\n\
+    \\ENQ\EOTQ\STX\v\ETX\DC2\EOT\231\DC2-/\n\
     \t\n\
-    \\EOT\EOTP\STX\f\DC2\EOT\171\DC2\EOT6\SUBf\n\
+    \\EOT\EOTQ\STX\f\DC2\EOT\237\DC2\EOT6\SUBf\n\
     \The channel id of the channel that must be taken to the first hop. If zero,\n\
     \any channel may be used.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\f\EOT\DC2\ACK\171\DC2\EOT\165\DC20\n\
+    \\ENQ\EOTQ\STX\f\EOT\DC2\ACK\237\DC2\EOT\231\DC20\n\
     \\r\n\
-    \\ENQ\EOTP\STX\f\ENQ\DC2\EOT\171\DC2\EOT\n\
+    \\ENQ\EOTQ\STX\f\ENQ\DC2\EOT\237\DC2\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTP\STX\f\SOH\DC2\EOT\171\DC2\v\ESC\n\
+    \\ENQ\EOTQ\STX\f\SOH\DC2\EOT\237\DC2\v\ESC\n\
     \\r\n\
-    \\ENQ\EOTP\STX\f\ETX\DC2\EOT\171\DC2\RS \n\
+    \\ENQ\EOTQ\STX\f\ETX\DC2\EOT\237\DC2\RS \n\
     \\r\n\
-    \\ENQ\EOTP\STX\f\b\DC2\EOT\171\DC2!5\n\
+    \\ENQ\EOTQ\STX\f\b\DC2\EOT\237\DC2!5\n\
     \\SO\n\
-    \\ACK\EOTP\STX\f\b\ACK\DC2\EOT\171\DC2\"4\n\
+    \\ACK\EOTQ\STX\f\b\ACK\DC2\EOT\237\DC2\"4\n\
     \W\n\
-    \\EOT\EOTP\STX\r\DC2\EOT\176\DC2\EOT\US\SUBI\n\
+    \\EOT\EOTQ\STX\r\DC2\EOT\242\DC2\EOT\US\SUBI\n\
     \The pubkey of the last hop of the route. If empty, any hop may be used.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTP\STX\r\EOT\DC2\ACK\176\DC2\EOT\171\DC26\n\
+    \\ENQ\EOTQ\STX\r\EOT\DC2\ACK\242\DC2\EOT\237\DC26\n\
     \\r\n\
-    \\ENQ\EOTP\STX\r\ENQ\DC2\EOT\176\DC2\EOT\t\n\
+    \\ENQ\EOTQ\STX\r\ENQ\DC2\EOT\242\DC2\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTP\STX\r\SOH\DC2\EOT\176\DC2\n\
+    \\ENQ\EOTQ\STX\r\SOH\DC2\EOT\242\DC2\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOTP\STX\r\ETX\DC2\EOT\176\DC2\FS\RS\n\
+    \\ENQ\EOTQ\STX\r\ETX\DC2\EOT\242\DC2\FS\RS\n\
     \W\n\
-    \\EOT\EOTP\STX\SO\DC2\EOT\181\DC2\EOT(\SUBI\n\
+    \\EOT\EOTQ\STX\SO\DC2\EOT\247\DC2\EOT.\SUBI\n\
     \Optional route hints to reach the destination through private channels.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SO\EOT\DC2\EOT\181\DC2\EOT\f\n\
+    \\ENQ\EOTQ\STX\SO\EOT\DC2\EOT\247\DC2\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SO\ACK\DC2\EOT\181\DC2\r\SYN\n\
+    \\ENQ\EOTQ\STX\SO\ACK\DC2\EOT\247\DC2\r\FS\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SO\SOH\DC2\EOT\181\DC2\ETB\"\n\
+    \\ENQ\EOTQ\STX\SO\SOH\DC2\EOT\247\DC2\GS(\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SO\ETX\DC2\EOT\181\DC2%'\n\
+    \\ENQ\EOTQ\STX\SO\ETX\DC2\EOT\247\DC2+-\n\
     \\195\STX\n\
-    \\EOT\EOTP\STX\SI\DC2\EOT\190\DC2\EOT+\SUB\180\STX\n\
+    \\EOT\EOTQ\STX\SI\DC2\EOT\128\DC3\EOT1\SUB\180\STX\n\
     \Features assumed to be supported by the final node. All transitive feature\n\
     \dependencies must also be set properly. For a given feature bit pair, either\n\
     \optional or remote may be set, but not both. If this field is nil or empty,\n\
@@ -56596,308 +58816,366 @@ packedFileDescriptor
     \fallback.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SI\EOT\DC2\EOT\190\DC2\EOT\f\n\
+    \\ENQ\EOTQ\STX\SI\EOT\DC2\EOT\128\DC3\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SI\ACK\DC2\EOT\190\DC2\r\ETB\n\
+    \\ENQ\EOTQ\STX\SI\ACK\DC2\EOT\128\DC3\r\GS\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SI\SOH\DC2\EOT\190\DC2\CAN%\n\
+    \\ENQ\EOTQ\STX\SI\SOH\DC2\EOT\128\DC3\RS+\n\
     \\r\n\
-    \\ENQ\EOTP\STX\SI\ETX\DC2\EOT\190\DC2(*\n\
+    \\ENQ\EOTQ\STX\SI\ETX\DC2\EOT\128\DC3.0\n\
     \\f\n\
-    \\STX\EOTQ\DC2\ACK\193\DC2\NUL\205\DC2\SOH\n\
+    \\STX\EOTR\DC2\ACK\131\DC3\NUL\143\DC3\SOH\n\
     \\v\n\
-    \\ETX\EOTQ\SOH\DC2\EOT\193\DC2\b\DLE\n\
+    \\ETX\EOTR\SOH\DC2\EOT\131\DC3\b\DLE\n\
     \d\n\
-    \\EOT\EOTQ\STX\NUL\DC2\EOT\198\DC2\EOT\DC3\SUBV\n\
+    \\EOT\EOTR\STX\NUL\DC2\EOT\136\DC3\EOT\DC3\SUBV\n\
     \The sending node of the pair. When using REST, this field must be encoded as\n\
     \base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTQ\STX\NUL\EOT\DC2\ACK\198\DC2\EOT\193\DC2\DC2\n\
+    \\ENQ\EOTR\STX\NUL\EOT\DC2\ACK\136\DC3\EOT\131\DC3\DC2\n\
     \\r\n\
-    \\ENQ\EOTQ\STX\NUL\ENQ\DC2\EOT\198\DC2\EOT\t\n\
+    \\ENQ\EOTR\STX\NUL\ENQ\DC2\EOT\136\DC3\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTQ\STX\NUL\SOH\DC2\EOT\198\DC2\n\
+    \\ENQ\EOTR\STX\NUL\SOH\DC2\EOT\136\DC3\n\
     \\SO\n\
     \\r\n\
-    \\ENQ\EOTQ\STX\NUL\ETX\DC2\EOT\198\DC2\DC1\DC2\n\
+    \\ENQ\EOTR\STX\NUL\ETX\DC2\EOT\136\DC3\DC1\DC2\n\
     \f\n\
-    \\EOT\EOTQ\STX\SOH\DC2\EOT\204\DC2\EOT\DC1\SUBX\n\
+    \\EOT\EOTR\STX\SOH\DC2\EOT\142\DC3\EOT\DC1\SUBX\n\
     \The receiving node of the pair. When using REST, this field must be encoded\n\
     \as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTQ\STX\SOH\EOT\DC2\ACK\204\DC2\EOT\198\DC2\DC3\n\
+    \\ENQ\EOTR\STX\SOH\EOT\DC2\ACK\142\DC3\EOT\136\DC3\DC3\n\
     \\r\n\
-    \\ENQ\EOTQ\STX\SOH\ENQ\DC2\EOT\204\DC2\EOT\t\n\
+    \\ENQ\EOTR\STX\SOH\ENQ\DC2\EOT\142\DC3\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTQ\STX\SOH\SOH\DC2\EOT\204\DC2\n\
+    \\ENQ\EOTR\STX\SOH\SOH\DC2\EOT\142\DC3\n\
     \\f\n\
     \\r\n\
-    \\ENQ\EOTQ\STX\SOH\ETX\DC2\EOT\204\DC2\SI\DLE\n\
+    \\ENQ\EOTR\STX\SOH\ETX\DC2\EOT\142\DC3\SI\DLE\n\
     \\f\n\
-    \\STX\EOTR\DC2\ACK\207\DC2\NUL\218\DC2\SOH\n\
+    \\STX\EOTS\DC2\ACK\145\DC3\NUL\156\DC3\SOH\n\
     \\v\n\
-    \\ETX\EOTR\SOH\DC2\EOT\207\DC2\b\DC3\n\
+    \\ETX\EOTS\SOH\DC2\EOT\145\DC3\b\DC3\n\
     \2\n\
-    \\EOT\EOTR\STX\NUL\DC2\EOT\209\DC2\EOT/\SUB$ The short channel id of this edge.\n\
+    \\EOT\EOTS\STX\NUL\DC2\EOT\147\DC3\EOT/\SUB$ The short channel id of this edge.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTR\STX\NUL\EOT\DC2\ACK\209\DC2\EOT\207\DC2\NAK\n\
+    \\ENQ\EOTS\STX\NUL\EOT\DC2\ACK\147\DC3\EOT\145\DC3\NAK\n\
     \\r\n\
-    \\ENQ\EOTR\STX\NUL\ENQ\DC2\EOT\209\DC2\EOT\n\
+    \\ENQ\EOTS\STX\NUL\ENQ\DC2\EOT\147\DC3\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTR\STX\NUL\SOH\DC2\EOT\209\DC2\v\NAK\n\
+    \\ENQ\EOTS\STX\NUL\SOH\DC2\EOT\147\DC3\v\NAK\n\
     \\r\n\
-    \\ENQ\EOTR\STX\NUL\ETX\DC2\EOT\209\DC2\CAN\EM\n\
+    \\ENQ\EOTS\STX\NUL\ETX\DC2\EOT\147\DC3\CAN\EM\n\
     \\r\n\
-    \\ENQ\EOTR\STX\NUL\b\DC2\EOT\209\DC2\SUB.\n\
+    \\ENQ\EOTS\STX\NUL\b\DC2\EOT\147\DC3\SUB.\n\
     \\SO\n\
-    \\ACK\EOTR\STX\NUL\b\ACK\DC2\EOT\209\DC2\ESC-\n\
+    \\ACK\EOTS\STX\NUL\b\ACK\DC2\EOT\147\DC3\ESC-\n\
     \\149\STX\n\
-    \\EOT\EOTR\STX\SOH\DC2\EOT\217\DC2\EOT\US\SUB\134\STX\n\
+    \\EOT\EOTS\STX\SOH\DC2\EOT\155\DC3\EOT\US\SUB\134\STX\n\
     \The direction of this edge. If direction_reverse is false, the direction\n\
     \of this edge is from the channel endpoint with the lexicographically smaller\n\
     \pub key to the endpoint with the larger pub key. If direction_reverse is\n\
     \is true, the edge goes the other way.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTR\STX\SOH\EOT\DC2\ACK\217\DC2\EOT\209\DC2/\n\
+    \\ENQ\EOTS\STX\SOH\EOT\DC2\ACK\155\DC3\EOT\147\DC3/\n\
     \\r\n\
-    \\ENQ\EOTR\STX\SOH\ENQ\DC2\EOT\217\DC2\EOT\b\n\
+    \\ENQ\EOTS\STX\SOH\ENQ\DC2\EOT\155\DC3\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTR\STX\SOH\SOH\DC2\EOT\217\DC2\t\SUB\n\
+    \\ENQ\EOTS\STX\SOH\SOH\DC2\EOT\155\DC3\t\SUB\n\
     \\r\n\
-    \\ENQ\EOTR\STX\SOH\ETX\DC2\EOT\217\DC2\GS\RS\n\
+    \\ENQ\EOTS\STX\SOH\ETX\DC2\EOT\155\DC3\GS\RS\n\
     \\f\n\
-    \\STX\EOTS\DC2\ACK\220\DC2\NUL\232\DC2\SOH\n\
+    \\STX\EOTT\DC2\ACK\158\DC3\NUL\170\DC3\SOH\n\
     \\v\n\
-    \\ETX\EOTS\SOH\DC2\EOT\220\DC2\b\ESC\n\
+    \\ETX\EOTT\SOH\DC2\EOT\158\DC3\b\ESC\n\
     \\137\SOH\n\
-    \\EOT\EOTS\STX\NUL\DC2\EOT\225\DC2\EOT\RS\SUB{\n\
+    \\EOT\EOTT\STX\NUL\DC2\EOT\163\DC3\EOT\RS\SUB{\n\
     \The route that results from the path finding operation. This is still a\n\
     \repeated field to retain backwards compatibility.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTS\STX\NUL\EOT\DC2\EOT\225\DC2\EOT\f\n\
+    \\ENQ\EOTT\STX\NUL\EOT\DC2\EOT\163\DC3\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTS\STX\NUL\ACK\DC2\EOT\225\DC2\r\DC2\n\
+    \\ENQ\EOTT\STX\NUL\ACK\DC2\EOT\163\DC3\r\DC2\n\
     \\r\n\
-    \\ENQ\EOTS\STX\NUL\SOH\DC2\EOT\225\DC2\DC3\EM\n\
+    \\ENQ\EOTT\STX\NUL\SOH\DC2\EOT\163\DC3\DC3\EM\n\
     \\r\n\
-    \\ENQ\EOTS\STX\NUL\ETX\DC2\EOT\225\DC2\FS\GS\n\
+    \\ENQ\EOTT\STX\NUL\ETX\DC2\EOT\163\DC3\FS\GS\n\
     \x\n\
-    \\EOT\EOTS\STX\SOH\DC2\EOT\231\DC2\EOT\FS\SUBj\n\
+    \\EOT\EOTT\STX\SOH\DC2\EOT\169\DC3\EOT\FS\SUBj\n\
     \The success probability of the returned route based on the current mission\n\
     \control state. [EXPERIMENTAL]\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTS\STX\SOH\EOT\DC2\ACK\231\DC2\EOT\225\DC2\RS\n\
+    \\ENQ\EOTT\STX\SOH\EOT\DC2\ACK\169\DC3\EOT\163\DC3\RS\n\
     \\r\n\
-    \\ENQ\EOTS\STX\SOH\ENQ\DC2\EOT\231\DC2\EOT\n\
+    \\ENQ\EOTT\STX\SOH\ENQ\DC2\EOT\169\DC3\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTS\STX\SOH\SOH\DC2\EOT\231\DC2\v\ETB\n\
+    \\ENQ\EOTT\STX\SOH\SOH\DC2\EOT\169\DC3\v\ETB\n\
     \\r\n\
-    \\ENQ\EOTS\STX\SOH\ETX\DC2\EOT\231\DC2\SUB\ESC\n\
+    \\ENQ\EOTT\STX\SOH\ETX\DC2\EOT\169\DC3\SUB\ESC\n\
     \\f\n\
-    \\STX\EOTT\DC2\ACK\234\DC2\NUL\147\DC3\SOH\n\
+    \\STX\EOTU\DC2\ACK\172\DC3\NUL\223\DC3\SOH\n\
     \\v\n\
-    \\ETX\EOTT\SOH\DC2\EOT\234\DC2\b\v\n\
+    \\ETX\EOTU\SOH\DC2\EOT\172\DC3\b\v\n\
     \\193\SOH\n\
-    \\EOT\EOTT\STX\NUL\DC2\EOT\240\DC2\EOT,\SUB\178\SOH\n\
+    \\EOT\EOTU\STX\NUL\DC2\EOT\178\DC3\EOT,\SUB\178\SOH\n\
     \The unique channel ID for the channel. The first 3 bytes are the block\n\
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\NUL\EOT\DC2\ACK\240\DC2\EOT\234\DC2\r\n\
+    \\ENQ\EOTU\STX\NUL\EOT\DC2\ACK\178\DC3\EOT\172\DC3\r\n\
     \\r\n\
-    \\ENQ\EOTT\STX\NUL\ENQ\DC2\EOT\240\DC2\EOT\n\
+    \\ENQ\EOTU\STX\NUL\ENQ\DC2\EOT\178\DC3\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTT\STX\NUL\SOH\DC2\EOT\240\DC2\v\DC2\n\
+    \\ENQ\EOTU\STX\NUL\SOH\DC2\EOT\178\DC3\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTT\STX\NUL\ETX\DC2\EOT\240\DC2\NAK\SYN\n\
+    \\ENQ\EOTU\STX\NUL\ETX\DC2\EOT\178\DC3\NAK\SYN\n\
     \\r\n\
-    \\ENQ\EOTT\STX\NUL\b\DC2\EOT\240\DC2\ETB+\n\
+    \\ENQ\EOTU\STX\NUL\b\DC2\EOT\178\DC3\ETB+\n\
     \\SO\n\
-    \\ACK\EOTT\STX\NUL\b\ACK\DC2\EOT\240\DC2\CAN*\n\
+    \\ACK\EOTU\STX\NUL\b\ACK\DC2\EOT\178\DC3\CAN*\n\
     \\f\n\
-    \\EOT\EOTT\STX\SOH\DC2\EOT\241\DC2\EOT\FS\n\
+    \\EOT\EOTU\STX\SOH\DC2\EOT\179\DC3\EOT0\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\SOH\EOT\DC2\ACK\241\DC2\EOT\240\DC2,\n\
+    \\ENQ\EOTU\STX\SOH\EOT\DC2\ACK\179\DC3\EOT\178\DC3,\n\
     \\r\n\
-    \\ENQ\EOTT\STX\SOH\ENQ\DC2\EOT\241\DC2\EOT\t\n\
+    \\ENQ\EOTU\STX\SOH\ENQ\DC2\EOT\179\DC3\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTT\STX\SOH\SOH\DC2\EOT\241\DC2\n\
+    \\ENQ\EOTU\STX\SOH\SOH\DC2\EOT\179\DC3\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOTT\STX\SOH\ETX\DC2\EOT\241\DC2\SUB\ESC\n\
+    \\ENQ\EOTU\STX\SOH\ETX\DC2\EOT\179\DC3\SUB\ESC\n\
+    \\r\n\
+    \\ENQ\EOTU\STX\SOH\b\DC2\EOT\179\DC3\FS/\n\
+    \\SO\n\
+    \\ACK\EOTU\STX\SOH\b\ETX\DC2\EOT\179\DC3\GS.\n\
     \\f\n\
-    \\EOT\EOTT\STX\STX\DC2\EOT\242\DC2\EOT1\n\
+    \\EOT\EOTU\STX\STX\DC2\EOT\180\DC3\EOT1\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\STX\EOT\DC2\ACK\242\DC2\EOT\241\DC2\FS\n\
+    \\ENQ\EOTU\STX\STX\EOT\DC2\ACK\180\DC3\EOT\179\DC30\n\
     \\r\n\
-    \\ENQ\EOTT\STX\STX\ENQ\DC2\EOT\242\DC2\EOT\t\n\
+    \\ENQ\EOTU\STX\STX\ENQ\DC2\EOT\180\DC3\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTT\STX\STX\SOH\DC2\EOT\242\DC2\n\
+    \\ENQ\EOTU\STX\STX\SOH\DC2\EOT\180\DC3\n\
     \\CAN\n\
     \\r\n\
-    \\ENQ\EOTT\STX\STX\ETX\DC2\EOT\242\DC2\ESC\FS\n\
+    \\ENQ\EOTU\STX\STX\ETX\DC2\EOT\180\DC3\ESC\FS\n\
     \\r\n\
-    \\ENQ\EOTT\STX\STX\b\DC2\EOT\242\DC2\GS0\n\
+    \\ENQ\EOTU\STX\STX\b\DC2\EOT\180\DC3\GS0\n\
     \\SO\n\
-    \\ACK\EOTT\STX\STX\b\ETX\DC2\EOT\242\DC2\RS/\n\
+    \\ACK\EOTU\STX\STX\b\ETX\DC2\EOT\180\DC3\RS/\n\
     \\f\n\
-    \\EOT\EOTT\STX\ETX\DC2\EOT\243\DC2\EOT&\n\
+    \\EOT\EOTU\STX\ETX\DC2\EOT\181\DC3\EOT&\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\ETX\EOT\DC2\ACK\243\DC2\EOT\242\DC21\n\
+    \\ENQ\EOTU\STX\ETX\EOT\DC2\ACK\181\DC3\EOT\180\DC31\n\
     \\r\n\
-    \\ENQ\EOTT\STX\ETX\ENQ\DC2\EOT\243\DC2\EOT\t\n\
+    \\ENQ\EOTU\STX\ETX\ENQ\DC2\EOT\181\DC3\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTT\STX\ETX\SOH\DC2\EOT\243\DC2\n\
+    \\ENQ\EOTU\STX\ETX\SOH\DC2\EOT\181\DC3\n\
     \\r\n\
     \\r\n\
-    \\ENQ\EOTT\STX\ETX\ETX\DC2\EOT\243\DC2\DLE\DC1\n\
+    \\ENQ\EOTU\STX\ETX\ETX\DC2\EOT\181\DC3\DLE\DC1\n\
     \\r\n\
-    \\ENQ\EOTT\STX\ETX\b\DC2\EOT\243\DC2\DC2%\n\
+    \\ENQ\EOTU\STX\ETX\b\DC2\EOT\181\DC3\DC2%\n\
     \\SO\n\
-    \\ACK\EOTT\STX\ETX\b\ETX\DC2\EOT\243\DC2\DC3$\n\
+    \\ACK\EOTU\STX\ETX\b\ETX\DC2\EOT\181\DC3\DC3$\n\
     \\f\n\
-    \\EOT\EOTT\STX\EOT\DC2\EOT\244\DC2\EOT\SYN\n\
+    \\EOT\EOTU\STX\EOT\DC2\EOT\182\DC3\EOT\SYN\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\EOT\EOT\DC2\ACK\244\DC2\EOT\243\DC2&\n\
+    \\ENQ\EOTU\STX\EOT\EOT\DC2\ACK\182\DC3\EOT\181\DC3&\n\
     \\r\n\
-    \\ENQ\EOTT\STX\EOT\ENQ\DC2\EOT\244\DC2\EOT\n\
+    \\ENQ\EOTU\STX\EOT\ENQ\DC2\EOT\182\DC3\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTT\STX\EOT\SOH\DC2\EOT\244\DC2\v\DC1\n\
+    \\ENQ\EOTU\STX\EOT\SOH\DC2\EOT\182\DC3\v\DC1\n\
     \\r\n\
-    \\ENQ\EOTT\STX\EOT\ETX\DC2\EOT\244\DC2\DC4\NAK\n\
+    \\ENQ\EOTU\STX\EOT\ETX\DC2\EOT\182\DC3\DC4\NAK\n\
     \\f\n\
-    \\EOT\EOTT\STX\ENQ\DC2\EOT\245\DC2\EOT\"\n\
+    \\EOT\EOTU\STX\ENQ\DC2\EOT\183\DC3\EOT\"\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\ENQ\EOT\DC2\ACK\245\DC2\EOT\244\DC2\SYN\n\
+    \\ENQ\EOTU\STX\ENQ\EOT\DC2\ACK\183\DC3\EOT\182\DC3\SYN\n\
     \\r\n\
-    \\ENQ\EOTT\STX\ENQ\ENQ\DC2\EOT\245\DC2\EOT\t\n\
+    \\ENQ\EOTU\STX\ENQ\ENQ\DC2\EOT\183\DC3\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTT\STX\ENQ\SOH\DC2\EOT\245\DC2\n\
+    \\ENQ\EOTU\STX\ENQ\SOH\DC2\EOT\183\DC3\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOTT\STX\ENQ\ETX\DC2\EOT\245\DC2 !\n\
+    \\ENQ\EOTU\STX\ENQ\ETX\DC2\EOT\183\DC3 !\n\
     \\f\n\
-    \\EOT\EOTT\STX\ACK\DC2\EOT\246\DC2\EOT\ETB\n\
+    \\EOT\EOTU\STX\ACK\DC2\EOT\184\DC3\EOT\ETB\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\ACK\EOT\DC2\ACK\246\DC2\EOT\245\DC2\"\n\
+    \\ENQ\EOTU\STX\ACK\EOT\DC2\ACK\184\DC3\EOT\183\DC3\"\n\
     \\r\n\
-    \\ENQ\EOTT\STX\ACK\ENQ\DC2\EOT\246\DC2\EOT\t\n\
+    \\ENQ\EOTU\STX\ACK\ENQ\DC2\EOT\184\DC3\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTT\STX\ACK\SOH\DC2\EOT\246\DC2\n\
+    \\ENQ\EOTU\STX\ACK\SOH\DC2\EOT\184\DC3\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOTT\STX\ACK\ETX\DC2\EOT\246\DC2\NAK\SYN\n\
+    \\ENQ\EOTU\STX\ACK\ETX\DC2\EOT\184\DC3\NAK\SYN\n\
     \\155\SOH\n\
-    \\EOT\EOTT\STX\a\DC2\EOT\252\DC2\EOT\ETB\SUB\140\SOH\n\
+    \\EOT\EOTU\STX\a\DC2\EOT\190\DC3\EOT\ETB\SUB\140\SOH\n\
     \An optional public key of the hop. If the public key is given, the payment\n\
     \can be executed without relying on a copy of the channel graph.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\a\EOT\DC2\ACK\252\DC2\EOT\246\DC2\ETB\n\
+    \\ENQ\EOTU\STX\a\EOT\DC2\ACK\190\DC3\EOT\184\DC3\ETB\n\
     \\r\n\
-    \\ENQ\EOTT\STX\a\ENQ\DC2\EOT\252\DC2\EOT\n\
+    \\ENQ\EOTU\STX\a\ENQ\DC2\EOT\190\DC3\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTT\STX\a\SOH\DC2\EOT\252\DC2\v\DC2\n\
+    \\ENQ\EOTU\STX\a\SOH\DC2\EOT\190\DC3\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTT\STX\a\ETX\DC2\EOT\252\DC2\NAK\SYN\n\
+    \\ENQ\EOTU\STX\a\ETX\DC2\EOT\190\DC3\NAK\SYN\n\
     \\230\SOH\n\
-    \\EOT\EOTT\STX\b\DC2\EOT\131\DC3\EOT\EM\SUB\215\SOH\n\
+    \\EOT\EOTU\STX\b\DC2\EOT\197\DC3\EOT\EM\SUB\215\SOH\n\
     \If set to true, then this hop will be encoded using the new variable length\n\
     \TLV format. Note that if any custom tlv_records below are specified, then\n\
     \this field MUST be set to true for them to be encoded properly.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\b\EOT\DC2\ACK\131\DC3\EOT\252\DC2\ETB\n\
+    \\ENQ\EOTU\STX\b\EOT\DC2\ACK\197\DC3\EOT\190\DC3\ETB\n\
     \\r\n\
-    \\ENQ\EOTT\STX\b\ENQ\DC2\EOT\131\DC3\EOT\b\n\
+    \\ENQ\EOTU\STX\b\ENQ\DC2\EOT\197\DC3\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTT\STX\b\SOH\DC2\EOT\131\DC3\t\DC4\n\
+    \\ENQ\EOTU\STX\b\SOH\DC2\EOT\197\DC3\t\DC4\n\
     \\r\n\
-    \\ENQ\EOTT\STX\b\ETX\DC2\EOT\131\DC3\ETB\CAN\n\
-    \\159\STX\n\
-    \\EOT\EOTT\STX\t\DC2\EOT\139\DC3\EOT\RS\SUB\144\STX\n\
+    \\ENQ\EOTU\STX\b\ETX\DC2\EOT\197\DC3\ETB\CAN\n\
+    \\154\STX\n\
+    \\EOT\EOTU\STX\t\DC2\EOT\205\DC3\EOT\RS\SUB\139\STX\n\
     \An optional TLV record that signals the use of an MPP payment. If present,\n\
-    \the receiver will enforce that that the same mpp_record is included in the\n\
-    \final hop payload of all non-zero payments in the HTLC set. If empty, a\n\
-    \regular single-shot payment is or was attempted.\n\
+    \the receiver will enforce that the same mpp_record is included in the final\n\
+    \hop payload of all non-zero payments in the HTLC set. If empty, a regular\n\
+    \single-shot payment is or was attempted.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\t\EOT\DC2\ACK\139\DC3\EOT\131\DC3\EM\n\
+    \\ENQ\EOTU\STX\t\EOT\DC2\ACK\205\DC3\EOT\197\DC3\EM\n\
     \\r\n\
-    \\ENQ\EOTT\STX\t\ACK\DC2\EOT\139\DC3\EOT\r\n\
+    \\ENQ\EOTU\STX\t\ACK\DC2\EOT\205\DC3\EOT\r\n\
     \\r\n\
-    \\ENQ\EOTT\STX\t\SOH\DC2\EOT\139\DC3\SO\CAN\n\
+    \\ENQ\EOTU\STX\t\SOH\DC2\EOT\205\DC3\SO\CAN\n\
     \\r\n\
-    \\ENQ\EOTT\STX\t\ETX\DC2\EOT\139\DC3\ESC\GS\n\
+    \\ENQ\EOTU\STX\t\ETX\DC2\EOT\205\DC3\ESC\GS\n\
+    \\142\ETX\n\
+    \\EOT\EOTU\STX\n\
+    \\DC2\EOT\215\DC3\EOT\RS\SUB\255\STX\n\
+    \An optional TLV record that signals the use of an AMP payment. If present,\n\
+    \the receiver will treat all received payments including the same\n\
+    \(payment_addr, set_id) pair  as being part of one logical payment. The\n\
+    \payment will be settled by XORing the root_share's together and deriving the\n\
+    \child hashes and preimages according to BOLT XX. Must be used in conjunction\n\
+    \with mpp_record.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTU\STX\n\
+    \\EOT\DC2\ACK\215\DC3\EOT\205\DC3\RS\n\
+    \\r\n\
+    \\ENQ\EOTU\STX\n\
+    \\ACK\DC2\EOT\215\DC3\EOT\r\n\
+    \\r\n\
+    \\ENQ\EOTU\STX\n\
+    \\SOH\DC2\EOT\215\DC3\SO\CAN\n\
+    \\r\n\
+    \\ENQ\EOTU\STX\n\
+    \\ETX\DC2\EOT\215\DC3\ESC\GS\n\
     \\210\SOH\n\
-    \\EOT\EOTT\STX\n\
-    \\DC2\EOT\146\DC3\EOT+\SUB\195\SOH\n\
+    \\EOT\EOTU\STX\v\DC2\EOT\222\DC3\EOT+\SUB\195\SOH\n\
     \An optional set of key-value TLV records. This is useful within the context\n\
     \of the SendToRoute call as it allows callers to specify arbitrary K-V pairs\n\
     \to drop off at each hop within the onion.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTT\STX\n\
-    \\EOT\DC2\ACK\146\DC3\EOT\139\DC3\RS\n\
+    \\ENQ\EOTU\STX\v\EOT\DC2\ACK\222\DC3\EOT\215\DC3\RS\n\
     \\r\n\
-    \\ENQ\EOTT\STX\n\
-    \\ACK\DC2\EOT\146\DC3\EOT\SYN\n\
+    \\ENQ\EOTU\STX\v\ACK\DC2\EOT\222\DC3\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOTT\STX\n\
-    \\SOH\DC2\EOT\146\DC3\ETB%\n\
+    \\ENQ\EOTU\STX\v\SOH\DC2\EOT\222\DC3\ETB%\n\
     \\r\n\
-    \\ENQ\EOTT\STX\n\
-    \\ETX\DC2\EOT\146\DC3(*\n\
+    \\ENQ\EOTU\STX\v\ETX\DC2\EOT\222\DC3(*\n\
     \\f\n\
-    \\STX\EOTU\DC2\ACK\149\DC3\NUL\165\DC3\SOH\n\
+    \\STX\EOTV\DC2\ACK\225\DC3\NUL\241\DC3\SOH\n\
     \\v\n\
-    \\ETX\EOTU\SOH\DC2\EOT\149\DC3\b\DC1\n\
+    \\ETX\EOTV\SOH\DC2\EOT\225\DC3\b\DC1\n\
     \\168\STX\n\
-    \\EOT\EOTU\STX\NUL\DC2\EOT\156\DC3\EOT\FS\SUB\153\STX\n\
+    \\EOT\EOTV\STX\NUL\DC2\EOT\232\DC3\EOT\FS\SUB\153\STX\n\
     \A unique, random identifier used to authenticate the sender as the intended\n\
     \payer of a multi-path payment. The payment_addr must be the same for all\n\
     \subpayments, and match the payment_addr provided in the receiver's invoice.\n\
     \The same payment_addr must be used on all subpayments.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTU\STX\NUL\EOT\DC2\ACK\156\DC3\EOT\149\DC3\DC3\n\
+    \\ENQ\EOTV\STX\NUL\EOT\DC2\ACK\232\DC3\EOT\225\DC3\DC3\n\
     \\r\n\
-    \\ENQ\EOTU\STX\NUL\ENQ\DC2\EOT\156\DC3\EOT\t\n\
+    \\ENQ\EOTV\STX\NUL\ENQ\DC2\EOT\232\DC3\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTU\STX\NUL\SOH\DC2\EOT\156\DC3\n\
+    \\ENQ\EOTV\STX\NUL\SOH\DC2\EOT\232\DC3\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOTU\STX\NUL\ETX\DC2\EOT\156\DC3\EM\ESC\n\
+    \\ENQ\EOTV\STX\NUL\ETX\DC2\EOT\232\DC3\EM\ESC\n\
     \\147\STX\n\
-    \\EOT\EOTU\STX\SOH\DC2\EOT\164\DC3\EOT\RS\SUB\132\STX\n\
+    \\EOT\EOTV\STX\SOH\DC2\EOT\240\DC3\EOT\RS\SUB\132\STX\n\
     \The total amount in milli-satoshis being sent as part of a larger multi-path\n\
     \payment. The caller is responsible for ensuring subpayments to the same node\n\
     \and payment_hash sum exactly to total_amt_msat. The same\n\
     \total_amt_msat must be used on all subpayments.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTU\STX\SOH\EOT\DC2\ACK\164\DC3\EOT\156\DC3\FS\n\
+    \\ENQ\EOTV\STX\SOH\EOT\DC2\ACK\240\DC3\EOT\232\DC3\FS\n\
     \\r\n\
-    \\ENQ\EOTU\STX\SOH\ENQ\DC2\EOT\164\DC3\EOT\t\n\
+    \\ENQ\EOTV\STX\SOH\ENQ\DC2\EOT\240\DC3\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTU\STX\SOH\SOH\DC2\EOT\164\DC3\n\
+    \\ENQ\EOTV\STX\SOH\SOH\DC2\EOT\240\DC3\n\
     \\CAN\n\
     \\r\n\
-    \\ENQ\EOTU\STX\SOH\ETX\DC2\EOT\164\DC3\ESC\GS\n\
+    \\ENQ\EOTV\STX\SOH\ETX\DC2\EOT\240\DC3\ESC\GS\n\
+    \\f\n\
+    \\STX\EOTW\DC2\ACK\243\DC3\NUL\249\DC3\SOH\n\
+    \\v\n\
+    \\ETX\EOTW\SOH\DC2\EOT\243\DC3\b\DC1\n\
+    \\f\n\
+    \\EOT\EOTW\STX\NUL\DC2\EOT\244\DC3\EOT\EM\n\
+    \\SI\n\
+    \\ENQ\EOTW\STX\NUL\EOT\DC2\ACK\244\DC3\EOT\243\DC3\DC3\n\
+    \\r\n\
+    \\ENQ\EOTW\STX\NUL\ENQ\DC2\EOT\244\DC3\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOTW\STX\NUL\SOH\DC2\EOT\244\DC3\n\
+    \\DC4\n\
+    \\r\n\
+    \\ENQ\EOTW\STX\NUL\ETX\DC2\EOT\244\DC3\ETB\CAN\n\
+    \\f\n\
+    \\EOT\EOTW\STX\SOH\DC2\EOT\246\DC3\EOT\NAK\n\
+    \\SI\n\
+    \\ENQ\EOTW\STX\SOH\EOT\DC2\ACK\246\DC3\EOT\244\DC3\EM\n\
+    \\r\n\
+    \\ENQ\EOTW\STX\SOH\ENQ\DC2\EOT\246\DC3\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOTW\STX\SOH\SOH\DC2\EOT\246\DC3\n\
+    \\DLE\n\
+    \\r\n\
+    \\ENQ\EOTW\STX\SOH\ETX\DC2\EOT\246\DC3\DC3\DC4\n\
+    \\f\n\
+    \\EOT\EOTW\STX\STX\DC2\EOT\248\DC3\EOT\ESC\n\
+    \\SI\n\
+    \\ENQ\EOTW\STX\STX\EOT\DC2\ACK\248\DC3\EOT\246\DC3\NAK\n\
+    \\r\n\
+    \\ENQ\EOTW\STX\STX\ENQ\DC2\EOT\248\DC3\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOTW\STX\STX\SOH\DC2\EOT\248\DC3\v\SYN\n\
+    \\r\n\
+    \\ENQ\EOTW\STX\STX\ETX\DC2\EOT\248\DC3\EM\SUB\n\
     \\255\STX\n\
-    \\STX\EOTV\DC2\ACK\174\DC3\NUL\213\DC3\SOH\SUB\240\STX\n\
+    \\STX\EOTX\DC2\ACK\130\DC4\NUL\169\DC4\SOH\SUB\240\STX\n\
     \A path through the channel graph which runs over one or more channels in\n\
     \succession. This struct carries all the information required to craft the\n\
     \Sphinx onion packet, and send the payment along the first hop in the path. A\n\
@@ -56905,44 +59183,44 @@ packedFileDescriptor
     \carry the initial payment amount after fees are accounted for.\n\
     \\n\
     \\v\n\
-    \\ETX\EOTV\SOH\DC2\EOT\174\DC3\b\r\n\
+    \\ETX\EOTX\SOH\DC2\EOT\130\DC4\b\r\n\
     \\185\STX\n\
-    \\EOT\EOTV\STX\NUL\DC2\EOT\181\DC3\EOT\US\SUB\170\STX\n\
+    \\EOT\EOTX\STX\NUL\DC2\EOT\137\DC4\EOT\US\SUB\170\STX\n\
     \The cumulative (final) time lock across the entire route. This is the CLTV\n\
     \value that should be extended to the first hop in the route. All other hops\n\
     \will decrement the time-lock as advertised, leaving enough time for all\n\
     \hops to wait for or present the payment preimage to complete the payment.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTV\STX\NUL\EOT\DC2\ACK\181\DC3\EOT\174\DC3\SI\n\
+    \\ENQ\EOTX\STX\NUL\EOT\DC2\ACK\137\DC4\EOT\130\DC4\SI\n\
     \\r\n\
-    \\ENQ\EOTV\STX\NUL\ENQ\DC2\EOT\181\DC3\EOT\n\
+    \\ENQ\EOTX\STX\NUL\ENQ\DC2\EOT\137\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTV\STX\NUL\SOH\DC2\EOT\181\DC3\v\SUB\n\
+    \\ENQ\EOTX\STX\NUL\SOH\DC2\EOT\137\DC4\v\SUB\n\
     \\r\n\
-    \\ENQ\EOTV\STX\NUL\ETX\DC2\EOT\181\DC3\GS\RS\n\
+    \\ENQ\EOTX\STX\NUL\ETX\DC2\EOT\137\DC4\GS\RS\n\
     \\179\SOH\n\
-    \\EOT\EOTV\STX\SOH\DC2\EOT\188\DC3\EOT-\SUB\164\SOH\n\
+    \\EOT\EOTX\STX\SOH\DC2\EOT\144\DC4\EOT-\SUB\164\SOH\n\
     \The sum of the fees paid at each hop within the final route. In the case\n\
     \of a one-hop payment, this value will be zero as we don't need to pay a fee\n\
     \to ourselves.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTV\STX\SOH\EOT\DC2\ACK\188\DC3\EOT\181\DC3\US\n\
+    \\ENQ\EOTX\STX\SOH\EOT\DC2\ACK\144\DC4\EOT\137\DC4\US\n\
     \\r\n\
-    \\ENQ\EOTV\STX\SOH\ENQ\DC2\EOT\188\DC3\EOT\t\n\
+    \\ENQ\EOTX\STX\SOH\ENQ\DC2\EOT\144\DC4\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTV\STX\SOH\SOH\DC2\EOT\188\DC3\n\
+    \\ENQ\EOTX\STX\SOH\SOH\DC2\EOT\144\DC4\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOTV\STX\SOH\ETX\DC2\EOT\188\DC3\ETB\CAN\n\
+    \\ENQ\EOTX\STX\SOH\ETX\DC2\EOT\144\DC4\ETB\CAN\n\
     \\r\n\
-    \\ENQ\EOTV\STX\SOH\b\DC2\EOT\188\DC3\EM,\n\
+    \\ENQ\EOTX\STX\SOH\b\DC2\EOT\144\DC4\EM,\n\
     \\SO\n\
-    \\ACK\EOTV\STX\SOH\b\ETX\DC2\EOT\188\DC3\SUB+\n\
+    \\ACK\EOTX\STX\SOH\b\ETX\DC2\EOT\144\DC4\SUB+\n\
     \\216\STX\n\
-    \\EOT\EOTV\STX\STX\DC2\EOT\197\DC3\EOT,\SUB\201\STX\n\
+    \\EOT\EOTX\STX\STX\DC2\EOT\153\DC4\EOT,\SUB\201\STX\n\
     \The total amount of funds required to complete a payment over this route.\n\
     \This value includes the cumulative fees at each hop. As a result, the HTLC\n\
     \extended to the first-hop in the route will need to have at least this many\n\
@@ -56950,318 +59228,318 @@ packedFileDescriptor
     \insufficient amount of fees.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTV\STX\STX\EOT\DC2\ACK\197\DC3\EOT\188\DC3-\n\
+    \\ENQ\EOTX\STX\STX\EOT\DC2\ACK\153\DC4\EOT\144\DC4-\n\
     \\r\n\
-    \\ENQ\EOTV\STX\STX\ENQ\DC2\EOT\197\DC3\EOT\t\n\
+    \\ENQ\EOTX\STX\STX\ENQ\DC2\EOT\153\DC4\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTV\STX\STX\SOH\DC2\EOT\197\DC3\n\
+    \\ENQ\EOTX\STX\STX\SOH\DC2\EOT\153\DC4\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOTV\STX\STX\ETX\DC2\EOT\197\DC3\SYN\ETB\n\
+    \\ENQ\EOTX\STX\STX\ETX\DC2\EOT\153\DC4\SYN\ETB\n\
     \\r\n\
-    \\ENQ\EOTV\STX\STX\b\DC2\EOT\197\DC3\CAN+\n\
+    \\ENQ\EOTX\STX\STX\b\DC2\EOT\153\DC4\CAN+\n\
     \\SO\n\
-    \\ACK\EOTV\STX\STX\b\ETX\DC2\EOT\197\DC3\EM*\n\
+    \\ACK\EOTX\STX\STX\b\ETX\DC2\EOT\153\DC4\EM*\n\
     \X\n\
-    \\EOT\EOTV\STX\ETX\DC2\EOT\202\DC3\EOT\SUB\SUBJ\n\
+    \\EOT\EOTX\STX\ETX\DC2\EOT\158\DC4\EOT\SUB\SUBJ\n\
     \Contains details concerning the specific forwarding details at each hop.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTV\STX\ETX\EOT\DC2\EOT\202\DC3\EOT\f\n\
+    \\ENQ\EOTX\STX\ETX\EOT\DC2\EOT\158\DC4\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTV\STX\ETX\ACK\DC2\EOT\202\DC3\r\DLE\n\
+    \\ENQ\EOTX\STX\ETX\ACK\DC2\EOT\158\DC4\r\DLE\n\
     \\r\n\
-    \\ENQ\EOTV\STX\ETX\SOH\DC2\EOT\202\DC3\DC1\NAK\n\
+    \\ENQ\EOTX\STX\ETX\SOH\DC2\EOT\158\DC4\DC1\NAK\n\
     \\r\n\
-    \\ENQ\EOTV\STX\ETX\ETX\DC2\EOT\202\DC3\CAN\EM\n\
+    \\ENQ\EOTX\STX\ETX\ETX\DC2\EOT\158\DC4\CAN\EM\n\
     \0\n\
-    \\EOT\EOTV\STX\EOT\DC2\EOT\207\DC3\EOT\RS\SUB\"\n\
+    \\EOT\EOTX\STX\EOT\DC2\EOT\163\DC4\EOT\RS\SUB\"\n\
     \The total fees in millisatoshis.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTV\STX\EOT\EOT\DC2\ACK\207\DC3\EOT\202\DC3\SUB\n\
+    \\ENQ\EOTX\STX\EOT\EOT\DC2\ACK\163\DC4\EOT\158\DC4\SUB\n\
     \\r\n\
-    \\ENQ\EOTV\STX\EOT\ENQ\DC2\EOT\207\DC3\EOT\t\n\
+    \\ENQ\EOTX\STX\EOT\ENQ\DC2\EOT\163\DC4\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTV\STX\EOT\SOH\DC2\EOT\207\DC3\n\
+    \\ENQ\EOTX\STX\EOT\SOH\DC2\EOT\163\DC4\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOTV\STX\EOT\ETX\DC2\EOT\207\DC3\FS\GS\n\
+    \\ENQ\EOTX\STX\EOT\ETX\DC2\EOT\163\DC4\FS\GS\n\
     \2\n\
-    \\EOT\EOTV\STX\ENQ\DC2\EOT\212\DC3\EOT\GS\SUB$\n\
+    \\EOT\EOTX\STX\ENQ\DC2\EOT\168\DC4\EOT\GS\SUB$\n\
     \The total amount in millisatoshis.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTV\STX\ENQ\EOT\DC2\ACK\212\DC3\EOT\207\DC3\RS\n\
+    \\ENQ\EOTX\STX\ENQ\EOT\DC2\ACK\168\DC4\EOT\163\DC4\RS\n\
     \\r\n\
-    \\ENQ\EOTV\STX\ENQ\ENQ\DC2\EOT\212\DC3\EOT\t\n\
+    \\ENQ\EOTX\STX\ENQ\ENQ\DC2\EOT\168\DC4\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTV\STX\ENQ\SOH\DC2\EOT\212\DC3\n\
+    \\ENQ\EOTX\STX\ENQ\SOH\DC2\EOT\168\DC4\n\
     \\CAN\n\
     \\r\n\
-    \\ENQ\EOTV\STX\ENQ\ETX\DC2\EOT\212\DC3\ESC\FS\n\
+    \\ENQ\EOTX\STX\ENQ\ETX\DC2\EOT\168\DC4\ESC\FS\n\
     \\f\n\
-    \\STX\EOTW\DC2\ACK\215\DC3\NUL\221\DC3\SOH\n\
+    \\STX\EOTY\DC2\ACK\171\DC4\NUL\177\DC4\SOH\n\
     \\v\n\
-    \\ETX\EOTW\SOH\DC2\EOT\215\DC3\b\ETB\n\
+    \\ETX\EOTY\SOH\DC2\EOT\171\DC4\b\ETB\n\
     \L\n\
-    \\EOT\EOTW\STX\NUL\DC2\EOT\217\DC3\EOT\ETB\SUB> The 33-byte hex-encoded compressed public of the target node\n\
+    \\EOT\EOTY\STX\NUL\DC2\EOT\173\DC4\EOT\ETB\SUB> The 33-byte hex-encoded compressed public of the target node\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTW\STX\NUL\EOT\DC2\ACK\217\DC3\EOT\215\DC3\EM\n\
+    \\ENQ\EOTY\STX\NUL\EOT\DC2\ACK\173\DC4\EOT\171\DC4\EM\n\
     \\r\n\
-    \\ENQ\EOTW\STX\NUL\ENQ\DC2\EOT\217\DC3\EOT\n\
+    \\ENQ\EOTY\STX\NUL\ENQ\DC2\EOT\173\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTW\STX\NUL\SOH\DC2\EOT\217\DC3\v\DC2\n\
+    \\ENQ\EOTY\STX\NUL\SOH\DC2\EOT\173\DC4\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTW\STX\NUL\ETX\DC2\EOT\217\DC3\NAK\SYN\n\
+    \\ENQ\EOTY\STX\NUL\ETX\DC2\EOT\173\DC4\NAK\SYN\n\
     \R\n\
-    \\EOT\EOTW\STX\SOH\DC2\EOT\220\DC3\EOT\RS\SUBD If true, will include all known channels associated with the node.\n\
+    \\EOT\EOTY\STX\SOH\DC2\EOT\176\DC4\EOT\RS\SUBD If true, will include all known channels associated with the node.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTW\STX\SOH\EOT\DC2\ACK\220\DC3\EOT\217\DC3\ETB\n\
+    \\ENQ\EOTY\STX\SOH\EOT\DC2\ACK\176\DC4\EOT\173\DC4\ETB\n\
     \\r\n\
-    \\ENQ\EOTW\STX\SOH\ENQ\DC2\EOT\220\DC3\EOT\b\n\
+    \\ENQ\EOTY\STX\SOH\ENQ\DC2\EOT\176\DC4\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTW\STX\SOH\SOH\DC2\EOT\220\DC3\t\EM\n\
+    \\ENQ\EOTY\STX\SOH\SOH\DC2\EOT\176\DC4\t\EM\n\
     \\r\n\
-    \\ENQ\EOTW\STX\SOH\ETX\DC2\EOT\220\DC3\FS\GS\n\
+    \\ENQ\EOTY\STX\SOH\ETX\DC2\EOT\176\DC4\FS\GS\n\
     \\f\n\
-    \\STX\EOTX\DC2\ACK\223\DC3\NUL\240\DC3\SOH\n\
+    \\STX\EOTZ\DC2\ACK\179\DC4\NUL\196\DC4\SOH\n\
     \\v\n\
-    \\ETX\EOTX\SOH\DC2\EOT\223\DC3\b\DLE\n\
+    \\ETX\EOTZ\SOH\DC2\EOT\179\DC4\b\DLE\n\
     \\255\SOH\n\
-    \\EOT\EOTX\STX\NUL\DC2\EOT\230\DC3\EOT\ESC\SUB\240\SOH\n\
+    \\EOT\EOTZ\STX\NUL\DC2\EOT\186\DC4\EOT\ESC\SUB\240\SOH\n\
     \An individual vertex/node within the channel graph. A node is\n\
     \connected to other nodes by one or more channel edges emanating from it. As\n\
     \the graph is directed, a node will also have an incoming edge attached to\n\
     \it for each outgoing edge.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTX\STX\NUL\EOT\DC2\ACK\230\DC3\EOT\223\DC3\DC2\n\
+    \\ENQ\EOTZ\STX\NUL\EOT\DC2\ACK\186\DC4\EOT\179\DC4\DC2\n\
     \\r\n\
-    \\ENQ\EOTX\STX\NUL\ACK\DC2\EOT\230\DC3\EOT\DC1\n\
+    \\ENQ\EOTZ\STX\NUL\ACK\DC2\EOT\186\DC4\EOT\DC1\n\
     \\r\n\
-    \\ENQ\EOTX\STX\NUL\SOH\DC2\EOT\230\DC3\DC2\SYN\n\
+    \\ENQ\EOTZ\STX\NUL\SOH\DC2\EOT\186\DC4\DC2\SYN\n\
     \\r\n\
-    \\ENQ\EOTX\STX\NUL\ETX\DC2\EOT\230\DC3\EM\SUB\n\
+    \\ENQ\EOTZ\STX\NUL\ETX\DC2\EOT\186\DC4\EM\SUB\n\
     \:\n\
-    \\EOT\EOTX\STX\SOH\DC2\EOT\233\DC3\EOT\FS\SUB, The total number of channels for the node.\n\
+    \\EOT\EOTZ\STX\SOH\DC2\EOT\189\DC4\EOT\FS\SUB, The total number of channels for the node.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTX\STX\SOH\EOT\DC2\ACK\233\DC3\EOT\230\DC3\ESC\n\
+    \\ENQ\EOTZ\STX\SOH\EOT\DC2\ACK\189\DC4\EOT\186\DC4\ESC\n\
     \\r\n\
-    \\ENQ\EOTX\STX\SOH\ENQ\DC2\EOT\233\DC3\EOT\n\
+    \\ENQ\EOTZ\STX\SOH\ENQ\DC2\EOT\189\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTX\STX\SOH\SOH\DC2\EOT\233\DC3\v\ETB\n\
+    \\ENQ\EOTZ\STX\SOH\SOH\DC2\EOT\189\DC4\v\ETB\n\
     \\r\n\
-    \\ENQ\EOTX\STX\SOH\ETX\DC2\EOT\233\DC3\SUB\ESC\n\
+    \\ENQ\EOTZ\STX\SOH\ETX\DC2\EOT\189\DC4\SUB\ESC\n\
     \W\n\
-    \\EOT\EOTX\STX\STX\DC2\EOT\236\DC3\EOT\GS\SUBI The sum of all channels capacity for the node, denominated in satoshis.\n\
+    \\EOT\EOTZ\STX\STX\DC2\EOT\192\DC4\EOT\GS\SUBI The sum of all channels capacity for the node, denominated in satoshis.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTX\STX\STX\EOT\DC2\ACK\236\DC3\EOT\233\DC3\FS\n\
+    \\ENQ\EOTZ\STX\STX\EOT\DC2\ACK\192\DC4\EOT\189\DC4\FS\n\
     \\r\n\
-    \\ENQ\EOTX\STX\STX\ENQ\DC2\EOT\236\DC3\EOT\t\n\
+    \\ENQ\EOTZ\STX\STX\ENQ\DC2\EOT\192\DC4\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTX\STX\STX\SOH\DC2\EOT\236\DC3\n\
+    \\ENQ\EOTZ\STX\STX\SOH\DC2\EOT\192\DC4\n\
     \\CAN\n\
     \\r\n\
-    \\ENQ\EOTX\STX\STX\ETX\DC2\EOT\236\DC3\ESC\FS\n\
+    \\ENQ\EOTZ\STX\STX\ETX\DC2\EOT\192\DC4\ESC\FS\n\
     \;\n\
-    \\EOT\EOTX\STX\ETX\DC2\EOT\239\DC3\EOT&\SUB- A list of all public channels for the node.\n\
+    \\EOT\EOTZ\STX\ETX\DC2\EOT\195\DC4\EOT&\SUB- A list of all public channels for the node.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTX\STX\ETX\EOT\DC2\EOT\239\DC3\EOT\f\n\
+    \\ENQ\EOTZ\STX\ETX\EOT\DC2\EOT\195\DC4\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTX\STX\ETX\ACK\DC2\EOT\239\DC3\r\CAN\n\
+    \\ENQ\EOTZ\STX\ETX\ACK\DC2\EOT\195\DC4\r\CAN\n\
     \\r\n\
-    \\ENQ\EOTX\STX\ETX\SOH\DC2\EOT\239\DC3\EM!\n\
+    \\ENQ\EOTZ\STX\ETX\SOH\DC2\EOT\195\DC4\EM!\n\
     \\r\n\
-    \\ENQ\EOTX\STX\ETX\ETX\DC2\EOT\239\DC3$%\n\
+    \\ENQ\EOTZ\STX\ETX\ETX\DC2\EOT\195\DC4$%\n\
     \\255\SOH\n\
-    \\STX\EOTY\DC2\ACK\248\DC3\NUL\255\DC3\SOH\SUB\240\SOH\n\
+    \\STX\EOT[\DC2\ACK\204\DC4\NUL\211\DC4\SOH\SUB\240\SOH\n\
     \An individual vertex/node within the channel graph. A node is\n\
     \connected to other nodes by one or more channel edges emanating from it. As the\n\
     \graph is directed, a node will also have an incoming edge attached to it for\n\
     \each outgoing edge.\n\
     \\n\
     \\v\n\
-    \\ETX\EOTY\SOH\DC2\EOT\248\DC3\b\NAK\n\
+    \\ETX\EOT[\SOH\DC2\EOT\204\DC4\b\NAK\n\
     \\f\n\
-    \\EOT\EOTY\STX\NUL\DC2\EOT\249\DC3\EOT\ESC\n\
+    \\EOT\EOT[\STX\NUL\DC2\EOT\205\DC4\EOT\ESC\n\
     \\SI\n\
-    \\ENQ\EOTY\STX\NUL\EOT\DC2\ACK\249\DC3\EOT\248\DC3\ETB\n\
+    \\ENQ\EOT[\STX\NUL\EOT\DC2\ACK\205\DC4\EOT\204\DC4\ETB\n\
     \\r\n\
-    \\ENQ\EOTY\STX\NUL\ENQ\DC2\EOT\249\DC3\EOT\n\
+    \\ENQ\EOT[\STX\NUL\ENQ\DC2\EOT\205\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTY\STX\NUL\SOH\DC2\EOT\249\DC3\v\SYN\n\
+    \\ENQ\EOT[\STX\NUL\SOH\DC2\EOT\205\DC4\v\SYN\n\
     \\r\n\
-    \\ENQ\EOTY\STX\NUL\ETX\DC2\EOT\249\DC3\EM\SUB\n\
+    \\ENQ\EOT[\STX\NUL\ETX\DC2\EOT\205\DC4\EM\SUB\n\
     \\f\n\
-    \\EOT\EOTY\STX\SOH\DC2\EOT\250\DC3\EOT\ETB\n\
+    \\EOT\EOT[\STX\SOH\DC2\EOT\206\DC4\EOT\ETB\n\
     \\SI\n\
-    \\ENQ\EOTY\STX\SOH\EOT\DC2\ACK\250\DC3\EOT\249\DC3\ESC\n\
+    \\ENQ\EOT[\STX\SOH\EOT\DC2\ACK\206\DC4\EOT\205\DC4\ESC\n\
     \\r\n\
-    \\ENQ\EOTY\STX\SOH\ENQ\DC2\EOT\250\DC3\EOT\n\
+    \\ENQ\EOT[\STX\SOH\ENQ\DC2\EOT\206\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTY\STX\SOH\SOH\DC2\EOT\250\DC3\v\DC2\n\
+    \\ENQ\EOT[\STX\SOH\SOH\DC2\EOT\206\DC4\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTY\STX\SOH\ETX\DC2\EOT\250\DC3\NAK\SYN\n\
+    \\ENQ\EOT[\STX\SOH\ETX\DC2\EOT\206\DC4\NAK\SYN\n\
     \\f\n\
-    \\EOT\EOTY\STX\STX\DC2\EOT\251\DC3\EOT\NAK\n\
+    \\EOT\EOT[\STX\STX\DC2\EOT\207\DC4\EOT\NAK\n\
     \\SI\n\
-    \\ENQ\EOTY\STX\STX\EOT\DC2\ACK\251\DC3\EOT\250\DC3\ETB\n\
+    \\ENQ\EOT[\STX\STX\EOT\DC2\ACK\207\DC4\EOT\206\DC4\ETB\n\
     \\r\n\
-    \\ENQ\EOTY\STX\STX\ENQ\DC2\EOT\251\DC3\EOT\n\
+    \\ENQ\EOT[\STX\STX\ENQ\DC2\EOT\207\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTY\STX\STX\SOH\DC2\EOT\251\DC3\v\DLE\n\
+    \\ENQ\EOT[\STX\STX\SOH\DC2\EOT\207\DC4\v\DLE\n\
     \\r\n\
-    \\ENQ\EOTY\STX\STX\ETX\DC2\EOT\251\DC3\DC3\DC4\n\
+    \\ENQ\EOT[\STX\STX\ETX\DC2\EOT\207\DC4\DC3\DC4\n\
     \\f\n\
-    \\EOT\EOTY\STX\ETX\DC2\EOT\252\DC3\EOT'\n\
+    \\EOT\EOT[\STX\ETX\DC2\EOT\208\DC4\EOT'\n\
     \\r\n\
-    \\ENQ\EOTY\STX\ETX\EOT\DC2\EOT\252\DC3\EOT\f\n\
+    \\ENQ\EOT[\STX\ETX\EOT\DC2\EOT\208\DC4\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTY\STX\ETX\ACK\DC2\EOT\252\DC3\r\CAN\n\
+    \\ENQ\EOT[\STX\ETX\ACK\DC2\EOT\208\DC4\r\CAN\n\
     \\r\n\
-    \\ENQ\EOTY\STX\ETX\SOH\DC2\EOT\252\DC3\EM\"\n\
+    \\ENQ\EOT[\STX\ETX\SOH\DC2\EOT\208\DC4\EM\"\n\
     \\r\n\
-    \\ENQ\EOTY\STX\ETX\ETX\DC2\EOT\252\DC3%&\n\
+    \\ENQ\EOT[\STX\ETX\ETX\DC2\EOT\208\DC4%&\n\
     \\f\n\
-    \\EOT\EOTY\STX\EOT\DC2\EOT\253\DC3\EOT\NAK\n\
+    \\EOT\EOT[\STX\EOT\DC2\EOT\209\DC4\EOT\NAK\n\
     \\SI\n\
-    \\ENQ\EOTY\STX\EOT\EOT\DC2\ACK\253\DC3\EOT\252\DC3'\n\
+    \\ENQ\EOT[\STX\EOT\EOT\DC2\ACK\209\DC4\EOT\208\DC4'\n\
     \\r\n\
-    \\ENQ\EOTY\STX\EOT\ENQ\DC2\EOT\253\DC3\EOT\n\
+    \\ENQ\EOT[\STX\EOT\ENQ\DC2\EOT\209\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTY\STX\EOT\SOH\DC2\EOT\253\DC3\v\DLE\n\
+    \\ENQ\EOT[\STX\EOT\SOH\DC2\EOT\209\DC4\v\DLE\n\
     \\r\n\
-    \\ENQ\EOTY\STX\EOT\ETX\DC2\EOT\253\DC3\DC3\DC4\n\
+    \\ENQ\EOT[\STX\EOT\ETX\DC2\EOT\209\DC4\DC3\DC4\n\
     \\f\n\
-    \\EOT\EOTY\STX\ENQ\DC2\EOT\254\DC3\EOT&\n\
+    \\EOT\EOT[\STX\ENQ\DC2\EOT\210\DC4\EOT&\n\
     \\SI\n\
-    \\ENQ\EOTY\STX\ENQ\EOT\DC2\ACK\254\DC3\EOT\253\DC3\NAK\n\
+    \\ENQ\EOT[\STX\ENQ\EOT\DC2\ACK\210\DC4\EOT\209\DC4\NAK\n\
     \\r\n\
-    \\ENQ\EOTY\STX\ENQ\ACK\DC2\EOT\254\DC3\EOT\CAN\n\
+    \\ENQ\EOT[\STX\ENQ\ACK\DC2\EOT\210\DC4\EOT\CAN\n\
     \\r\n\
-    \\ENQ\EOTY\STX\ENQ\SOH\DC2\EOT\254\DC3\EM!\n\
+    \\ENQ\EOT[\STX\ENQ\SOH\DC2\EOT\210\DC4\EM!\n\
     \\r\n\
-    \\ENQ\EOTY\STX\ENQ\ETX\DC2\EOT\254\DC3$%\n\
+    \\ENQ\EOT[\STX\ENQ\ETX\DC2\EOT\210\DC4$%\n\
     \\f\n\
-    \\STX\EOTZ\DC2\ACK\129\DC4\NUL\132\DC4\SOH\n\
+    \\STX\EOT\\\DC2\ACK\213\DC4\NUL\216\DC4\SOH\n\
     \\v\n\
-    \\ETX\EOTZ\SOH\DC2\EOT\129\DC4\b\DC3\n\
+    \\ETX\EOT\\\SOH\DC2\EOT\213\DC4\b\DC3\n\
     \\f\n\
-    \\EOT\EOTZ\STX\NUL\DC2\EOT\130\DC4\EOT\ETB\n\
+    \\EOT\EOT\\\STX\NUL\DC2\EOT\214\DC4\EOT\ETB\n\
     \\SI\n\
-    \\ENQ\EOTZ\STX\NUL\EOT\DC2\ACK\130\DC4\EOT\129\DC4\NAK\n\
+    \\ENQ\EOT\\\STX\NUL\EOT\DC2\ACK\214\DC4\EOT\213\DC4\NAK\n\
     \\r\n\
-    \\ENQ\EOTZ\STX\NUL\ENQ\DC2\EOT\130\DC4\EOT\n\
+    \\ENQ\EOT\\\STX\NUL\ENQ\DC2\EOT\214\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTZ\STX\NUL\SOH\DC2\EOT\130\DC4\v\DC2\n\
+    \\ENQ\EOT\\\STX\NUL\SOH\DC2\EOT\214\DC4\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTZ\STX\NUL\ETX\DC2\EOT\130\DC4\NAK\SYN\n\
+    \\ENQ\EOT\\\STX\NUL\ETX\DC2\EOT\214\DC4\NAK\SYN\n\
     \\f\n\
-    \\EOT\EOTZ\STX\SOH\DC2\EOT\131\DC4\EOT\DC4\n\
+    \\EOT\EOT\\\STX\SOH\DC2\EOT\215\DC4\EOT\DC4\n\
     \\SI\n\
-    \\ENQ\EOTZ\STX\SOH\EOT\DC2\ACK\131\DC4\EOT\130\DC4\ETB\n\
+    \\ENQ\EOT\\\STX\SOH\EOT\DC2\ACK\215\DC4\EOT\214\DC4\ETB\n\
     \\r\n\
-    \\ENQ\EOTZ\STX\SOH\ENQ\DC2\EOT\131\DC4\EOT\n\
+    \\ENQ\EOT\\\STX\SOH\ENQ\DC2\EOT\215\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTZ\STX\SOH\SOH\DC2\EOT\131\DC4\v\SI\n\
+    \\ENQ\EOT\\\STX\SOH\SOH\DC2\EOT\215\DC4\v\SI\n\
     \\r\n\
-    \\ENQ\EOTZ\STX\SOH\ETX\DC2\EOT\131\DC4\DC2\DC3\n\
+    \\ENQ\EOT\\\STX\SOH\ETX\DC2\EOT\215\DC4\DC2\DC3\n\
     \\f\n\
-    \\STX\EOT[\DC2\ACK\134\DC4\NUL\142\DC4\SOH\n\
+    \\STX\EOT]\DC2\ACK\218\DC4\NUL\226\DC4\SOH\n\
     \\v\n\
-    \\ETX\EOT[\SOH\DC2\EOT\134\DC4\b\NAK\n\
+    \\ETX\EOT]\SOH\DC2\EOT\218\DC4\b\NAK\n\
     \\f\n\
-    \\EOT\EOT[\STX\NUL\DC2\EOT\135\DC4\EOT\US\n\
+    \\EOT\EOT]\STX\NUL\DC2\EOT\219\DC4\EOT\US\n\
     \\SI\n\
-    \\ENQ\EOT[\STX\NUL\EOT\DC2\ACK\135\DC4\EOT\134\DC4\ETB\n\
+    \\ENQ\EOT]\STX\NUL\EOT\DC2\ACK\219\DC4\EOT\218\DC4\ETB\n\
     \\r\n\
-    \\ENQ\EOT[\STX\NUL\ENQ\DC2\EOT\135\DC4\EOT\n\
+    \\ENQ\EOT]\STX\NUL\ENQ\DC2\EOT\219\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT[\STX\NUL\SOH\DC2\EOT\135\DC4\v\SUB\n\
+    \\ENQ\EOT]\STX\NUL\SOH\DC2\EOT\219\DC4\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT[\STX\NUL\ETX\DC2\EOT\135\DC4\GS\RS\n\
+    \\ENQ\EOT]\STX\NUL\ETX\DC2\EOT\219\DC4\GS\RS\n\
     \\f\n\
-    \\EOT\EOT[\STX\SOH\DC2\EOT\136\DC4\EOT\ETB\n\
+    \\EOT\EOT]\STX\SOH\DC2\EOT\220\DC4\EOT\ETB\n\
     \\SI\n\
-    \\ENQ\EOT[\STX\SOH\EOT\DC2\ACK\136\DC4\EOT\135\DC4\US\n\
+    \\ENQ\EOT]\STX\SOH\EOT\DC2\ACK\220\DC4\EOT\219\DC4\US\n\
     \\r\n\
-    \\ENQ\EOT[\STX\SOH\ENQ\DC2\EOT\136\DC4\EOT\t\n\
+    \\ENQ\EOT]\STX\SOH\ENQ\DC2\EOT\220\DC4\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT[\STX\SOH\SOH\DC2\EOT\136\DC4\n\
+    \\ENQ\EOT]\STX\SOH\SOH\DC2\EOT\220\DC4\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOT[\STX\SOH\ETX\DC2\EOT\136\DC4\NAK\SYN\n\
+    \\ENQ\EOT]\STX\SOH\ETX\DC2\EOT\220\DC4\NAK\SYN\n\
     \\f\n\
-    \\EOT\EOT[\STX\STX\DC2\EOT\137\DC4\EOT\FS\n\
+    \\EOT\EOT]\STX\STX\DC2\EOT\221\DC4\EOT\FS\n\
     \\SI\n\
-    \\ENQ\EOT[\STX\STX\EOT\DC2\ACK\137\DC4\EOT\136\DC4\ETB\n\
+    \\ENQ\EOT]\STX\STX\EOT\DC2\ACK\221\DC4\EOT\220\DC4\ETB\n\
     \\r\n\
-    \\ENQ\EOT[\STX\STX\ENQ\DC2\EOT\137\DC4\EOT\t\n\
+    \\ENQ\EOT]\STX\STX\ENQ\DC2\EOT\221\DC4\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT[\STX\STX\SOH\DC2\EOT\137\DC4\n\
+    \\ENQ\EOT]\STX\STX\SOH\DC2\EOT\221\DC4\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOT[\STX\STX\ETX\DC2\EOT\137\DC4\SUB\ESC\n\
+    \\ENQ\EOT]\STX\STX\ETX\DC2\EOT\221\DC4\SUB\ESC\n\
     \\f\n\
-    \\EOT\EOT[\STX\ETX\DC2\EOT\138\DC4\EOT\"\n\
+    \\EOT\EOT]\STX\ETX\DC2\EOT\222\DC4\EOT\"\n\
     \\SI\n\
-    \\ENQ\EOT[\STX\ETX\EOT\DC2\ACK\138\DC4\EOT\137\DC4\FS\n\
+    \\ENQ\EOT]\STX\ETX\EOT\DC2\ACK\222\DC4\EOT\221\DC4\FS\n\
     \\r\n\
-    \\ENQ\EOT[\STX\ETX\ENQ\DC2\EOT\138\DC4\EOT\t\n\
+    \\ENQ\EOT]\STX\ETX\ENQ\DC2\EOT\222\DC4\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT[\STX\ETX\SOH\DC2\EOT\138\DC4\n\
+    \\ENQ\EOT]\STX\ETX\SOH\DC2\EOT\222\DC4\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOT[\STX\ETX\ETX\DC2\EOT\138\DC4 !\n\
+    \\ENQ\EOT]\STX\ETX\ETX\DC2\EOT\222\DC4 !\n\
     \\f\n\
-    \\EOT\EOT[\STX\EOT\DC2\EOT\139\DC4\EOT\SYN\n\
+    \\EOT\EOT]\STX\EOT\DC2\EOT\223\DC4\EOT\SYN\n\
     \\SI\n\
-    \\ENQ\EOT[\STX\EOT\EOT\DC2\ACK\139\DC4\EOT\138\DC4\"\n\
+    \\ENQ\EOT]\STX\EOT\EOT\DC2\ACK\223\DC4\EOT\222\DC4\"\n\
     \\r\n\
-    \\ENQ\EOT[\STX\EOT\ENQ\DC2\EOT\139\DC4\EOT\b\n\
+    \\ENQ\EOT]\STX\EOT\ENQ\DC2\EOT\223\DC4\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT[\STX\EOT\SOH\DC2\EOT\139\DC4\t\DC1\n\
+    \\ENQ\EOT]\STX\EOT\SOH\DC2\EOT\223\DC4\t\DC1\n\
     \\r\n\
-    \\ENQ\EOT[\STX\EOT\ETX\DC2\EOT\139\DC4\DC4\NAK\n\
+    \\ENQ\EOT]\STX\EOT\ETX\DC2\EOT\223\DC4\DC4\NAK\n\
     \\f\n\
-    \\EOT\EOT[\STX\ENQ\DC2\EOT\140\DC4\EOT\GS\n\
+    \\EOT\EOT]\STX\ENQ\DC2\EOT\224\DC4\EOT\GS\n\
     \\SI\n\
-    \\ENQ\EOT[\STX\ENQ\EOT\DC2\ACK\140\DC4\EOT\139\DC4\SYN\n\
+    \\ENQ\EOT]\STX\ENQ\EOT\DC2\ACK\224\DC4\EOT\223\DC4\SYN\n\
     \\r\n\
-    \\ENQ\EOT[\STX\ENQ\ENQ\DC2\EOT\140\DC4\EOT\n\
+    \\ENQ\EOT]\STX\ENQ\ENQ\DC2\EOT\224\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT[\STX\ENQ\SOH\DC2\EOT\140\DC4\v\CAN\n\
+    \\ENQ\EOT]\STX\ENQ\SOH\DC2\EOT\224\DC4\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT[\STX\ENQ\ETX\DC2\EOT\140\DC4\ESC\FS\n\
+    \\ENQ\EOT]\STX\ENQ\ETX\DC2\EOT\224\DC4\ESC\FS\n\
     \\f\n\
-    \\EOT\EOT[\STX\ACK\DC2\EOT\141\DC4\EOT\ESC\n\
+    \\EOT\EOT]\STX\ACK\DC2\EOT\225\DC4\EOT\ESC\n\
     \\SI\n\
-    \\ENQ\EOT[\STX\ACK\EOT\DC2\ACK\141\DC4\EOT\140\DC4\GS\n\
+    \\ENQ\EOT]\STX\ACK\EOT\DC2\ACK\225\DC4\EOT\224\DC4\GS\n\
     \\r\n\
-    \\ENQ\EOT[\STX\ACK\ENQ\DC2\EOT\141\DC4\EOT\n\
+    \\ENQ\EOT]\STX\ACK\ENQ\DC2\EOT\225\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT[\STX\ACK\SOH\DC2\EOT\141\DC4\v\SYN\n\
+    \\ENQ\EOT]\STX\ACK\SOH\DC2\EOT\225\DC4\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT[\STX\ACK\ETX\DC2\EOT\141\DC4\EM\SUB\n\
+    \\ENQ\EOT]\STX\ACK\ETX\DC2\EOT\225\DC4\EM\SUB\n\
     \\251\STX\n\
-    \\STX\EOT\\\DC2\ACK\151\DC4\NUL\169\DC4\SOH\SUB\236\STX\n\
+    \\STX\EOT^\DC2\ACK\235\DC4\NUL\253\DC4\SOH\SUB\236\STX\n\
     \A fully authenticated channel along with all its unique attributes.\n\
     \Once an authenticated channel announcement has been processed on the network,\n\
     \then an instance of ChannelEdgeInfo encapsulating the channels attributes is\n\
@@ -57269,187 +59547,187 @@ packedFileDescriptor
     \within a ChannelEdgePolicy for each direction of the channel.\n\
     \\n\
     \\v\n\
-    \\ETX\EOT\\\SOH\DC2\EOT\151\DC4\b\DC3\n\
+    \\ETX\EOT^\SOH\DC2\EOT\235\DC4\b\DC3\n\
     \\193\SOH\n\
-    \\EOT\EOT\\\STX\NUL\DC2\EOT\157\DC4\EOT/\SUB\178\SOH\n\
+    \\EOT\EOT^\STX\NUL\DC2\EOT\241\DC4\EOT/\SUB\178\SOH\n\
     \The unique channel ID for the channel. The first 3 bytes are the block\n\
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\\\STX\NUL\EOT\DC2\ACK\157\DC4\EOT\151\DC4\NAK\n\
+    \\ENQ\EOT^\STX\NUL\EOT\DC2\ACK\241\DC4\EOT\235\DC4\NAK\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\NUL\ENQ\DC2\EOT\157\DC4\EOT\n\
+    \\ENQ\EOT^\STX\NUL\ENQ\DC2\EOT\241\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\NUL\SOH\DC2\EOT\157\DC4\v\NAK\n\
+    \\ENQ\EOT^\STX\NUL\SOH\DC2\EOT\241\DC4\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\NUL\ETX\DC2\EOT\157\DC4\CAN\EM\n\
+    \\ENQ\EOT^\STX\NUL\ETX\DC2\EOT\241\DC4\CAN\EM\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\NUL\b\DC2\EOT\157\DC4\SUB.\n\
+    \\ENQ\EOT^\STX\NUL\b\DC2\EOT\241\DC4\SUB.\n\
     \\SO\n\
-    \\ACK\EOT\\\STX\NUL\b\ACK\DC2\EOT\157\DC4\ESC-\n\
+    \\ACK\EOT^\STX\NUL\b\ACK\DC2\EOT\241\DC4\ESC-\n\
     \\f\n\
-    \\EOT\EOT\\\STX\SOH\DC2\EOT\158\DC4\EOT\SUB\n\
+    \\EOT\EOT^\STX\SOH\DC2\EOT\242\DC4\EOT\SUB\n\
     \\SI\n\
-    \\ENQ\EOT\\\STX\SOH\EOT\DC2\ACK\158\DC4\EOT\157\DC4/\n\
+    \\ENQ\EOT^\STX\SOH\EOT\DC2\ACK\242\DC4\EOT\241\DC4/\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\SOH\ENQ\DC2\EOT\158\DC4\EOT\n\
+    \\ENQ\EOT^\STX\SOH\ENQ\DC2\EOT\242\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\SOH\SOH\DC2\EOT\158\DC4\v\NAK\n\
+    \\ENQ\EOT^\STX\SOH\SOH\DC2\EOT\242\DC4\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\SOH\ETX\DC2\EOT\158\DC4\CAN\EM\n\
+    \\ENQ\EOT^\STX\SOH\ETX\DC2\EOT\242\DC4\CAN\EM\n\
     \\f\n\
-    \\EOT\EOT\\\STX\STX\DC2\EOT\160\DC4\EOT/\n\
+    \\EOT\EOT^\STX\STX\DC2\EOT\244\DC4\EOT/\n\
     \\SI\n\
-    \\ENQ\EOT\\\STX\STX\EOT\DC2\ACK\160\DC4\EOT\158\DC4\SUB\n\
+    \\ENQ\EOT^\STX\STX\EOT\DC2\ACK\244\DC4\EOT\242\DC4\SUB\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\STX\ENQ\DC2\EOT\160\DC4\EOT\n\
+    \\ENQ\EOT^\STX\STX\ENQ\DC2\EOT\244\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\STX\SOH\DC2\EOT\160\DC4\v\SYN\n\
+    \\ENQ\EOT^\STX\STX\SOH\DC2\EOT\244\DC4\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\STX\ETX\DC2\EOT\160\DC4\EM\SUB\n\
+    \\ENQ\EOT^\STX\STX\ETX\DC2\EOT\244\DC4\EM\SUB\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\STX\b\DC2\EOT\160\DC4\ESC.\n\
+    \\ENQ\EOT^\STX\STX\b\DC2\EOT\244\DC4\ESC.\n\
     \\SO\n\
-    \\ACK\EOT\\\STX\STX\b\ETX\DC2\EOT\160\DC4\FS-\n\
+    \\ACK\EOT^\STX\STX\b\ETX\DC2\EOT\244\DC4\FS-\n\
     \\f\n\
-    \\EOT\EOT\\\STX\ETX\DC2\EOT\162\DC4\EOT\EM\n\
+    \\EOT\EOT^\STX\ETX\DC2\EOT\246\DC4\EOT\EM\n\
     \\SI\n\
-    \\ENQ\EOT\\\STX\ETX\EOT\DC2\ACK\162\DC4\EOT\160\DC4/\n\
+    \\ENQ\EOT^\STX\ETX\EOT\DC2\ACK\246\DC4\EOT\244\DC4/\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\ETX\ENQ\DC2\EOT\162\DC4\EOT\n\
+    \\ENQ\EOT^\STX\ETX\ENQ\DC2\EOT\246\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\ETX\SOH\DC2\EOT\162\DC4\v\DC4\n\
+    \\ENQ\EOT^\STX\ETX\SOH\DC2\EOT\246\DC4\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\ETX\ETX\DC2\EOT\162\DC4\ETB\CAN\n\
+    \\ENQ\EOT^\STX\ETX\ETX\DC2\EOT\246\DC4\ETB\CAN\n\
     \\f\n\
-    \\EOT\EOT\\\STX\EOT\DC2\EOT\163\DC4\EOT\EM\n\
+    \\EOT\EOT^\STX\EOT\DC2\EOT\247\DC4\EOT\EM\n\
     \\SI\n\
-    \\ENQ\EOT\\\STX\EOT\EOT\DC2\ACK\163\DC4\EOT\162\DC4\EM\n\
+    \\ENQ\EOT^\STX\EOT\EOT\DC2\ACK\247\DC4\EOT\246\DC4\EM\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\EOT\ENQ\DC2\EOT\163\DC4\EOT\n\
+    \\ENQ\EOT^\STX\EOT\ENQ\DC2\EOT\247\DC4\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\EOT\SOH\DC2\EOT\163\DC4\v\DC4\n\
+    \\ENQ\EOT^\STX\EOT\SOH\DC2\EOT\247\DC4\v\DC4\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\EOT\ETX\DC2\EOT\163\DC4\ETB\CAN\n\
+    \\ENQ\EOT^\STX\EOT\ETX\DC2\EOT\247\DC4\ETB\CAN\n\
     \\f\n\
-    \\EOT\EOT\\\STX\ENQ\DC2\EOT\165\DC4\EOT\ETB\n\
+    \\EOT\EOT^\STX\ENQ\DC2\EOT\249\DC4\EOT\ETB\n\
     \\SI\n\
-    \\ENQ\EOT\\\STX\ENQ\EOT\DC2\ACK\165\DC4\EOT\163\DC4\EM\n\
+    \\ENQ\EOT^\STX\ENQ\EOT\DC2\ACK\249\DC4\EOT\247\DC4\EM\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\ENQ\ENQ\DC2\EOT\165\DC4\EOT\t\n\
+    \\ENQ\EOT^\STX\ENQ\ENQ\DC2\EOT\249\DC4\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\ENQ\SOH\DC2\EOT\165\DC4\n\
+    \\ENQ\EOT^\STX\ENQ\SOH\DC2\EOT\249\DC4\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\ENQ\ETX\DC2\EOT\165\DC4\NAK\SYN\n\
+    \\ENQ\EOT^\STX\ENQ\ETX\DC2\EOT\249\DC4\NAK\SYN\n\
     \\f\n\
-    \\EOT\EOT\\\STX\ACK\DC2\EOT\167\DC4\EOT#\n\
+    \\EOT\EOT^\STX\ACK\DC2\EOT\251\DC4\EOT#\n\
     \\SI\n\
-    \\ENQ\EOT\\\STX\ACK\EOT\DC2\ACK\167\DC4\EOT\165\DC4\ETB\n\
+    \\ENQ\EOT^\STX\ACK\EOT\DC2\ACK\251\DC4\EOT\249\DC4\ETB\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\ACK\ACK\DC2\EOT\167\DC4\EOT\DC1\n\
+    \\ENQ\EOT^\STX\ACK\ACK\DC2\EOT\251\DC4\EOT\DC1\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\ACK\SOH\DC2\EOT\167\DC4\DC2\RS\n\
+    \\ENQ\EOT^\STX\ACK\SOH\DC2\EOT\251\DC4\DC2\RS\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\ACK\ETX\DC2\EOT\167\DC4!\"\n\
+    \\ENQ\EOT^\STX\ACK\ETX\DC2\EOT\251\DC4!\"\n\
     \\f\n\
-    \\EOT\EOT\\\STX\a\DC2\EOT\168\DC4\EOT#\n\
+    \\EOT\EOT^\STX\a\DC2\EOT\252\DC4\EOT#\n\
     \\SI\n\
-    \\ENQ\EOT\\\STX\a\EOT\DC2\ACK\168\DC4\EOT\167\DC4#\n\
+    \\ENQ\EOT^\STX\a\EOT\DC2\ACK\252\DC4\EOT\251\DC4#\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\a\ACK\DC2\EOT\168\DC4\EOT\DC1\n\
+    \\ENQ\EOT^\STX\a\ACK\DC2\EOT\252\DC4\EOT\DC1\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\a\SOH\DC2\EOT\168\DC4\DC2\RS\n\
+    \\ENQ\EOT^\STX\a\SOH\DC2\EOT\252\DC4\DC2\RS\n\
     \\r\n\
-    \\ENQ\EOT\\\STX\a\ETX\DC2\EOT\168\DC4!\"\n\
+    \\ENQ\EOT^\STX\a\ETX\DC2\EOT\252\DC4!\"\n\
     \\f\n\
-    \\STX\EOT]\DC2\ACK\171\DC4\NUL\178\DC4\SOH\n\
+    \\STX\EOT_\DC2\ACK\255\DC4\NUL\134\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOT]\SOH\DC2\EOT\171\DC4\b\ESC\n\
+    \\ETX\EOT_\SOH\DC2\EOT\255\DC4\b\ESC\n\
     \\236\SOH\n\
-    \\EOT\EOT]\STX\NUL\DC2\EOT\177\DC4\EOT!\SUB\221\SOH\n\
+    \\EOT\EOT_\STX\NUL\DC2\EOT\133\NAK\EOT!\SUB\221\SOH\n\
     \Whether unannounced channels are included in the response or not. If set,\n\
     \unannounced channels are included. Unannounced channels are both private\n\
     \channels, and public channels that are not yet announced to the network.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT]\STX\NUL\EOT\DC2\ACK\177\DC4\EOT\171\DC4\GS\n\
+    \\ENQ\EOT_\STX\NUL\EOT\DC2\ACK\133\NAK\EOT\255\DC4\GS\n\
     \\r\n\
-    \\ENQ\EOT]\STX\NUL\ENQ\DC2\EOT\177\DC4\EOT\b\n\
+    \\ENQ\EOT_\STX\NUL\ENQ\DC2\EOT\133\NAK\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT]\STX\NUL\SOH\DC2\EOT\177\DC4\t\FS\n\
+    \\ENQ\EOT_\STX\NUL\SOH\DC2\EOT\133\NAK\t\FS\n\
     \\r\n\
-    \\ENQ\EOT]\STX\NUL\ETX\DC2\EOT\177\DC4\US \n\
+    \\ENQ\EOT_\STX\NUL\ETX\DC2\EOT\133\NAK\US \n\
     \E\n\
-    \\STX\EOT^\DC2\ACK\181\DC4\NUL\187\DC4\SOH\SUB7 Returns a new instance of the directed channel graph.\n\
+    \\STX\EOT`\DC2\ACK\137\NAK\NUL\143\NAK\SOH\SUB7 Returns a new instance of the directed channel graph.\n\
     \\n\
     \\v\n\
-    \\ETX\EOT^\SOH\DC2\EOT\181\DC4\b\DC4\n\
+    \\ETX\EOT`\SOH\DC2\EOT\137\NAK\b\DC4\n\
     \B\n\
-    \\EOT\EOT^\STX\NUL\DC2\EOT\183\DC4\EOT%\SUB4 The list of `LightningNode`s in this channel graph\n\
+    \\EOT\EOT`\STX\NUL\DC2\EOT\139\NAK\EOT%\SUB4 The list of `LightningNode`s in this channel graph\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT^\STX\NUL\EOT\DC2\EOT\183\DC4\EOT\f\n\
+    \\ENQ\EOT`\STX\NUL\EOT\DC2\EOT\139\NAK\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT^\STX\NUL\ACK\DC2\EOT\183\DC4\r\SUB\n\
+    \\ENQ\EOT`\STX\NUL\ACK\DC2\EOT\139\NAK\r\SUB\n\
     \\r\n\
-    \\ENQ\EOT^\STX\NUL\SOH\DC2\EOT\183\DC4\ESC \n\
+    \\ENQ\EOT`\STX\NUL\SOH\DC2\EOT\139\NAK\ESC \n\
     \\r\n\
-    \\ENQ\EOT^\STX\NUL\ETX\DC2\EOT\183\DC4#$\n\
+    \\ENQ\EOT`\STX\NUL\ETX\DC2\EOT\139\NAK#$\n\
     \@\n\
-    \\EOT\EOT^\STX\SOH\DC2\EOT\186\DC4\EOT#\SUB2 The list of `ChannelEdge`s in this channel graph\n\
+    \\EOT\EOT`\STX\SOH\DC2\EOT\142\NAK\EOT#\SUB2 The list of `ChannelEdge`s in this channel graph\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT^\STX\SOH\EOT\DC2\EOT\186\DC4\EOT\f\n\
+    \\ENQ\EOT`\STX\SOH\EOT\DC2\EOT\142\NAK\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT^\STX\SOH\ACK\DC2\EOT\186\DC4\r\CAN\n\
+    \\ENQ\EOT`\STX\SOH\ACK\DC2\EOT\142\NAK\r\CAN\n\
     \\r\n\
-    \\ENQ\EOT^\STX\SOH\SOH\DC2\EOT\186\DC4\EM\RS\n\
+    \\ENQ\EOT`\STX\SOH\SOH\DC2\EOT\142\NAK\EM\RS\n\
     \\r\n\
-    \\ENQ\EOT^\STX\SOH\ETX\DC2\EOT\186\DC4!\"\n\
+    \\ENQ\EOT`\STX\SOH\ETX\DC2\EOT\142\NAK!\"\n\
     \\f\n\
-    \\STX\ENQ\ENQ\DC2\ACK\189\DC4\NUL\192\DC4\SOH\n\
+    \\STX\ENQ\ENQ\DC2\ACK\145\NAK\NUL\148\NAK\SOH\n\
     \\v\n\
-    \\ETX\ENQ\ENQ\SOH\DC2\EOT\189\DC4\ENQ\DC3\n\
+    \\ETX\ENQ\ENQ\SOH\DC2\EOT\145\NAK\ENQ\DC3\n\
     \\f\n\
-    \\EOT\ENQ\ENQ\STX\NUL\DC2\EOT\190\DC4\EOT\DLE\n\
+    \\EOT\ENQ\ENQ\STX\NUL\DC2\EOT\146\NAK\EOT\DLE\n\
     \\r\n\
-    \\ENQ\ENQ\ENQ\STX\NUL\SOH\DC2\EOT\190\DC4\EOT\v\n\
+    \\ENQ\ENQ\ENQ\STX\NUL\SOH\DC2\EOT\146\NAK\EOT\v\n\
     \\r\n\
-    \\ENQ\ENQ\ENQ\STX\NUL\STX\DC2\EOT\190\DC4\SO\SI\n\
+    \\ENQ\ENQ\ENQ\STX\NUL\STX\DC2\EOT\146\NAK\SO\SI\n\
     \\f\n\
-    \\EOT\ENQ\ENQ\STX\SOH\DC2\EOT\191\DC4\EOT\US\n\
+    \\EOT\ENQ\ENQ\STX\SOH\DC2\EOT\147\NAK\EOT\US\n\
     \\r\n\
-    \\ENQ\ENQ\ENQ\STX\SOH\SOH\DC2\EOT\191\DC4\EOT\SUB\n\
+    \\ENQ\ENQ\ENQ\STX\SOH\SOH\DC2\EOT\147\NAK\EOT\SUB\n\
     \\r\n\
-    \\ENQ\ENQ\ENQ\STX\SOH\STX\DC2\EOT\191\DC4\GS\RS\n\
+    \\ENQ\ENQ\ENQ\STX\SOH\STX\DC2\EOT\147\NAK\GS\RS\n\
     \\f\n\
-    \\STX\EOT_\DC2\ACK\194\DC4\NUL\197\DC4\SOH\n\
+    \\STX\EOTa\DC2\ACK\150\NAK\NUL\153\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOT_\SOH\DC2\EOT\194\DC4\b\SUB\n\
+    \\ETX\EOTa\SOH\DC2\EOT\150\NAK\b\SUB\n\
     \+\n\
-    \\EOT\EOT_\STX\NUL\DC2\EOT\196\DC4\EOT&\SUB\GS The requested node metrics.\n\
+    \\EOT\EOTa\STX\NUL\DC2\EOT\152\NAK\EOT&\SUB\GS The requested node metrics.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT_\STX\NUL\EOT\DC2\EOT\196\DC4\EOT\f\n\
+    \\ENQ\EOTa\STX\NUL\EOT\DC2\EOT\152\NAK\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT_\STX\NUL\ACK\DC2\EOT\196\DC4\r\ESC\n\
+    \\ENQ\EOTa\STX\NUL\ACK\DC2\EOT\152\NAK\r\ESC\n\
     \\r\n\
-    \\ENQ\EOT_\STX\NUL\SOH\DC2\EOT\196\DC4\FS!\n\
+    \\ENQ\EOTa\STX\NUL\SOH\DC2\EOT\152\NAK\FS!\n\
     \\r\n\
-    \\ENQ\EOT_\STX\NUL\ETX\DC2\EOT\196\DC4$%\n\
+    \\ENQ\EOTa\STX\NUL\ETX\DC2\EOT\152\NAK$%\n\
     \\f\n\
-    \\STX\EOT`\DC2\ACK\199\DC4\NUL\208\DC4\SOH\n\
+    \\STX\EOTb\DC2\ACK\155\NAK\NUL\164\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOT`\SOH\DC2\EOT\199\DC4\b\ESC\n\
+    \\ETX\EOTb\SOH\DC2\EOT\155\NAK\b\ESC\n\
     \\180\STX\n\
-    \\EOT\EOT`\STX\NUL\DC2\EOT\207\DC4\EOT8\SUB\165\STX\n\
+    \\EOT\EOTb\STX\NUL\DC2\EOT\163\NAK\EOT8\SUB\165\STX\n\
     \Betweenness centrality is the sum of the ratio of shortest paths that pass\n\
     \through the node for each pair of nodes in the graph (not counting paths\n\
     \starting or ending at this node).\n\
@@ -57457,810 +59735,828 @@ packedFileDescriptor
     \values are in the [0,1] closed interval.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT`\STX\NUL\EOT\DC2\ACK\207\DC4\EOT\199\DC4\GS\n\
+    \\ENQ\EOTb\STX\NUL\EOT\DC2\ACK\163\NAK\EOT\155\NAK\GS\n\
     \\r\n\
-    \\ENQ\EOT`\STX\NUL\ACK\DC2\EOT\207\DC4\EOT\FS\n\
+    \\ENQ\EOTb\STX\NUL\ACK\DC2\EOT\163\NAK\EOT\FS\n\
     \\r\n\
-    \\ENQ\EOT`\STX\NUL\SOH\DC2\EOT\207\DC4\GS3\n\
+    \\ENQ\EOTb\STX\NUL\SOH\DC2\EOT\163\NAK\GS3\n\
     \\r\n\
-    \\ENQ\EOT`\STX\NUL\ETX\DC2\EOT\207\DC467\n\
+    \\ENQ\EOTb\STX\NUL\ETX\DC2\EOT\163\NAK67\n\
     \\f\n\
-    \\STX\EOTa\DC2\ACK\210\DC4\NUL\216\DC4\SOH\n\
+    \\STX\EOTc\DC2\ACK\166\NAK\NUL\172\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOTa\SOH\DC2\EOT\210\DC4\b\DC3\n\
+    \\ETX\EOTc\SOH\DC2\EOT\166\NAK\b\DC3\n\
     \&\n\
-    \\EOT\EOTa\STX\NUL\DC2\EOT\212\DC4\EOT\NAK\SUB\CAN Arbitrary float value.\n\
+    \\EOT\EOTc\STX\NUL\DC2\EOT\168\NAK\EOT\NAK\SUB\CAN Arbitrary float value.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTa\STX\NUL\EOT\DC2\ACK\212\DC4\EOT\210\DC4\NAK\n\
+    \\ENQ\EOTc\STX\NUL\EOT\DC2\ACK\168\NAK\EOT\166\NAK\NAK\n\
     \\r\n\
-    \\ENQ\EOTa\STX\NUL\ENQ\DC2\EOT\212\DC4\EOT\n\
+    \\ENQ\EOTc\STX\NUL\ENQ\DC2\EOT\168\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTa\STX\NUL\SOH\DC2\EOT\212\DC4\v\DLE\n\
+    \\ENQ\EOTc\STX\NUL\SOH\DC2\EOT\168\NAK\v\DLE\n\
     \\r\n\
-    \\ENQ\EOTa\STX\NUL\ETX\DC2\EOT\212\DC4\DC3\DC4\n\
+    \\ENQ\EOTc\STX\NUL\ETX\DC2\EOT\168\NAK\DC3\DC4\n\
     \8\n\
-    \\EOT\EOTa\STX\SOH\DC2\EOT\215\DC4\EOT \SUB* The value normalized to [0,1] or [-1,1].\n\
+    \\EOT\EOTc\STX\SOH\DC2\EOT\171\NAK\EOT \SUB* The value normalized to [0,1] or [-1,1].\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTa\STX\SOH\EOT\DC2\ACK\215\DC4\EOT\212\DC4\NAK\n\
+    \\ENQ\EOTc\STX\SOH\EOT\DC2\ACK\171\NAK\EOT\168\NAK\NAK\n\
     \\r\n\
-    \\ENQ\EOTa\STX\SOH\ENQ\DC2\EOT\215\DC4\EOT\n\
+    \\ENQ\EOTc\STX\SOH\ENQ\DC2\EOT\171\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTa\STX\SOH\SOH\DC2\EOT\215\DC4\v\ESC\n\
+    \\ENQ\EOTc\STX\SOH\SOH\DC2\EOT\171\NAK\v\ESC\n\
     \\r\n\
-    \\ENQ\EOTa\STX\SOH\ETX\DC2\EOT\215\DC4\RS\US\n\
+    \\ENQ\EOTc\STX\SOH\ETX\DC2\EOT\171\NAK\RS\US\n\
     \\f\n\
-    \\STX\EOTb\DC2\ACK\218\DC4\NUL\225\DC4\SOH\n\
+    \\STX\EOTd\DC2\ACK\174\NAK\NUL\181\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOTb\SOH\DC2\EOT\218\DC4\b\ETB\n\
+    \\ETX\EOTd\SOH\DC2\EOT\174\NAK\b\ETB\n\
     \\193\SOH\n\
-    \\EOT\EOTb\STX\NUL\DC2\EOT\224\DC4\EOT,\SUB\178\SOH\n\
+    \\EOT\EOTd\STX\NUL\DC2\EOT\180\NAK\EOT,\SUB\178\SOH\n\
     \The unique channel ID for the channel. The first 3 bytes are the block\n\
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTb\STX\NUL\EOT\DC2\ACK\224\DC4\EOT\218\DC4\EM\n\
+    \\ENQ\EOTd\STX\NUL\EOT\DC2\ACK\180\NAK\EOT\174\NAK\EM\n\
     \\r\n\
-    \\ENQ\EOTb\STX\NUL\ENQ\DC2\EOT\224\DC4\EOT\n\
+    \\ENQ\EOTd\STX\NUL\ENQ\DC2\EOT\180\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTb\STX\NUL\SOH\DC2\EOT\224\DC4\v\DC2\n\
+    \\ENQ\EOTd\STX\NUL\SOH\DC2\EOT\180\NAK\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTb\STX\NUL\ETX\DC2\EOT\224\DC4\NAK\SYN\n\
+    \\ENQ\EOTd\STX\NUL\ETX\DC2\EOT\180\NAK\NAK\SYN\n\
     \\r\n\
-    \\ENQ\EOTb\STX\NUL\b\DC2\EOT\224\DC4\ETB+\n\
+    \\ENQ\EOTd\STX\NUL\b\DC2\EOT\180\NAK\ETB+\n\
     \\SO\n\
-    \\ACK\EOTb\STX\NUL\b\ACK\DC2\EOT\224\DC4\CAN*\n\
+    \\ACK\EOTd\STX\NUL\b\ACK\DC2\EOT\180\NAK\CAN*\n\
     \\f\n\
-    \\STX\EOTc\DC2\ACK\227\DC4\NUL\228\DC4\SOH\n\
+    \\STX\EOTe\DC2\ACK\183\NAK\NUL\184\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOTc\SOH\DC2\EOT\227\DC4\b\SUB\n\
+    \\ETX\EOTe\SOH\DC2\EOT\183\NAK\b\SUB\n\
     \\f\n\
-    \\STX\EOTd\DC2\ACK\229\DC4\NUL\249\DC4\SOH\n\
+    \\STX\EOTf\DC2\ACK\185\NAK\NUL\205\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOTd\SOH\DC2\EOT\229\DC4\b\DC3\n\
+    \\ETX\EOTf\SOH\DC2\EOT\185\NAK\b\DC3\n\
     \\f\n\
-    \\EOT\EOTd\STX\NUL\DC2\EOT\230\DC4\EOT\RS\n\
+    \\EOT\EOTf\STX\NUL\DC2\EOT\186\NAK\EOT\RS\n\
     \\SI\n\
-    \\ENQ\EOTd\STX\NUL\EOT\DC2\ACK\230\DC4\EOT\229\DC4\NAK\n\
+    \\ENQ\EOTf\STX\NUL\EOT\DC2\ACK\186\NAK\EOT\185\NAK\NAK\n\
     \\r\n\
-    \\ENQ\EOTd\STX\NUL\ENQ\DC2\EOT\230\DC4\EOT\n\
+    \\ENQ\EOTf\STX\NUL\ENQ\DC2\EOT\186\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTd\STX\NUL\SOH\DC2\EOT\230\DC4\v\EM\n\
+    \\ENQ\EOTf\STX\NUL\SOH\DC2\EOT\186\NAK\v\EM\n\
     \\r\n\
-    \\ENQ\EOTd\STX\NUL\ETX\DC2\EOT\230\DC4\FS\GS\n\
+    \\ENQ\EOTf\STX\NUL\ETX\DC2\EOT\186\NAK\FS\GS\n\
     \\f\n\
-    \\EOT\EOTd\STX\SOH\DC2\EOT\231\DC4\EOT\RS\n\
+    \\EOT\EOTf\STX\SOH\DC2\EOT\187\NAK\EOT\RS\n\
     \\SI\n\
-    \\ENQ\EOTd\STX\SOH\EOT\DC2\ACK\231\DC4\EOT\230\DC4\RS\n\
+    \\ENQ\EOTf\STX\SOH\EOT\DC2\ACK\187\NAK\EOT\186\NAK\RS\n\
     \\r\n\
-    \\ENQ\EOTd\STX\SOH\ENQ\DC2\EOT\231\DC4\EOT\n\
+    \\ENQ\EOTf\STX\SOH\ENQ\DC2\EOT\187\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTd\STX\SOH\SOH\DC2\EOT\231\DC4\v\EM\n\
+    \\ENQ\EOTf\STX\SOH\SOH\DC2\EOT\187\NAK\v\EM\n\
     \\r\n\
-    \\ENQ\EOTd\STX\SOH\ETX\DC2\EOT\231\DC4\FS\GS\n\
+    \\ENQ\EOTf\STX\SOH\ETX\DC2\EOT\187\NAK\FS\GS\n\
     \\f\n\
-    \\EOT\EOTd\STX\STX\DC2\EOT\232\DC4\EOT\RS\n\
+    \\EOT\EOTf\STX\STX\DC2\EOT\188\NAK\EOT\RS\n\
     \\SI\n\
-    \\ENQ\EOTd\STX\STX\EOT\DC2\ACK\232\DC4\EOT\231\DC4\RS\n\
+    \\ENQ\EOTf\STX\STX\EOT\DC2\ACK\188\NAK\EOT\187\NAK\RS\n\
     \\r\n\
-    \\ENQ\EOTd\STX\STX\ENQ\DC2\EOT\232\DC4\EOT\n\
+    \\ENQ\EOTf\STX\STX\ENQ\DC2\EOT\188\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTd\STX\STX\SOH\DC2\EOT\232\DC4\v\EM\n\
+    \\ENQ\EOTf\STX\STX\SOH\DC2\EOT\188\NAK\v\EM\n\
     \\r\n\
-    \\ENQ\EOTd\STX\STX\ETX\DC2\EOT\232\DC4\FS\GS\n\
+    \\ENQ\EOTf\STX\STX\ETX\DC2\EOT\188\NAK\FS\GS\n\
     \\f\n\
-    \\EOT\EOTd\STX\ETX\DC2\EOT\234\DC4\EOT\EM\n\
+    \\EOT\EOTf\STX\ETX\DC2\EOT\190\NAK\EOT\EM\n\
     \\SI\n\
-    \\ENQ\EOTd\STX\ETX\EOT\DC2\ACK\234\DC4\EOT\232\DC4\RS\n\
+    \\ENQ\EOTf\STX\ETX\EOT\DC2\ACK\190\NAK\EOT\188\NAK\RS\n\
     \\r\n\
-    \\ENQ\EOTd\STX\ETX\ENQ\DC2\EOT\234\DC4\EOT\n\
+    \\ENQ\EOTf\STX\ETX\ENQ\DC2\EOT\190\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTd\STX\ETX\SOH\DC2\EOT\234\DC4\v\DC4\n\
+    \\ENQ\EOTf\STX\ETX\SOH\DC2\EOT\190\NAK\v\DC4\n\
     \\r\n\
-    \\ENQ\EOTd\STX\ETX\ETX\DC2\EOT\234\DC4\ETB\CAN\n\
+    \\ENQ\EOTf\STX\ETX\ETX\DC2\EOT\190\NAK\ETB\CAN\n\
     \\f\n\
-    \\EOT\EOTd\STX\EOT\DC2\EOT\235\DC4\EOT\FS\n\
+    \\EOT\EOTf\STX\EOT\DC2\EOT\191\NAK\EOT\FS\n\
     \\SI\n\
-    \\ENQ\EOTd\STX\EOT\EOT\DC2\ACK\235\DC4\EOT\234\DC4\EM\n\
+    \\ENQ\EOTf\STX\EOT\EOT\DC2\ACK\191\NAK\EOT\190\NAK\EM\n\
     \\r\n\
-    \\ENQ\EOTd\STX\EOT\ENQ\DC2\EOT\235\DC4\EOT\n\
+    \\ENQ\EOTf\STX\EOT\ENQ\DC2\EOT\191\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTd\STX\EOT\SOH\DC2\EOT\235\DC4\v\ETB\n\
+    \\ENQ\EOTf\STX\EOT\SOH\DC2\EOT\191\NAK\v\ETB\n\
     \\r\n\
-    \\ENQ\EOTd\STX\EOT\ETX\DC2\EOT\235\DC4\SUB\ESC\n\
+    \\ENQ\EOTf\STX\EOT\ETX\DC2\EOT\191\NAK\SUB\ESC\n\
     \\f\n\
-    \\EOT\EOTd\STX\ENQ\DC2\EOT\237\DC4\EOT%\n\
+    \\EOT\EOTf\STX\ENQ\DC2\EOT\193\NAK\EOT%\n\
     \\SI\n\
-    \\ENQ\EOTd\STX\ENQ\EOT\DC2\ACK\237\DC4\EOT\235\DC4\FS\n\
+    \\ENQ\EOTf\STX\ENQ\EOT\DC2\ACK\193\NAK\EOT\191\NAK\FS\n\
     \\r\n\
-    \\ENQ\EOTd\STX\ENQ\ENQ\DC2\EOT\237\DC4\EOT\t\n\
+    \\ENQ\EOTf\STX\ENQ\ENQ\DC2\EOT\193\NAK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTd\STX\ENQ\SOH\DC2\EOT\237\DC4\n\
+    \\ENQ\EOTf\STX\ENQ\SOH\DC2\EOT\193\NAK\n\
     \ \n\
     \\r\n\
-    \\ENQ\EOTd\STX\ENQ\ETX\DC2\EOT\237\DC4#$\n\
+    \\ENQ\EOTf\STX\ENQ\ETX\DC2\EOT\193\NAK#$\n\
     \\f\n\
-    \\EOT\EOTd\STX\ACK\DC2\EOT\239\DC4\EOT \n\
+    \\EOT\EOTf\STX\ACK\DC2\EOT\195\NAK\EOT \n\
     \\SI\n\
-    \\ENQ\EOTd\STX\ACK\EOT\DC2\ACK\239\DC4\EOT\237\DC4%\n\
+    \\ENQ\EOTf\STX\ACK\EOT\DC2\ACK\195\NAK\EOT\193\NAK%\n\
     \\r\n\
-    \\ENQ\EOTd\STX\ACK\ENQ\DC2\EOT\239\DC4\EOT\n\
+    \\ENQ\EOTf\STX\ACK\ENQ\DC2\EOT\195\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTd\STX\ACK\SOH\DC2\EOT\239\DC4\v\ESC\n\
+    \\ENQ\EOTf\STX\ACK\SOH\DC2\EOT\195\NAK\v\ESC\n\
     \\r\n\
-    \\ENQ\EOTd\STX\ACK\ETX\DC2\EOT\239\DC4\RS\US\n\
+    \\ENQ\EOTf\STX\ACK\ETX\DC2\EOT\195\NAK\RS\US\n\
     \\f\n\
-    \\EOT\EOTd\STX\a\DC2\EOT\240\DC4\EOT\US\n\
+    \\EOT\EOTf\STX\a\DC2\EOT\196\NAK\EOT\US\n\
     \\SI\n\
-    \\ENQ\EOTd\STX\a\EOT\DC2\ACK\240\DC4\EOT\239\DC4 \n\
+    \\ENQ\EOTf\STX\a\EOT\DC2\ACK\196\NAK\EOT\195\NAK \n\
     \\r\n\
-    \\ENQ\EOTd\STX\a\ENQ\DC2\EOT\240\DC4\EOT\t\n\
+    \\ENQ\EOTf\STX\a\ENQ\DC2\EOT\196\NAK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTd\STX\a\SOH\DC2\EOT\240\DC4\n\
+    \\ENQ\EOTf\STX\a\SOH\DC2\EOT\196\NAK\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOTd\STX\a\ETX\DC2\EOT\240\DC4\GS\RS\n\
+    \\ENQ\EOTf\STX\a\ETX\DC2\EOT\196\NAK\GS\RS\n\
     \\f\n\
-    \\EOT\EOTd\STX\b\DC2\EOT\241\DC4\EOT\US\n\
+    \\EOT\EOTf\STX\b\DC2\EOT\197\NAK\EOT\US\n\
     \\SI\n\
-    \\ENQ\EOTd\STX\b\EOT\DC2\ACK\241\DC4\EOT\240\DC4\US\n\
+    \\ENQ\EOTf\STX\b\EOT\DC2\ACK\197\NAK\EOT\196\NAK\US\n\
     \\r\n\
-    \\ENQ\EOTd\STX\b\ENQ\DC2\EOT\241\DC4\EOT\t\n\
+    \\ENQ\EOTf\STX\b\ENQ\DC2\EOT\197\NAK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTd\STX\b\SOH\DC2\EOT\241\DC4\n\
+    \\ENQ\EOTf\STX\b\SOH\DC2\EOT\197\NAK\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOTd\STX\b\ETX\DC2\EOT\241\DC4\GS\RS\n\
+    \\ENQ\EOTf\STX\b\ETX\DC2\EOT\197\NAK\GS\RS\n\
     \\f\n\
-    \\EOT\EOTd\STX\t\DC2\EOT\242\DC4\EOT'\n\
+    \\EOT\EOTf\STX\t\DC2\EOT\198\NAK\EOT'\n\
     \\SI\n\
-    \\ENQ\EOTd\STX\t\EOT\DC2\ACK\242\DC4\EOT\241\DC4\US\n\
+    \\ENQ\EOTf\STX\t\EOT\DC2\ACK\198\NAK\EOT\197\NAK\US\n\
     \\r\n\
-    \\ENQ\EOTd\STX\t\ENQ\DC2\EOT\242\DC4\EOT\t\n\
+    \\ENQ\EOTf\STX\t\ENQ\DC2\EOT\198\NAK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTd\STX\t\SOH\DC2\EOT\242\DC4\n\
+    \\ENQ\EOTf\STX\t\SOH\DC2\EOT\198\NAK\n\
     \!\n\
     \\r\n\
-    \\ENQ\EOTd\STX\t\ETX\DC2\EOT\242\DC4$&\n\
+    \\ENQ\EOTf\STX\t\ETX\DC2\EOT\198\NAK$&\n\
     \6\n\
-    \\EOT\EOTd\STX\n\
-    \\DC2\EOT\245\DC4\EOT!\SUB( The number of edges marked as zombies.\n\
+    \\EOT\EOTf\STX\n\
+    \\DC2\EOT\201\NAK\EOT!\SUB( The number of edges marked as zombies.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTd\STX\n\
-    \\EOT\DC2\ACK\245\DC4\EOT\242\DC4'\n\
+    \\ENQ\EOTf\STX\n\
+    \\EOT\DC2\ACK\201\NAK\EOT\198\NAK'\n\
     \\r\n\
-    \\ENQ\EOTd\STX\n\
-    \\ENQ\DC2\EOT\245\DC4\EOT\n\
+    \\ENQ\EOTf\STX\n\
+    \\ENQ\DC2\EOT\201\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTd\STX\n\
-    \\SOH\DC2\EOT\245\DC4\v\ESC\n\
+    \\ENQ\EOTf\STX\n\
+    \\SOH\DC2\EOT\201\NAK\v\ESC\n\
     \\r\n\
-    \\ENQ\EOTd\STX\n\
-    \\ETX\DC2\EOT\245\DC4\RS \n\
+    \\ENQ\EOTf\STX\n\
+    \\ETX\DC2\EOT\201\NAK\RS \n\
     \\f\n\
-    \\STX\EOTe\DC2\ACK\251\DC4\NUL\252\DC4\SOH\n\
+    \\STX\EOTg\DC2\ACK\207\NAK\NUL\208\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOTe\SOH\DC2\EOT\251\DC4\b\DC3\n\
+    \\ETX\EOTg\SOH\DC2\EOT\207\NAK\b\DC3\n\
     \\f\n\
-    \\STX\EOTf\DC2\ACK\253\DC4\NUL\254\DC4\SOH\n\
+    \\STX\EOTh\DC2\ACK\209\NAK\NUL\210\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOTf\SOH\DC2\EOT\253\DC4\b\DC4\n\
+    \\ETX\EOTh\SOH\DC2\EOT\209\NAK\b\DC4\n\
     \\f\n\
-    \\STX\EOTg\DC2\ACK\128\NAK\NUL\129\NAK\SOH\n\
+    \\STX\EOTi\DC2\ACK\212\NAK\NUL\213\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOTg\SOH\DC2\EOT\128\NAK\b!\n\
+    \\ETX\EOTi\SOH\DC2\EOT\212\NAK\b!\n\
     \\f\n\
-    \\STX\EOTh\DC2\ACK\130\NAK\NUL\134\NAK\SOH\n\
+    \\STX\EOTj\DC2\ACK\214\NAK\NUL\218\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOTh\SOH\DC2\EOT\130\NAK\b\ESC\n\
+    \\ETX\EOTj\SOH\DC2\EOT\214\NAK\b\ESC\n\
     \\f\n\
-    \\EOT\EOTh\STX\NUL\DC2\EOT\131\NAK\EOT)\n\
+    \\EOT\EOTj\STX\NUL\DC2\EOT\215\NAK\EOT)\n\
     \\r\n\
-    \\ENQ\EOTh\STX\NUL\EOT\DC2\EOT\131\NAK\EOT\f\n\
+    \\ENQ\EOTj\STX\NUL\EOT\DC2\EOT\215\NAK\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTh\STX\NUL\ACK\DC2\EOT\131\NAK\r\ETB\n\
+    \\ENQ\EOTj\STX\NUL\ACK\DC2\EOT\215\NAK\r\ETB\n\
     \\r\n\
-    \\ENQ\EOTh\STX\NUL\SOH\DC2\EOT\131\NAK\CAN$\n\
+    \\ENQ\EOTj\STX\NUL\SOH\DC2\EOT\215\NAK\CAN$\n\
     \\r\n\
-    \\ENQ\EOTh\STX\NUL\ETX\DC2\EOT\131\NAK'(\n\
+    \\ENQ\EOTj\STX\NUL\ETX\DC2\EOT\215\NAK'(\n\
     \\f\n\
-    \\EOT\EOTh\STX\SOH\DC2\EOT\132\NAK\EOT3\n\
+    \\EOT\EOTj\STX\SOH\DC2\EOT\216\NAK\EOT3\n\
     \\r\n\
-    \\ENQ\EOTh\STX\SOH\EOT\DC2\EOT\132\NAK\EOT\f\n\
+    \\ENQ\EOTj\STX\SOH\EOT\DC2\EOT\216\NAK\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTh\STX\SOH\ACK\DC2\EOT\132\NAK\r\RS\n\
+    \\ENQ\EOTj\STX\SOH\ACK\DC2\EOT\216\NAK\r\RS\n\
     \\r\n\
-    \\ENQ\EOTh\STX\SOH\SOH\DC2\EOT\132\NAK\US.\n\
+    \\ENQ\EOTj\STX\SOH\SOH\DC2\EOT\216\NAK\US.\n\
     \\r\n\
-    \\ENQ\EOTh\STX\SOH\ETX\DC2\EOT\132\NAK12\n\
+    \\ENQ\EOTj\STX\SOH\ETX\DC2\EOT\216\NAK12\n\
     \\f\n\
-    \\EOT\EOTh\STX\STX\DC2\EOT\133\NAK\EOT2\n\
+    \\EOT\EOTj\STX\STX\DC2\EOT\217\NAK\EOT2\n\
     \\r\n\
-    \\ENQ\EOTh\STX\STX\EOT\DC2\EOT\133\NAK\EOT\f\n\
+    \\ENQ\EOTj\STX\STX\EOT\DC2\EOT\217\NAK\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTh\STX\STX\ACK\DC2\EOT\133\NAK\r \n\
+    \\ENQ\EOTj\STX\STX\ACK\DC2\EOT\217\NAK\r \n\
     \\r\n\
-    \\ENQ\EOTh\STX\STX\SOH\DC2\EOT\133\NAK!-\n\
+    \\ENQ\EOTj\STX\STX\SOH\DC2\EOT\217\NAK!-\n\
     \\r\n\
-    \\ENQ\EOTh\STX\STX\ETX\DC2\EOT\133\NAK01\n\
+    \\ENQ\EOTj\STX\STX\ETX\DC2\EOT\217\NAK01\n\
     \\f\n\
-    \\STX\EOTi\DC2\ACK\135\NAK\NUL\147\NAK\SOH\n\
+    \\STX\EOTk\DC2\ACK\219\NAK\NUL\241\NAK\SOH\n\
     \\v\n\
-    \\ETX\EOTi\SOH\DC2\EOT\135\NAK\b\DC2\n\
-    \\f\n\
-    \\EOT\EOTi\STX\NUL\DC2\EOT\136\NAK\EOT\"\n\
-    \\r\n\
-    \\ENQ\EOTi\STX\NUL\EOT\DC2\EOT\136\NAK\EOT\f\n\
-    \\r\n\
-    \\ENQ\EOTi\STX\NUL\ENQ\DC2\EOT\136\NAK\r\DC3\n\
-    \\r\n\
-    \\ENQ\EOTi\STX\NUL\SOH\DC2\EOT\136\NAK\DC4\GS\n\
-    \\r\n\
-    \\ENQ\EOTi\STX\NUL\ETX\DC2\EOT\136\NAK !\n\
-    \\f\n\
-    \\EOT\EOTi\STX\SOH\DC2\EOT\137\NAK\EOT\FS\n\
-    \\SI\n\
-    \\ENQ\EOTi\STX\SOH\EOT\DC2\ACK\137\NAK\EOT\136\NAK\"\n\
-    \\r\n\
-    \\ENQ\EOTi\STX\SOH\ENQ\DC2\EOT\137\NAK\EOT\n\
+    \\ETX\EOTk\SOH\DC2\EOT\219\NAK\b\DC2\n\
+    \/\n\
+    \\EOT\EOTk\STX\NUL\DC2\EOT\223\NAK\EOT6\SUB!\n\
+    \Deprecated, use node_addresses.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTi\STX\SOH\SOH\DC2\EOT\137\NAK\v\ETB\n\
+    \\ENQ\EOTk\STX\NUL\EOT\DC2\EOT\223\NAK\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTi\STX\SOH\ETX\DC2\EOT\137\NAK\SUB\ESC\n\
+    \\ENQ\EOTk\STX\NUL\ENQ\DC2\EOT\223\NAK\r\DC3\n\
+    \\r\n\
+    \\ENQ\EOTk\STX\NUL\SOH\DC2\EOT\223\NAK\DC4\GS\n\
+    \\r\n\
+    \\ENQ\EOTk\STX\NUL\ETX\DC2\EOT\223\NAK !\n\
+    \\r\n\
+    \\ENQ\EOTk\STX\NUL\b\DC2\EOT\223\NAK\"5\n\
+    \\SO\n\
+    \\ACK\EOTk\STX\NUL\b\ETX\DC2\EOT\223\NAK#4\n\
     \\f\n\
-    \\EOT\EOTi\STX\STX\DC2\EOT\138\NAK\EOT2\n\
+    \\EOT\EOTk\STX\SOH\DC2\EOT\225\NAK\EOT\FS\n\
     \\SI\n\
-    \\ENQ\EOTi\STX\STX\EOT\DC2\ACK\138\NAK\EOT\137\NAK\FS\n\
+    \\ENQ\EOTk\STX\SOH\EOT\DC2\ACK\225\NAK\EOT\223\NAK6\n\
     \\r\n\
-    \\ENQ\EOTi\STX\STX\ENQ\DC2\EOT\138\NAK\EOT\t\n\
+    \\ENQ\EOTk\STX\SOH\ENQ\DC2\EOT\225\NAK\EOT\n\
+    \\n\
     \\r\n\
-    \\ENQ\EOTi\STX\STX\SOH\DC2\EOT\138\NAK\n\
+    \\ENQ\EOTk\STX\SOH\SOH\DC2\EOT\225\NAK\v\ETB\n\
+    \\r\n\
+    \\ENQ\EOTk\STX\SOH\ETX\DC2\EOT\225\NAK\SUB\ESC\n\
+    \)\n\
+    \\EOT\EOTk\STX\STX\DC2\EOT\230\NAK\EOT2\SUB\ESC\n\
+    \Deprecated, use features.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTk\STX\STX\EOT\DC2\ACK\230\NAK\EOT\225\NAK\FS\n\
+    \\r\n\
+    \\ENQ\EOTk\STX\STX\ENQ\DC2\EOT\230\NAK\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOTk\STX\STX\SOH\DC2\EOT\230\NAK\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOTi\STX\STX\ETX\DC2\EOT\138\NAK\FS\GS\n\
+    \\ENQ\EOTk\STX\STX\ETX\DC2\EOT\230\NAK\FS\GS\n\
     \\r\n\
-    \\ENQ\EOTi\STX\STX\b\DC2\EOT\138\NAK\RS1\n\
+    \\ENQ\EOTk\STX\STX\b\DC2\EOT\230\NAK\RS1\n\
     \\SO\n\
-    \\ACK\EOTi\STX\STX\b\ETX\DC2\EOT\138\NAK\US0\n\
+    \\ACK\EOTk\STX\STX\b\ETX\DC2\EOT\230\NAK\US0\n\
     \\f\n\
-    \\EOT\EOTi\STX\ETX\DC2\EOT\139\NAK\EOT\NAK\n\
+    \\EOT\EOTk\STX\ETX\DC2\EOT\232\NAK\EOT\NAK\n\
     \\SI\n\
-    \\ENQ\EOTi\STX\ETX\EOT\DC2\ACK\139\NAK\EOT\138\NAK2\n\
+    \\ENQ\EOTk\STX\ETX\EOT\DC2\ACK\232\NAK\EOT\230\NAK2\n\
     \\r\n\
-    \\ENQ\EOTi\STX\ETX\ENQ\DC2\EOT\139\NAK\EOT\n\
+    \\ENQ\EOTk\STX\ETX\ENQ\DC2\EOT\232\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTi\STX\ETX\SOH\DC2\EOT\139\NAK\v\DLE\n\
+    \\ENQ\EOTk\STX\ETX\SOH\DC2\EOT\232\NAK\v\DLE\n\
     \\r\n\
-    \\ENQ\EOTi\STX\ETX\ETX\DC2\EOT\139\NAK\DC3\DC4\n\
+    \\ENQ\EOTk\STX\ETX\ETX\DC2\EOT\232\NAK\DC3\DC4\n\
     \\f\n\
-    \\EOT\EOTi\STX\EOT\DC2\EOT\140\NAK\EOT\NAK\n\
+    \\EOT\EOTk\STX\EOT\DC2\EOT\233\NAK\EOT\NAK\n\
     \\SI\n\
-    \\ENQ\EOTi\STX\EOT\EOT\DC2\ACK\140\NAK\EOT\139\NAK\NAK\n\
+    \\ENQ\EOTk\STX\EOT\EOT\DC2\ACK\233\NAK\EOT\232\NAK\NAK\n\
     \\r\n\
-    \\ENQ\EOTi\STX\EOT\ENQ\DC2\EOT\140\NAK\EOT\n\
+    \\ENQ\EOTk\STX\EOT\ENQ\DC2\EOT\233\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTi\STX\EOT\SOH\DC2\EOT\140\NAK\v\DLE\n\
+    \\ENQ\EOTk\STX\EOT\SOH\DC2\EOT\233\NAK\v\DLE\n\
     \\r\n\
-    \\ENQ\EOTi\STX\EOT\ETX\DC2\EOT\140\NAK\DC3\DC4\n\
+    \\ENQ\EOTk\STX\EOT\ETX\DC2\EOT\233\NAK\DC3\DC4\n\
+    \\f\n\
+    \\EOT\EOTk\STX\ENQ\DC2\EOT\234\NAK\EOT,\n\
+    \\r\n\
+    \\ENQ\EOTk\STX\ENQ\EOT\DC2\EOT\234\NAK\EOT\f\n\
+    \\r\n\
+    \\ENQ\EOTk\STX\ENQ\ACK\DC2\EOT\234\NAK\r\CAN\n\
+    \\r\n\
+    \\ENQ\EOTk\STX\ENQ\SOH\DC2\EOT\234\NAK\EM'\n\
+    \\r\n\
+    \\ENQ\EOTk\STX\ENQ\ETX\DC2\EOT\234\NAK*+\n\
     \k\n\
-    \\EOT\EOTi\STX\ENQ\DC2\EOT\146\NAK\EOT&\SUB]\n\
+    \\EOT\EOTk\STX\ACK\DC2\EOT\240\NAK\EOT&\SUB]\n\
     \Features that the node has advertised in the init message, node\n\
     \announcements and invoices.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTi\STX\ENQ\EOT\DC2\ACK\146\NAK\EOT\140\NAK\NAK\n\
+    \\ENQ\EOTk\STX\ACK\EOT\DC2\ACK\240\NAK\EOT\234\NAK,\n\
     \\r\n\
-    \\ENQ\EOTi\STX\ENQ\ACK\DC2\EOT\146\NAK\EOT\CAN\n\
+    \\ENQ\EOTk\STX\ACK\ACK\DC2\EOT\240\NAK\EOT\CAN\n\
     \\r\n\
-    \\ENQ\EOTi\STX\ENQ\SOH\DC2\EOT\146\NAK\EM!\n\
+    \\ENQ\EOTk\STX\ACK\SOH\DC2\EOT\240\NAK\EM!\n\
     \\r\n\
-    \\ENQ\EOTi\STX\ENQ\ETX\DC2\EOT\146\NAK$%\n\
+    \\ENQ\EOTk\STX\ACK\ETX\DC2\EOT\240\NAK$%\n\
     \\f\n\
-    \\STX\EOTj\DC2\ACK\148\NAK\NUL\164\NAK\SOH\n\
+    \\STX\EOTl\DC2\ACK\242\NAK\NUL\130\SYN\SOH\n\
     \\v\n\
-    \\ETX\EOTj\SOH\DC2\EOT\148\NAK\b\EM\n\
+    \\ETX\EOTl\SOH\DC2\EOT\242\NAK\b\EM\n\
     \\193\SOH\n\
-    \\EOT\EOTj\STX\NUL\DC2\EOT\154\NAK\EOT,\SUB\178\SOH\n\
+    \\EOT\EOTl\STX\NUL\DC2\EOT\248\NAK\EOT,\SUB\178\SOH\n\
     \The unique channel ID for the channel. The first 3 bytes are the block\n\
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTj\STX\NUL\EOT\DC2\ACK\154\NAK\EOT\148\NAK\ESC\n\
+    \\ENQ\EOTl\STX\NUL\EOT\DC2\ACK\248\NAK\EOT\242\NAK\ESC\n\
     \\r\n\
-    \\ENQ\EOTj\STX\NUL\ENQ\DC2\EOT\154\NAK\EOT\n\
+    \\ENQ\EOTl\STX\NUL\ENQ\DC2\EOT\248\NAK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTj\STX\NUL\SOH\DC2\EOT\154\NAK\v\DC2\n\
+    \\ENQ\EOTl\STX\NUL\SOH\DC2\EOT\248\NAK\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTj\STX\NUL\ETX\DC2\EOT\154\NAK\NAK\SYN\n\
+    \\ENQ\EOTl\STX\NUL\ETX\DC2\EOT\248\NAK\NAK\SYN\n\
     \\r\n\
-    \\ENQ\EOTj\STX\NUL\b\DC2\EOT\154\NAK\ETB+\n\
+    \\ENQ\EOTl\STX\NUL\b\DC2\EOT\248\NAK\ETB+\n\
     \\SO\n\
-    \\ACK\EOTj\STX\NUL\b\ACK\DC2\EOT\154\NAK\CAN*\n\
+    \\ACK\EOTl\STX\NUL\b\ACK\DC2\EOT\248\NAK\CAN*\n\
     \\f\n\
-    \\EOT\EOTj\STX\SOH\DC2\EOT\156\NAK\EOT \n\
+    \\EOT\EOTl\STX\SOH\DC2\EOT\250\NAK\EOT \n\
     \\SI\n\
-    \\ENQ\EOTj\STX\SOH\EOT\DC2\ACK\156\NAK\EOT\154\NAK,\n\
+    \\ENQ\EOTl\STX\SOH\EOT\DC2\ACK\250\NAK\EOT\248\NAK,\n\
     \\r\n\
-    \\ENQ\EOTj\STX\SOH\ACK\DC2\EOT\156\NAK\EOT\DLE\n\
+    \\ENQ\EOTl\STX\SOH\ACK\DC2\EOT\250\NAK\EOT\DLE\n\
     \\r\n\
-    \\ENQ\EOTj\STX\SOH\SOH\DC2\EOT\156\NAK\DC1\ESC\n\
+    \\ENQ\EOTl\STX\SOH\SOH\DC2\EOT\250\NAK\DC1\ESC\n\
     \\r\n\
-    \\ENQ\EOTj\STX\SOH\ETX\DC2\EOT\156\NAK\RS\US\n\
+    \\ENQ\EOTl\STX\SOH\ETX\DC2\EOT\250\NAK\RS\US\n\
     \\f\n\
-    \\EOT\EOTj\STX\STX\DC2\EOT\158\NAK\EOT\ETB\n\
+    \\EOT\EOTl\STX\STX\DC2\EOT\252\NAK\EOT\ETB\n\
     \\SI\n\
-    \\ENQ\EOTj\STX\STX\EOT\DC2\ACK\158\NAK\EOT\156\NAK \n\
+    \\ENQ\EOTl\STX\STX\EOT\DC2\ACK\252\NAK\EOT\250\NAK \n\
     \\r\n\
-    \\ENQ\EOTj\STX\STX\ENQ\DC2\EOT\158\NAK\EOT\t\n\
+    \\ENQ\EOTl\STX\STX\ENQ\DC2\EOT\252\NAK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTj\STX\STX\SOH\DC2\EOT\158\NAK\n\
+    \\ENQ\EOTl\STX\STX\SOH\DC2\EOT\252\NAK\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOTj\STX\STX\ETX\DC2\EOT\158\NAK\NAK\SYN\n\
+    \\ENQ\EOTl\STX\STX\ETX\DC2\EOT\252\NAK\NAK\SYN\n\
     \\f\n\
-    \\EOT\EOTj\STX\ETX\DC2\EOT\160\NAK\EOT%\n\
+    \\EOT\EOTl\STX\ETX\DC2\EOT\254\NAK\EOT%\n\
     \\SI\n\
-    \\ENQ\EOTj\STX\ETX\EOT\DC2\ACK\160\NAK\EOT\158\NAK\ETB\n\
+    \\ENQ\EOTl\STX\ETX\EOT\DC2\ACK\254\NAK\EOT\252\NAK\ETB\n\
     \\r\n\
-    \\ENQ\EOTj\STX\ETX\ACK\DC2\EOT\160\NAK\EOT\DC1\n\
+    \\ENQ\EOTl\STX\ETX\ACK\DC2\EOT\254\NAK\EOT\DC1\n\
     \\r\n\
-    \\ENQ\EOTj\STX\ETX\SOH\DC2\EOT\160\NAK\DC2 \n\
+    \\ENQ\EOTl\STX\ETX\SOH\DC2\EOT\254\NAK\DC2 \n\
     \\r\n\
-    \\ENQ\EOTj\STX\ETX\ETX\DC2\EOT\160\NAK#$\n\
+    \\ENQ\EOTl\STX\ETX\ETX\DC2\EOT\254\NAK#$\n\
     \\f\n\
-    \\EOT\EOTj\STX\EOT\DC2\EOT\162\NAK\EOT \n\
+    \\EOT\EOTl\STX\EOT\DC2\EOT\128\SYN\EOT \n\
     \\SI\n\
-    \\ENQ\EOTj\STX\EOT\EOT\DC2\ACK\162\NAK\EOT\160\NAK%\n\
+    \\ENQ\EOTl\STX\EOT\EOT\DC2\ACK\128\SYN\EOT\254\NAK%\n\
     \\r\n\
-    \\ENQ\EOTj\STX\EOT\ENQ\DC2\EOT\162\NAK\EOT\n\
+    \\ENQ\EOTl\STX\EOT\ENQ\DC2\EOT\128\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTj\STX\EOT\SOH\DC2\EOT\162\NAK\v\ESC\n\
+    \\ENQ\EOTl\STX\EOT\SOH\DC2\EOT\128\SYN\v\ESC\n\
     \\r\n\
-    \\ENQ\EOTj\STX\EOT\ETX\DC2\EOT\162\NAK\RS\US\n\
+    \\ENQ\EOTl\STX\EOT\ETX\DC2\EOT\128\SYN\RS\US\n\
     \\f\n\
-    \\EOT\EOTj\STX\ENQ\DC2\EOT\163\NAK\EOT\US\n\
+    \\EOT\EOTl\STX\ENQ\DC2\EOT\129\SYN\EOT\US\n\
     \\SI\n\
-    \\ENQ\EOTj\STX\ENQ\EOT\DC2\ACK\163\NAK\EOT\162\NAK \n\
+    \\ENQ\EOTl\STX\ENQ\EOT\DC2\ACK\129\SYN\EOT\128\SYN \n\
     \\r\n\
-    \\ENQ\EOTj\STX\ENQ\ENQ\DC2\EOT\163\NAK\EOT\n\
+    \\ENQ\EOTl\STX\ENQ\ENQ\DC2\EOT\129\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTj\STX\ENQ\SOH\DC2\EOT\163\NAK\v\SUB\n\
+    \\ENQ\EOTl\STX\ENQ\SOH\DC2\EOT\129\SYN\v\SUB\n\
     \\r\n\
-    \\ENQ\EOTj\STX\ENQ\ETX\DC2\EOT\163\NAK\GS\RS\n\
+    \\ENQ\EOTl\STX\ENQ\ETX\DC2\EOT\129\SYN\GS\RS\n\
     \\f\n\
-    \\STX\EOTk\DC2\ACK\165\NAK\NUL\175\NAK\SOH\n\
+    \\STX\EOTm\DC2\ACK\131\SYN\NUL\141\SYN\SOH\n\
     \\v\n\
-    \\ETX\EOTk\SOH\DC2\EOT\165\NAK\b\ESC\n\
+    \\ETX\EOTm\SOH\DC2\EOT\131\SYN\b\ESC\n\
     \\193\SOH\n\
-    \\EOT\EOTk\STX\NUL\DC2\EOT\171\NAK\EOT,\SUB\178\SOH\n\
+    \\EOT\EOTm\STX\NUL\DC2\EOT\137\SYN\EOT,\SUB\178\SOH\n\
     \The unique channel ID for the channel. The first 3 bytes are the block\n\
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTk\STX\NUL\EOT\DC2\ACK\171\NAK\EOT\165\NAK\GS\n\
+    \\ENQ\EOTm\STX\NUL\EOT\DC2\ACK\137\SYN\EOT\131\SYN\GS\n\
     \\r\n\
-    \\ENQ\EOTk\STX\NUL\ENQ\DC2\EOT\171\NAK\EOT\n\
+    \\ENQ\EOTm\STX\NUL\ENQ\DC2\EOT\137\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTk\STX\NUL\SOH\DC2\EOT\171\NAK\v\DC2\n\
+    \\ENQ\EOTm\STX\NUL\SOH\DC2\EOT\137\SYN\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTk\STX\NUL\ETX\DC2\EOT\171\NAK\NAK\SYN\n\
+    \\ENQ\EOTm\STX\NUL\ETX\DC2\EOT\137\SYN\NAK\SYN\n\
     \\r\n\
-    \\ENQ\EOTk\STX\NUL\b\DC2\EOT\171\NAK\ETB+\n\
+    \\ENQ\EOTm\STX\NUL\b\DC2\EOT\137\SYN\ETB+\n\
     \\SO\n\
-    \\ACK\EOTk\STX\NUL\b\ACK\DC2\EOT\171\NAK\CAN*\n\
+    \\ACK\EOTm\STX\NUL\b\ACK\DC2\EOT\137\SYN\CAN*\n\
     \\f\n\
-    \\EOT\EOTk\STX\SOH\DC2\EOT\172\NAK\EOT\ETB\n\
+    \\EOT\EOTm\STX\SOH\DC2\EOT\138\SYN\EOT\ETB\n\
     \\SI\n\
-    \\ENQ\EOTk\STX\SOH\EOT\DC2\ACK\172\NAK\EOT\171\NAK,\n\
+    \\ENQ\EOTm\STX\SOH\EOT\DC2\ACK\138\SYN\EOT\137\SYN,\n\
     \\r\n\
-    \\ENQ\EOTk\STX\SOH\ENQ\DC2\EOT\172\NAK\EOT\t\n\
+    \\ENQ\EOTm\STX\SOH\ENQ\DC2\EOT\138\SYN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTk\STX\SOH\SOH\DC2\EOT\172\NAK\n\
+    \\ENQ\EOTm\STX\SOH\SOH\DC2\EOT\138\SYN\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOTk\STX\SOH\ETX\DC2\EOT\172\NAK\NAK\SYN\n\
+    \\ENQ\EOTm\STX\SOH\ETX\DC2\EOT\138\SYN\NAK\SYN\n\
     \\f\n\
-    \\EOT\EOTk\STX\STX\DC2\EOT\173\NAK\EOT\GS\n\
+    \\EOT\EOTm\STX\STX\DC2\EOT\139\SYN\EOT\GS\n\
     \\SI\n\
-    \\ENQ\EOTk\STX\STX\EOT\DC2\ACK\173\NAK\EOT\172\NAK\ETB\n\
+    \\ENQ\EOTm\STX\STX\EOT\DC2\ACK\139\SYN\EOT\138\SYN\ETB\n\
     \\r\n\
-    \\ENQ\EOTk\STX\STX\ENQ\DC2\EOT\173\NAK\EOT\n\
+    \\ENQ\EOTm\STX\STX\ENQ\DC2\EOT\139\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTk\STX\STX\SOH\DC2\EOT\173\NAK\v\CAN\n\
+    \\ENQ\EOTm\STX\STX\SOH\DC2\EOT\139\SYN\v\CAN\n\
     \\r\n\
-    \\ENQ\EOTk\STX\STX\ETX\DC2\EOT\173\NAK\ESC\FS\n\
+    \\ENQ\EOTm\STX\STX\ETX\DC2\EOT\139\SYN\ESC\FS\n\
     \\f\n\
-    \\EOT\EOTk\STX\ETX\DC2\EOT\174\NAK\EOT \n\
+    \\EOT\EOTm\STX\ETX\DC2\EOT\140\SYN\EOT \n\
     \\SI\n\
-    \\ENQ\EOTk\STX\ETX\EOT\DC2\ACK\174\NAK\EOT\173\NAK\GS\n\
+    \\ENQ\EOTm\STX\ETX\EOT\DC2\ACK\140\SYN\EOT\139\SYN\GS\n\
     \\r\n\
-    \\ENQ\EOTk\STX\ETX\ACK\DC2\EOT\174\NAK\EOT\DLE\n\
+    \\ENQ\EOTm\STX\ETX\ACK\DC2\EOT\140\SYN\EOT\DLE\n\
     \\r\n\
-    \\ENQ\EOTk\STX\ETX\SOH\DC2\EOT\174\NAK\DC1\ESC\n\
+    \\ENQ\EOTm\STX\ETX\SOH\DC2\EOT\140\SYN\DC1\ESC\n\
     \\r\n\
-    \\ENQ\EOTk\STX\ETX\ETX\DC2\EOT\174\NAK\RS\US\n\
+    \\ENQ\EOTm\STX\ETX\ETX\DC2\EOT\140\SYN\RS\US\n\
     \\f\n\
-    \\STX\EOTl\DC2\ACK\177\NAK\NUL\195\NAK\SOH\n\
+    \\STX\EOTn\DC2\ACK\143\SYN\NUL\161\SYN\SOH\n\
     \\v\n\
-    \\ETX\EOTl\SOH\DC2\EOT\177\NAK\b\SI\n\
+    \\ETX\EOTn\SOH\DC2\EOT\143\SYN\b\SI\n\
     \G\n\
-    \\EOT\EOTl\STX\NUL\DC2\EOT\179\NAK\EOT\ETB\SUB9 The public key of the node at the start of the channel.\n\
+    \\EOT\EOTn\STX\NUL\DC2\EOT\145\SYN\EOT\ETB\SUB9 The public key of the node at the start of the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTl\STX\NUL\EOT\DC2\ACK\179\NAK\EOT\177\NAK\DC1\n\
+    \\ENQ\EOTn\STX\NUL\EOT\DC2\ACK\145\SYN\EOT\143\SYN\DC1\n\
     \\r\n\
-    \\ENQ\EOTl\STX\NUL\ENQ\DC2\EOT\179\NAK\EOT\n\
+    \\ENQ\EOTn\STX\NUL\ENQ\DC2\EOT\145\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTl\STX\NUL\SOH\DC2\EOT\179\NAK\v\DC2\n\
+    \\ENQ\EOTn\STX\NUL\SOH\DC2\EOT\145\SYN\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTl\STX\NUL\ETX\DC2\EOT\179\NAK\NAK\SYN\n\
+    \\ENQ\EOTn\STX\NUL\ETX\DC2\EOT\145\SYN\NAK\SYN\n\
     \5\n\
-    \\EOT\EOTl\STX\SOH\DC2\EOT\182\NAK\EOT,\SUB' The unique identifier of the channel.\n\
+    \\EOT\EOTn\STX\SOH\DC2\EOT\148\SYN\EOT,\SUB' The unique identifier of the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTl\STX\SOH\EOT\DC2\ACK\182\NAK\EOT\179\NAK\ETB\n\
+    \\ENQ\EOTn\STX\SOH\EOT\DC2\ACK\148\SYN\EOT\145\SYN\ETB\n\
     \\r\n\
-    \\ENQ\EOTl\STX\SOH\ENQ\DC2\EOT\182\NAK\EOT\n\
+    \\ENQ\EOTn\STX\SOH\ENQ\DC2\EOT\148\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTl\STX\SOH\SOH\DC2\EOT\182\NAK\v\DC2\n\
+    \\ENQ\EOTn\STX\SOH\SOH\DC2\EOT\148\SYN\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTl\STX\SOH\ETX\DC2\EOT\182\NAK\NAK\SYN\n\
+    \\ENQ\EOTn\STX\SOH\ETX\DC2\EOT\148\SYN\NAK\SYN\n\
     \\r\n\
-    \\ENQ\EOTl\STX\SOH\b\DC2\EOT\182\NAK\ETB+\n\
+    \\ENQ\EOTn\STX\SOH\b\DC2\EOT\148\SYN\ETB+\n\
     \\SO\n\
-    \\ACK\EOTl\STX\SOH\b\ACK\DC2\EOT\182\NAK\CAN*\n\
+    \\ACK\EOTn\STX\SOH\b\ACK\DC2\EOT\148\SYN\CAN*\n\
     \I\n\
-    \\EOT\EOTl\STX\STX\DC2\EOT\185\NAK\EOT\GS\SUB; The base fee of the channel denominated in millisatoshis.\n\
+    \\EOT\EOTn\STX\STX\DC2\EOT\151\SYN\EOT\GS\SUB; The base fee of the channel denominated in millisatoshis.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTl\STX\STX\EOT\DC2\ACK\185\NAK\EOT\182\NAK,\n\
+    \\ENQ\EOTn\STX\STX\EOT\DC2\ACK\151\SYN\EOT\148\SYN,\n\
     \\r\n\
-    \\ENQ\EOTl\STX\STX\ENQ\DC2\EOT\185\NAK\EOT\n\
+    \\ENQ\EOTn\STX\STX\ENQ\DC2\EOT\151\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTl\STX\STX\SOH\DC2\EOT\185\NAK\v\CAN\n\
+    \\ENQ\EOTn\STX\STX\SOH\DC2\EOT\151\SYN\v\CAN\n\
     \\r\n\
-    \\ENQ\EOTl\STX\STX\ETX\DC2\EOT\185\NAK\ESC\FS\n\
+    \\ENQ\EOTn\STX\STX\ETX\DC2\EOT\151\SYN\ESC\FS\n\
     \u\n\
-    \\EOT\EOTl\STX\ETX\DC2\EOT\191\NAK\EOT+\SUBg\n\
+    \\EOT\EOTn\STX\ETX\DC2\EOT\157\SYN\EOT+\SUBg\n\
     \The fee rate of the channel for sending one satoshi across it denominated in\n\
     \millionths of a satoshi.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTl\STX\ETX\EOT\DC2\ACK\191\NAK\EOT\185\NAK\GS\n\
+    \\ENQ\EOTn\STX\ETX\EOT\DC2\ACK\157\SYN\EOT\151\SYN\GS\n\
     \\r\n\
-    \\ENQ\EOTl\STX\ETX\ENQ\DC2\EOT\191\NAK\EOT\n\
+    \\ENQ\EOTn\STX\ETX\ENQ\DC2\EOT\157\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTl\STX\ETX\SOH\DC2\EOT\191\NAK\v&\n\
+    \\ENQ\EOTn\STX\ETX\SOH\DC2\EOT\157\SYN\v&\n\
     \\r\n\
-    \\ENQ\EOTl\STX\ETX\ETX\DC2\EOT\191\NAK)*\n\
+    \\ENQ\EOTn\STX\ETX\ETX\DC2\EOT\157\SYN)*\n\
     \3\n\
-    \\EOT\EOTl\STX\EOT\DC2\EOT\194\NAK\EOT!\SUB% The time-lock delta of the channel.\n\
+    \\EOT\EOTn\STX\EOT\DC2\EOT\160\SYN\EOT!\SUB% The time-lock delta of the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTl\STX\EOT\EOT\DC2\ACK\194\NAK\EOT\191\NAK+\n\
+    \\ENQ\EOTn\STX\EOT\EOT\DC2\ACK\160\SYN\EOT\157\SYN+\n\
     \\r\n\
-    \\ENQ\EOTl\STX\EOT\ENQ\DC2\EOT\194\NAK\EOT\n\
+    \\ENQ\EOTn\STX\EOT\ENQ\DC2\EOT\160\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTl\STX\EOT\SOH\DC2\EOT\194\NAK\v\FS\n\
+    \\ENQ\EOTn\STX\EOT\SOH\DC2\EOT\160\SYN\v\FS\n\
     \\r\n\
-    \\ENQ\EOTl\STX\EOT\ETX\DC2\EOT\194\NAK\US \n\
+    \\ENQ\EOTn\STX\EOT\ETX\DC2\EOT\160\SYN\US \n\
     \\f\n\
-    \\STX\EOTm\DC2\ACK\197\NAK\NUL\203\NAK\SOH\n\
+    \\STX\EOTo\DC2\ACK\163\SYN\NUL\169\SYN\SOH\n\
     \\v\n\
-    \\ETX\EOTm\SOH\DC2\EOT\197\NAK\b\DC1\n\
+    \\ETX\EOTo\SOH\DC2\EOT\163\SYN\b\DC1\n\
     \m\n\
-    \\EOT\EOTm\STX\NUL\DC2\EOT\202\NAK\EOT#\SUB_\n\
+    \\EOT\EOTo\STX\NUL\DC2\EOT\168\SYN\EOT#\SUB_\n\
     \A list of hop hints that when chained together can assist in reaching a\n\
     \specific destination.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTm\STX\NUL\EOT\DC2\EOT\202\NAK\EOT\f\n\
+    \\ENQ\EOTo\STX\NUL\EOT\DC2\EOT\168\SYN\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTm\STX\NUL\ACK\DC2\EOT\202\NAK\r\DC4\n\
+    \\ENQ\EOTo\STX\NUL\ACK\DC2\EOT\168\SYN\r\DC4\n\
     \\r\n\
-    \\ENQ\EOTm\STX\NUL\SOH\DC2\EOT\202\NAK\NAK\RS\n\
+    \\ENQ\EOTo\STX\NUL\SOH\DC2\EOT\168\SYN\NAK\RS\n\
     \\r\n\
-    \\ENQ\EOTm\STX\NUL\ETX\DC2\EOT\202\NAK!\"\n\
+    \\ENQ\EOTo\STX\NUL\ETX\DC2\EOT\168\SYN!\"\n\
     \\f\n\
-    \\STX\EOTn\DC2\ACK\205\NAK\NUL\226\SYN\SOH\n\
+    \\STX\EOTp\DC2\ACK\171\SYN\NUL\197\ETB\SOH\n\
     \\v\n\
-    \\ETX\EOTn\SOH\DC2\EOT\205\NAK\b\SI\n\
+    \\ETX\EOTp\SOH\DC2\EOT\171\SYN\b\SI\n\
     \\253\SOH\n\
-    \\EOT\EOTn\STX\NUL\DC2\EOT\212\NAK\EOT\DC4\SUB\238\SOH\n\
+    \\EOT\EOTp\STX\NUL\DC2\EOT\178\SYN\EOT\DC4\SUB\238\SOH\n\
     \An optional memo to attach along with the invoice. Used for record keeping\n\
     \purposes for the invoice's creator, and will also be set in the description\n\
     \field of the encoded payment request if the description_hash field is not\n\
     \being used.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\NUL\EOT\DC2\ACK\212\NAK\EOT\205\NAK\DC1\n\
+    \\ENQ\EOTp\STX\NUL\EOT\DC2\ACK\178\SYN\EOT\171\SYN\DC1\n\
     \\r\n\
-    \\ENQ\EOTn\STX\NUL\ENQ\DC2\EOT\212\NAK\EOT\n\
+    \\ENQ\EOTp\STX\NUL\ENQ\DC2\EOT\178\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTn\STX\NUL\SOH\DC2\EOT\212\NAK\v\SI\n\
+    \\ENQ\EOTp\STX\NUL\SOH\DC2\EOT\178\SYN\v\SI\n\
     \\r\n\
-    \\ENQ\EOTn\STX\NUL\ETX\DC2\EOT\212\NAK\DC2\DC3\n\
+    \\ENQ\EOTp\STX\NUL\ETX\DC2\EOT\178\SYN\DC2\DC3\n\
     \\v\n\
-    \\ETX\EOTn\t\DC2\EOT\214\NAK\EOT\SI\n\
+    \\ETX\EOTp\t\DC2\EOT\180\SYN\EOT\SI\n\
     \\f\n\
-    \\EOT\EOTn\t\NUL\DC2\EOT\214\NAK\r\SO\n\
+    \\EOT\EOTp\t\NUL\DC2\EOT\180\SYN\r\SO\n\
     \\r\n\
-    \\ENQ\EOTn\t\NUL\SOH\DC2\EOT\214\NAK\r\SO\n\
+    \\ENQ\EOTp\t\NUL\SOH\DC2\EOT\180\SYN\r\SO\n\
     \\r\n\
-    \\ENQ\EOTn\t\NUL\STX\DC2\EOT\214\NAK\r\SO\n\
+    \\ENQ\EOTp\t\NUL\STX\DC2\EOT\180\SYN\r\SO\n\
     \\175\SOH\n\
-    \\EOT\EOTn\STX\SOH\DC2\EOT\221\NAK\EOT\EM\SUB\160\SOH\n\
+    \\EOT\EOTp\STX\SOH\DC2\EOT\187\SYN\EOT\EM\SUB\160\SOH\n\
     \The hex-encoded preimage (32 byte) which will allow settling an incoming\n\
     \HTLC payable to this preimage. When using REST, this field must be encoded\n\
     \as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\SOH\EOT\DC2\ACK\221\NAK\EOT\214\NAK\SI\n\
+    \\ENQ\EOTp\STX\SOH\EOT\DC2\ACK\187\SYN\EOT\180\SYN\SI\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SOH\ENQ\DC2\EOT\221\NAK\EOT\t\n\
+    \\ENQ\EOTp\STX\SOH\ENQ\DC2\EOT\187\SYN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SOH\SOH\DC2\EOT\221\NAK\n\
+    \\ENQ\EOTp\STX\SOH\SOH\DC2\EOT\187\SYN\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SOH\ETX\DC2\EOT\221\NAK\ETB\CAN\n\
+    \\ENQ\EOTp\STX\SOH\ETX\DC2\EOT\187\SYN\ETB\CAN\n\
     \`\n\
-    \\EOT\EOTn\STX\STX\DC2\EOT\227\NAK\EOT\NAK\SUBR\n\
+    \\EOT\EOTp\STX\STX\DC2\EOT\193\SYN\EOT\NAK\SUBR\n\
     \The hash of the preimage. When using REST, this field must be encoded as\n\
     \base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\STX\EOT\DC2\ACK\227\NAK\EOT\221\NAK\EM\n\
+    \\ENQ\EOTp\STX\STX\EOT\DC2\ACK\193\SYN\EOT\187\SYN\EM\n\
     \\r\n\
-    \\ENQ\EOTn\STX\STX\ENQ\DC2\EOT\227\NAK\EOT\t\n\
+    \\ENQ\EOTp\STX\STX\ENQ\DC2\EOT\193\SYN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\STX\SOH\DC2\EOT\227\NAK\n\
+    \\ENQ\EOTp\STX\STX\SOH\DC2\EOT\193\SYN\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOTn\STX\STX\ETX\DC2\EOT\227\NAK\DC3\DC4\n\
+    \\ENQ\EOTp\STX\STX\ETX\DC2\EOT\193\SYN\DC3\DC4\n\
     \n\n\
-    \\EOT\EOTn\STX\ETX\DC2\EOT\234\NAK\EOT\DC4\SUB`\n\
+    \\EOT\EOTp\STX\ETX\DC2\EOT\200\SYN\EOT\DC4\SUB`\n\
     \The value of this invoice in satoshis\n\
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\ETX\EOT\DC2\ACK\234\NAK\EOT\227\NAK\NAK\n\
+    \\ENQ\EOTp\STX\ETX\EOT\DC2\ACK\200\SYN\EOT\193\SYN\NAK\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ETX\ENQ\DC2\EOT\234\NAK\EOT\t\n\
+    \\ENQ\EOTp\STX\ETX\ENQ\DC2\EOT\200\SYN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ETX\SOH\DC2\EOT\234\NAK\n\
+    \\ENQ\EOTp\STX\ETX\SOH\DC2\EOT\200\SYN\n\
     \\SI\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ETX\ETX\DC2\EOT\234\NAK\DC2\DC3\n\
+    \\ENQ\EOTp\STX\ETX\ETX\DC2\EOT\200\SYN\DC2\DC3\n\
     \s\n\
-    \\EOT\EOTn\STX\EOT\DC2\EOT\241\NAK\EOT\SUB\SUBe\n\
+    \\EOT\EOTp\STX\EOT\DC2\EOT\207\SYN\EOT\SUB\SUBe\n\
     \The value of this invoice in millisatoshis\n\
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\EOT\EOT\DC2\ACK\241\NAK\EOT\234\NAK\DC4\n\
+    \\ENQ\EOTp\STX\EOT\EOT\DC2\ACK\207\SYN\EOT\200\SYN\DC4\n\
     \\r\n\
-    \\ENQ\EOTn\STX\EOT\ENQ\DC2\EOT\241\NAK\EOT\t\n\
+    \\ENQ\EOTp\STX\EOT\ENQ\DC2\EOT\207\SYN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\EOT\SOH\DC2\EOT\241\NAK\n\
+    \\ENQ\EOTp\STX\EOT\SOH\DC2\EOT\207\SYN\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOTn\STX\EOT\ETX\DC2\EOT\241\NAK\ETB\EM\n\
+    \\ENQ\EOTp\STX\EOT\ETX\DC2\EOT\207\SYN\ETB\EM\n\
     \7\n\
-    \\EOT\EOTn\STX\ENQ\DC2\EOT\244\NAK\EOT)\SUB) Whether this invoice has been fulfilled\n\
+    \\EOT\EOTp\STX\ENQ\DC2\EOT\210\SYN\EOT)\SUB) Whether this invoice has been fulfilled\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\ENQ\EOT\DC2\ACK\244\NAK\EOT\241\NAK\SUB\n\
+    \\ENQ\EOTp\STX\ENQ\EOT\DC2\ACK\210\SYN\EOT\207\SYN\SUB\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ENQ\ENQ\DC2\EOT\244\NAK\EOT\b\n\
+    \\ENQ\EOTp\STX\ENQ\ENQ\DC2\EOT\210\SYN\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ENQ\SOH\DC2\EOT\244\NAK\t\DLE\n\
+    \\ENQ\EOTp\STX\ENQ\SOH\DC2\EOT\210\SYN\t\DLE\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ENQ\ETX\DC2\EOT\244\NAK\DC3\DC4\n\
+    \\ENQ\EOTp\STX\ENQ\ETX\DC2\EOT\210\SYN\DC3\DC4\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ENQ\b\DC2\EOT\244\NAK\NAK(\n\
+    \\ENQ\EOTp\STX\ENQ\b\DC2\EOT\210\SYN\NAK(\n\
     \\SO\n\
-    \\ACK\EOTn\STX\ENQ\b\ETX\DC2\EOT\244\NAK\SYN'\n\
+    \\ACK\EOTp\STX\ENQ\b\ETX\DC2\EOT\210\SYN\SYN'\n\
     \-\n\
-    \\EOT\EOTn\STX\ACK\DC2\EOT\247\NAK\EOT\FS\SUB\US When this invoice was created\n\
+    \\EOT\EOTp\STX\ACK\DC2\EOT\213\SYN\EOT\FS\SUB\US When this invoice was created\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\ACK\EOT\DC2\ACK\247\NAK\EOT\244\NAK)\n\
+    \\ENQ\EOTp\STX\ACK\EOT\DC2\ACK\213\SYN\EOT\210\SYN)\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ACK\ENQ\DC2\EOT\247\NAK\EOT\t\n\
+    \\ENQ\EOTp\STX\ACK\ENQ\DC2\EOT\213\SYN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ACK\SOH\DC2\EOT\247\NAK\n\
+    \\ENQ\EOTp\STX\ACK\SOH\DC2\EOT\213\SYN\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ACK\ETX\DC2\EOT\247\NAK\SUB\ESC\n\
+    \\ENQ\EOTp\STX\ACK\ETX\DC2\EOT\213\SYN\SUB\ESC\n\
     \-\n\
-    \\EOT\EOTn\STX\a\DC2\EOT\250\NAK\EOT\SUB\SUB\US When this invoice was settled\n\
+    \\EOT\EOTp\STX\a\DC2\EOT\216\SYN\EOT\SUB\SUB\US When this invoice was settled\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\a\EOT\DC2\ACK\250\NAK\EOT\247\NAK\FS\n\
+    \\ENQ\EOTp\STX\a\EOT\DC2\ACK\216\SYN\EOT\213\SYN\FS\n\
     \\r\n\
-    \\ENQ\EOTn\STX\a\ENQ\DC2\EOT\250\NAK\EOT\t\n\
+    \\ENQ\EOTp\STX\a\ENQ\DC2\EOT\216\SYN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\a\SOH\DC2\EOT\250\NAK\n\
+    \\ENQ\EOTp\STX\a\SOH\DC2\EOT\216\SYN\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOTn\STX\a\ETX\DC2\EOT\250\NAK\CAN\EM\n\
+    \\ENQ\EOTp\STX\a\ETX\DC2\EOT\216\SYN\CAN\EM\n\
     \\188\SOH\n\
-    \\EOT\EOTn\STX\b\DC2\EOT\129\SYN\EOT\US\SUB\173\SOH\n\
+    \\EOT\EOTp\STX\b\DC2\EOT\223\SYN\EOT\US\SUB\173\SOH\n\
     \A bare-bones invoice for a payment within the Lightning Network. With the\n\
     \details of the invoice, the sender has all the data necessary to send a\n\
     \payment to the recipient.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\b\EOT\DC2\ACK\129\SYN\EOT\250\NAK\SUB\n\
+    \\ENQ\EOTp\STX\b\EOT\DC2\ACK\223\SYN\EOT\216\SYN\SUB\n\
     \\r\n\
-    \\ENQ\EOTn\STX\b\ENQ\DC2\EOT\129\SYN\EOT\n\
+    \\ENQ\EOTp\STX\b\ENQ\DC2\EOT\223\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTn\STX\b\SOH\DC2\EOT\129\SYN\v\SUB\n\
+    \\ENQ\EOTp\STX\b\SOH\DC2\EOT\223\SYN\v\SUB\n\
     \\r\n\
-    \\ENQ\EOTn\STX\b\ETX\DC2\EOT\129\SYN\GS\RS\n\
+    \\ENQ\EOTp\STX\b\ETX\DC2\EOT\223\SYN\GS\RS\n\
     \\250\SOH\n\
-    \\EOT\EOTn\STX\t\DC2\EOT\137\SYN\EOT \SUB\235\SOH\n\
+    \\EOT\EOTp\STX\t\DC2\EOT\231\SYN\EOT \SUB\235\SOH\n\
     \Hash (SHA-256) of a description of the payment. Used if the description of\n\
     \payment (memo) is too long to naturally fit within the description field\n\
     \of an encoded payment request. When using REST, this field must be encoded\n\
     \as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\t\EOT\DC2\ACK\137\SYN\EOT\129\SYN\US\n\
+    \\ENQ\EOTp\STX\t\EOT\DC2\ACK\231\SYN\EOT\223\SYN\US\n\
     \\r\n\
-    \\ENQ\EOTn\STX\t\ENQ\DC2\EOT\137\SYN\EOT\t\n\
+    \\ENQ\EOTp\STX\t\ENQ\DC2\EOT\231\SYN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\t\SOH\DC2\EOT\137\SYN\n\
+    \\ENQ\EOTp\STX\t\SOH\DC2\EOT\231\SYN\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOTn\STX\t\ETX\DC2\EOT\137\SYN\GS\US\n\
+    \\ENQ\EOTp\STX\t\ETX\DC2\EOT\231\SYN\GS\US\n\
     \Q\n\
-    \\EOT\EOTn\STX\n\
-    \\DC2\EOT\140\SYN\EOT\SYN\SUBC Payment request expiry time in seconds. Default is 3600 (1 hour).\n\
+    \\EOT\EOTp\STX\n\
+    \\DC2\EOT\234\SYN\EOT\SYN\SUBC Payment request expiry time in seconds. Default is 3600 (1 hour).\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\n\
-    \\EOT\DC2\ACK\140\SYN\EOT\137\SYN \n\
+    \\ENQ\EOTp\STX\n\
+    \\EOT\DC2\ACK\234\SYN\EOT\231\SYN \n\
     \\r\n\
-    \\ENQ\EOTn\STX\n\
-    \\ENQ\DC2\EOT\140\SYN\EOT\t\n\
+    \\ENQ\EOTp\STX\n\
+    \\ENQ\DC2\EOT\234\SYN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\n\
-    \\SOH\DC2\EOT\140\SYN\n\
+    \\ENQ\EOTp\STX\n\
+    \\SOH\DC2\EOT\234\SYN\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOTn\STX\n\
-    \\ETX\DC2\EOT\140\SYN\DC3\NAK\n\
+    \\ENQ\EOTp\STX\n\
+    \\ETX\DC2\EOT\234\SYN\DC3\NAK\n\
     \*\n\
-    \\EOT\EOTn\STX\v\DC2\EOT\143\SYN\EOT\RS\SUB\FS Fallback on-chain address.\n\
+    \\EOT\EOTp\STX\v\DC2\EOT\237\SYN\EOT\RS\SUB\FS Fallback on-chain address.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\v\EOT\DC2\ACK\143\SYN\EOT\140\SYN\SYN\n\
+    \\ENQ\EOTp\STX\v\EOT\DC2\ACK\237\SYN\EOT\234\SYN\SYN\n\
     \\r\n\
-    \\ENQ\EOTn\STX\v\ENQ\DC2\EOT\143\SYN\EOT\n\
+    \\ENQ\EOTp\STX\v\ENQ\DC2\EOT\237\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTn\STX\v\SOH\DC2\EOT\143\SYN\v\CAN\n\
+    \\ENQ\EOTp\STX\v\SOH\DC2\EOT\237\SYN\v\CAN\n\
     \\r\n\
-    \\ENQ\EOTn\STX\v\ETX\DC2\EOT\143\SYN\ESC\GS\n\
+    \\ENQ\EOTp\STX\v\ETX\DC2\EOT\237\SYN\ESC\GS\n\
     \U\n\
-    \\EOT\EOTn\STX\f\DC2\EOT\146\SYN\EOT\FS\SUBG Delta to use for the time-lock of the CLTV extended to the final hop.\n\
+    \\EOT\EOTp\STX\f\DC2\EOT\240\SYN\EOT\FS\SUBG Delta to use for the time-lock of the CLTV extended to the final hop.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\f\EOT\DC2\ACK\146\SYN\EOT\143\SYN\RS\n\
+    \\ENQ\EOTp\STX\f\EOT\DC2\ACK\240\SYN\EOT\237\SYN\RS\n\
     \\r\n\
-    \\ENQ\EOTn\STX\f\ENQ\DC2\EOT\146\SYN\EOT\n\
+    \\ENQ\EOTp\STX\f\ENQ\DC2\EOT\240\SYN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTn\STX\f\SOH\DC2\EOT\146\SYN\v\SYN\n\
+    \\ENQ\EOTp\STX\f\SOH\DC2\EOT\240\SYN\v\SYN\n\
     \\r\n\
-    \\ENQ\EOTn\STX\f\ETX\DC2\EOT\146\SYN\EM\ESC\n\
+    \\ENQ\EOTp\STX\f\ETX\DC2\EOT\240\SYN\EM\ESC\n\
     \o\n\
-    \\EOT\EOTn\STX\r\DC2\EOT\152\SYN\EOT(\SUBa\n\
+    \\EOT\EOTp\STX\r\DC2\EOT\246\SYN\EOT(\SUBa\n\
     \Route hints that can each be individually used to assist in reaching the\n\
     \invoice's destination.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTn\STX\r\EOT\DC2\EOT\152\SYN\EOT\f\n\
+    \\ENQ\EOTp\STX\r\EOT\DC2\EOT\246\SYN\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTn\STX\r\ACK\DC2\EOT\152\SYN\r\SYN\n\
+    \\ENQ\EOTp\STX\r\ACK\DC2\EOT\246\SYN\r\SYN\n\
     \\r\n\
-    \\ENQ\EOTn\STX\r\SOH\DC2\EOT\152\SYN\ETB\"\n\
+    \\ENQ\EOTp\STX\r\SOH\DC2\EOT\246\SYN\ETB\"\n\
     \\r\n\
-    \\ENQ\EOTn\STX\r\ETX\DC2\EOT\152\SYN%'\n\
+    \\ENQ\EOTp\STX\r\ETX\DC2\EOT\246\SYN%'\n\
     \W\n\
-    \\EOT\EOTn\STX\SO\DC2\EOT\155\SYN\EOT\SYN\SUBI Whether this invoice should include routing hints for private channels.\n\
+    \\EOT\EOTp\STX\SO\DC2\EOT\249\SYN\EOT\SYN\SUBI Whether this invoice should include routing hints for private channels.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\SO\EOT\DC2\ACK\155\SYN\EOT\152\SYN(\n\
+    \\ENQ\EOTp\STX\SO\EOT\DC2\ACK\249\SYN\EOT\246\SYN(\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SO\ENQ\DC2\EOT\155\SYN\EOT\b\n\
+    \\ENQ\EOTp\STX\SO\ENQ\DC2\EOT\249\SYN\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SO\SOH\DC2\EOT\155\SYN\t\DLE\n\
+    \\ENQ\EOTp\STX\SO\SOH\DC2\EOT\249\SYN\t\DLE\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SO\ETX\DC2\EOT\155\SYN\DC3\NAK\n\
+    \\ENQ\EOTp\STX\SO\ETX\DC2\EOT\249\SYN\DC3\NAK\n\
     \\150\STX\n\
-    \\EOT\EOTn\STX\SI\DC2\EOT\163\SYN\EOT\SUB\SUB\135\STX\n\
+    \\EOT\EOTp\STX\SI\DC2\EOT\129\ETB\EOT\SUB\SUB\135\STX\n\
     \The \"add\" index of this invoice. Each newly created invoice will increment\n\
     \this index making it monotonically increasing. Callers to the\n\
     \SubscribeInvoices call can use this to instantly get notified of all added\n\
     \invoices with an add_index greater than this one.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\SI\EOT\DC2\ACK\163\SYN\EOT\155\SYN\SYN\n\
+    \\ENQ\EOTp\STX\SI\EOT\DC2\ACK\129\ETB\EOT\249\SYN\SYN\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SI\ENQ\DC2\EOT\163\SYN\EOT\n\
+    \\ENQ\EOTp\STX\SI\ENQ\DC2\EOT\129\ETB\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SI\SOH\DC2\EOT\163\SYN\v\DC4\n\
+    \\ENQ\EOTp\STX\SI\SOH\DC2\EOT\129\ETB\v\DC4\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SI\ETX\DC2\EOT\163\SYN\ETB\EM\n\
+    \\ENQ\EOTp\STX\SI\ETX\DC2\EOT\129\ETB\ETB\EM\n\
     \\158\STX\n\
-    \\EOT\EOTn\STX\DLE\DC2\EOT\171\SYN\EOT\GS\SUB\143\STX\n\
+    \\EOT\EOTp\STX\DLE\DC2\EOT\137\ETB\EOT\GS\SUB\143\STX\n\
     \The \"settle\" index of this invoice. Each newly settled invoice will\n\
     \increment this index making it monotonically increasing. Callers to the\n\
     \SubscribeInvoices call can use this to instantly get notified of all\n\
     \settled invoices with an settle_index greater than this one.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\DLE\EOT\DC2\ACK\171\SYN\EOT\163\SYN\SUB\n\
+    \\ENQ\EOTp\STX\DLE\EOT\DC2\ACK\137\ETB\EOT\129\ETB\SUB\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DLE\ENQ\DC2\EOT\171\SYN\EOT\n\
+    \\ENQ\EOTp\STX\DLE\ENQ\DC2\EOT\137\ETB\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DLE\SOH\DC2\EOT\171\SYN\v\ETB\n\
+    \\ENQ\EOTp\STX\DLE\SOH\DC2\EOT\137\ETB\v\ETB\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DLE\ETX\DC2\EOT\171\SYN\SUB\FS\n\
+    \\ENQ\EOTp\STX\DLE\ETX\DC2\EOT\137\ETB\SUB\FS\n\
     \>\n\
-    \\EOT\EOTn\STX\DC1\DC2\EOT\174\SYN\EOT,\SUB0 Deprecated, use amt_paid_sat or amt_paid_msat.\n\
+    \\EOT\EOTp\STX\DC1\DC2\EOT\140\ETB\EOT,\SUB0 Deprecated, use amt_paid_sat or amt_paid_msat.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\DC1\EOT\DC2\ACK\174\SYN\EOT\171\SYN\GS\n\
+    \\ENQ\EOTp\STX\DC1\EOT\DC2\ACK\140\ETB\EOT\137\ETB\GS\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC1\ENQ\DC2\EOT\174\SYN\EOT\t\n\
+    \\ENQ\EOTp\STX\DC1\ENQ\DC2\EOT\140\ETB\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC1\SOH\DC2\EOT\174\SYN\n\
+    \\ENQ\EOTp\STX\DC1\SOH\DC2\EOT\140\ETB\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC1\ETX\DC2\EOT\174\SYN\NAK\ETB\n\
+    \\ENQ\EOTp\STX\DC1\ETX\DC2\EOT\140\ETB\NAK\ETB\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC1\b\DC2\EOT\174\SYN\CAN+\n\
+    \\ENQ\EOTp\STX\DC1\b\DC2\EOT\140\ETB\CAN+\n\
     \\SO\n\
-    \\ACK\EOTn\STX\DC1\b\ETX\DC2\EOT\174\SYN\EM*\n\
+    \\ACK\EOTp\STX\DC1\b\ETX\DC2\EOT\140\ETB\EM*\n\
     \\140\ETX\n\
-    \\EOT\EOTn\STX\DC2\DC2\EOT\184\SYN\EOT\FS\SUB\253\STX\n\
+    \\EOT\EOTp\STX\DC2\DC2\EOT\150\ETB\EOT\FS\SUB\253\STX\n\
     \The amount that was accepted for this invoice, in satoshis. This will ONLY\n\
     \be set if this invoice has been settled. We provide this field as if the\n\
     \invoice was created with a zero value, then we need to record what amount\n\
@@ -58269,16 +60565,16 @@ packedFileDescriptor
     \as well.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\DC2\EOT\DC2\ACK\184\SYN\EOT\174\SYN,\n\
+    \\ENQ\EOTp\STX\DC2\EOT\DC2\ACK\150\ETB\EOT\140\ETB,\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC2\ENQ\DC2\EOT\184\SYN\EOT\t\n\
+    \\ENQ\EOTp\STX\DC2\ENQ\DC2\EOT\150\ETB\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC2\SOH\DC2\EOT\184\SYN\n\
+    \\ENQ\EOTp\STX\DC2\SOH\DC2\EOT\150\ETB\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC2\ETX\DC2\EOT\184\SYN\EM\ESC\n\
+    \\ENQ\EOTp\STX\DC2\ETX\DC2\EOT\150\ETB\EM\ESC\n\
     \\145\ETX\n\
-    \\EOT\EOTn\STX\DC3\DC2\EOT\194\SYN\EOT\GS\SUB\130\ETX\n\
+    \\EOT\EOTp\STX\DC3\DC2\EOT\160\ETB\EOT\GS\SUB\130\ETX\n\
     \The amount that was accepted for this invoice, in millisatoshis. This will\n\
     \ONLY be set if this invoice has been settled. We provide this field as if\n\
     \the invoice was created with a zero value, then we need to record what\n\
@@ -58287,898 +60583,1007 @@ packedFileDescriptor
     \here as well.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\DC3\EOT\DC2\ACK\194\SYN\EOT\184\SYN\FS\n\
+    \\ENQ\EOTp\STX\DC3\EOT\DC2\ACK\160\ETB\EOT\150\ETB\FS\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC3\ENQ\DC2\EOT\194\SYN\EOT\t\n\
+    \\ENQ\EOTp\STX\DC3\ENQ\DC2\EOT\160\ETB\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC3\SOH\DC2\EOT\194\SYN\n\
+    \\ENQ\EOTp\STX\DC3\SOH\DC2\EOT\160\ETB\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC3\ETX\DC2\EOT\194\SYN\SUB\FS\n\
+    \\ENQ\EOTp\STX\DC3\ETX\DC2\EOT\160\ETB\SUB\FS\n\
     \\SO\n\
-    \\EOT\EOTn\EOT\NUL\DC2\ACK\196\SYN\EOT\201\SYN\ENQ\n\
+    \\EOT\EOTp\EOT\NUL\DC2\ACK\162\ETB\EOT\167\ETB\ENQ\n\
     \\r\n\
-    \\ENQ\EOTn\EOT\NUL\SOH\DC2\EOT\196\SYN\t\NAK\n\
+    \\ENQ\EOTp\EOT\NUL\SOH\DC2\EOT\162\ETB\t\NAK\n\
     \\SO\n\
-    \\ACK\EOTn\EOT\NUL\STX\NUL\DC2\EOT\197\SYN\b\DC1\n\
+    \\ACK\EOTp\EOT\NUL\STX\NUL\DC2\EOT\163\ETB\b\DC1\n\
     \\SI\n\
-    \\a\EOTn\EOT\NUL\STX\NUL\SOH\DC2\EOT\197\SYN\b\f\n\
+    \\a\EOTp\EOT\NUL\STX\NUL\SOH\DC2\EOT\163\ETB\b\f\n\
     \\SI\n\
-    \\a\EOTn\EOT\NUL\STX\NUL\STX\DC2\EOT\197\SYN\SI\DLE\n\
+    \\a\EOTp\EOT\NUL\STX\NUL\STX\DC2\EOT\163\ETB\SI\DLE\n\
     \\SO\n\
-    \\ACK\EOTn\EOT\NUL\STX\SOH\DC2\EOT\198\SYN\b\DC4\n\
+    \\ACK\EOTp\EOT\NUL\STX\SOH\DC2\EOT\164\ETB\b\DC4\n\
     \\SI\n\
-    \\a\EOTn\EOT\NUL\STX\SOH\SOH\DC2\EOT\198\SYN\b\SI\n\
+    \\a\EOTp\EOT\NUL\STX\SOH\SOH\DC2\EOT\164\ETB\b\SI\n\
     \\SI\n\
-    \\a\EOTn\EOT\NUL\STX\SOH\STX\DC2\EOT\198\SYN\DC2\DC3\n\
+    \\a\EOTp\EOT\NUL\STX\SOH\STX\DC2\EOT\164\ETB\DC2\DC3\n\
     \\SO\n\
-    \\ACK\EOTn\EOT\NUL\STX\STX\DC2\EOT\199\SYN\b\NAK\n\
+    \\ACK\EOTp\EOT\NUL\STX\STX\DC2\EOT\165\ETB\b\NAK\n\
     \\SI\n\
-    \\a\EOTn\EOT\NUL\STX\STX\SOH\DC2\EOT\199\SYN\b\DLE\n\
+    \\a\EOTp\EOT\NUL\STX\STX\SOH\DC2\EOT\165\ETB\b\DLE\n\
     \\SI\n\
-    \\a\EOTn\EOT\NUL\STX\STX\STX\DC2\EOT\199\SYN\DC3\DC4\n\
+    \\a\EOTp\EOT\NUL\STX\STX\STX\DC2\EOT\165\ETB\DC3\DC4\n\
     \\SO\n\
-    \\ACK\EOTn\EOT\NUL\STX\ETX\DC2\EOT\200\SYN\b\NAK\n\
+    \\ACK\EOTp\EOT\NUL\STX\ETX\DC2\EOT\166\ETB\b\NAK\n\
     \\SI\n\
-    \\a\EOTn\EOT\NUL\STX\ETX\SOH\DC2\EOT\200\SYN\b\DLE\n\
+    \\a\EOTp\EOT\NUL\STX\ETX\SOH\DC2\EOT\166\ETB\b\DLE\n\
     \\SI\n\
-    \\a\EOTn\EOT\NUL\STX\ETX\STX\DC2\EOT\200\SYN\DC3\DC4\n\
+    \\a\EOTp\EOT\NUL\STX\ETX\STX\DC2\EOT\166\ETB\DC3\DC4\n\
     \,\n\
-    \\EOT\EOTn\STX\DC4\DC2\EOT\206\SYN\EOT\FS\SUB\RS\n\
+    \\EOT\EOTp\STX\DC4\DC2\EOT\172\ETB\EOT\FS\SUB\RS\n\
     \The state the invoice is in.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\DC4\EOT\DC2\ACK\206\SYN\EOT\201\SYN\ENQ\n\
+    \\ENQ\EOTp\STX\DC4\EOT\DC2\ACK\172\ETB\EOT\167\ETB\ENQ\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC4\ACK\DC2\EOT\206\SYN\EOT\DLE\n\
+    \\ENQ\EOTp\STX\DC4\ACK\DC2\EOT\172\ETB\EOT\DLE\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC4\SOH\DC2\EOT\206\SYN\DC1\SYN\n\
+    \\ENQ\EOTp\STX\DC4\SOH\DC2\EOT\172\ETB\DC1\SYN\n\
     \\r\n\
-    \\ENQ\EOTn\STX\DC4\ETX\DC2\EOT\206\SYN\EM\ESC\n\
+    \\ENQ\EOTp\STX\DC4\ETX\DC2\EOT\172\ETB\EM\ESC\n\
     \D\n\
-    \\EOT\EOTn\STX\NAK\DC2\EOT\209\SYN\EOT$\SUB6 List of HTLCs paying to this invoice [EXPERIMENTAL].\n\
+    \\EOT\EOTp\STX\NAK\DC2\EOT\175\ETB\EOT$\SUB6 List of HTLCs paying to this invoice [EXPERIMENTAL].\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTn\STX\NAK\EOT\DC2\EOT\209\SYN\EOT\f\n\
+    \\ENQ\EOTp\STX\NAK\EOT\DC2\EOT\175\ETB\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTn\STX\NAK\ACK\DC2\EOT\209\SYN\r\CAN\n\
+    \\ENQ\EOTp\STX\NAK\ACK\DC2\EOT\175\ETB\r\CAN\n\
     \\r\n\
-    \\ENQ\EOTn\STX\NAK\SOH\DC2\EOT\209\SYN\EM\RS\n\
+    \\ENQ\EOTp\STX\NAK\SOH\DC2\EOT\175\ETB\EM\RS\n\
     \\r\n\
-    \\ENQ\EOTn\STX\NAK\ETX\DC2\EOT\209\SYN!#\n\
+    \\ENQ\EOTp\STX\NAK\ETX\DC2\EOT\175\ETB!#\n\
     \;\n\
-    \\EOT\EOTn\STX\SYN\DC2\EOT\212\SYN\EOT'\SUB- List of features advertised on the invoice.\n\
+    \\EOT\EOTp\STX\SYN\DC2\EOT\178\ETB\EOT'\SUB- List of features advertised on the invoice.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\SYN\EOT\DC2\ACK\212\SYN\EOT\209\SYN$\n\
+    \\ENQ\EOTp\STX\SYN\EOT\DC2\ACK\178\ETB\EOT\175\ETB$\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SYN\ACK\DC2\EOT\212\SYN\EOT\CAN\n\
+    \\ENQ\EOTp\STX\SYN\ACK\DC2\EOT\178\ETB\EOT\CAN\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SYN\SOH\DC2\EOT\212\SYN\EM!\n\
+    \\ENQ\EOTp\STX\SYN\SOH\DC2\EOT\178\ETB\EM!\n\
     \\r\n\
-    \\ENQ\EOTn\STX\SYN\ETX\DC2\EOT\212\SYN$&\n\
+    \\ENQ\EOTp\STX\SYN\ETX\DC2\EOT\178\ETB$&\n\
     \l\n\
-    \\EOT\EOTn\STX\ETB\DC2\EOT\218\SYN\EOT\EM\SUB^\n\
+    \\EOT\EOTp\STX\ETB\DC2\EOT\184\ETB\EOT\EM\SUB^\n\
     \Indicates if this invoice was a spontaneous payment that arrived via keysend\n\
     \[EXPERIMENTAL].\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\ETB\EOT\DC2\ACK\218\SYN\EOT\212\SYN'\n\
+    \\ENQ\EOTp\STX\ETB\EOT\DC2\ACK\184\ETB\EOT\178\ETB'\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ETB\ENQ\DC2\EOT\218\SYN\EOT\b\n\
+    \\ENQ\EOTp\STX\ETB\ENQ\DC2\EOT\184\ETB\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ETB\SOH\DC2\EOT\218\SYN\t\DC3\n\
+    \\ENQ\EOTp\STX\ETB\SOH\DC2\EOT\184\ETB\t\DC3\n\
     \\r\n\
-    \\ENQ\EOTn\STX\ETB\ETX\DC2\EOT\218\SYN\SYN\CAN\n\
+    \\ENQ\EOTp\STX\ETB\ETX\DC2\EOT\184\ETB\SYN\CAN\n\
     \\188\SOH\n\
-    \\EOT\EOTn\STX\CAN\DC2\EOT\225\SYN\EOT\FS\SUB\173\SOH\n\
+    \\EOT\EOTp\STX\CAN\DC2\EOT\191\ETB\EOT\FS\SUB\173\SOH\n\
     \The payment address of this invoice. This value will be used in MPP\n\
     \payments, and also for newer invoies that always require the MPP paylaod\n\
     \for added end-to-end security.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTn\STX\CAN\EOT\DC2\ACK\225\SYN\EOT\218\SYN\EM\n\
+    \\ENQ\EOTp\STX\CAN\EOT\DC2\ACK\191\ETB\EOT\184\ETB\EM\n\
     \\r\n\
-    \\ENQ\EOTn\STX\CAN\ENQ\DC2\EOT\225\SYN\EOT\t\n\
+    \\ENQ\EOTp\STX\CAN\ENQ\DC2\EOT\191\ETB\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTn\STX\CAN\SOH\DC2\EOT\225\SYN\n\
+    \\ENQ\EOTp\STX\CAN\SOH\DC2\EOT\191\ETB\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOTn\STX\CAN\ETX\DC2\EOT\225\SYN\EM\ESC\n\
+    \\ENQ\EOTp\STX\CAN\ETX\DC2\EOT\191\ETB\EM\ESC\n\
+    \>\n\
+    \\EOT\EOTp\STX\EM\DC2\EOT\196\ETB\EOT\NAK\SUB0\n\
+    \Signals whether or not this is an AMP invoice.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTp\STX\EM\EOT\DC2\ACK\196\ETB\EOT\191\ETB\FS\n\
+    \\r\n\
+    \\ENQ\EOTp\STX\EM\ENQ\DC2\EOT\196\ETB\EOT\b\n\
+    \\r\n\
+    \\ENQ\EOTp\STX\EM\SOH\DC2\EOT\196\ETB\t\SI\n\
+    \\r\n\
+    \\ENQ\EOTp\STX\EM\ETX\DC2\EOT\196\ETB\DC2\DC4\n\
     \\f\n\
-    \\STX\ENQ\ACK\DC2\ACK\228\SYN\NUL\232\SYN\SOH\n\
+    \\STX\ENQ\ACK\DC2\ACK\199\ETB\NUL\203\ETB\SOH\n\
     \\v\n\
-    \\ETX\ENQ\ACK\SOH\DC2\EOT\228\SYN\ENQ\NAK\n\
+    \\ETX\ENQ\ACK\SOH\DC2\EOT\199\ETB\ENQ\NAK\n\
     \\f\n\
-    \\EOT\ENQ\ACK\STX\NUL\DC2\EOT\229\SYN\EOT\DC1\n\
+    \\EOT\ENQ\ACK\STX\NUL\DC2\EOT\200\ETB\EOT\DC1\n\
     \\r\n\
-    \\ENQ\ENQ\ACK\STX\NUL\SOH\DC2\EOT\229\SYN\EOT\f\n\
+    \\ENQ\ENQ\ACK\STX\NUL\SOH\DC2\EOT\200\ETB\EOT\f\n\
     \\r\n\
-    \\ENQ\ENQ\ACK\STX\NUL\STX\DC2\EOT\229\SYN\SI\DLE\n\
+    \\ENQ\ENQ\ACK\STX\NUL\STX\DC2\EOT\200\ETB\SI\DLE\n\
     \\f\n\
-    \\EOT\ENQ\ACK\STX\SOH\DC2\EOT\230\SYN\EOT\DLE\n\
+    \\EOT\ENQ\ACK\STX\SOH\DC2\EOT\201\ETB\EOT\DLE\n\
     \\r\n\
-    \\ENQ\ENQ\ACK\STX\SOH\SOH\DC2\EOT\230\SYN\EOT\v\n\
+    \\ENQ\ENQ\ACK\STX\SOH\SOH\DC2\EOT\201\ETB\EOT\v\n\
     \\r\n\
-    \\ENQ\ENQ\ACK\STX\SOH\STX\DC2\EOT\230\SYN\SO\SI\n\
+    \\ENQ\ENQ\ACK\STX\SOH\STX\DC2\EOT\201\ETB\SO\SI\n\
     \\f\n\
-    \\EOT\ENQ\ACK\STX\STX\DC2\EOT\231\SYN\EOT\DC1\n\
+    \\EOT\ENQ\ACK\STX\STX\DC2\EOT\202\ETB\EOT\DC1\n\
     \\r\n\
-    \\ENQ\ENQ\ACK\STX\STX\SOH\DC2\EOT\231\SYN\EOT\f\n\
+    \\ENQ\ENQ\ACK\STX\STX\SOH\DC2\EOT\202\ETB\EOT\f\n\
     \\r\n\
-    \\ENQ\ENQ\ACK\STX\STX\STX\DC2\EOT\231\SYN\SI\DLE\n\
+    \\ENQ\ENQ\ACK\STX\STX\STX\DC2\EOT\202\ETB\SI\DLE\n\
     \:\n\
-    \\STX\EOTo\DC2\ACK\235\SYN\NUL\137\ETB\SOH\SUB, Details of an HTLC that paid to an invoice\n\
+    \\STX\EOTq\DC2\ACK\206\ETB\NUL\239\ETB\SOH\SUB, Details of an HTLC that paid to an invoice\n\
     \\n\
     \\v\n\
-    \\ETX\EOTo\SOH\DC2\EOT\235\SYN\b\DC3\n\
+    \\ETX\EOTq\SOH\DC2\EOT\206\ETB\b\DC3\n\
     \B\n\
-    \\EOT\EOTo\STX\NUL\DC2\EOT\237\SYN\EOT,\SUB4 Short channel id over which the htlc was received.\n\
+    \\EOT\EOTq\STX\NUL\DC2\EOT\208\ETB\EOT,\SUB4 Short channel id over which the htlc was received.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTo\STX\NUL\EOT\DC2\ACK\237\SYN\EOT\235\SYN\NAK\n\
+    \\ENQ\EOTq\STX\NUL\EOT\DC2\ACK\208\ETB\EOT\206\ETB\NAK\n\
     \\r\n\
-    \\ENQ\EOTo\STX\NUL\ENQ\DC2\EOT\237\SYN\EOT\n\
+    \\ENQ\EOTq\STX\NUL\ENQ\DC2\EOT\208\ETB\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTo\STX\NUL\SOH\DC2\EOT\237\SYN\v\DC2\n\
+    \\ENQ\EOTq\STX\NUL\SOH\DC2\EOT\208\ETB\v\DC2\n\
     \\r\n\
-    \\ENQ\EOTo\STX\NUL\ETX\DC2\EOT\237\SYN\NAK\SYN\n\
+    \\ENQ\EOTq\STX\NUL\ETX\DC2\EOT\208\ETB\NAK\SYN\n\
     \\r\n\
-    \\ENQ\EOTo\STX\NUL\b\DC2\EOT\237\SYN\ETB+\n\
+    \\ENQ\EOTq\STX\NUL\b\DC2\EOT\208\ETB\ETB+\n\
     \\SO\n\
-    \\ACK\EOTo\STX\NUL\b\ACK\DC2\EOT\237\SYN\CAN*\n\
+    \\ACK\EOTq\STX\NUL\b\ACK\DC2\EOT\208\ETB\CAN*\n\
     \:\n\
-    \\EOT\EOTo\STX\SOH\DC2\EOT\240\SYN\EOT\SUB\SUB, Index identifying the htlc on the channel.\n\
+    \\EOT\EOTq\STX\SOH\DC2\EOT\211\ETB\EOT\SUB\SUB, Index identifying the htlc on the channel.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTo\STX\SOH\EOT\DC2\ACK\240\SYN\EOT\237\SYN,\n\
+    \\ENQ\EOTq\STX\SOH\EOT\DC2\ACK\211\ETB\EOT\208\ETB,\n\
     \\r\n\
-    \\ENQ\EOTo\STX\SOH\ENQ\DC2\EOT\240\SYN\EOT\n\
+    \\ENQ\EOTq\STX\SOH\ENQ\DC2\EOT\211\ETB\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTo\STX\SOH\SOH\DC2\EOT\240\SYN\v\NAK\n\
+    \\ENQ\EOTq\STX\SOH\SOH\DC2\EOT\211\ETB\v\NAK\n\
     \\r\n\
-    \\ENQ\EOTo\STX\SOH\ETX\DC2\EOT\240\SYN\CAN\EM\n\
+    \\ENQ\EOTq\STX\SOH\ETX\DC2\EOT\211\ETB\CAN\EM\n\
     \/\n\
-    \\EOT\EOTo\STX\STX\DC2\EOT\243\SYN\EOT\CAN\SUB! The amount of the htlc in msat.\n\
+    \\EOT\EOTq\STX\STX\DC2\EOT\214\ETB\EOT\CAN\SUB! The amount of the htlc in msat.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTo\STX\STX\EOT\DC2\ACK\243\SYN\EOT\240\SYN\SUB\n\
+    \\ENQ\EOTq\STX\STX\EOT\DC2\ACK\214\ETB\EOT\211\ETB\SUB\n\
     \\r\n\
-    \\ENQ\EOTo\STX\STX\ENQ\DC2\EOT\243\SYN\EOT\n\
+    \\ENQ\EOTq\STX\STX\ENQ\DC2\EOT\214\ETB\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTo\STX\STX\SOH\DC2\EOT\243\SYN\v\DC3\n\
+    \\ENQ\EOTq\STX\STX\SOH\DC2\EOT\214\ETB\v\DC3\n\
     \\r\n\
-    \\ENQ\EOTo\STX\STX\ETX\DC2\EOT\243\SYN\SYN\ETB\n\
+    \\ENQ\EOTq\STX\STX\ETX\DC2\EOT\214\ETB\SYN\ETB\n\
     \=\n\
-    \\EOT\EOTo\STX\ETX\DC2\EOT\246\SYN\EOT\FS\SUB/ Block height at which this htlc was accepted.\n\
+    \\EOT\EOTq\STX\ETX\DC2\EOT\217\ETB\EOT\FS\SUB/ Block height at which this htlc was accepted.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTo\STX\ETX\EOT\DC2\ACK\246\SYN\EOT\243\SYN\CAN\n\
+    \\ENQ\EOTq\STX\ETX\EOT\DC2\ACK\217\ETB\EOT\214\ETB\CAN\n\
     \\r\n\
-    \\ENQ\EOTo\STX\ETX\ENQ\DC2\EOT\246\SYN\EOT\t\n\
+    \\ENQ\EOTq\STX\ETX\ENQ\DC2\EOT\217\ETB\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTo\STX\ETX\SOH\DC2\EOT\246\SYN\n\
+    \\ENQ\EOTq\STX\ETX\SOH\DC2\EOT\217\ETB\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOTo\STX\ETX\ETX\DC2\EOT\246\SYN\SUB\ESC\n\
+    \\ENQ\EOTq\STX\ETX\ETX\DC2\EOT\217\ETB\SUB\ESC\n\
     \5\n\
-    \\EOT\EOTo\STX\EOT\DC2\EOT\249\SYN\EOT\SUB\SUB' Time at which this htlc was accepted.\n\
+    \\EOT\EOTq\STX\EOT\DC2\EOT\220\ETB\EOT\SUB\SUB' Time at which this htlc was accepted.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTo\STX\EOT\EOT\DC2\ACK\249\SYN\EOT\246\SYN\FS\n\
+    \\ENQ\EOTq\STX\EOT\EOT\DC2\ACK\220\ETB\EOT\217\ETB\FS\n\
     \\r\n\
-    \\ENQ\EOTo\STX\EOT\ENQ\DC2\EOT\249\SYN\EOT\t\n\
+    \\ENQ\EOTq\STX\EOT\ENQ\DC2\EOT\220\ETB\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTo\STX\EOT\SOH\DC2\EOT\249\SYN\n\
+    \\ENQ\EOTq\STX\EOT\SOH\DC2\EOT\220\ETB\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOTo\STX\EOT\ETX\DC2\EOT\249\SYN\CAN\EM\n\
+    \\ENQ\EOTq\STX\EOT\ETX\DC2\EOT\220\ETB\CAN\EM\n\
     \@\n\
-    \\EOT\EOTo\STX\ENQ\DC2\EOT\252\SYN\EOT\ESC\SUB2 Time at which this htlc was settled or canceled.\n\
+    \\EOT\EOTq\STX\ENQ\DC2\EOT\223\ETB\EOT\ESC\SUB2 Time at which this htlc was settled or canceled.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTo\STX\ENQ\EOT\DC2\ACK\252\SYN\EOT\249\SYN\SUB\n\
+    \\ENQ\EOTq\STX\ENQ\EOT\DC2\ACK\223\ETB\EOT\220\ETB\SUB\n\
     \\r\n\
-    \\ENQ\EOTo\STX\ENQ\ENQ\DC2\EOT\252\SYN\EOT\t\n\
+    \\ENQ\EOTq\STX\ENQ\ENQ\DC2\EOT\223\ETB\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTo\STX\ENQ\SOH\DC2\EOT\252\SYN\n\
+    \\ENQ\EOTq\STX\ENQ\SOH\DC2\EOT\223\ETB\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOTo\STX\ENQ\ETX\DC2\EOT\252\SYN\EM\SUB\n\
+    \\ENQ\EOTq\STX\ENQ\ETX\DC2\EOT\223\ETB\EM\SUB\n\
     \8\n\
-    \\EOT\EOTo\STX\ACK\DC2\EOT\255\SYN\EOT\FS\SUB* Block height at which this htlc expires.\n\
+    \\EOT\EOTq\STX\ACK\DC2\EOT\226\ETB\EOT\FS\SUB* Block height at which this htlc expires.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTo\STX\ACK\EOT\DC2\ACK\255\SYN\EOT\252\SYN\ESC\n\
+    \\ENQ\EOTq\STX\ACK\EOT\DC2\ACK\226\ETB\EOT\223\ETB\ESC\n\
     \\r\n\
-    \\ENQ\EOTo\STX\ACK\ENQ\DC2\EOT\255\SYN\EOT\t\n\
+    \\ENQ\EOTq\STX\ACK\ENQ\DC2\EOT\226\ETB\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTo\STX\ACK\SOH\DC2\EOT\255\SYN\n\
+    \\ENQ\EOTq\STX\ACK\SOH\DC2\EOT\226\ETB\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOTo\STX\ACK\ETX\DC2\EOT\255\SYN\SUB\ESC\n\
+    \\ENQ\EOTq\STX\ACK\ETX\DC2\EOT\226\ETB\SUB\ESC\n\
     \-\n\
-    \\EOT\EOTo\STX\a\DC2\EOT\130\ETB\EOT\US\SUB\US Current state the htlc is in.\n\
+    \\EOT\EOTq\STX\a\DC2\EOT\229\ETB\EOT\US\SUB\US Current state the htlc is in.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTo\STX\a\EOT\DC2\ACK\130\ETB\EOT\255\SYN\FS\n\
+    \\ENQ\EOTq\STX\a\EOT\DC2\ACK\229\ETB\EOT\226\ETB\FS\n\
     \\r\n\
-    \\ENQ\EOTo\STX\a\ACK\DC2\EOT\130\ETB\EOT\DC4\n\
+    \\ENQ\EOTq\STX\a\ACK\DC2\EOT\229\ETB\EOT\DC4\n\
     \\r\n\
-    \\ENQ\EOTo\STX\a\SOH\DC2\EOT\130\ETB\NAK\SUB\n\
+    \\ENQ\EOTq\STX\a\SOH\DC2\EOT\229\ETB\NAK\SUB\n\
     \\r\n\
-    \\ENQ\EOTo\STX\a\ETX\DC2\EOT\130\ETB\GS\RS\n\
+    \\ENQ\EOTq\STX\a\ETX\DC2\EOT\229\ETB\GS\RS\n\
     \#\n\
-    \\EOT\EOTo\STX\b\DC2\EOT\133\ETB\EOT*\SUB\NAK Custom tlv records.\n\
+    \\EOT\EOTq\STX\b\DC2\EOT\232\ETB\EOT*\SUB\NAK Custom tlv records.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTo\STX\b\EOT\DC2\ACK\133\ETB\EOT\130\ETB\US\n\
+    \\ENQ\EOTq\STX\b\EOT\DC2\ACK\232\ETB\EOT\229\ETB\US\n\
     \\r\n\
-    \\ENQ\EOTo\STX\b\ACK\DC2\EOT\133\ETB\EOT\SYN\n\
+    \\ENQ\EOTq\STX\b\ACK\DC2\EOT\232\ETB\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOTo\STX\b\SOH\DC2\EOT\133\ETB\ETB%\n\
+    \\ENQ\EOTq\STX\b\SOH\DC2\EOT\232\ETB\ETB%\n\
     \\r\n\
-    \\ENQ\EOTo\STX\b\ETX\DC2\EOT\133\ETB()\n\
+    \\ENQ\EOTq\STX\b\ETX\DC2\EOT\232\ETB()\n\
     \<\n\
-    \\EOT\EOTo\STX\t\DC2\EOT\136\ETB\EOT#\SUB. The total amount of the mpp payment in msat.\n\
+    \\EOT\EOTq\STX\t\DC2\EOT\235\ETB\EOT#\SUB. The total amount of the mpp payment in msat.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTo\STX\t\EOT\DC2\ACK\136\ETB\EOT\133\ETB*\n\
+    \\ENQ\EOTq\STX\t\EOT\DC2\ACK\235\ETB\EOT\232\ETB*\n\
     \\r\n\
-    \\ENQ\EOTo\STX\t\ENQ\DC2\EOT\136\ETB\EOT\n\
+    \\ENQ\EOTq\STX\t\ENQ\DC2\EOT\235\ETB\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTo\STX\t\SOH\DC2\EOT\136\ETB\v\GS\n\
+    \\ENQ\EOTq\STX\t\SOH\DC2\EOT\235\ETB\v\GS\n\
     \\r\n\
-    \\ENQ\EOTo\STX\t\ETX\DC2\EOT\136\ETB \"\n\
-    \\f\n\
-    \\STX\EOTp\DC2\ACK\139\ETB\NUL\163\ETB\SOH\n\
+    \\ENQ\EOTq\STX\t\ETX\DC2\EOT\235\ETB \"\n\
+    \U\n\
+    \\EOT\EOTq\STX\n\
+    \\DC2\EOT\238\ETB\EOT\DC1\SUBG Details relevant to AMP HTLCs, only populated if this is an AMP HTLC.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTq\STX\n\
+    \\EOT\DC2\ACK\238\ETB\EOT\235\ETB#\n\
+    \\r\n\
+    \\ENQ\EOTq\STX\n\
+    \\ACK\DC2\EOT\238\ETB\EOT\a\n\
+    \\r\n\
+    \\ENQ\EOTq\STX\n\
+    \\SOH\DC2\EOT\238\ETB\b\v\n\
+    \\r\n\
+    \\ENQ\EOTq\STX\n\
+    \\ETX\DC2\EOT\238\ETB\SO\DLE\n\
+    \.\n\
+    \\STX\EOTr\DC2\ACK\242\ETB\NUL\133\CAN\SOH\SUB  Details specific to AMP HTLCs.\n\
+    \\n\
     \\v\n\
-    \\ETX\EOTp\SOH\DC2\EOT\139\ETB\b\SUB\n\
-    \\f\n\
-    \\EOT\EOTp\STX\NUL\DC2\EOT\140\ETB\EOT\NAK\n\
+    \\ETX\EOTr\SOH\DC2\EOT\242\ETB\b\v\n\
+    \s\n\
+    \\EOT\EOTr\STX\NUL\DC2\EOT\245\ETB\EOT\EM\SUBe An n-of-n secret share of the root seed from which child payment hashes\n\
+    \ and preimages are derived.\n\
+    \\n\
     \\SI\n\
-    \\ENQ\EOTp\STX\NUL\EOT\DC2\ACK\140\ETB\EOT\139\ETB\FS\n\
+    \\ENQ\EOTr\STX\NUL\EOT\DC2\ACK\245\ETB\EOT\242\ETB\r\n\
     \\r\n\
-    \\ENQ\EOTp\STX\NUL\ENQ\DC2\EOT\140\ETB\EOT\t\n\
+    \\ENQ\EOTr\STX\NUL\ENQ\DC2\EOT\245\ETB\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTp\STX\NUL\SOH\DC2\EOT\140\ETB\n\
+    \\ENQ\EOTr\STX\NUL\SOH\DC2\EOT\245\ETB\n\
+    \\DC4\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\NUL\ETX\DC2\EOT\245\ETB\ETB\CAN\n\
+    \I\n\
+    \\EOT\EOTr\STX\SOH\DC2\EOT\248\ETB\EOT\NAK\SUB; An identifier for the HTLC set that this HTLC belongs to.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTr\STX\SOH\EOT\DC2\ACK\248\ETB\EOT\245\ETB\EM\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\SOH\ENQ\DC2\EOT\248\ETB\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\SOH\SOH\DC2\EOT\248\ETB\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOTp\STX\NUL\ETX\DC2\EOT\140\ETB\DC3\DC4\n\
+    \\ENQ\EOTr\STX\SOH\ETX\DC2\EOT\248\ETB\DC3\DC4\n\
+    \e\n\
+    \\EOT\EOTr\STX\STX\DC2\EOT\252\ETB\EOT\ESC\SUBW A nonce used to randomize the child preimage and child hash from a given\n\
+    \ root_share.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTr\STX\STX\EOT\DC2\ACK\252\ETB\EOT\248\ETB\NAK\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\STX\ENQ\DC2\EOT\252\ETB\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\STX\SOH\DC2\EOT\252\ETB\v\SYN\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\STX\ETX\DC2\EOT\252\ETB\EM\SUB\n\
+    \1\n\
+    \\EOT\EOTr\STX\ETX\DC2\EOT\255\ETB\EOT\DC3\SUB# The payment hash of the AMP HTLC.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTr\STX\ETX\EOT\DC2\ACK\255\ETB\EOT\252\ETB\ESC\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\ETX\ENQ\DC2\EOT\255\ETB\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\ETX\SOH\DC2\EOT\255\ETB\n\
+    \\SO\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\ETX\ETX\DC2\EOT\255\ETB\DC1\DC2\n\
+    \\163\SOH\n\
+    \\EOT\EOTr\STX\EOT\DC2\EOT\132\CAN\EOT\ETB\SUB\148\SOH The preimage used to settle this AMP htlc. This field will only be\n\
+    \ populated if the invoice is in InvoiceState_ACCEPTED or\n\
+    \ InvoiceState_SETTLED.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTr\STX\EOT\EOT\DC2\ACK\132\CAN\EOT\255\ETB\DC3\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\EOT\ENQ\DC2\EOT\132\CAN\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\EOT\SOH\DC2\EOT\132\CAN\n\
+    \\DC2\n\
+    \\r\n\
+    \\ENQ\EOTr\STX\EOT\ETX\DC2\EOT\132\CAN\NAK\SYN\n\
+    \\f\n\
+    \\STX\EOTs\DC2\ACK\135\CAN\NUL\159\CAN\SOH\n\
+    \\v\n\
+    \\ETX\EOTs\SOH\DC2\EOT\135\CAN\b\SUB\n\
+    \\f\n\
+    \\EOT\EOTs\STX\NUL\DC2\EOT\136\CAN\EOT\NAK\n\
+    \\SI\n\
+    \\ENQ\EOTs\STX\NUL\EOT\DC2\ACK\136\CAN\EOT\135\CAN\FS\n\
+    \\r\n\
+    \\ENQ\EOTs\STX\NUL\ENQ\DC2\EOT\136\CAN\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOTs\STX\NUL\SOH\DC2\EOT\136\CAN\n\
+    \\DLE\n\
+    \\r\n\
+    \\ENQ\EOTs\STX\NUL\ETX\DC2\EOT\136\CAN\DC3\DC4\n\
     \\188\SOH\n\
-    \\EOT\EOTp\STX\SOH\DC2\EOT\147\ETB\EOT\US\SUB\173\SOH\n\
+    \\EOT\EOTs\STX\SOH\DC2\EOT\143\CAN\EOT\US\SUB\173\SOH\n\
     \A bare-bones invoice for a payment within the Lightning Network. With the\n\
     \details of the invoice, the sender has all the data necessary to send a\n\
     \payment to the recipient.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTp\STX\SOH\EOT\DC2\ACK\147\ETB\EOT\140\ETB\NAK\n\
+    \\ENQ\EOTs\STX\SOH\EOT\DC2\ACK\143\CAN\EOT\136\CAN\NAK\n\
     \\r\n\
-    \\ENQ\EOTp\STX\SOH\ENQ\DC2\EOT\147\ETB\EOT\n\
+    \\ENQ\EOTs\STX\SOH\ENQ\DC2\EOT\143\CAN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTp\STX\SOH\SOH\DC2\EOT\147\ETB\v\SUB\n\
+    \\ENQ\EOTs\STX\SOH\SOH\DC2\EOT\143\CAN\v\SUB\n\
     \\r\n\
-    \\ENQ\EOTp\STX\SOH\ETX\DC2\EOT\147\ETB\GS\RS\n\
+    \\ENQ\EOTs\STX\SOH\ETX\DC2\EOT\143\CAN\GS\RS\n\
     \\150\STX\n\
-    \\EOT\EOTp\STX\STX\DC2\EOT\155\ETB\EOT\SUB\SUB\135\STX\n\
+    \\EOT\EOTs\STX\STX\DC2\EOT\151\CAN\EOT\SUB\SUB\135\STX\n\
     \The \"add\" index of this invoice. Each newly created invoice will increment\n\
     \this index making it monotonically increasing. Callers to the\n\
     \SubscribeInvoices call can use this to instantly get notified of all added\n\
     \invoices with an add_index greater than this one.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTp\STX\STX\EOT\DC2\ACK\155\ETB\EOT\147\ETB\US\n\
+    \\ENQ\EOTs\STX\STX\EOT\DC2\ACK\151\CAN\EOT\143\CAN\US\n\
     \\r\n\
-    \\ENQ\EOTp\STX\STX\ENQ\DC2\EOT\155\ETB\EOT\n\
+    \\ENQ\EOTs\STX\STX\ENQ\DC2\EOT\151\CAN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTp\STX\STX\SOH\DC2\EOT\155\ETB\v\DC4\n\
+    \\ENQ\EOTs\STX\STX\SOH\DC2\EOT\151\CAN\v\DC4\n\
     \\r\n\
-    \\ENQ\EOTp\STX\STX\ETX\DC2\EOT\155\ETB\ETB\EM\n\
+    \\ENQ\EOTs\STX\STX\ETX\DC2\EOT\151\CAN\ETB\EM\n\
     \\163\SOH\n\
-    \\EOT\EOTp\STX\ETX\DC2\EOT\162\ETB\EOT\FS\SUB\148\SOH\n\
+    \\EOT\EOTs\STX\ETX\DC2\EOT\158\CAN\EOT\FS\SUB\148\SOH\n\
     \The payment address of the generated invoice. This value should be used\n\
     \in all payments for this invoice as we require it for end to end\n\
     \security.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTp\STX\ETX\EOT\DC2\ACK\162\ETB\EOT\155\ETB\SUB\n\
+    \\ENQ\EOTs\STX\ETX\EOT\DC2\ACK\158\CAN\EOT\151\CAN\SUB\n\
     \\r\n\
-    \\ENQ\EOTp\STX\ETX\ENQ\DC2\EOT\162\ETB\EOT\t\n\
+    \\ENQ\EOTs\STX\ETX\ENQ\DC2\EOT\158\CAN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTp\STX\ETX\SOH\DC2\EOT\162\ETB\n\
+    \\ENQ\EOTs\STX\ETX\SOH\DC2\EOT\158\CAN\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOTp\STX\ETX\ETX\DC2\EOT\162\ETB\EM\ESC\n\
+    \\ENQ\EOTs\STX\ETX\ETX\DC2\EOT\158\CAN\EM\ESC\n\
     \\f\n\
-    \\STX\EOTq\DC2\ACK\164\ETB\NUL\178\ETB\SOH\n\
+    \\STX\EOTt\DC2\ACK\160\CAN\NUL\174\CAN\SOH\n\
     \\v\n\
-    \\ETX\EOTq\SOH\DC2\EOT\164\ETB\b\DC3\n\
+    \\ETX\EOTt\SOH\DC2\EOT\160\CAN\b\DC3\n\
     \\238\SOH\n\
-    \\EOT\EOTq\STX\NUL\DC2\EOT\171\ETB\EOT.\SUB\223\SOH\n\
+    \\EOT\EOTt\STX\NUL\DC2\EOT\167\CAN\EOT.\SUB\223\SOH\n\
     \The hex-encoded payment hash of the invoice to be looked up. The passed\n\
     \payment hash must be exactly 32 bytes, otherwise an error is returned.\n\
     \Deprecated now that the REST gateway supports base64 encoding of bytes\n\
     \fields.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTq\STX\NUL\EOT\DC2\ACK\171\ETB\EOT\164\ETB\NAK\n\
+    \\ENQ\EOTt\STX\NUL\EOT\DC2\ACK\167\CAN\EOT\160\CAN\NAK\n\
     \\r\n\
-    \\ENQ\EOTq\STX\NUL\ENQ\DC2\EOT\171\ETB\EOT\n\
+    \\ENQ\EOTt\STX\NUL\ENQ\DC2\EOT\167\CAN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTq\STX\NUL\SOH\DC2\EOT\171\ETB\v\NAK\n\
+    \\ENQ\EOTt\STX\NUL\SOH\DC2\EOT\167\CAN\v\NAK\n\
     \\r\n\
-    \\ENQ\EOTq\STX\NUL\ETX\DC2\EOT\171\ETB\CAN\EM\n\
+    \\ENQ\EOTt\STX\NUL\ETX\DC2\EOT\167\CAN\CAN\EM\n\
     \\r\n\
-    \\ENQ\EOTq\STX\NUL\b\DC2\EOT\171\ETB\SUB-\n\
+    \\ENQ\EOTt\STX\NUL\b\DC2\EOT\167\CAN\SUB-\n\
     \\SO\n\
-    \\ACK\EOTq\STX\NUL\b\ETX\DC2\EOT\171\ETB\ESC,\n\
+    \\ACK\EOTt\STX\NUL\b\ETX\DC2\EOT\167\CAN\ESC,\n\
     \w\n\
-    \\EOT\EOTq\STX\SOH\DC2\EOT\177\ETB\EOT\NAK\SUBi\n\
+    \\EOT\EOTt\STX\SOH\DC2\EOT\173\CAN\EOT\NAK\SUBi\n\
     \The payment hash of the invoice to be looked up. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTq\STX\SOH\EOT\DC2\ACK\177\ETB\EOT\171\ETB.\n\
+    \\ENQ\EOTt\STX\SOH\EOT\DC2\ACK\173\CAN\EOT\167\CAN.\n\
     \\r\n\
-    \\ENQ\EOTq\STX\SOH\ENQ\DC2\EOT\177\ETB\EOT\t\n\
+    \\ENQ\EOTt\STX\SOH\ENQ\DC2\EOT\173\CAN\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTq\STX\SOH\SOH\DC2\EOT\177\ETB\n\
+    \\ENQ\EOTt\STX\SOH\SOH\DC2\EOT\173\CAN\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOTq\STX\SOH\ETX\DC2\EOT\177\ETB\DC3\DC4\n\
+    \\ENQ\EOTt\STX\SOH\ETX\DC2\EOT\173\CAN\DC3\DC4\n\
     \\f\n\
-    \\STX\EOTr\DC2\ACK\180\ETB\NUL\201\ETB\SOH\n\
+    \\STX\EOTu\DC2\ACK\176\CAN\NUL\197\CAN\SOH\n\
     \\v\n\
-    \\ETX\EOTr\SOH\DC2\EOT\180\ETB\b\SUB\n\
+    \\ETX\EOTu\SOH\DC2\EOT\176\CAN\b\SUB\n\
     \m\n\
-    \\EOT\EOTr\STX\NUL\DC2\EOT\185\ETB\EOT\SUB\SUB_\n\
+    \\EOT\EOTu\STX\NUL\DC2\EOT\181\CAN\EOT\SUB\SUB_\n\
     \If set, only invoices that are not settled and not canceled will be returned\n\
     \in the response.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTr\STX\NUL\EOT\DC2\ACK\185\ETB\EOT\180\ETB\FS\n\
+    \\ENQ\EOTu\STX\NUL\EOT\DC2\ACK\181\CAN\EOT\176\CAN\FS\n\
     \\r\n\
-    \\ENQ\EOTr\STX\NUL\ENQ\DC2\EOT\185\ETB\EOT\b\n\
+    \\ENQ\EOTu\STX\NUL\ENQ\DC2\EOT\181\CAN\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTr\STX\NUL\SOH\DC2\EOT\185\ETB\t\NAK\n\
+    \\ENQ\EOTu\STX\NUL\SOH\DC2\EOT\181\CAN\t\NAK\n\
     \\r\n\
-    \\ENQ\EOTr\STX\NUL\ETX\DC2\EOT\185\ETB\CAN\EM\n\
+    \\ENQ\EOTu\STX\NUL\ETX\DC2\EOT\181\CAN\CAN\EM\n\
     \\160\SOH\n\
-    \\EOT\EOTr\STX\SOH\DC2\EOT\191\ETB\EOT\FS\SUB\145\SOH\n\
+    \\EOT\EOTu\STX\SOH\DC2\EOT\187\CAN\EOT\FS\SUB\145\SOH\n\
     \The index of an invoice that will be used as either the start or end of a\n\
     \query to determine which invoices should be returned in the response.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTr\STX\SOH\EOT\DC2\ACK\191\ETB\EOT\185\ETB\SUB\n\
+    \\ENQ\EOTu\STX\SOH\EOT\DC2\ACK\187\CAN\EOT\181\CAN\SUB\n\
     \\r\n\
-    \\ENQ\EOTr\STX\SOH\ENQ\DC2\EOT\191\ETB\EOT\n\
+    \\ENQ\EOTu\STX\SOH\ENQ\DC2\EOT\187\CAN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTr\STX\SOH\SOH\DC2\EOT\191\ETB\v\ETB\n\
+    \\ENQ\EOTu\STX\SOH\SOH\DC2\EOT\187\CAN\v\ETB\n\
     \\r\n\
-    \\ENQ\EOTr\STX\SOH\ETX\DC2\EOT\191\ETB\SUB\ESC\n\
+    \\ENQ\EOTu\STX\SOH\ETX\DC2\EOT\187\CAN\SUB\ESC\n\
     \S\n\
-    \\EOT\EOTr\STX\STX\DC2\EOT\194\ETB\EOT \SUBE The max number of invoices to return in the response to this query.\n\
+    \\EOT\EOTu\STX\STX\DC2\EOT\190\CAN\EOT \SUBE The max number of invoices to return in the response to this query.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTr\STX\STX\EOT\DC2\ACK\194\ETB\EOT\191\ETB\FS\n\
+    \\ENQ\EOTu\STX\STX\EOT\DC2\ACK\190\CAN\EOT\187\CAN\FS\n\
     \\r\n\
-    \\ENQ\EOTr\STX\STX\ENQ\DC2\EOT\194\ETB\EOT\n\
+    \\ENQ\EOTu\STX\STX\ENQ\DC2\EOT\190\CAN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTr\STX\STX\SOH\DC2\EOT\194\ETB\v\ESC\n\
+    \\ENQ\EOTu\STX\STX\SOH\DC2\EOT\190\CAN\v\ESC\n\
     \\r\n\
-    \\ENQ\EOTr\STX\STX\ETX\DC2\EOT\194\ETB\RS\US\n\
+    \\ENQ\EOTu\STX\STX\ETX\DC2\EOT\190\CAN\RS\US\n\
     \\154\SOH\n\
-    \\EOT\EOTr\STX\ETX\DC2\EOT\200\ETB\EOT\SYN\SUB\139\SOH\n\
+    \\EOT\EOTu\STX\ETX\DC2\EOT\196\CAN\EOT\SYN\SUB\139\SOH\n\
     \If set, the invoices returned will result from seeking backwards from the\n\
     \specified index offset. This can be used to paginate backwards.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTr\STX\ETX\EOT\DC2\ACK\200\ETB\EOT\194\ETB \n\
+    \\ENQ\EOTu\STX\ETX\EOT\DC2\ACK\196\CAN\EOT\190\CAN \n\
     \\r\n\
-    \\ENQ\EOTr\STX\ETX\ENQ\DC2\EOT\200\ETB\EOT\b\n\
+    \\ENQ\EOTu\STX\ETX\ENQ\DC2\EOT\196\CAN\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTr\STX\ETX\SOH\DC2\EOT\200\ETB\t\DC1\n\
+    \\ENQ\EOTu\STX\ETX\SOH\DC2\EOT\196\CAN\t\DC1\n\
     \\r\n\
-    \\ENQ\EOTr\STX\ETX\ETX\DC2\EOT\200\ETB\DC4\NAK\n\
+    \\ENQ\EOTu\STX\ETX\ETX\DC2\EOT\196\CAN\DC4\NAK\n\
     \\f\n\
-    \\STX\EOTs\DC2\ACK\202\ETB\NUL\220\ETB\SOH\n\
+    \\STX\EOTv\DC2\ACK\198\CAN\NUL\216\CAN\SOH\n\
     \\v\n\
-    \\ETX\EOTs\SOH\DC2\EOT\202\ETB\b\ESC\n\
+    \\ETX\EOTv\SOH\DC2\EOT\198\CAN\b\ESC\n\
     \c\n\
-    \\EOT\EOTs\STX\NUL\DC2\EOT\207\ETB\EOT\"\SUBU\n\
+    \\EOT\EOTv\STX\NUL\DC2\EOT\203\CAN\EOT\"\SUBU\n\
     \A list of invoices from the time slice of the time series specified in the\n\
     \request.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTs\STX\NUL\EOT\DC2\EOT\207\ETB\EOT\f\n\
+    \\ENQ\EOTv\STX\NUL\EOT\DC2\EOT\203\CAN\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTs\STX\NUL\ACK\DC2\EOT\207\ETB\r\DC4\n\
+    \\ENQ\EOTv\STX\NUL\ACK\DC2\EOT\203\CAN\r\DC4\n\
     \\r\n\
-    \\ENQ\EOTs\STX\NUL\SOH\DC2\EOT\207\ETB\NAK\GS\n\
+    \\ENQ\EOTv\STX\NUL\SOH\DC2\EOT\203\CAN\NAK\GS\n\
     \\r\n\
-    \\ENQ\EOTs\STX\NUL\ETX\DC2\EOT\207\ETB !\n\
+    \\ENQ\EOTv\STX\NUL\ETX\DC2\EOT\203\CAN !\n\
     \\DEL\n\
-    \\EOT\EOTs\STX\SOH\DC2\EOT\213\ETB\EOT!\SUBq\n\
+    \\EOT\EOTv\STX\SOH\DC2\EOT\209\CAN\EOT!\SUBq\n\
     \The index of the last item in the set of returned invoices. This can be used\n\
     \to seek further, pagination style.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTs\STX\SOH\EOT\DC2\ACK\213\ETB\EOT\207\ETB\"\n\
+    \\ENQ\EOTv\STX\SOH\EOT\DC2\ACK\209\CAN\EOT\203\CAN\"\n\
     \\r\n\
-    \\ENQ\EOTs\STX\SOH\ENQ\DC2\EOT\213\ETB\EOT\n\
+    \\ENQ\EOTv\STX\SOH\ENQ\DC2\EOT\209\CAN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTs\STX\SOH\SOH\DC2\EOT\213\ETB\v\FS\n\
+    \\ENQ\EOTv\STX\SOH\SOH\DC2\EOT\209\CAN\v\FS\n\
     \\r\n\
-    \\ENQ\EOTs\STX\SOH\ETX\DC2\EOT\213\ETB\US \n\
+    \\ENQ\EOTv\STX\SOH\ETX\DC2\EOT\209\CAN\US \n\
     \\129\SOH\n\
-    \\EOT\EOTs\STX\STX\DC2\EOT\219\ETB\EOT\"\SUBs\n\
+    \\EOT\EOTv\STX\STX\DC2\EOT\215\CAN\EOT\"\SUBs\n\
     \The index of the last item in the set of returned invoices. This can be used\n\
     \to seek backwards, pagination style.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTs\STX\STX\EOT\DC2\ACK\219\ETB\EOT\213\ETB!\n\
+    \\ENQ\EOTv\STX\STX\EOT\DC2\ACK\215\CAN\EOT\209\CAN!\n\
     \\r\n\
-    \\ENQ\EOTs\STX\STX\ENQ\DC2\EOT\219\ETB\EOT\n\
+    \\ENQ\EOTv\STX\STX\ENQ\DC2\EOT\215\CAN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTs\STX\STX\SOH\DC2\EOT\219\ETB\v\GS\n\
+    \\ENQ\EOTv\STX\STX\SOH\DC2\EOT\215\CAN\v\GS\n\
     \\r\n\
-    \\ENQ\EOTs\STX\STX\ETX\DC2\EOT\219\ETB !\n\
+    \\ENQ\EOTv\STX\STX\ETX\DC2\EOT\215\CAN !\n\
     \\f\n\
-    \\STX\EOTt\DC2\ACK\222\ETB\NUL\238\ETB\SOH\n\
+    \\STX\EOTw\DC2\ACK\218\CAN\NUL\234\CAN\SOH\n\
     \\v\n\
-    \\ETX\EOTt\SOH\DC2\EOT\222\ETB\b\ESC\n\
+    \\ETX\EOTw\SOH\DC2\EOT\218\CAN\b\ESC\n\
     \\139\STX\n\
-    \\EOT\EOTt\STX\NUL\DC2\EOT\229\ETB\EOT\EM\SUB\252\SOH\n\
+    \\EOT\EOTw\STX\NUL\DC2\EOT\225\CAN\EOT\EM\SUB\252\SOH\n\
     \If specified (non-zero), then we'll first start by sending out\n\
     \notifications for all added indexes with an add_index greater than this\n\
     \value. This allows callers to catch up on any events they missed while they\n\
     \weren't connected to the streaming RPC.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTt\STX\NUL\EOT\DC2\ACK\229\ETB\EOT\222\ETB\GS\n\
+    \\ENQ\EOTw\STX\NUL\EOT\DC2\ACK\225\CAN\EOT\218\CAN\GS\n\
     \\r\n\
-    \\ENQ\EOTt\STX\NUL\ENQ\DC2\EOT\229\ETB\EOT\n\
+    \\ENQ\EOTw\STX\NUL\ENQ\DC2\EOT\225\CAN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTt\STX\NUL\SOH\DC2\EOT\229\ETB\v\DC4\n\
+    \\ENQ\EOTw\STX\NUL\SOH\DC2\EOT\225\CAN\v\DC4\n\
     \\r\n\
-    \\ENQ\EOTt\STX\NUL\ETX\DC2\EOT\229\ETB\ETB\CAN\n\
+    \\ENQ\EOTw\STX\NUL\ETX\DC2\EOT\225\CAN\ETB\CAN\n\
     \\144\STX\n\
-    \\EOT\EOTt\STX\SOH\DC2\EOT\237\ETB\EOT\FS\SUB\129\STX\n\
+    \\EOT\EOTw\STX\SOH\DC2\EOT\233\CAN\EOT\FS\SUB\129\STX\n\
     \If specified (non-zero), then we'll first start by sending out\n\
     \notifications for all settled indexes with an settle_index greater than\n\
     \this value. This allows callers to catch up on any events they missed while\n\
     \they weren't connected to the streaming RPC.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTt\STX\SOH\EOT\DC2\ACK\237\ETB\EOT\229\ETB\EM\n\
+    \\ENQ\EOTw\STX\SOH\EOT\DC2\ACK\233\CAN\EOT\225\CAN\EM\n\
     \\r\n\
-    \\ENQ\EOTt\STX\SOH\ENQ\DC2\EOT\237\ETB\EOT\n\
+    \\ENQ\EOTw\STX\SOH\ENQ\DC2\EOT\233\CAN\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTt\STX\SOH\SOH\DC2\EOT\237\ETB\v\ETB\n\
+    \\ENQ\EOTw\STX\SOH\SOH\DC2\EOT\233\CAN\v\ETB\n\
     \\r\n\
-    \\ENQ\EOTt\STX\SOH\ETX\DC2\EOT\237\ETB\SUB\ESC\n\
+    \\ENQ\EOTw\STX\SOH\ETX\DC2\EOT\233\CAN\SUB\ESC\n\
     \\f\n\
-    \\STX\ENQ\a\DC2\ACK\240\ETB\NUL\144\CAN\SOH\n\
+    \\STX\ENQ\a\DC2\ACK\236\CAN\NUL\140\EM\SOH\n\
     \\v\n\
-    \\ETX\ENQ\a\SOH\DC2\EOT\240\ETB\ENQ\EM\n\
+    \\ETX\ENQ\a\SOH\DC2\EOT\236\CAN\ENQ\EM\n\
     \+\n\
-    \\EOT\ENQ\a\STX\NUL\DC2\EOT\244\ETB\EOT\FS\SUB\GS\n\
+    \\EOT\ENQ\a\STX\NUL\DC2\EOT\240\CAN\EOT\FS\SUB\GS\n\
     \Payment isn't failed (yet).\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\NUL\SOH\DC2\EOT\244\ETB\EOT\ETB\n\
+    \\ENQ\ENQ\a\STX\NUL\SOH\DC2\EOT\240\CAN\EOT\ETB\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\NUL\STX\DC2\EOT\244\ETB\SUB\ESC\n\
+    \\ENQ\ENQ\a\STX\NUL\STX\DC2\EOT\240\CAN\SUB\ESC\n\
     \S\n\
-    \\EOT\ENQ\a\STX\SOH\DC2\EOT\249\ETB\EOT\US\SUBE\n\
+    \\EOT\ENQ\a\STX\SOH\DC2\EOT\245\CAN\EOT\US\SUBE\n\
     \There are more routes to try, but the payment timeout was exceeded.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\SOH\SOH\DC2\EOT\249\ETB\EOT\SUB\n\
+    \\ENQ\ENQ\a\STX\SOH\SOH\DC2\EOT\245\CAN\EOT\SUB\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\SOH\STX\DC2\EOT\249\ETB\GS\RS\n\
+    \\ENQ\ENQ\a\STX\SOH\STX\DC2\EOT\245\CAN\GS\RS\n\
     \s\n\
-    \\EOT\ENQ\a\STX\STX\DC2\EOT\255\ETB\EOT \SUBe\n\
+    \\EOT\ENQ\a\STX\STX\DC2\EOT\251\CAN\EOT \SUBe\n\
     \All possible routes were tried and failed permanently. Or were no\n\
     \routes to the destination at all.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\STX\SOH\DC2\EOT\255\ETB\EOT\ESC\n\
+    \\ENQ\ENQ\a\STX\STX\SOH\DC2\EOT\251\CAN\EOT\ESC\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\STX\STX\DC2\EOT\255\ETB\RS\US\n\
+    \\ENQ\ENQ\a\STX\STX\STX\DC2\EOT\251\CAN\RS\US\n\
     \4\n\
-    \\EOT\ENQ\a\STX\ETX\DC2\EOT\132\CAN\EOT\GS\SUB&\n\
+    \\EOT\ENQ\a\STX\ETX\DC2\EOT\128\EM\EOT\GS\SUB&\n\
     \A non-recoverable error has occured.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\ETX\SOH\DC2\EOT\132\CAN\EOT\CAN\n\
+    \\ENQ\ENQ\a\STX\ETX\SOH\DC2\EOT\128\EM\EOT\CAN\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\ETX\STX\DC2\EOT\132\CAN\ESC\FS\n\
+    \\ENQ\ENQ\a\STX\ETX\STX\DC2\EOT\128\EM\ESC\FS\n\
     \a\n\
-    \\EOT\ENQ\a\STX\EOT\DC2\EOT\138\CAN\EOT1\SUBS\n\
+    \\EOT\ENQ\a\STX\EOT\DC2\EOT\134\EM\EOT1\SUBS\n\
     \Payment details incorrect (unknown hash, invalid amt or\n\
     \invalid final cltv delta)\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\EOT\SOH\DC2\EOT\138\CAN\EOT,\n\
+    \\ENQ\ENQ\a\STX\EOT\SOH\DC2\EOT\134\EM\EOT,\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\EOT\STX\DC2\EOT\138\CAN/0\n\
+    \\ENQ\ENQ\a\STX\EOT\STX\DC2\EOT\134\EM/0\n\
     \+\n\
-    \\EOT\ENQ\a\STX\ENQ\DC2\EOT\143\CAN\EOT,\SUB\GS\n\
+    \\EOT\ENQ\a\STX\ENQ\DC2\EOT\139\EM\EOT,\SUB\GS\n\
     \Insufficient local balance.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\ENQ\SOH\DC2\EOT\143\CAN\EOT'\n\
+    \\ENQ\ENQ\a\STX\ENQ\SOH\DC2\EOT\139\EM\EOT'\n\
     \\r\n\
-    \\ENQ\ENQ\a\STX\ENQ\STX\DC2\EOT\143\CAN*+\n\
+    \\ENQ\ENQ\a\STX\ENQ\STX\DC2\EOT\139\EM*+\n\
     \\f\n\
-    \\STX\EOTu\DC2\ACK\146\CAN\NUL\203\CAN\SOH\n\
+    \\STX\EOTx\DC2\ACK\142\EM\NUL\199\EM\SOH\n\
     \\v\n\
-    \\ETX\EOTu\SOH\DC2\EOT\146\CAN\b\SI\n\
+    \\ETX\EOTx\SOH\DC2\EOT\142\EM\b\SI\n\
     \ \n\
-    \\EOT\EOTu\STX\NUL\DC2\EOT\148\CAN\EOT\FS\SUB\DC2 The payment hash\n\
+    \\EOT\EOTx\STX\NUL\DC2\EOT\144\EM\EOT\FS\SUB\DC2 The payment hash\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\NUL\EOT\DC2\ACK\148\CAN\EOT\146\CAN\DC1\n\
+    \\ENQ\EOTx\STX\NUL\EOT\DC2\ACK\144\EM\EOT\142\EM\DC1\n\
     \\r\n\
-    \\ENQ\EOTu\STX\NUL\ENQ\DC2\EOT\148\CAN\EOT\n\
+    \\ENQ\EOTx\STX\NUL\ENQ\DC2\EOT\144\EM\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTu\STX\NUL\SOH\DC2\EOT\148\CAN\v\ETB\n\
+    \\ENQ\EOTx\STX\NUL\SOH\DC2\EOT\144\EM\v\ETB\n\
     \\r\n\
-    \\ENQ\EOTu\STX\NUL\ETX\DC2\EOT\148\CAN\SUB\ESC\n\
+    \\ENQ\EOTx\STX\NUL\ETX\DC2\EOT\144\EM\SUB\ESC\n\
     \8\n\
-    \\EOT\EOTu\STX\SOH\DC2\EOT\151\CAN\EOT(\SUB* Deprecated, use value_sat or value_msat.\n\
+    \\EOT\EOTx\STX\SOH\DC2\EOT\147\EM\EOT(\SUB* Deprecated, use value_sat or value_msat.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\SOH\EOT\DC2\ACK\151\CAN\EOT\148\CAN\FS\n\
+    \\ENQ\EOTx\STX\SOH\EOT\DC2\ACK\147\EM\EOT\144\EM\FS\n\
     \\r\n\
-    \\ENQ\EOTu\STX\SOH\ENQ\DC2\EOT\151\CAN\EOT\t\n\
+    \\ENQ\EOTx\STX\SOH\ENQ\DC2\EOT\147\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTu\STX\SOH\SOH\DC2\EOT\151\CAN\n\
+    \\ENQ\EOTx\STX\SOH\SOH\DC2\EOT\147\EM\n\
     \\SI\n\
     \\r\n\
-    \\ENQ\EOTu\STX\SOH\ETX\DC2\EOT\151\CAN\DC2\DC3\n\
+    \\ENQ\EOTx\STX\SOH\ETX\DC2\EOT\147\EM\DC2\DC3\n\
     \\r\n\
-    \\ENQ\EOTu\STX\SOH\b\DC2\EOT\151\CAN\DC4'\n\
+    \\ENQ\EOTx\STX\SOH\b\DC2\EOT\147\EM\DC4'\n\
     \\SO\n\
-    \\ACK\EOTu\STX\SOH\b\ETX\DC2\EOT\151\CAN\NAK&\n\
+    \\ACK\EOTx\STX\SOH\b\ETX\DC2\EOT\147\EM\NAK&\n\
     \0\n\
-    \\EOT\EOTu\STX\STX\DC2\EOT\154\CAN\EOT0\SUB\" Deprecated, use creation_time_ns\n\
+    \\EOT\EOTx\STX\STX\DC2\EOT\150\EM\EOT0\SUB\" Deprecated, use creation_time_ns\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\STX\EOT\DC2\ACK\154\CAN\EOT\151\CAN(\n\
+    \\ENQ\EOTx\STX\STX\EOT\DC2\ACK\150\EM\EOT\147\EM(\n\
     \\r\n\
-    \\ENQ\EOTu\STX\STX\ENQ\DC2\EOT\154\CAN\EOT\t\n\
+    \\ENQ\EOTx\STX\STX\ENQ\DC2\EOT\150\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTu\STX\STX\SOH\DC2\EOT\154\CAN\n\
+    \\ENQ\EOTx\STX\STX\SOH\DC2\EOT\150\EM\n\
     \\ETB\n\
     \\r\n\
-    \\ENQ\EOTu\STX\STX\ETX\DC2\EOT\154\CAN\SUB\ESC\n\
+    \\ENQ\EOTx\STX\STX\ETX\DC2\EOT\150\EM\SUB\ESC\n\
     \\r\n\
-    \\ENQ\EOTu\STX\STX\b\DC2\EOT\154\CAN\FS/\n\
+    \\ENQ\EOTx\STX\STX\b\DC2\EOT\150\EM\FS/\n\
     \\SO\n\
-    \\ACK\EOTu\STX\STX\b\ETX\DC2\EOT\154\CAN\GS.\n\
+    \\ACK\EOTx\STX\STX\b\ETX\DC2\EOT\150\EM\GS.\n\
     \\v\n\
-    \\ETX\EOTu\t\DC2\EOT\156\CAN\EOT\SI\n\
+    \\ETX\EOTx\t\DC2\EOT\152\EM\EOT\SI\n\
     \\f\n\
-    \\EOT\EOTu\t\NUL\DC2\EOT\156\CAN\r\SO\n\
+    \\EOT\EOTx\t\NUL\DC2\EOT\152\EM\r\SO\n\
     \\r\n\
-    \\ENQ\EOTu\t\NUL\SOH\DC2\EOT\156\CAN\r\SO\n\
+    \\ENQ\EOTx\t\NUL\SOH\DC2\EOT\152\EM\r\SO\n\
     \\r\n\
-    \\ENQ\EOTu\t\NUL\STX\DC2\EOT\156\CAN\r\SO\n\
+    \\ENQ\EOTx\t\NUL\STX\DC2\EOT\152\EM\r\SO\n\
     \4\n\
-    \\EOT\EOTu\STX\ETX\DC2\EOT\159\CAN\EOT&\SUB& Deprecated, use fee_sat or fee_msat.\n\
+    \\EOT\EOTx\STX\ETX\DC2\EOT\155\EM\EOT&\SUB& Deprecated, use fee_sat or fee_msat.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\ETX\EOT\DC2\ACK\159\CAN\EOT\156\CAN\SI\n\
+    \\ENQ\EOTx\STX\ETX\EOT\DC2\ACK\155\EM\EOT\152\EM\SI\n\
     \\r\n\
-    \\ENQ\EOTu\STX\ETX\ENQ\DC2\EOT\159\CAN\EOT\t\n\
+    \\ENQ\EOTx\STX\ETX\ENQ\DC2\EOT\155\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTu\STX\ETX\SOH\DC2\EOT\159\CAN\n\
+    \\ENQ\EOTx\STX\ETX\SOH\DC2\EOT\155\EM\n\
     \\r\n\
     \\r\n\
-    \\ENQ\EOTu\STX\ETX\ETX\DC2\EOT\159\CAN\DLE\DC1\n\
+    \\ENQ\EOTx\STX\ETX\ETX\DC2\EOT\155\EM\DLE\DC1\n\
     \\r\n\
-    \\ENQ\EOTu\STX\ETX\b\DC2\EOT\159\CAN\DC2%\n\
+    \\ENQ\EOTx\STX\ETX\b\DC2\EOT\155\EM\DC2%\n\
     \\SO\n\
-    \\ACK\EOTu\STX\ETX\b\ETX\DC2\EOT\159\CAN\DC3$\n\
+    \\ACK\EOTx\STX\ETX\b\ETX\DC2\EOT\155\EM\DC3$\n\
     \$\n\
-    \\EOT\EOTu\STX\EOT\DC2\EOT\162\CAN\EOT \SUB\SYN The payment preimage\n\
+    \\EOT\EOTx\STX\EOT\DC2\EOT\158\EM\EOT \SUB\SYN The payment preimage\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\EOT\EOT\DC2\ACK\162\CAN\EOT\159\CAN&\n\
+    \\ENQ\EOTx\STX\EOT\EOT\DC2\ACK\158\EM\EOT\155\EM&\n\
     \\r\n\
-    \\ENQ\EOTu\STX\EOT\ENQ\DC2\EOT\162\CAN\EOT\n\
+    \\ENQ\EOTx\STX\EOT\ENQ\DC2\EOT\158\EM\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTu\STX\EOT\SOH\DC2\EOT\162\CAN\v\ESC\n\
+    \\ENQ\EOTx\STX\EOT\SOH\DC2\EOT\158\EM\v\ESC\n\
     \\r\n\
-    \\ENQ\EOTu\STX\EOT\ETX\DC2\EOT\162\CAN\RS\US\n\
+    \\ENQ\EOTx\STX\EOT\ETX\DC2\EOT\158\EM\RS\US\n\
     \4\n\
-    \\EOT\EOTu\STX\ENQ\DC2\EOT\165\CAN\EOT\CAN\SUB& The value of the payment in satoshis\n\
+    \\EOT\EOTx\STX\ENQ\DC2\EOT\161\EM\EOT\CAN\SUB& The value of the payment in satoshis\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\ENQ\EOT\DC2\ACK\165\CAN\EOT\162\CAN \n\
+    \\ENQ\EOTx\STX\ENQ\EOT\DC2\ACK\161\EM\EOT\158\EM \n\
     \\r\n\
-    \\ENQ\EOTu\STX\ENQ\ENQ\DC2\EOT\165\CAN\EOT\t\n\
+    \\ENQ\EOTx\STX\ENQ\ENQ\DC2\EOT\161\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTu\STX\ENQ\SOH\DC2\EOT\165\CAN\n\
+    \\ENQ\EOTx\STX\ENQ\SOH\DC2\EOT\161\EM\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOTu\STX\ENQ\ETX\DC2\EOT\165\CAN\SYN\ETB\n\
+    \\ENQ\EOTx\STX\ENQ\ETX\DC2\EOT\161\EM\SYN\ETB\n\
     \:\n\
-    \\EOT\EOTu\STX\ACK\DC2\EOT\168\CAN\EOT\EM\SUB, The value of the payment in milli-satoshis\n\
+    \\EOT\EOTx\STX\ACK\DC2\EOT\164\EM\EOT\EM\SUB, The value of the payment in milli-satoshis\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\ACK\EOT\DC2\ACK\168\CAN\EOT\165\CAN\CAN\n\
+    \\ENQ\EOTx\STX\ACK\EOT\DC2\ACK\164\EM\EOT\161\EM\CAN\n\
     \\r\n\
-    \\ENQ\EOTu\STX\ACK\ENQ\DC2\EOT\168\CAN\EOT\t\n\
+    \\ENQ\EOTx\STX\ACK\ENQ\DC2\EOT\164\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTu\STX\ACK\SOH\DC2\EOT\168\CAN\n\
+    \\ENQ\EOTx\STX\ACK\SOH\DC2\EOT\164\EM\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOTu\STX\ACK\ETX\DC2\EOT\168\CAN\ETB\CAN\n\
+    \\ENQ\EOTx\STX\ACK\ETX\DC2\EOT\164\EM\ETB\CAN\n\
     \=\n\
-    \\EOT\EOTu\STX\a\DC2\EOT\171\CAN\EOT\US\SUB/ The optional payment request being fulfilled.\n\
+    \\EOT\EOTx\STX\a\DC2\EOT\167\EM\EOT\US\SUB/ The optional payment request being fulfilled.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\a\EOT\DC2\ACK\171\CAN\EOT\168\CAN\EM\n\
+    \\ENQ\EOTx\STX\a\EOT\DC2\ACK\167\EM\EOT\164\EM\EM\n\
     \\r\n\
-    \\ENQ\EOTu\STX\a\ENQ\DC2\EOT\171\CAN\EOT\n\
+    \\ENQ\EOTx\STX\a\ENQ\DC2\EOT\167\EM\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTu\STX\a\SOH\DC2\EOT\171\CAN\v\SUB\n\
+    \\ENQ\EOTx\STX\a\SOH\DC2\EOT\167\EM\v\SUB\n\
     \\r\n\
-    \\ENQ\EOTu\STX\a\ETX\DC2\EOT\171\CAN\GS\RS\n\
+    \\ENQ\EOTx\STX\a\ETX\DC2\EOT\167\EM\GS\RS\n\
     \\SO\n\
-    \\EOT\EOTu\EOT\NUL\DC2\ACK\173\CAN\EOT\178\CAN\ENQ\n\
+    \\EOT\EOTx\EOT\NUL\DC2\ACK\169\EM\EOT\174\EM\ENQ\n\
     \\r\n\
-    \\ENQ\EOTu\EOT\NUL\SOH\DC2\EOT\173\CAN\t\SYN\n\
+    \\ENQ\EOTx\EOT\NUL\SOH\DC2\EOT\169\EM\t\SYN\n\
     \\SO\n\
-    \\ACK\EOTu\EOT\NUL\STX\NUL\DC2\EOT\174\CAN\b\DC4\n\
+    \\ACK\EOTx\EOT\NUL\STX\NUL\DC2\EOT\170\EM\b\DC4\n\
     \\SI\n\
-    \\a\EOTu\EOT\NUL\STX\NUL\SOH\DC2\EOT\174\CAN\b\SI\n\
+    \\a\EOTx\EOT\NUL\STX\NUL\SOH\DC2\EOT\170\EM\b\SI\n\
     \\SI\n\
-    \\a\EOTu\EOT\NUL\STX\NUL\STX\DC2\EOT\174\CAN\DC2\DC3\n\
+    \\a\EOTx\EOT\NUL\STX\NUL\STX\DC2\EOT\170\EM\DC2\DC3\n\
     \\SO\n\
-    \\ACK\EOTu\EOT\NUL\STX\SOH\DC2\EOT\175\CAN\b\SYN\n\
+    \\ACK\EOTx\EOT\NUL\STX\SOH\DC2\EOT\171\EM\b\SYN\n\
     \\SI\n\
-    \\a\EOTu\EOT\NUL\STX\SOH\SOH\DC2\EOT\175\CAN\b\DC1\n\
+    \\a\EOTx\EOT\NUL\STX\SOH\SOH\DC2\EOT\171\EM\b\DC1\n\
     \\SI\n\
-    \\a\EOTu\EOT\NUL\STX\SOH\STX\DC2\EOT\175\CAN\DC4\NAK\n\
+    \\a\EOTx\EOT\NUL\STX\SOH\STX\DC2\EOT\171\EM\DC4\NAK\n\
     \\SO\n\
-    \\ACK\EOTu\EOT\NUL\STX\STX\DC2\EOT\176\CAN\b\SYN\n\
+    \\ACK\EOTx\EOT\NUL\STX\STX\DC2\EOT\172\EM\b\SYN\n\
     \\SI\n\
-    \\a\EOTu\EOT\NUL\STX\STX\SOH\DC2\EOT\176\CAN\b\DC1\n\
+    \\a\EOTx\EOT\NUL\STX\STX\SOH\DC2\EOT\172\EM\b\DC1\n\
     \\SI\n\
-    \\a\EOTu\EOT\NUL\STX\STX\STX\DC2\EOT\176\CAN\DC4\NAK\n\
+    \\a\EOTx\EOT\NUL\STX\STX\STX\DC2\EOT\172\EM\DC4\NAK\n\
     \\SO\n\
-    \\ACK\EOTu\EOT\NUL\STX\ETX\DC2\EOT\177\CAN\b\DC3\n\
+    \\ACK\EOTx\EOT\NUL\STX\ETX\DC2\EOT\173\EM\b\DC3\n\
     \\SI\n\
-    \\a\EOTu\EOT\NUL\STX\ETX\SOH\DC2\EOT\177\CAN\b\SO\n\
+    \\a\EOTx\EOT\NUL\STX\ETX\SOH\DC2\EOT\173\EM\b\SO\n\
     \\SI\n\
-    \\a\EOTu\EOT\NUL\STX\ETX\STX\DC2\EOT\177\CAN\DC1\DC2\n\
+    \\a\EOTx\EOT\NUL\STX\ETX\STX\DC2\EOT\173\EM\DC1\DC2\n\
     \*\n\
-    \\EOT\EOTu\STX\b\DC2\EOT\181\CAN\EOT\RS\SUB\FS The status of the payment.\n\
+    \\EOT\EOTx\STX\b\DC2\EOT\177\EM\EOT\RS\SUB\FS The status of the payment.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\b\EOT\DC2\ACK\181\CAN\EOT\178\CAN\ENQ\n\
+    \\ENQ\EOTx\STX\b\EOT\DC2\ACK\177\EM\EOT\174\EM\ENQ\n\
     \\r\n\
-    \\ENQ\EOTu\STX\b\ACK\DC2\EOT\181\CAN\EOT\DC1\n\
+    \\ENQ\EOTx\STX\b\ACK\DC2\EOT\177\EM\EOT\DC1\n\
     \\r\n\
-    \\ENQ\EOTu\STX\b\SOH\DC2\EOT\181\CAN\DC2\CAN\n\
+    \\ENQ\EOTx\STX\b\SOH\DC2\EOT\177\EM\DC2\CAN\n\
     \\r\n\
-    \\ENQ\EOTu\STX\b\ETX\DC2\EOT\181\CAN\ESC\GS\n\
+    \\ENQ\EOTx\STX\b\ETX\DC2\EOT\177\EM\ESC\GS\n\
     \:\n\
-    \\EOT\EOTu\STX\t\DC2\EOT\184\CAN\EOT\ETB\SUB,  The fee paid for this payment in satoshis\n\
+    \\EOT\EOTx\STX\t\DC2\EOT\180\EM\EOT\ETB\SUB,  The fee paid for this payment in satoshis\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\t\EOT\DC2\ACK\184\CAN\EOT\181\CAN\RS\n\
+    \\ENQ\EOTx\STX\t\EOT\DC2\ACK\180\EM\EOT\177\EM\RS\n\
     \\r\n\
-    \\ENQ\EOTu\STX\t\ENQ\DC2\EOT\184\CAN\EOT\t\n\
+    \\ENQ\EOTx\STX\t\ENQ\DC2\EOT\180\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTu\STX\t\SOH\DC2\EOT\184\CAN\n\
+    \\ENQ\EOTx\STX\t\SOH\DC2\EOT\180\EM\n\
     \\DC1\n\
     \\r\n\
-    \\ENQ\EOTu\STX\t\ETX\DC2\EOT\184\CAN\DC4\SYN\n\
+    \\ENQ\EOTx\STX\t\ETX\DC2\EOT\180\EM\DC4\SYN\n\
     \@\n\
-    \\EOT\EOTu\STX\n\
-    \\DC2\EOT\187\CAN\EOT\CAN\SUB2  The fee paid for this payment in milli-satoshis\n\
+    \\EOT\EOTx\STX\n\
+    \\DC2\EOT\183\EM\EOT\CAN\SUB2  The fee paid for this payment in milli-satoshis\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\n\
-    \\EOT\DC2\ACK\187\CAN\EOT\184\CAN\ETB\n\
+    \\ENQ\EOTx\STX\n\
+    \\EOT\DC2\ACK\183\EM\EOT\180\EM\ETB\n\
     \\r\n\
-    \\ENQ\EOTu\STX\n\
-    \\ENQ\DC2\EOT\187\CAN\EOT\t\n\
+    \\ENQ\EOTx\STX\n\
+    \\ENQ\DC2\EOT\183\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTu\STX\n\
-    \\SOH\DC2\EOT\187\CAN\n\
+    \\ENQ\EOTx\STX\n\
+    \\SOH\DC2\EOT\183\EM\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOTu\STX\n\
-    \\ETX\DC2\EOT\187\CAN\NAK\ETB\n\
+    \\ENQ\EOTx\STX\n\
+    \\ETX\DC2\EOT\183\EM\NAK\ETB\n\
     \N\n\
-    \\EOT\EOTu\STX\v\DC2\EOT\190\CAN\EOT \SUB@ The time in UNIX nanoseconds at which the payment was created.\n\
+    \\EOT\EOTx\STX\v\DC2\EOT\186\EM\EOT \SUB@ The time in UNIX nanoseconds at which the payment was created.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\v\EOT\DC2\ACK\190\CAN\EOT\187\CAN\CAN\n\
+    \\ENQ\EOTx\STX\v\EOT\DC2\ACK\186\EM\EOT\183\EM\CAN\n\
     \\r\n\
-    \\ENQ\EOTu\STX\v\ENQ\DC2\EOT\190\CAN\EOT\t\n\
+    \\ENQ\EOTx\STX\v\ENQ\DC2\EOT\186\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTu\STX\v\SOH\DC2\EOT\190\CAN\n\
+    \\ENQ\EOTx\STX\v\SOH\DC2\EOT\186\EM\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOTu\STX\v\ETX\DC2\EOT\190\CAN\GS\US\n\
+    \\ENQ\EOTx\STX\v\ETX\DC2\EOT\186\EM\GS\US\n\
     \@\n\
-    \\EOT\EOTu\STX\f\DC2\EOT\193\CAN\EOT$\SUB2 The HTLCs made in attempt to settle the payment.\n\
+    \\EOT\EOTx\STX\f\DC2\EOT\189\EM\EOT$\SUB2 The HTLCs made in attempt to settle the payment.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTu\STX\f\EOT\DC2\EOT\193\CAN\EOT\f\n\
+    \\ENQ\EOTx\STX\f\EOT\DC2\EOT\189\EM\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTu\STX\f\ACK\DC2\EOT\193\CAN\r\CAN\n\
+    \\ENQ\EOTx\STX\f\ACK\DC2\EOT\189\EM\r\CAN\n\
     \\r\n\
-    \\ENQ\EOTu\STX\f\SOH\DC2\EOT\193\CAN\EM\RS\n\
+    \\ENQ\EOTx\STX\f\SOH\DC2\EOT\189\EM\EM\RS\n\
     \\r\n\
-    \\ENQ\EOTu\STX\f\ETX\DC2\EOT\193\CAN!#\n\
+    \\ENQ\EOTx\STX\f\ETX\DC2\EOT\189\EM!#\n\
     \\189\SOH\n\
-    \\EOT\EOTu\STX\r\DC2\EOT\200\CAN\EOT\RS\SUB\174\SOH\n\
+    \\EOT\EOTx\STX\r\DC2\EOT\196\EM\EOT\RS\SUB\174\SOH\n\
     \The creation index of this payment. Each payment can be uniquely identified\n\
     \by this index, which may not strictly increment by 1 for payments made in\n\
     \older versions of lnd.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\r\EOT\DC2\ACK\200\CAN\EOT\193\CAN$\n\
+    \\ENQ\EOTx\STX\r\EOT\DC2\ACK\196\EM\EOT\189\EM$\n\
     \\r\n\
-    \\ENQ\EOTu\STX\r\ENQ\DC2\EOT\200\CAN\EOT\n\
+    \\ENQ\EOTx\STX\r\ENQ\DC2\EOT\196\EM\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTu\STX\r\SOH\DC2\EOT\200\CAN\v\CAN\n\
+    \\ENQ\EOTx\STX\r\SOH\DC2\EOT\196\EM\v\CAN\n\
     \\r\n\
-    \\ENQ\EOTu\STX\r\ETX\DC2\EOT\200\CAN\ESC\GS\n\
+    \\ENQ\EOTx\STX\r\ETX\DC2\EOT\196\EM\ESC\GS\n\
     \\f\n\
-    \\EOT\EOTu\STX\SO\DC2\EOT\202\CAN\EOT-\n\
+    \\EOT\EOTx\STX\SO\DC2\EOT\198\EM\EOT-\n\
     \\SI\n\
-    \\ENQ\EOTu\STX\SO\EOT\DC2\ACK\202\CAN\EOT\200\CAN\RS\n\
+    \\ENQ\EOTx\STX\SO\EOT\DC2\ACK\198\EM\EOT\196\EM\RS\n\
     \\r\n\
-    \\ENQ\EOTu\STX\SO\ACK\DC2\EOT\202\CAN\EOT\CAN\n\
+    \\ENQ\EOTx\STX\SO\ACK\DC2\EOT\198\EM\EOT\CAN\n\
     \\r\n\
-    \\ENQ\EOTu\STX\SO\SOH\DC2\EOT\202\CAN\EM'\n\
+    \\ENQ\EOTx\STX\SO\SOH\DC2\EOT\198\EM\EM'\n\
     \\r\n\
-    \\ENQ\EOTu\STX\SO\ETX\DC2\EOT\202\CAN*,\n\
+    \\ENQ\EOTx\STX\SO\ETX\DC2\EOT\198\EM*,\n\
     \\f\n\
-    \\STX\EOTv\DC2\ACK\205\CAN\NUL\232\CAN\SOH\n\
+    \\STX\EOTy\DC2\ACK\201\EM\NUL\231\EM\SOH\n\
     \\v\n\
-    \\ETX\EOTv\SOH\DC2\EOT\205\CAN\b\DC3\n\
-    \\SO\n\
-    \\EOT\EOTv\EOT\NUL\DC2\ACK\206\CAN\EOT\210\CAN\ENQ\n\
+    \\ETX\EOTy\SOH\DC2\EOT\201\EM\b\DC3\n\
+    \<\n\
+    \\EOT\EOTy\STX\NUL\DC2\EOT\203\EM\EOT\SUB\SUB. The unique ID that is used for this attempt.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOTy\STX\NUL\EOT\DC2\ACK\203\EM\EOT\201\EM\NAK\n\
     \\r\n\
-    \\ENQ\EOTv\EOT\NUL\SOH\DC2\EOT\206\CAN\t\DC3\n\
+    \\ENQ\EOTy\STX\NUL\ENQ\DC2\EOT\203\EM\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOTy\STX\NUL\SOH\DC2\EOT\203\EM\v\NAK\n\
+    \\r\n\
+    \\ENQ\EOTy\STX\NUL\ETX\DC2\EOT\203\EM\CAN\EM\n\
     \\SO\n\
-    \\ACK\EOTv\EOT\NUL\STX\NUL\DC2\EOT\207\CAN\b\SYN\n\
-    \\SI\n\
-    \\a\EOTv\EOT\NUL\STX\NUL\SOH\DC2\EOT\207\CAN\b\DC1\n\
-    \\SI\n\
-    \\a\EOTv\EOT\NUL\STX\NUL\STX\DC2\EOT\207\CAN\DC4\NAK\n\
+    \\EOT\EOTy\EOT\NUL\DC2\ACK\205\EM\EOT\209\EM\ENQ\n\
+    \\r\n\
+    \\ENQ\EOTy\EOT\NUL\SOH\DC2\EOT\205\EM\t\DC3\n\
     \\SO\n\
-    \\ACK\EOTv\EOT\NUL\STX\SOH\DC2\EOT\208\CAN\b\SYN\n\
+    \\ACK\EOTy\EOT\NUL\STX\NUL\DC2\EOT\206\EM\b\SYN\n\
     \\SI\n\
-    \\a\EOTv\EOT\NUL\STX\SOH\SOH\DC2\EOT\208\CAN\b\DC1\n\
+    \\a\EOTy\EOT\NUL\STX\NUL\SOH\DC2\EOT\206\EM\b\DC1\n\
     \\SI\n\
-    \\a\EOTv\EOT\NUL\STX\SOH\STX\DC2\EOT\208\CAN\DC4\NAK\n\
+    \\a\EOTy\EOT\NUL\STX\NUL\STX\DC2\EOT\206\EM\DC4\NAK\n\
     \\SO\n\
-    \\ACK\EOTv\EOT\NUL\STX\STX\DC2\EOT\209\CAN\b\DC3\n\
+    \\ACK\EOTy\EOT\NUL\STX\SOH\DC2\EOT\207\EM\b\SYN\n\
     \\SI\n\
-    \\a\EOTv\EOT\NUL\STX\STX\SOH\DC2\EOT\209\CAN\b\SO\n\
+    \\a\EOTy\EOT\NUL\STX\SOH\SOH\DC2\EOT\207\EM\b\DC1\n\
     \\SI\n\
-    \\a\EOTv\EOT\NUL\STX\STX\STX\DC2\EOT\209\CAN\DC1\DC2\n\
+    \\a\EOTy\EOT\NUL\STX\SOH\STX\DC2\EOT\207\EM\DC4\NAK\n\
+    \\SO\n\
+    \\ACK\EOTy\EOT\NUL\STX\STX\DC2\EOT\208\EM\b\DC3\n\
+    \\SI\n\
+    \\a\EOTy\EOT\NUL\STX\STX\SOH\DC2\EOT\208\EM\b\SO\n\
+    \\SI\n\
+    \\a\EOTy\EOT\NUL\STX\STX\STX\DC2\EOT\208\EM\DC1\DC2\n\
     \'\n\
-    \\EOT\EOTv\STX\NUL\DC2\EOT\213\CAN\EOT\SUB\SUB\EM The status of the HTLC.\n\
+    \\EOT\EOTy\STX\SOH\DC2\EOT\212\EM\EOT\SUB\SUB\EM The status of the HTLC.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTv\STX\NUL\EOT\DC2\ACK\213\CAN\EOT\210\CAN\ENQ\n\
+    \\ENQ\EOTy\STX\SOH\EOT\DC2\ACK\212\EM\EOT\209\EM\ENQ\n\
     \\r\n\
-    \\ENQ\EOTv\STX\NUL\ACK\DC2\EOT\213\CAN\EOT\SO\n\
+    \\ENQ\EOTy\STX\SOH\ACK\DC2\EOT\212\EM\EOT\SO\n\
     \\r\n\
-    \\ENQ\EOTv\STX\NUL\SOH\DC2\EOT\213\CAN\SI\NAK\n\
+    \\ENQ\EOTy\STX\SOH\SOH\DC2\EOT\212\EM\SI\NAK\n\
     \\r\n\
-    \\ENQ\EOTv\STX\NUL\ETX\DC2\EOT\213\CAN\CAN\EM\n\
+    \\ENQ\EOTy\STX\SOH\ETX\DC2\EOT\212\EM\CAN\EM\n\
     \-\n\
-    \\EOT\EOTv\STX\SOH\DC2\EOT\216\CAN\EOT\DC4\SUB\US The route taken by this HTLC.\n\
+    \\EOT\EOTy\STX\STX\DC2\EOT\215\EM\EOT\DC4\SUB\US The route taken by this HTLC.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTv\STX\SOH\EOT\DC2\ACK\216\CAN\EOT\213\CAN\SUB\n\
+    \\ENQ\EOTy\STX\STX\EOT\DC2\ACK\215\EM\EOT\212\EM\SUB\n\
     \\r\n\
-    \\ENQ\EOTv\STX\SOH\ACK\DC2\EOT\216\CAN\EOT\t\n\
+    \\ENQ\EOTy\STX\STX\ACK\DC2\EOT\215\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTv\STX\SOH\SOH\DC2\EOT\216\CAN\n\
+    \\ENQ\EOTy\STX\STX\SOH\DC2\EOT\215\EM\n\
     \\SI\n\
     \\r\n\
-    \\ENQ\EOTv\STX\SOH\ETX\DC2\EOT\216\CAN\DC2\DC3\n\
+    \\ENQ\EOTy\STX\STX\ETX\DC2\EOT\215\EM\DC2\DC3\n\
     \I\n\
-    \\EOT\EOTv\STX\STX\DC2\EOT\219\CAN\EOT\RS\SUB; The time in UNIX nanoseconds at which this HTLC was sent.\n\
+    \\EOT\EOTy\STX\ETX\DC2\EOT\218\EM\EOT\RS\SUB; The time in UNIX nanoseconds at which this HTLC was sent.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTv\STX\STX\EOT\DC2\ACK\219\CAN\EOT\216\CAN\DC4\n\
+    \\ENQ\EOTy\STX\ETX\EOT\DC2\ACK\218\EM\EOT\215\EM\DC4\n\
     \\r\n\
-    \\ENQ\EOTv\STX\STX\ENQ\DC2\EOT\219\CAN\EOT\t\n\
+    \\ENQ\EOTy\STX\ETX\ENQ\DC2\EOT\218\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTv\STX\STX\SOH\DC2\EOT\219\CAN\n\
+    \\ENQ\EOTy\STX\ETX\SOH\DC2\EOT\218\EM\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOTv\STX\STX\ETX\DC2\EOT\219\CAN\FS\GS\n\
+    \\ENQ\EOTy\STX\ETX\ETX\DC2\EOT\218\EM\FS\GS\n\
     \\146\SOH\n\
-    \\EOT\EOTv\STX\ETX\DC2\EOT\225\CAN\EOT\RS\SUB\131\SOH\n\
+    \\EOT\EOTy\STX\EOT\DC2\EOT\224\EM\EOT\RS\SUB\131\SOH\n\
     \The time in UNIX nanoseconds at which this HTLC was settled or failed.\n\
     \This value will not be set if the HTLC is still IN_FLIGHT.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTv\STX\ETX\EOT\DC2\ACK\225\CAN\EOT\219\CAN\RS\n\
+    \\ENQ\EOTy\STX\EOT\EOT\DC2\ACK\224\EM\EOT\218\EM\RS\n\
     \\r\n\
-    \\ENQ\EOTv\STX\ETX\ENQ\DC2\EOT\225\CAN\EOT\t\n\
+    \\ENQ\EOTy\STX\EOT\ENQ\DC2\EOT\224\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTv\STX\ETX\SOH\DC2\EOT\225\CAN\n\
+    \\ENQ\EOTy\STX\EOT\SOH\DC2\EOT\224\EM\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOTv\STX\ETX\ETX\DC2\EOT\225\CAN\FS\GS\n\
+    \\ENQ\EOTy\STX\EOT\ETX\DC2\EOT\224\EM\FS\GS\n\
     \+\n\
-    \\EOT\EOTv\STX\EOT\DC2\EOT\228\CAN\EOT\CAN\SUB\GS Detailed htlc failure info.\n\
+    \\EOT\EOTy\STX\ENQ\DC2\EOT\227\EM\EOT\CAN\SUB\GS Detailed htlc failure info.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTv\STX\EOT\EOT\DC2\ACK\228\CAN\EOT\225\CAN\RS\n\
+    \\ENQ\EOTy\STX\ENQ\EOT\DC2\ACK\227\EM\EOT\224\EM\RS\n\
     \\r\n\
-    \\ENQ\EOTv\STX\EOT\ACK\DC2\EOT\228\CAN\EOT\v\n\
+    \\ENQ\EOTy\STX\ENQ\ACK\DC2\EOT\227\EM\EOT\v\n\
     \\r\n\
-    \\ENQ\EOTv\STX\EOT\SOH\DC2\EOT\228\CAN\f\DC3\n\
+    \\ENQ\EOTy\STX\ENQ\SOH\DC2\EOT\227\EM\f\DC3\n\
     \\r\n\
-    \\ENQ\EOTv\STX\EOT\ETX\DC2\EOT\228\CAN\SYN\ETB\n\
+    \\ENQ\EOTy\STX\ENQ\ETX\DC2\EOT\227\EM\SYN\ETB\n\
     \>\n\
-    \\EOT\EOTv\STX\ENQ\DC2\EOT\231\CAN\EOT\ETB\SUB0 The preimage that was used to settle the HTLC.\n\
+    \\EOT\EOTy\STX\ACK\DC2\EOT\230\EM\EOT\ETB\SUB0 The preimage that was used to settle the HTLC.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTv\STX\ENQ\EOT\DC2\ACK\231\CAN\EOT\228\CAN\CAN\n\
+    \\ENQ\EOTy\STX\ACK\EOT\DC2\ACK\230\EM\EOT\227\EM\CAN\n\
     \\r\n\
-    \\ENQ\EOTv\STX\ENQ\ENQ\DC2\EOT\231\CAN\EOT\t\n\
+    \\ENQ\EOTy\STX\ACK\ENQ\DC2\EOT\230\EM\EOT\t\n\
     \\r\n\
-    \\ENQ\EOTv\STX\ENQ\SOH\DC2\EOT\231\CAN\n\
+    \\ENQ\EOTy\STX\ACK\SOH\DC2\EOT\230\EM\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOTv\STX\ENQ\ETX\DC2\EOT\231\CAN\NAK\SYN\n\
+    \\ENQ\EOTy\STX\ACK\ETX\DC2\EOT\230\EM\NAK\SYN\n\
     \\f\n\
-    \\STX\EOTw\DC2\ACK\234\CAN\NUL\133\EM\SOH\n\
+    \\STX\EOTz\DC2\ACK\233\EM\NUL\132\SUB\SOH\n\
     \\v\n\
-    \\ETX\EOTw\SOH\DC2\EOT\234\CAN\b\ESC\n\
+    \\ETX\EOTz\SOH\DC2\EOT\233\EM\b\ESC\n\
     \\149\STX\n\
-    \\EOT\EOTw\STX\NUL\DC2\EOT\241\CAN\EOT \SUB\134\STX\n\
+    \\EOT\EOTz\STX\NUL\DC2\EOT\240\EM\EOT \SUB\134\STX\n\
     \If true, then return payments that have not yet fully completed. This means\n\
     \that pending payments, as well as failed payments will show up if this\n\
     \field is set to true. This flag doesn't change the meaning of the indices,\n\
     \which are tied to individual payments.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTw\STX\NUL\EOT\DC2\ACK\241\CAN\EOT\234\CAN\GS\n\
+    \\ENQ\EOTz\STX\NUL\EOT\DC2\ACK\240\EM\EOT\233\EM\GS\n\
     \\r\n\
-    \\ENQ\EOTw\STX\NUL\ENQ\DC2\EOT\241\CAN\EOT\b\n\
+    \\ENQ\EOTz\STX\NUL\ENQ\DC2\EOT\240\EM\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTw\STX\NUL\SOH\DC2\EOT\241\CAN\t\ESC\n\
+    \\ENQ\EOTz\STX\NUL\SOH\DC2\EOT\240\EM\t\ESC\n\
     \\r\n\
-    \\ENQ\EOTw\STX\NUL\ETX\DC2\EOT\241\CAN\RS\US\n\
+    \\ENQ\EOTz\STX\NUL\ETX\DC2\EOT\240\EM\RS\US\n\
     \\237\STX\n\
-    \\EOT\EOTw\STX\SOH\DC2\EOT\250\CAN\EOT\FS\SUB\222\STX\n\
+    \\EOT\EOTz\STX\SOH\DC2\EOT\249\EM\EOT\FS\SUB\222\STX\n\
     \The index of a payment that will be used as either the start or end of a\n\
     \query to determine which payments should be returned in the response. The\n\
     \index_offset is exclusive. In the case of a zero index_offset, the query\n\
@@ -59186,1615 +61591,1723 @@ packedFileDescriptor
     \with the most recent payment when paginating backwards.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTw\STX\SOH\EOT\DC2\ACK\250\CAN\EOT\241\CAN \n\
+    \\ENQ\EOTz\STX\SOH\EOT\DC2\ACK\249\EM\EOT\240\EM \n\
     \\r\n\
-    \\ENQ\EOTw\STX\SOH\ENQ\DC2\EOT\250\CAN\EOT\n\
+    \\ENQ\EOTz\STX\SOH\ENQ\DC2\EOT\249\EM\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTw\STX\SOH\SOH\DC2\EOT\250\CAN\v\ETB\n\
+    \\ENQ\EOTz\STX\SOH\SOH\DC2\EOT\249\EM\v\ETB\n\
     \\r\n\
-    \\ENQ\EOTw\STX\SOH\ETX\DC2\EOT\250\CAN\SUB\ESC\n\
+    \\ENQ\EOTz\STX\SOH\ETX\DC2\EOT\249\EM\SUB\ESC\n\
     \V\n\
-    \\EOT\EOTw\STX\STX\DC2\EOT\253\CAN\EOT\FS\SUBH The maximal number of payments returned in the response to this query.\n\
+    \\EOT\EOTz\STX\STX\DC2\EOT\252\EM\EOT\FS\SUBH The maximal number of payments returned in the response to this query.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTw\STX\STX\EOT\DC2\ACK\253\CAN\EOT\250\CAN\FS\n\
+    \\ENQ\EOTz\STX\STX\EOT\DC2\ACK\252\EM\EOT\249\EM\FS\n\
     \\r\n\
-    \\ENQ\EOTw\STX\STX\ENQ\DC2\EOT\253\CAN\EOT\n\
+    \\ENQ\EOTz\STX\STX\ENQ\DC2\EOT\252\EM\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTw\STX\STX\SOH\DC2\EOT\253\CAN\v\ETB\n\
+    \\ENQ\EOTz\STX\STX\SOH\DC2\EOT\252\EM\v\ETB\n\
     \\r\n\
-    \\ENQ\EOTw\STX\STX\ETX\DC2\EOT\253\CAN\SUB\ESC\n\
+    \\ENQ\EOTz\STX\STX\ETX\DC2\EOT\252\EM\SUB\ESC\n\
     \\237\SOH\n\
-    \\EOT\EOTw\STX\ETX\DC2\EOT\132\EM\EOT\SYN\SUB\222\SOH\n\
+    \\EOT\EOTz\STX\ETX\DC2\EOT\131\SUB\EOT\SYN\SUB\222\SOH\n\
     \If set, the payments returned will result from seeking backwards from the\n\
     \specified index offset. This can be used to paginate backwards. The order\n\
     \of the returned payments is always oldest first (ascending index order).\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTw\STX\ETX\EOT\DC2\ACK\132\EM\EOT\253\CAN\FS\n\
+    \\ENQ\EOTz\STX\ETX\EOT\DC2\ACK\131\SUB\EOT\252\EM\FS\n\
     \\r\n\
-    \\ENQ\EOTw\STX\ETX\ENQ\DC2\EOT\132\EM\EOT\b\n\
+    \\ENQ\EOTz\STX\ETX\ENQ\DC2\EOT\131\SUB\EOT\b\n\
     \\r\n\
-    \\ENQ\EOTw\STX\ETX\SOH\DC2\EOT\132\EM\t\DC1\n\
+    \\ENQ\EOTz\STX\ETX\SOH\DC2\EOT\131\SUB\t\DC1\n\
     \\r\n\
-    \\ENQ\EOTw\STX\ETX\ETX\DC2\EOT\132\EM\DC4\NAK\n\
+    \\ENQ\EOTz\STX\ETX\ETX\DC2\EOT\131\SUB\DC4\NAK\n\
     \\f\n\
-    \\STX\EOTx\DC2\ACK\135\EM\NUL\150\EM\SOH\n\
+    \\STX\EOT{\DC2\ACK\134\SUB\NUL\149\SUB\SOH\n\
     \\v\n\
-    \\ETX\EOTx\SOH\DC2\EOT\135\EM\b\FS\n\
+    \\ETX\EOT{\SOH\DC2\EOT\134\SUB\b\FS\n\
     \$\n\
-    \\EOT\EOTx\STX\NUL\DC2\EOT\137\EM\EOT\"\SUB\SYN The list of payments\n\
+    \\EOT\EOT{\STX\NUL\DC2\EOT\136\SUB\EOT\"\SUB\SYN The list of payments\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTx\STX\NUL\EOT\DC2\EOT\137\EM\EOT\f\n\
+    \\ENQ\EOT{\STX\NUL\EOT\DC2\EOT\136\SUB\EOT\f\n\
     \\r\n\
-    \\ENQ\EOTx\STX\NUL\ACK\DC2\EOT\137\EM\r\DC4\n\
+    \\ENQ\EOT{\STX\NUL\ACK\DC2\EOT\136\SUB\r\DC4\n\
     \\r\n\
-    \\ENQ\EOTx\STX\NUL\SOH\DC2\EOT\137\EM\NAK\GS\n\
+    \\ENQ\EOT{\STX\NUL\SOH\DC2\EOT\136\SUB\NAK\GS\n\
     \\r\n\
-    \\ENQ\EOTx\STX\NUL\ETX\DC2\EOT\137\EM !\n\
+    \\ENQ\EOT{\STX\NUL\ETX\DC2\EOT\136\SUB !\n\
     \\165\SOH\n\
-    \\EOT\EOTx\STX\SOH\DC2\EOT\143\EM\EOT\"\SUB\150\SOH\n\
+    \\EOT\EOT{\STX\SOH\DC2\EOT\142\SUB\EOT\"\SUB\150\SOH\n\
     \The index of the first item in the set of returned payments. This can be\n\
     \used as the index_offset to continue seeking backwards in the next request.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTx\STX\SOH\EOT\DC2\ACK\143\EM\EOT\137\EM\"\n\
+    \\ENQ\EOT{\STX\SOH\EOT\DC2\ACK\142\SUB\EOT\136\SUB\"\n\
     \\r\n\
-    \\ENQ\EOTx\STX\SOH\ENQ\DC2\EOT\143\EM\EOT\n\
+    \\ENQ\EOT{\STX\SOH\ENQ\DC2\EOT\142\SUB\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTx\STX\SOH\SOH\DC2\EOT\143\EM\v\GS\n\
+    \\ENQ\EOT{\STX\SOH\SOH\DC2\EOT\142\SUB\v\GS\n\
     \\r\n\
-    \\ENQ\EOTx\STX\SOH\ETX\DC2\EOT\143\EM !\n\
+    \\ENQ\EOT{\STX\SOH\ETX\DC2\EOT\142\SUB !\n\
     \\163\SOH\n\
-    \\EOT\EOTx\STX\STX\DC2\EOT\149\EM\EOT!\SUB\148\SOH\n\
+    \\EOT\EOT{\STX\STX\DC2\EOT\148\SUB\EOT!\SUB\148\SOH\n\
     \The index of the last item in the set of returned payments. This can be used\n\
     \as the index_offset to continue seeking forwards in the next request.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOTx\STX\STX\EOT\DC2\ACK\149\EM\EOT\143\EM\"\n\
+    \\ENQ\EOT{\STX\STX\EOT\DC2\ACK\148\SUB\EOT\142\SUB\"\n\
     \\r\n\
-    \\ENQ\EOTx\STX\STX\ENQ\DC2\EOT\149\EM\EOT\n\
+    \\ENQ\EOT{\STX\STX\ENQ\DC2\EOT\148\SUB\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOTx\STX\STX\SOH\DC2\EOT\149\EM\v\FS\n\
+    \\ENQ\EOT{\STX\STX\SOH\DC2\EOT\148\SUB\v\FS\n\
     \\r\n\
-    \\ENQ\EOTx\STX\STX\ETX\DC2\EOT\149\EM\US \n\
+    \\ENQ\EOT{\STX\STX\ETX\DC2\EOT\148\SUB\US \n\
     \\f\n\
-    \\STX\EOTy\DC2\ACK\152\EM\NUL\153\EM\SOH\n\
+    \\STX\EOT|\DC2\ACK\151\SUB\NUL\159\SUB\SOH\n\
     \\v\n\
-    \\ETX\EOTy\SOH\DC2\EOT\152\EM\b \n\
-    \\f\n\
-    \\STX\EOTz\DC2\ACK\155\EM\NUL\156\EM\SOH\n\
-    \\v\n\
-    \\ETX\EOTz\SOH\DC2\EOT\155\EM\b!\n\
-    \\f\n\
-    \\STX\EOT{\DC2\ACK\158\EM\NUL\162\EM\SOH\n\
-    \\v\n\
-    \\ETX\EOT{\SOH\DC2\EOT\158\EM\b\GS\n\
-    \\f\n\
-    \\EOT\EOT{\STX\NUL\DC2\EOT\159\EM\EOT#\n\
-    \\SI\n\
-    \\ENQ\EOT{\STX\NUL\EOT\DC2\ACK\159\EM\EOT\158\EM\US\n\
-    \\r\n\
-    \\ENQ\EOT{\STX\NUL\ACK\DC2\EOT\159\EM\EOT\DLE\n\
-    \\r\n\
-    \\ENQ\EOT{\STX\NUL\SOH\DC2\EOT\159\EM\DC1\RS\n\
-    \\r\n\
-    \\ENQ\EOT{\STX\NUL\ETX\DC2\EOT\159\EM!\"\n\
-    \\f\n\
-    \\EOT\EOT{\STX\SOH\DC2\EOT\161\EM\EOT'\n\
-    \\SI\n\
-    \\ENQ\EOT{\STX\SOH\EOT\DC2\ACK\161\EM\EOT\159\EM#\n\
-    \\r\n\
-    \\ENQ\EOT{\STX\SOH\ENQ\DC2\EOT\161\EM\EOT\b\n\
-    \\r\n\
-    \\ENQ\EOT{\STX\SOH\SOH\DC2\EOT\161\EM\t\"\n\
-    \\r\n\
-    \\ENQ\EOT{\STX\SOH\ETX\DC2\EOT\161\EM%&\n\
-    \\f\n\
-    \\STX\EOT|\DC2\ACK\164\EM\NUL\165\EM\SOH\n\
-    \\v\n\
-    \\ETX\EOT|\SOH\DC2\EOT\164\EM\b\RS\n\
-    \\f\n\
-    \\STX\EOT}\DC2\ACK\167\EM\NUL\170\EM\SOH\n\
-    \\v\n\
-    \\ETX\EOT}\SOH\DC2\EOT\167\EM\b\EM\n\
-    \\f\n\
-    \\EOT\EOT}\STX\NUL\DC2\EOT\168\EM\EOT\DC2\n\
-    \\SI\n\
-    \\ENQ\EOT}\STX\NUL\EOT\DC2\ACK\168\EM\EOT\167\EM\ESC\n\
-    \\r\n\
-    \\ENQ\EOT}\STX\NUL\ENQ\DC2\EOT\168\EM\EOT\b\n\
-    \\r\n\
-    \\ENQ\EOT}\STX\NUL\SOH\DC2\EOT\168\EM\t\r\n\
-    \\r\n\
-    \\ENQ\EOT}\STX\NUL\ETX\DC2\EOT\168\EM\DLE\DC1\n\
-    \\f\n\
-    \\EOT\EOT}\STX\SOH\DC2\EOT\169\EM\EOT\SUB\n\
-    \\SI\n\
-    \\ENQ\EOT}\STX\SOH\EOT\DC2\ACK\169\EM\EOT\168\EM\DC2\n\
-    \\r\n\
-    \\ENQ\EOT}\STX\SOH\ENQ\DC2\EOT\169\EM\EOT\n\
-    \\n\
-    \\r\n\
-    \\ENQ\EOT}\STX\SOH\SOH\DC2\EOT\169\EM\v\NAK\n\
-    \\r\n\
-    \\ENQ\EOT}\STX\SOH\ETX\DC2\EOT\169\EM\CAN\EM\n\
-    \\f\n\
-    \\STX\EOT~\DC2\ACK\171\EM\NUL\173\EM\SOH\n\
-    \\v\n\
-    \\ETX\EOT~\SOH\DC2\EOT\171\EM\b\SUB\n\
-    \\f\n\
-    \\EOT\EOT~\STX\NUL\DC2\EOT\172\EM\EOT\ESC\n\
-    \\SI\n\
-    \\ENQ\EOT~\STX\NUL\EOT\DC2\ACK\172\EM\EOT\171\EM\FS\n\
-    \\r\n\
-    \\ENQ\EOT~\STX\NUL\ENQ\DC2\EOT\172\EM\EOT\n\
-    \\n\
-    \\r\n\
-    \\ENQ\EOT~\STX\NUL\SOH\DC2\EOT\172\EM\v\SYN\n\
-    \\r\n\
-    \\ENQ\EOT~\STX\NUL\ETX\DC2\EOT\172\EM\EM\SUB\n\
-    \\f\n\
-    \\STX\EOT\DEL\DC2\ACK\175\EM\NUL\178\EM\SOH\n\
-    \\v\n\
-    \\ETX\EOT\DEL\SOH\DC2\EOT\175\EM\b\DC4\n\
-    \8\n\
-    \\EOT\EOT\DEL\STX\NUL\DC2\EOT\177\EM\EOT\ETB\SUB* The payment request string to be decoded\n\
+    \\ETX\EOT|\SOH\DC2\EOT\151\SUB\b \n\
+    \,\n\
+    \\EOT\EOT|\STX\NUL\DC2\EOT\153\SUB\EOT\"\SUB\RS Only delete failed payments.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\DEL\STX\NUL\EOT\DC2\ACK\177\EM\EOT\175\EM\SYN\n\
+    \\ENQ\EOT|\STX\NUL\EOT\DC2\ACK\153\SUB\EOT\151\SUB\"\n\
     \\r\n\
-    \\ENQ\EOT\DEL\STX\NUL\ENQ\DC2\EOT\177\EM\EOT\n\
+    \\ENQ\EOT|\STX\NUL\ENQ\DC2\EOT\153\SUB\EOT\b\n\
+    \\r\n\
+    \\ENQ\EOT|\STX\NUL\SOH\DC2\EOT\153\SUB\t\GS\n\
+    \\r\n\
+    \\ENQ\EOT|\STX\NUL\ETX\DC2\EOT\153\SUB !\n\
+    \O\n\
+    \\EOT\EOT|\STX\SOH\DC2\EOT\158\SUB\EOT\US\SUBA\n\
+    \Only delete failed HTLCs from payments, not the payment itself.\n\
     \\n\
+    \\SI\n\
+    \\ENQ\EOT|\STX\SOH\EOT\DC2\ACK\158\SUB\EOT\153\SUB\"\n\
     \\r\n\
-    \\ENQ\EOT\DEL\STX\NUL\SOH\DC2\EOT\177\EM\v\DC2\n\
+    \\ENQ\EOT|\STX\SOH\ENQ\DC2\EOT\158\SUB\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\DEL\STX\NUL\ETX\DC2\EOT\177\EM\NAK\SYN\n\
+    \\ENQ\EOT|\STX\SOH\SOH\DC2\EOT\158\SUB\t\SUB\n\
     \\r\n\
-    \\ETX\EOT\128\SOH\DC2\ACK\179\EM\NUL\193\EM\SOH\n\
+    \\ENQ\EOT|\STX\SOH\ETX\DC2\EOT\158\SUB\GS\RS\n\
     \\f\n\
-    \\EOT\EOT\128\SOH\SOH\DC2\EOT\179\EM\b\SO\n\
+    \\STX\EOT}\DC2\ACK\161\SUB\NUL\162\SUB\SOH\n\
+    \\v\n\
+    \\ETX\EOT}\SOH\DC2\EOT\161\SUB\b!\n\
+    \\f\n\
+    \\STX\EOT~\DC2\ACK\164\SUB\NUL\175\SUB\SOH\n\
+    \\v\n\
+    \\ETX\EOT~\SOH\DC2\EOT\164\SUB\b\GS\n\
+    \\f\n\
+    \\EOT\EOT~\STX\NUL\DC2\EOT\165\SUB\EOT#\n\
+    \\SI\n\
+    \\ENQ\EOT~\STX\NUL\EOT\DC2\ACK\165\SUB\EOT\164\SUB\US\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\NUL\DC2\EOT\180\EM\EOT\ESC\n\
+    \\ENQ\EOT~\STX\NUL\ACK\DC2\EOT\165\SUB\EOT\DLE\n\
+    \\r\n\
+    \\ENQ\EOT~\STX\NUL\SOH\DC2\EOT\165\SUB\DC1\RS\n\
+    \\r\n\
+    \\ENQ\EOT~\STX\NUL\ETX\DC2\EOT\165\SUB!\"\n\
+    \\f\n\
+    \\EOT\EOT~\STX\SOH\DC2\EOT\167\SUB\EOT'\n\
+    \\SI\n\
+    \\ENQ\EOT~\STX\SOH\EOT\DC2\ACK\167\SUB\EOT\165\SUB#\n\
+    \\r\n\
+    \\ENQ\EOT~\STX\SOH\ENQ\DC2\EOT\167\SUB\EOT\b\n\
+    \\r\n\
+    \\ENQ\EOT~\STX\SOH\SOH\DC2\EOT\167\SUB\t\"\n\
+    \\r\n\
+    \\ENQ\EOT~\STX\SOH\ETX\DC2\EOT\167\SUB%&\n\
+    \\212\SOH\n\
+    \\EOT\EOT~\STX\STX\DC2\EOT\174\SUB\EOT$\SUB\197\SOH\n\
+    \Override the requirement for being in dev mode by setting this to true and\n\
+    \confirming the user knows what they are doing and this is a potential foot\n\
+    \gun to lose funds if used on active channels.\n\
+    \\n\
+    \\SI\n\
+    \\ENQ\EOT~\STX\STX\EOT\DC2\ACK\174\SUB\EOT\167\SUB'\n\
+    \\r\n\
+    \\ENQ\EOT~\STX\STX\ENQ\DC2\EOT\174\SUB\EOT\b\n\
+    \\r\n\
+    \\ENQ\EOT~\STX\STX\SOH\DC2\EOT\174\SUB\t\US\n\
+    \\r\n\
+    \\ENQ\EOT~\STX\STX\ETX\DC2\EOT\174\SUB\"#\n\
+    \\f\n\
+    \\STX\EOT\DEL\DC2\ACK\177\SUB\NUL\178\SUB\SOH\n\
+    \\v\n\
+    \\ETX\EOT\DEL\SOH\DC2\EOT\177\SUB\b\RS\n\
+    \\r\n\
+    \\ETX\EOT\128\SOH\DC2\ACK\180\SUB\NUL\183\SUB\SOH\n\
+    \\f\n\
+    \\EOT\EOT\128\SOH\SOH\DC2\EOT\180\SUB\b\EM\n\
+    \\r\n\
+    \\ENQ\EOT\128\SOH\STX\NUL\DC2\EOT\181\SUB\EOT\DC2\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\NUL\EOT\DC2\ACK\180\EM\EOT\179\EM\DLE\n\
+    \\ACK\EOT\128\SOH\STX\NUL\EOT\DC2\ACK\181\SUB\EOT\180\SUB\ESC\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\NUL\ENQ\DC2\EOT\180\EM\EOT\n\
+    \\ACK\EOT\128\SOH\STX\NUL\ENQ\DC2\EOT\181\SUB\EOT\b\n\
+    \\SO\n\
+    \\ACK\EOT\128\SOH\STX\NUL\SOH\DC2\EOT\181\SUB\t\r\n\
+    \\SO\n\
+    \\ACK\EOT\128\SOH\STX\NUL\ETX\DC2\EOT\181\SUB\DLE\DC1\n\
+    \\r\n\
+    \\ENQ\EOT\128\SOH\STX\SOH\DC2\EOT\182\SUB\EOT\SUB\n\
+    \\DLE\n\
+    \\ACK\EOT\128\SOH\STX\SOH\EOT\DC2\ACK\182\SUB\EOT\181\SUB\DC2\n\
+    \\SO\n\
+    \\ACK\EOT\128\SOH\STX\SOH\ENQ\DC2\EOT\182\SUB\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\NUL\SOH\DC2\EOT\180\EM\v\SYN\n\
+    \\ACK\EOT\128\SOH\STX\SOH\SOH\DC2\EOT\182\SUB\v\NAK\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\NUL\ETX\DC2\EOT\180\EM\EM\SUB\n\
+    \\ACK\EOT\128\SOH\STX\SOH\ETX\DC2\EOT\182\SUB\CAN\EM\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\SOH\DC2\EOT\181\EM\EOT\FS\n\
+    \\ETX\EOT\129\SOH\DC2\ACK\184\SUB\NUL\186\SUB\SOH\n\
+    \\f\n\
+    \\EOT\EOT\129\SOH\SOH\DC2\EOT\184\SUB\b\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\129\SOH\STX\NUL\DC2\EOT\185\SUB\EOT\ESC\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\SOH\EOT\DC2\ACK\181\EM\EOT\180\EM\ESC\n\
+    \\ACK\EOT\129\SOH\STX\NUL\EOT\DC2\ACK\185\SUB\EOT\184\SUB\FS\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\SOH\ENQ\DC2\EOT\181\EM\EOT\n\
+    \\ACK\EOT\129\SOH\STX\NUL\ENQ\DC2\EOT\185\SUB\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\SOH\SOH\DC2\EOT\181\EM\v\ETB\n\
+    \\ACK\EOT\129\SOH\STX\NUL\SOH\DC2\EOT\185\SUB\v\SYN\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\SOH\ETX\DC2\EOT\181\EM\SUB\ESC\n\
+    \\ACK\EOT\129\SOH\STX\NUL\ETX\DC2\EOT\185\SUB\EM\SUB\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\STX\DC2\EOT\182\EM\EOT\ESC\n\
+    \\ETX\EOT\130\SOH\DC2\ACK\188\SUB\NUL\191\SUB\SOH\n\
+    \\f\n\
+    \\EOT\EOT\130\SOH\SOH\DC2\EOT\188\SUB\b\DC4\n\
+    \9\n\
+    \\ENQ\EOT\130\SOH\STX\NUL\DC2\EOT\190\SUB\EOT\ETB\SUB* The payment request string to be decoded\n\
+    \\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\STX\EOT\DC2\ACK\182\EM\EOT\181\EM\FS\n\
+    \\ACK\EOT\130\SOH\STX\NUL\EOT\DC2\ACK\190\SUB\EOT\188\SUB\SYN\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\STX\ENQ\DC2\EOT\182\EM\EOT\t\n\
+    \\ACK\EOT\130\SOH\STX\NUL\ENQ\DC2\EOT\190\SUB\EOT\n\
+    \\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\STX\SOH\DC2\EOT\182\EM\n\
+    \\ACK\EOT\130\SOH\STX\NUL\SOH\DC2\EOT\190\SUB\v\DC2\n\
+    \\SO\n\
+    \\ACK\EOT\130\SOH\STX\NUL\ETX\DC2\EOT\190\SUB\NAK\SYN\n\
+    \\r\n\
+    \\ETX\EOT\131\SOH\DC2\ACK\192\SUB\NUL\206\SUB\SOH\n\
+    \\f\n\
+    \\EOT\EOT\131\SOH\SOH\DC2\EOT\192\SUB\b\SO\n\
+    \\r\n\
+    \\ENQ\EOT\131\SOH\STX\NUL\DC2\EOT\193\SUB\EOT\ESC\n\
+    \\DLE\n\
+    \\ACK\EOT\131\SOH\STX\NUL\EOT\DC2\ACK\193\SUB\EOT\192\SUB\DLE\n\
+    \\SO\n\
+    \\ACK\EOT\131\SOH\STX\NUL\ENQ\DC2\EOT\193\SUB\EOT\n\
+    \\n\
+    \\SO\n\
+    \\ACK\EOT\131\SOH\STX\NUL\SOH\DC2\EOT\193\SUB\v\SYN\n\
+    \\SO\n\
+    \\ACK\EOT\131\SOH\STX\NUL\ETX\DC2\EOT\193\SUB\EM\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\131\SOH\STX\SOH\DC2\EOT\194\SUB\EOT\FS\n\
+    \\DLE\n\
+    \\ACK\EOT\131\SOH\STX\SOH\EOT\DC2\ACK\194\SUB\EOT\193\SUB\ESC\n\
+    \\SO\n\
+    \\ACK\EOT\131\SOH\STX\SOH\ENQ\DC2\EOT\194\SUB\EOT\n\
+    \\n\
+    \\SO\n\
+    \\ACK\EOT\131\SOH\STX\SOH\SOH\DC2\EOT\194\SUB\v\ETB\n\
+    \\SO\n\
+    \\ACK\EOT\131\SOH\STX\SOH\ETX\DC2\EOT\194\SUB\SUB\ESC\n\
+    \\r\n\
+    \\ENQ\EOT\131\SOH\STX\STX\DC2\EOT\195\SUB\EOT\ESC\n\
+    \\DLE\n\
+    \\ACK\EOT\131\SOH\STX\STX\EOT\DC2\ACK\195\SUB\EOT\194\SUB\FS\n\
+    \\SO\n\
+    \\ACK\EOT\131\SOH\STX\STX\ENQ\DC2\EOT\195\SUB\EOT\t\n\
+    \\SO\n\
+    \\ACK\EOT\131\SOH\STX\STX\SOH\DC2\EOT\195\SUB\n\
     \\SYN\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\STX\ETX\DC2\EOT\182\EM\EM\SUB\n\
+    \\ACK\EOT\131\SOH\STX\STX\ETX\DC2\EOT\195\SUB\EM\SUB\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\ETX\DC2\EOT\183\EM\EOT\CAN\n\
+    \\ENQ\EOT\131\SOH\STX\ETX\DC2\EOT\196\SUB\EOT\CAN\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\ETX\EOT\DC2\ACK\183\EM\EOT\182\EM\ESC\n\
+    \\ACK\EOT\131\SOH\STX\ETX\EOT\DC2\ACK\196\SUB\EOT\195\SUB\ESC\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\ETX\ENQ\DC2\EOT\183\EM\EOT\t\n\
+    \\ACK\EOT\131\SOH\STX\ETX\ENQ\DC2\EOT\196\SUB\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\ETX\SOH\DC2\EOT\183\EM\n\
+    \\ACK\EOT\131\SOH\STX\ETX\SOH\DC2\EOT\196\SUB\n\
     \\DC3\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\ETX\ETX\DC2\EOT\183\EM\SYN\ETB\n\
+    \\ACK\EOT\131\SOH\STX\ETX\ETX\DC2\EOT\196\SUB\SYN\ETB\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\EOT\DC2\EOT\184\EM\EOT\NAK\n\
+    \\ENQ\EOT\131\SOH\STX\EOT\DC2\EOT\197\SUB\EOT\NAK\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\EOT\EOT\DC2\ACK\184\EM\EOT\183\EM\CAN\n\
+    \\ACK\EOT\131\SOH\STX\EOT\EOT\DC2\ACK\197\SUB\EOT\196\SUB\CAN\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\EOT\ENQ\DC2\EOT\184\EM\EOT\t\n\
+    \\ACK\EOT\131\SOH\STX\EOT\ENQ\DC2\EOT\197\SUB\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\EOT\SOH\DC2\EOT\184\EM\n\
+    \\ACK\EOT\131\SOH\STX\EOT\SOH\DC2\EOT\197\SUB\n\
     \\DLE\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\EOT\ETX\DC2\EOT\184\EM\DC3\DC4\n\
+    \\ACK\EOT\131\SOH\STX\EOT\ETX\DC2\EOT\197\SUB\DC3\DC4\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\ENQ\DC2\EOT\185\EM\EOT\ESC\n\
+    \\ENQ\EOT\131\SOH\STX\ENQ\DC2\EOT\198\SUB\EOT\ESC\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\ENQ\EOT\DC2\ACK\185\EM\EOT\184\EM\NAK\n\
+    \\ACK\EOT\131\SOH\STX\ENQ\EOT\DC2\ACK\198\SUB\EOT\197\SUB\NAK\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\ENQ\ENQ\DC2\EOT\185\EM\EOT\n\
+    \\ACK\EOT\131\SOH\STX\ENQ\ENQ\DC2\EOT\198\SUB\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\ENQ\SOH\DC2\EOT\185\EM\v\SYN\n\
+    \\ACK\EOT\131\SOH\STX\ENQ\SOH\DC2\EOT\198\SUB\v\SYN\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\ENQ\ETX\DC2\EOT\185\EM\EM\SUB\n\
+    \\ACK\EOT\131\SOH\STX\ENQ\ETX\DC2\EOT\198\SUB\EM\SUB\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\ACK\DC2\EOT\186\EM\EOT \n\
+    \\ENQ\EOT\131\SOH\STX\ACK\DC2\EOT\199\SUB\EOT \n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\ACK\EOT\DC2\ACK\186\EM\EOT\185\EM\ESC\n\
+    \\ACK\EOT\131\SOH\STX\ACK\EOT\DC2\ACK\199\SUB\EOT\198\SUB\ESC\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\ACK\ENQ\DC2\EOT\186\EM\EOT\n\
+    \\ACK\EOT\131\SOH\STX\ACK\ENQ\DC2\EOT\199\SUB\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\ACK\SOH\DC2\EOT\186\EM\v\ESC\n\
+    \\ACK\EOT\131\SOH\STX\ACK\SOH\DC2\EOT\199\SUB\v\ESC\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\ACK\ETX\DC2\EOT\186\EM\RS\US\n\
+    \\ACK\EOT\131\SOH\STX\ACK\ETX\DC2\EOT\199\SUB\RS\US\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\a\DC2\EOT\187\EM\EOT\GS\n\
+    \\ENQ\EOT\131\SOH\STX\a\DC2\EOT\200\SUB\EOT\GS\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\a\EOT\DC2\ACK\187\EM\EOT\186\EM \n\
+    \\ACK\EOT\131\SOH\STX\a\EOT\DC2\ACK\200\SUB\EOT\199\SUB \n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\a\ENQ\DC2\EOT\187\EM\EOT\n\
+    \\ACK\EOT\131\SOH\STX\a\ENQ\DC2\EOT\200\SUB\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\a\SOH\DC2\EOT\187\EM\v\CAN\n\
+    \\ACK\EOT\131\SOH\STX\a\SOH\DC2\EOT\200\SUB\v\CAN\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\a\ETX\DC2\EOT\187\EM\ESC\FS\n\
+    \\ACK\EOT\131\SOH\STX\a\ETX\DC2\EOT\200\SUB\ESC\FS\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\b\DC2\EOT\188\EM\EOT\SUB\n\
+    \\ENQ\EOT\131\SOH\STX\b\DC2\EOT\201\SUB\EOT\SUB\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\b\EOT\DC2\ACK\188\EM\EOT\187\EM\GS\n\
+    \\ACK\EOT\131\SOH\STX\b\EOT\DC2\ACK\201\SUB\EOT\200\SUB\GS\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\b\ENQ\DC2\EOT\188\EM\EOT\t\n\
+    \\ACK\EOT\131\SOH\STX\b\ENQ\DC2\EOT\201\SUB\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\b\SOH\DC2\EOT\188\EM\n\
+    \\ACK\EOT\131\SOH\STX\b\SOH\DC2\EOT\201\SUB\n\
     \\NAK\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\b\ETX\DC2\EOT\188\EM\CAN\EM\n\
+    \\ACK\EOT\131\SOH\STX\b\ETX\DC2\EOT\201\SUB\CAN\EM\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\t\DC2\EOT\189\EM\EOT(\n\
+    \\ENQ\EOT\131\SOH\STX\t\DC2\EOT\202\SUB\EOT(\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\t\EOT\DC2\EOT\189\EM\EOT\f\n\
+    \\ACK\EOT\131\SOH\STX\t\EOT\DC2\EOT\202\SUB\EOT\f\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\t\ACK\DC2\EOT\189\EM\r\SYN\n\
+    \\ACK\EOT\131\SOH\STX\t\ACK\DC2\EOT\202\SUB\r\SYN\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\t\SOH\DC2\EOT\189\EM\ETB\"\n\
+    \\ACK\EOT\131\SOH\STX\t\SOH\DC2\EOT\202\SUB\ETB\"\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\t\ETX\DC2\EOT\189\EM%'\n\
+    \\ACK\EOT\131\SOH\STX\t\ETX\DC2\EOT\202\SUB%'\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\n\
-    \\DC2\EOT\190\EM\EOT\FS\n\
+    \\ENQ\EOT\131\SOH\STX\n\
+    \\DC2\EOT\203\SUB\EOT\FS\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\n\
-    \\EOT\DC2\ACK\190\EM\EOT\189\EM(\n\
+    \\ACK\EOT\131\SOH\STX\n\
+    \\EOT\DC2\ACK\203\SUB\EOT\202\SUB(\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\n\
-    \\ENQ\DC2\EOT\190\EM\EOT\t\n\
+    \\ACK\EOT\131\SOH\STX\n\
+    \\ENQ\DC2\EOT\203\SUB\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\n\
-    \\SOH\DC2\EOT\190\EM\n\
+    \\ACK\EOT\131\SOH\STX\n\
+    \\SOH\DC2\EOT\203\SUB\n\
     \\SYN\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\n\
-    \\ETX\DC2\EOT\190\EM\EM\ESC\n\
+    \\ACK\EOT\131\SOH\STX\n\
+    \\ETX\DC2\EOT\203\SUB\EM\ESC\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\v\DC2\EOT\191\EM\EOT\CAN\n\
+    \\ENQ\EOT\131\SOH\STX\v\DC2\EOT\204\SUB\EOT\CAN\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\v\EOT\DC2\ACK\191\EM\EOT\190\EM\FS\n\
+    \\ACK\EOT\131\SOH\STX\v\EOT\DC2\ACK\204\SUB\EOT\203\SUB\FS\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\v\ENQ\DC2\EOT\191\EM\EOT\t\n\
+    \\ACK\EOT\131\SOH\STX\v\ENQ\DC2\EOT\204\SUB\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\v\SOH\DC2\EOT\191\EM\n\
+    \\ACK\EOT\131\SOH\STX\v\SOH\DC2\EOT\204\SUB\n\
     \\DC2\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\v\ETX\DC2\EOT\191\EM\NAK\ETB\n\
+    \\ACK\EOT\131\SOH\STX\v\ETX\DC2\EOT\204\SUB\NAK\ETB\n\
     \\r\n\
-    \\ENQ\EOT\128\SOH\STX\f\DC2\EOT\192\EM\EOT'\n\
+    \\ENQ\EOT\131\SOH\STX\f\DC2\EOT\205\SUB\EOT'\n\
     \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\f\EOT\DC2\ACK\192\EM\EOT\191\EM\CAN\n\
+    \\ACK\EOT\131\SOH\STX\f\EOT\DC2\ACK\205\SUB\EOT\204\SUB\CAN\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\f\ACK\DC2\EOT\192\EM\EOT\CAN\n\
+    \\ACK\EOT\131\SOH\STX\f\ACK\DC2\EOT\205\SUB\EOT\CAN\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\f\SOH\DC2\EOT\192\EM\EM!\n\
+    \\ACK\EOT\131\SOH\STX\f\SOH\DC2\EOT\205\SUB\EM!\n\
     \\SO\n\
-    \\ACK\EOT\128\SOH\STX\f\ETX\DC2\EOT\192\EM$&\n\
+    \\ACK\EOT\131\SOH\STX\f\ETX\DC2\EOT\205\SUB$&\n\
     \\f\n\
-    \\STX\ENQ\b\DC2\ACK\195\EM\NUL\213\EM\SOH\n\
+    \\STX\ENQ\b\DC2\ACK\208\SUB\NUL\234\SUB\SOH\n\
     \\v\n\
-    \\ETX\ENQ\b\SOH\DC2\EOT\195\EM\ENQ\SI\n\
+    \\ETX\ENQ\b\SOH\DC2\EOT\208\SUB\ENQ\SI\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\NUL\DC2\EOT\196\EM\EOT\GS\n\
+    \\EOT\ENQ\b\STX\NUL\DC2\EOT\209\SUB\EOT\GS\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\NUL\SOH\DC2\EOT\196\EM\EOT\CAN\n\
+    \\ENQ\ENQ\b\STX\NUL\SOH\DC2\EOT\209\SUB\EOT\CAN\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\NUL\STX\DC2\EOT\196\EM\ESC\FS\n\
+    \\ENQ\ENQ\b\STX\NUL\STX\DC2\EOT\209\SUB\ESC\FS\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\SOH\DC2\EOT\197\EM\EOT\GS\n\
+    \\EOT\ENQ\b\STX\SOH\DC2\EOT\210\SUB\EOT\GS\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\SOH\SOH\DC2\EOT\197\EM\EOT\CAN\n\
+    \\ENQ\ENQ\b\STX\SOH\SOH\DC2\EOT\210\SUB\EOT\CAN\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\SOH\STX\DC2\EOT\197\EM\ESC\FS\n\
+    \\ENQ\ENQ\b\STX\SOH\STX\DC2\EOT\210\SUB\ESC\FS\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\STX\DC2\EOT\198\EM\EOT\FS\n\
+    \\EOT\ENQ\b\STX\STX\DC2\EOT\211\SUB\EOT\FS\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\STX\SOH\DC2\EOT\198\EM\EOT\ETB\n\
+    \\ENQ\ENQ\b\STX\STX\SOH\DC2\EOT\211\SUB\EOT\ETB\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\STX\STX\DC2\EOT\198\EM\SUB\ESC\n\
+    \\ENQ\ENQ\b\STX\STX\STX\DC2\EOT\211\SUB\SUB\ESC\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\ETX\DC2\EOT\199\EM\EOT$\n\
+    \\EOT\ENQ\b\STX\ETX\DC2\EOT\212\SUB\EOT$\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\ETX\SOH\DC2\EOT\199\EM\EOT\US\n\
+    \\ENQ\ENQ\b\STX\ETX\SOH\DC2\EOT\212\SUB\EOT\US\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\ETX\STX\DC2\EOT\199\EM\"#\n\
+    \\ENQ\ENQ\b\STX\ETX\STX\DC2\EOT\212\SUB\"#\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\EOT\DC2\EOT\200\EM\EOT$\n\
+    \\EOT\ENQ\b\STX\EOT\DC2\EOT\213\SUB\EOT$\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\EOT\SOH\DC2\EOT\200\EM\EOT\US\n\
+    \\ENQ\ENQ\b\STX\EOT\SOH\DC2\EOT\213\SUB\EOT\US\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\EOT\STX\DC2\EOT\200\EM\"#\n\
+    \\ENQ\ENQ\b\STX\EOT\STX\DC2\EOT\213\SUB\"#\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\ENQ\DC2\EOT\201\EM\EOT\ESC\n\
+    \\EOT\ENQ\b\STX\ENQ\DC2\EOT\214\SUB\EOT\ESC\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\ENQ\SOH\DC2\EOT\201\EM\EOT\SYN\n\
+    \\ENQ\ENQ\b\STX\ENQ\SOH\DC2\EOT\214\SUB\EOT\SYN\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\ENQ\STX\DC2\EOT\201\EM\EM\SUB\n\
+    \\ENQ\ENQ\b\STX\ENQ\STX\DC2\EOT\214\SUB\EM\SUB\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\ACK\DC2\EOT\202\EM\EOT\ESC\n\
+    \\EOT\ENQ\b\STX\ACK\DC2\EOT\215\SUB\EOT\ESC\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\ACK\SOH\DC2\EOT\202\EM\EOT\SYN\n\
+    \\ENQ\ENQ\b\STX\ACK\SOH\DC2\EOT\215\SUB\EOT\SYN\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\ACK\STX\DC2\EOT\202\EM\EM\SUB\n\
+    \\ENQ\ENQ\b\STX\ACK\STX\DC2\EOT\215\SUB\EM\SUB\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\a\DC2\EOT\203\EM\EOT\SYN\n\
+    \\EOT\ENQ\b\STX\a\DC2\EOT\216\SUB\EOT\SYN\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\a\SOH\DC2\EOT\203\EM\EOT\DC1\n\
+    \\ENQ\ENQ\b\STX\a\SOH\DC2\EOT\216\SUB\EOT\DC1\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\a\STX\DC2\EOT\203\EM\DC4\NAK\n\
+    \\ENQ\ENQ\b\STX\a\STX\DC2\EOT\216\SUB\DC4\NAK\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\b\DC2\EOT\204\EM\EOT\SYN\n\
+    \\EOT\ENQ\b\STX\b\DC2\EOT\217\SUB\EOT\SYN\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\b\SOH\DC2\EOT\204\EM\EOT\DC1\n\
+    \\ENQ\ENQ\b\STX\b\SOH\DC2\EOT\217\SUB\EOT\DC1\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\b\STX\DC2\EOT\204\EM\DC4\NAK\n\
+    \\ENQ\ENQ\b\STX\b\STX\DC2\EOT\217\SUB\DC4\NAK\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\t\DC2\EOT\205\EM\EOT \n\
+    \\EOT\ENQ\b\STX\t\DC2\EOT\218\SUB\EOT \n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\t\SOH\DC2\EOT\205\EM\EOT\SUB\n\
+    \\ENQ\ENQ\b\STX\t\SOH\DC2\EOT\218\SUB\EOT\SUB\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\t\STX\DC2\EOT\205\EM\GS\US\n\
+    \\ENQ\ENQ\b\STX\t\STX\DC2\EOT\218\SUB\GS\US\n\
     \\f\n\
     \\EOT\ENQ\b\STX\n\
-    \\DC2\EOT\206\EM\EOT \n\
+    \\DC2\EOT\219\SUB\EOT \n\
     \\r\n\
     \\ENQ\ENQ\b\STX\n\
-    \\SOH\DC2\EOT\206\EM\EOT\SUB\n\
+    \\SOH\DC2\EOT\219\SUB\EOT\SUB\n\
     \\r\n\
     \\ENQ\ENQ\b\STX\n\
-    \\STX\DC2\EOT\206\EM\GS\US\n\
+    \\STX\DC2\EOT\219\SUB\GS\US\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\v\DC2\EOT\207\EM\EOT\US\n\
+    \\EOT\ENQ\b\STX\v\DC2\EOT\220\SUB\EOT\US\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\v\SOH\DC2\EOT\207\EM\EOT\EM\n\
+    \\ENQ\ENQ\b\STX\v\SOH\DC2\EOT\220\SUB\EOT\EM\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\v\STX\DC2\EOT\207\EM\FS\RS\n\
+    \\ENQ\ENQ\b\STX\v\STX\DC2\EOT\220\SUB\FS\RS\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\f\DC2\EOT\208\EM\EOT\US\n\
+    \\EOT\ENQ\b\STX\f\DC2\EOT\221\SUB\EOT\US\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\f\SOH\DC2\EOT\208\EM\EOT\EM\n\
+    \\ENQ\ENQ\b\STX\f\SOH\DC2\EOT\221\SUB\EOT\EM\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\f\STX\DC2\EOT\208\EM\FS\RS\n\
+    \\ENQ\ENQ\b\STX\f\STX\DC2\EOT\221\SUB\FS\RS\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\r\DC2\EOT\209\EM\EOT\SUB\n\
+    \\EOT\ENQ\b\STX\r\DC2\EOT\222\SUB\EOT\SUB\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\r\SOH\DC2\EOT\209\EM\EOT\DC4\n\
+    \\ENQ\ENQ\b\STX\r\SOH\DC2\EOT\222\SUB\EOT\DC4\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\r\STX\DC2\EOT\209\EM\ETB\EM\n\
+    \\ENQ\ENQ\b\STX\r\STX\DC2\EOT\222\SUB\ETB\EM\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\SO\DC2\EOT\210\EM\EOT\SUB\n\
+    \\EOT\ENQ\b\STX\SO\DC2\EOT\223\SUB\EOT\SUB\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\SO\SOH\DC2\EOT\210\EM\EOT\DC4\n\
+    \\ENQ\ENQ\b\STX\SO\SOH\DC2\EOT\223\SUB\EOT\DC4\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\SO\STX\DC2\EOT\210\EM\ETB\EM\n\
+    \\ENQ\ENQ\b\STX\SO\STX\DC2\EOT\223\SUB\ETB\EM\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\SI\DC2\EOT\211\EM\EOT\DC1\n\
+    \\EOT\ENQ\b\STX\SI\DC2\EOT\224\SUB\EOT\DC1\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\SI\SOH\DC2\EOT\211\EM\EOT\v\n\
+    \\ENQ\ENQ\b\STX\SI\SOH\DC2\EOT\224\SUB\EOT\v\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\SI\STX\DC2\EOT\211\EM\SO\DLE\n\
+    \\ENQ\ENQ\b\STX\SI\STX\DC2\EOT\224\SUB\SO\DLE\n\
     \\f\n\
-    \\EOT\ENQ\b\STX\DLE\DC2\EOT\212\EM\EOT\DC1\n\
+    \\EOT\ENQ\b\STX\DLE\DC2\EOT\225\SUB\EOT\DC1\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\DLE\SOH\DC2\EOT\212\EM\EOT\v\n\
+    \\ENQ\ENQ\b\STX\DLE\SOH\DC2\EOT\225\SUB\EOT\v\n\
     \\r\n\
-    \\ENQ\ENQ\b\STX\DLE\STX\DC2\EOT\212\EM\SO\DLE\n\
-    \\r\n\
-    \\ETX\EOT\129\SOH\DC2\ACK\215\EM\NUL\219\EM\SOH\n\
+    \\ENQ\ENQ\b\STX\DLE\STX\DC2\EOT\225\SUB\SO\DLE\n\
     \\f\n\
-    \\EOT\EOT\129\SOH\SOH\DC2\EOT\215\EM\b\SI\n\
+    \\EOT\ENQ\b\STX\DC1\DC2\EOT\226\SUB\EOT\FS\n\
     \\r\n\
-    \\ENQ\EOT\129\SOH\STX\NUL\DC2\EOT\216\EM\EOT\DC4\n\
+    \\ENQ\ENQ\b\STX\DC1\SOH\DC2\EOT\226\SUB\EOT\SYN\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\DC1\STX\DC2\EOT\226\SUB\EM\ESC\n\
+    \\f\n\
+    \\EOT\ENQ\b\STX\DC2\DC2\EOT\227\SUB\EOT\FS\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\DC2\SOH\DC2\EOT\227\SUB\EOT\SYN\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\DC2\STX\DC2\EOT\227\SUB\EM\ESC\n\
+    \\f\n\
+    \\EOT\ENQ\b\STX\DC3\DC2\EOT\228\SUB\EOT\NAK\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\DC3\SOH\DC2\EOT\228\SUB\EOT\SI\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\DC3\STX\DC2\EOT\228\SUB\DC2\DC4\n\
+    \\f\n\
+    \\EOT\ENQ\b\STX\DC4\DC2\EOT\229\SUB\EOT\NAK\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\DC4\SOH\DC2\EOT\229\SUB\EOT\SI\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\DC4\STX\DC2\EOT\229\SUB\DC2\DC4\n\
+    \\f\n\
+    \\EOT\ENQ\b\STX\NAK\DC2\EOT\230\SUB\EOT#\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\NAK\SOH\DC2\EOT\230\SUB\EOT\GS\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\NAK\STX\DC2\EOT\230\SUB \"\n\
+    \\f\n\
+    \\EOT\ENQ\b\STX\SYN\DC2\EOT\231\SUB\EOT#\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\SYN\SOH\DC2\EOT\231\SUB\EOT\GS\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\SYN\STX\DC2\EOT\231\SUB \"\n\
+    \\f\n\
+    \\EOT\ENQ\b\STX\ETB\DC2\EOT\232\SUB\EOT\DC1\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\ETB\SOH\DC2\EOT\232\SUB\EOT\v\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\ETB\STX\DC2\EOT\232\SUB\SO\DLE\n\
+    \\f\n\
+    \\EOT\ENQ\b\STX\CAN\DC2\EOT\233\SUB\EOT\DC1\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\CAN\SOH\DC2\EOT\233\SUB\EOT\v\n\
+    \\r\n\
+    \\ENQ\ENQ\b\STX\CAN\STX\DC2\EOT\233\SUB\SO\DLE\n\
+    \\r\n\
+    \\ETX\EOT\132\SOH\DC2\ACK\236\SUB\NUL\240\SUB\SOH\n\
+    \\f\n\
+    \\EOT\EOT\132\SOH\SOH\DC2\EOT\236\SUB\b\SI\n\
+    \\r\n\
+    \\ENQ\EOT\132\SOH\STX\NUL\DC2\EOT\237\SUB\EOT\DC4\n\
     \\DLE\n\
-    \\ACK\EOT\129\SOH\STX\NUL\EOT\DC2\ACK\216\EM\EOT\215\EM\DC1\n\
+    \\ACK\EOT\132\SOH\STX\NUL\EOT\DC2\ACK\237\SUB\EOT\236\SUB\DC1\n\
     \\SO\n\
-    \\ACK\EOT\129\SOH\STX\NUL\ENQ\DC2\EOT\216\EM\EOT\n\
+    \\ACK\EOT\132\SOH\STX\NUL\ENQ\DC2\EOT\237\SUB\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\129\SOH\STX\NUL\SOH\DC2\EOT\216\EM\v\SI\n\
+    \\ACK\EOT\132\SOH\STX\NUL\SOH\DC2\EOT\237\SUB\v\SI\n\
     \\SO\n\
-    \\ACK\EOT\129\SOH\STX\NUL\ETX\DC2\EOT\216\EM\DC2\DC3\n\
+    \\ACK\EOT\132\SOH\STX\NUL\ETX\DC2\EOT\237\SUB\DC2\DC3\n\
     \\r\n\
-    \\ENQ\EOT\129\SOH\STX\SOH\DC2\EOT\217\EM\EOT\EM\n\
+    \\ENQ\EOT\132\SOH\STX\SOH\DC2\EOT\238\SUB\EOT\EM\n\
     \\DLE\n\
-    \\ACK\EOT\129\SOH\STX\SOH\EOT\DC2\ACK\217\EM\EOT\216\EM\DC4\n\
+    \\ACK\EOT\132\SOH\STX\SOH\EOT\DC2\ACK\238\SUB\EOT\237\SUB\DC4\n\
     \\SO\n\
-    \\ACK\EOT\129\SOH\STX\SOH\ENQ\DC2\EOT\217\EM\EOT\b\n\
+    \\ACK\EOT\132\SOH\STX\SOH\ENQ\DC2\EOT\238\SUB\EOT\b\n\
     \\SO\n\
-    \\ACK\EOT\129\SOH\STX\SOH\SOH\DC2\EOT\217\EM\t\DC4\n\
+    \\ACK\EOT\132\SOH\STX\SOH\SOH\DC2\EOT\238\SUB\t\DC4\n\
     \\SO\n\
-    \\ACK\EOT\129\SOH\STX\SOH\ETX\DC2\EOT\217\EM\ETB\CAN\n\
+    \\ACK\EOT\132\SOH\STX\SOH\ETX\DC2\EOT\238\SUB\ETB\CAN\n\
     \\r\n\
-    \\ENQ\EOT\129\SOH\STX\STX\DC2\EOT\218\EM\EOT\SYN\n\
+    \\ENQ\EOT\132\SOH\STX\STX\DC2\EOT\239\SUB\EOT\SYN\n\
     \\DLE\n\
-    \\ACK\EOT\129\SOH\STX\STX\EOT\DC2\ACK\218\EM\EOT\217\EM\EM\n\
+    \\ACK\EOT\132\SOH\STX\STX\EOT\DC2\ACK\239\SUB\EOT\238\SUB\EM\n\
     \\SO\n\
-    \\ACK\EOT\129\SOH\STX\STX\ENQ\DC2\EOT\218\EM\EOT\b\n\
+    \\ACK\EOT\132\SOH\STX\STX\ENQ\DC2\EOT\239\SUB\EOT\b\n\
     \\SO\n\
-    \\ACK\EOT\129\SOH\STX\STX\SOH\DC2\EOT\218\EM\t\DC1\n\
+    \\ACK\EOT\132\SOH\STX\STX\SOH\DC2\EOT\239\SUB\t\DC1\n\
     \\SO\n\
-    \\ACK\EOT\129\SOH\STX\STX\ETX\DC2\EOT\218\EM\DC4\NAK\n\
+    \\ACK\EOT\132\SOH\STX\STX\ETX\DC2\EOT\239\SUB\DC4\NAK\n\
     \\r\n\
-    \\ETX\EOT\130\SOH\DC2\ACK\221\EM\NUL\222\EM\SOH\n\
+    \\ETX\EOT\133\SOH\DC2\ACK\242\SUB\NUL\243\SUB\SOH\n\
     \\f\n\
-    \\EOT\EOT\130\SOH\SOH\DC2\EOT\221\EM\b\CAN\n\
+    \\EOT\EOT\133\SOH\SOH\DC2\EOT\242\SUB\b\CAN\n\
     \\r\n\
-    \\ETX\EOT\131\SOH\DC2\ACK\223\EM\NUL\240\EM\SOH\n\
+    \\ETX\EOT\134\SOH\DC2\ACK\244\SUB\NUL\133\ESC\SOH\n\
     \\f\n\
-    \\EOT\EOT\131\SOH\SOH\DC2\EOT\223\EM\b\CAN\n\
+    \\EOT\EOT\134\SOH\SOH\DC2\EOT\244\SUB\b\CAN\n\
     \F\n\
-    \\ENQ\EOT\131\SOH\STX\NUL\DC2\EOT\225\EM\EOT,\SUB7 The short channel id that this fee report belongs to.\n\
+    \\ENQ\EOT\134\SOH\STX\NUL\DC2\EOT\246\SUB\EOT,\SUB7 The short channel id that this fee report belongs to.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\NUL\EOT\DC2\ACK\225\EM\EOT\223\EM\SUB\n\
+    \\ACK\EOT\134\SOH\STX\NUL\EOT\DC2\ACK\246\SUB\EOT\244\SUB\SUB\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\NUL\ENQ\DC2\EOT\225\EM\EOT\n\
+    \\ACK\EOT\134\SOH\STX\NUL\ENQ\DC2\EOT\246\SUB\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\NUL\SOH\DC2\EOT\225\EM\v\DC2\n\
+    \\ACK\EOT\134\SOH\STX\NUL\SOH\DC2\EOT\246\SUB\v\DC2\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\NUL\ETX\DC2\EOT\225\EM\NAK\SYN\n\
+    \\ACK\EOT\134\SOH\STX\NUL\ETX\DC2\EOT\246\SUB\NAK\SYN\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\NUL\b\DC2\EOT\225\EM\ETB+\n\
+    \\ACK\EOT\134\SOH\STX\NUL\b\DC2\EOT\246\SUB\ETB+\n\
     \\SI\n\
-    \\a\EOT\131\SOH\STX\NUL\b\ACK\DC2\EOT\225\EM\CAN*\n\
+    \\a\EOT\134\SOH\STX\NUL\b\ACK\DC2\EOT\246\SUB\CAN*\n\
     \=\n\
-    \\ENQ\EOT\131\SOH\STX\SOH\DC2\EOT\228\EM\EOT\GS\SUB. The channel that this fee report belongs to.\n\
+    \\ENQ\EOT\134\SOH\STX\SOH\DC2\EOT\249\SUB\EOT\GS\SUB. The channel that this fee report belongs to.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\SOH\EOT\DC2\ACK\228\EM\EOT\225\EM,\n\
+    \\ACK\EOT\134\SOH\STX\SOH\EOT\DC2\ACK\249\SUB\EOT\246\SUB,\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\SOH\ENQ\DC2\EOT\228\EM\EOT\n\
+    \\ACK\EOT\134\SOH\STX\SOH\ENQ\DC2\EOT\249\SUB\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\SOH\SOH\DC2\EOT\228\EM\v\CAN\n\
+    \\ACK\EOT\134\SOH\STX\SOH\SOH\DC2\EOT\249\SUB\v\CAN\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\SOH\ETX\DC2\EOT\228\EM\ESC\FS\n\
+    \\ACK\EOT\134\SOH\STX\SOH\ETX\DC2\EOT\249\SUB\ESC\FS\n\
     \V\n\
-    \\ENQ\EOT\131\SOH\STX\STX\DC2\EOT\231\EM\EOT\FS\SUBG The base fee charged regardless of the number of milli-satoshis sent.\n\
+    \\ENQ\EOT\134\SOH\STX\STX\DC2\EOT\252\SUB\EOT\FS\SUBG The base fee charged regardless of the number of milli-satoshis sent.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\STX\EOT\DC2\ACK\231\EM\EOT\228\EM\GS\n\
+    \\ACK\EOT\134\SOH\STX\STX\EOT\DC2\ACK\252\SUB\EOT\249\SUB\GS\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\STX\ENQ\DC2\EOT\231\EM\EOT\t\n\
+    \\ACK\EOT\134\SOH\STX\STX\ENQ\DC2\EOT\252\SUB\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\STX\SOH\DC2\EOT\231\EM\n\
+    \\ACK\EOT\134\SOH\STX\STX\SOH\DC2\EOT\252\SUB\n\
     \\ETB\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\STX\ETX\DC2\EOT\231\EM\SUB\ESC\n\
+    \\ACK\EOT\134\SOH\STX\STX\ETX\DC2\EOT\252\SUB\SUB\ESC\n\
     \i\n\
-    \\ENQ\EOT\131\SOH\STX\ETX\DC2\EOT\235\EM\EOT\SUB\SUBZ The amount charged per milli-satoshis transferred expressed in\n\
+    \\ENQ\EOT\134\SOH\STX\ETX\DC2\EOT\128\ESC\EOT\SUB\SUBZ The amount charged per milli-satoshis transferred expressed in\n\
     \ millionths of a satoshi.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\ETX\EOT\DC2\ACK\235\EM\EOT\231\EM\FS\n\
+    \\ACK\EOT\134\SOH\STX\ETX\EOT\DC2\ACK\128\ESC\EOT\252\SUB\FS\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\ETX\ENQ\DC2\EOT\235\EM\EOT\t\n\
+    \\ACK\EOT\134\SOH\STX\ETX\ENQ\DC2\EOT\128\ESC\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\ETX\SOH\DC2\EOT\235\EM\n\
+    \\ACK\EOT\134\SOH\STX\ETX\SOH\DC2\EOT\128\ESC\n\
     \\NAK\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\ETX\ETX\DC2\EOT\235\EM\CAN\EM\n\
+    \\ACK\EOT\134\SOH\STX\ETX\ETX\DC2\EOT\128\ESC\CAN\EM\n\
     \t\n\
-    \\ENQ\EOT\131\SOH\STX\EOT\DC2\EOT\239\EM\EOT\CAN\SUBe The effective fee rate in milli-satoshis. Computed by dividing the\n\
+    \\ENQ\EOT\134\SOH\STX\EOT\DC2\EOT\132\ESC\EOT\CAN\SUBe The effective fee rate in milli-satoshis. Computed by dividing the\n\
     \ fee_per_mil value by 1 million.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\EOT\EOT\DC2\ACK\239\EM\EOT\235\EM\SUB\n\
+    \\ACK\EOT\134\SOH\STX\EOT\EOT\DC2\ACK\132\ESC\EOT\128\ESC\SUB\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\EOT\ENQ\DC2\EOT\239\EM\EOT\n\
+    \\ACK\EOT\134\SOH\STX\EOT\ENQ\DC2\EOT\132\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\EOT\SOH\DC2\EOT\239\EM\v\DC3\n\
+    \\ACK\EOT\134\SOH\STX\EOT\SOH\DC2\EOT\132\ESC\v\DC3\n\
     \\SO\n\
-    \\ACK\EOT\131\SOH\STX\EOT\ETX\DC2\EOT\239\EM\SYN\ETB\n\
+    \\ACK\EOT\134\SOH\STX\EOT\ETX\DC2\EOT\132\ESC\SYN\ETB\n\
     \\r\n\
-    \\ETX\EOT\132\SOH\DC2\ACK\241\EM\NUL\129\SUB\SOH\n\
+    \\ETX\EOT\135\SOH\DC2\ACK\134\ESC\NUL\150\ESC\SOH\n\
     \\f\n\
-    \\EOT\EOT\132\SOH\SOH\DC2\EOT\241\EM\b\EM\n\
+    \\EOT\EOT\135\SOH\SOH\DC2\EOT\134\ESC\b\EM\n\
     \l\n\
-    \\ENQ\EOT\132\SOH\STX\NUL\DC2\EOT\244\EM\EOT/\SUB] An array of channel fee reports which describes the current fee schedule\n\
+    \\ENQ\EOT\135\SOH\STX\NUL\DC2\EOT\137\ESC\EOT/\SUB] An array of channel fee reports which describes the current fee schedule\n\
     \ for each channel.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\NUL\EOT\DC2\EOT\244\EM\EOT\f\n\
+    \\ACK\EOT\135\SOH\STX\NUL\EOT\DC2\EOT\137\ESC\EOT\f\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\NUL\ACK\DC2\EOT\244\EM\r\GS\n\
+    \\ACK\EOT\135\SOH\STX\NUL\ACK\DC2\EOT\137\ESC\r\GS\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\NUL\SOH\DC2\EOT\244\EM\RS*\n\
+    \\ACK\EOT\135\SOH\STX\NUL\SOH\DC2\EOT\137\ESC\RS*\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\NUL\ETX\DC2\EOT\244\EM-.\n\
+    \\ACK\EOT\135\SOH\STX\NUL\ETX\DC2\EOT\137\ESC-.\n\
     \n\n\
-    \\ENQ\EOT\132\SOH\STX\SOH\DC2\EOT\248\EM\EOT\ESC\SUB_ The total amount of fee revenue (in satoshis) the switch has collected\n\
+    \\ENQ\EOT\135\SOH\STX\SOH\DC2\EOT\141\ESC\EOT\ESC\SUB_ The total amount of fee revenue (in satoshis) the switch has collected\n\
     \ over the past 24 hrs.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\132\SOH\STX\SOH\EOT\DC2\ACK\248\EM\EOT\244\EM/\n\
+    \\ACK\EOT\135\SOH\STX\SOH\EOT\DC2\ACK\141\ESC\EOT\137\ESC/\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\SOH\ENQ\DC2\EOT\248\EM\EOT\n\
+    \\ACK\EOT\135\SOH\STX\SOH\ENQ\DC2\EOT\141\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\SOH\SOH\DC2\EOT\248\EM\v\SYN\n\
+    \\ACK\EOT\135\SOH\STX\SOH\SOH\DC2\EOT\141\ESC\v\SYN\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\SOH\ETX\DC2\EOT\248\EM\EM\SUB\n\
+    \\ACK\EOT\135\SOH\STX\SOH\ETX\DC2\EOT\141\ESC\EM\SUB\n\
     \n\n\
-    \\ENQ\EOT\132\SOH\STX\STX\DC2\EOT\252\EM\EOT\FS\SUB_ The total amount of fee revenue (in satoshis) the switch has collected\n\
+    \\ENQ\EOT\135\SOH\STX\STX\DC2\EOT\145\ESC\EOT\FS\SUB_ The total amount of fee revenue (in satoshis) the switch has collected\n\
     \ over the past 1 week.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\132\SOH\STX\STX\EOT\DC2\ACK\252\EM\EOT\248\EM\ESC\n\
+    \\ACK\EOT\135\SOH\STX\STX\EOT\DC2\ACK\145\ESC\EOT\141\ESC\ESC\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\STX\ENQ\DC2\EOT\252\EM\EOT\n\
+    \\ACK\EOT\135\SOH\STX\STX\ENQ\DC2\EOT\145\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\STX\SOH\DC2\EOT\252\EM\v\ETB\n\
+    \\ACK\EOT\135\SOH\STX\STX\SOH\DC2\EOT\145\ESC\v\ETB\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\STX\ETX\DC2\EOT\252\EM\SUB\ESC\n\
+    \\ACK\EOT\135\SOH\STX\STX\ETX\DC2\EOT\145\ESC\SUB\ESC\n\
     \o\n\
-    \\ENQ\EOT\132\SOH\STX\ETX\DC2\EOT\128\SUB\EOT\GS\SUB` The total amount of fee revenue (in satoshis) the switch has collected\n\
+    \\ENQ\EOT\135\SOH\STX\ETX\DC2\EOT\149\ESC\EOT\GS\SUB` The total amount of fee revenue (in satoshis) the switch has collected\n\
     \ over the past 1 month.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\132\SOH\STX\ETX\EOT\DC2\ACK\128\SUB\EOT\252\EM\FS\n\
+    \\ACK\EOT\135\SOH\STX\ETX\EOT\DC2\ACK\149\ESC\EOT\145\ESC\FS\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\ETX\ENQ\DC2\EOT\128\SUB\EOT\n\
+    \\ACK\EOT\135\SOH\STX\ETX\ENQ\DC2\EOT\149\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\ETX\SOH\DC2\EOT\128\SUB\v\CAN\n\
+    \\ACK\EOT\135\SOH\STX\ETX\SOH\DC2\EOT\149\ESC\v\CAN\n\
     \\SO\n\
-    \\ACK\EOT\132\SOH\STX\ETX\ETX\DC2\EOT\128\SUB\ESC\FS\n\
+    \\ACK\EOT\135\SOH\STX\ETX\ETX\DC2\EOT\149\ESC\ESC\FS\n\
     \\r\n\
-    \\ETX\EOT\133\SOH\DC2\ACK\131\SUB\NUL\160\SUB\SOH\n\
+    \\ETX\EOT\136\SOH\DC2\ACK\152\ESC\NUL\181\ESC\SOH\n\
     \\f\n\
-    \\EOT\EOT\133\SOH\SOH\DC2\EOT\131\SUB\b\ESC\n\
+    \\EOT\EOT\136\SOH\SOH\DC2\EOT\152\ESC\b\ESC\n\
     \\SI\n\
-    \\ENQ\EOT\133\SOH\b\NUL\DC2\ACK\132\SUB\EOT\138\SUB\ENQ\n\
+    \\ENQ\EOT\136\SOH\b\NUL\DC2\ACK\153\ESC\EOT\159\ESC\ENQ\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\b\NUL\SOH\DC2\EOT\132\SUB\n\
+    \\ACK\EOT\136\SOH\b\NUL\SOH\DC2\EOT\153\ESC\n\
     \\SI\n\
     \S\n\
-    \\ENQ\EOT\133\SOH\STX\NUL\DC2\EOT\134\SUB\b\CAN\SUBD If set, then this update applies to all currently active channels.\n\
+    \\ENQ\EOT\136\SOH\STX\NUL\DC2\EOT\155\ESC\b\CAN\SUBD If set, then this update applies to all currently active channels.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\NUL\ENQ\DC2\EOT\134\SUB\b\f\n\
+    \\ACK\EOT\136\SOH\STX\NUL\ENQ\DC2\EOT\155\ESC\b\f\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\NUL\SOH\DC2\EOT\134\SUB\r\DC3\n\
+    \\ACK\EOT\136\SOH\STX\NUL\SOH\DC2\EOT\155\ESC\r\DC3\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\NUL\ETX\DC2\EOT\134\SUB\SYN\ETB\n\
+    \\ACK\EOT\136\SOH\STX\NUL\ETX\DC2\EOT\155\ESC\SYN\ETB\n\
     \D\n\
-    \\ENQ\EOT\133\SOH\STX\SOH\DC2\EOT\137\SUB\b$\SUB5 If set, this update will target a specific channel.\n\
+    \\ENQ\EOT\136\SOH\STX\SOH\DC2\EOT\158\ESC\b$\SUB5 If set, this update will target a specific channel.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\SOH\ACK\DC2\EOT\137\SUB\b\DC4\n\
+    \\ACK\EOT\136\SOH\STX\SOH\ACK\DC2\EOT\158\ESC\b\DC4\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\SOH\SOH\DC2\EOT\137\SUB\NAK\US\n\
+    \\ACK\EOT\136\SOH\STX\SOH\SOH\DC2\EOT\158\ESC\NAK\US\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\SOH\ETX\DC2\EOT\137\SUB\"#\n\
+    \\ACK\EOT\136\SOH\STX\SOH\ETX\DC2\EOT\158\ESC\"#\n\
     \V\n\
-    \\ENQ\EOT\133\SOH\STX\STX\DC2\EOT\141\SUB\EOT\FS\SUBG The base fee charged regardless of the number of milli-satoshis sent.\n\
+    \\ENQ\EOT\136\SOH\STX\STX\DC2\EOT\162\ESC\EOT\FS\SUBG The base fee charged regardless of the number of milli-satoshis sent.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\133\SOH\STX\STX\EOT\DC2\ACK\141\SUB\EOT\138\SUB\ENQ\n\
+    \\ACK\EOT\136\SOH\STX\STX\EOT\DC2\ACK\162\ESC\EOT\159\ESC\ENQ\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\STX\ENQ\DC2\EOT\141\SUB\EOT\t\n\
+    \\ACK\EOT\136\SOH\STX\STX\ENQ\DC2\EOT\162\ESC\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\STX\SOH\DC2\EOT\141\SUB\n\
+    \\ACK\EOT\136\SOH\STX\STX\SOH\DC2\EOT\162\ESC\n\
     \\ETB\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\STX\ETX\DC2\EOT\141\SUB\SUB\ESC\n\
+    \\ACK\EOT\136\SOH\STX\STX\ETX\DC2\EOT\162\ESC\SUB\ESC\n\
     \}\n\
-    \\ENQ\EOT\133\SOH\STX\ETX\DC2\EOT\145\SUB\EOT\CAN\SUBn The effective fee rate in milli-satoshis. The precision of this value\n\
+    \\ENQ\EOT\136\SOH\STX\ETX\DC2\EOT\166\ESC\EOT\CAN\SUBn The effective fee rate in milli-satoshis. The precision of this value\n\
     \ goes up to 6 decimal places, so 1e-6.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\133\SOH\STX\ETX\EOT\DC2\ACK\145\SUB\EOT\141\SUB\FS\n\
+    \\ACK\EOT\136\SOH\STX\ETX\EOT\DC2\ACK\166\ESC\EOT\162\ESC\FS\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\ETX\ENQ\DC2\EOT\145\SUB\EOT\n\
+    \\ACK\EOT\136\SOH\STX\ETX\ENQ\DC2\EOT\166\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\ETX\SOH\DC2\EOT\145\SUB\v\DC3\n\
+    \\ACK\EOT\136\SOH\STX\ETX\SOH\DC2\EOT\166\ESC\v\DC3\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\ETX\ETX\DC2\EOT\145\SUB\SYN\ETB\n\
+    \\ACK\EOT\136\SOH\STX\ETX\ETX\DC2\EOT\166\ESC\SYN\ETB\n\
     \R\n\
-    \\ENQ\EOT\133\SOH\STX\EOT\DC2\EOT\148\SUB\EOT\US\SUBC The required timelock delta for HTLCs forwarded over the channel.\n\
+    \\ENQ\EOT\136\SOH\STX\EOT\DC2\EOT\169\ESC\EOT\US\SUBC The required timelock delta for HTLCs forwarded over the channel.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\133\SOH\STX\EOT\EOT\DC2\ACK\148\SUB\EOT\145\SUB\CAN\n\
+    \\ACK\EOT\136\SOH\STX\EOT\EOT\DC2\ACK\169\ESC\EOT\166\ESC\CAN\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\EOT\ENQ\DC2\EOT\148\SUB\EOT\n\
+    \\ACK\EOT\136\SOH\STX\EOT\ENQ\DC2\EOT\169\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\EOT\SOH\DC2\EOT\148\SUB\v\SUB\n\
+    \\ACK\EOT\136\SOH\STX\EOT\SOH\DC2\EOT\169\ESC\v\SUB\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\EOT\ETX\DC2\EOT\148\SUB\GS\RS\n\
+    \\ACK\EOT\136\SOH\STX\EOT\ETX\DC2\EOT\169\ESC\GS\RS\n\
     \p\n\
-    \\ENQ\EOT\133\SOH\STX\ENQ\DC2\EOT\152\SUB\EOT\GS\SUBa If set, the maximum HTLC size in milli-satoshis. If unset, the maximum\n\
+    \\ENQ\EOT\136\SOH\STX\ENQ\DC2\EOT\173\ESC\EOT\GS\SUBa If set, the maximum HTLC size in milli-satoshis. If unset, the maximum\n\
     \ HTLC will be unchanged.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\133\SOH\STX\ENQ\EOT\DC2\ACK\152\SUB\EOT\148\SUB\US\n\
+    \\ACK\EOT\136\SOH\STX\ENQ\EOT\DC2\ACK\173\ESC\EOT\169\ESC\US\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\ENQ\ENQ\DC2\EOT\152\SUB\EOT\n\
+    \\ACK\EOT\136\SOH\STX\ENQ\ENQ\DC2\EOT\173\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\ENQ\SOH\DC2\EOT\152\SUB\v\CAN\n\
+    \\ACK\EOT\136\SOH\STX\ENQ\SOH\DC2\EOT\173\ESC\v\CAN\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\ENQ\ETX\DC2\EOT\152\SUB\ESC\FS\n\
+    \\ACK\EOT\136\SOH\STX\ENQ\ETX\DC2\EOT\173\ESC\ESC\FS\n\
     \k\n\
-    \\ENQ\EOT\133\SOH\STX\ACK\DC2\EOT\156\SUB\EOT\GS\SUB\\ The minimum HTLC size in milli-satoshis. Only applied if\n\
+    \\ENQ\EOT\136\SOH\STX\ACK\DC2\EOT\177\ESC\EOT\GS\SUB\\ The minimum HTLC size in milli-satoshis. Only applied if\n\
     \ min_htlc_msat_specified is true.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\133\SOH\STX\ACK\EOT\DC2\ACK\156\SUB\EOT\152\SUB\GS\n\
+    \\ACK\EOT\136\SOH\STX\ACK\EOT\DC2\ACK\177\ESC\EOT\173\ESC\GS\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\ACK\ENQ\DC2\EOT\156\SUB\EOT\n\
+    \\ACK\EOT\136\SOH\STX\ACK\ENQ\DC2\EOT\177\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\ACK\SOH\DC2\EOT\156\SUB\v\CAN\n\
+    \\ACK\EOT\136\SOH\STX\ACK\SOH\DC2\EOT\177\ESC\v\CAN\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\ACK\ETX\DC2\EOT\156\SUB\ESC\FS\n\
+    \\ACK\EOT\136\SOH\STX\ACK\ETX\DC2\EOT\177\ESC\ESC\FS\n\
     \3\n\
-    \\ENQ\EOT\133\SOH\STX\a\DC2\EOT\159\SUB\EOT%\SUB$ If true, min_htlc_msat is applied.\n\
+    \\ENQ\EOT\136\SOH\STX\a\DC2\EOT\180\ESC\EOT%\SUB$ If true, min_htlc_msat is applied.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\133\SOH\STX\a\EOT\DC2\ACK\159\SUB\EOT\156\SUB\GS\n\
+    \\ACK\EOT\136\SOH\STX\a\EOT\DC2\ACK\180\ESC\EOT\177\ESC\GS\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\a\ENQ\DC2\EOT\159\SUB\EOT\b\n\
+    \\ACK\EOT\136\SOH\STX\a\ENQ\DC2\EOT\180\ESC\EOT\b\n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\a\SOH\DC2\EOT\159\SUB\t \n\
+    \\ACK\EOT\136\SOH\STX\a\SOH\DC2\EOT\180\ESC\t \n\
     \\SO\n\
-    \\ACK\EOT\133\SOH\STX\a\ETX\DC2\EOT\159\SUB#$\n\
+    \\ACK\EOT\136\SOH\STX\a\ETX\DC2\EOT\180\ESC#$\n\
     \\r\n\
-    \\ETX\EOT\134\SOH\DC2\ACK\161\SUB\NUL\162\SUB\SOH\n\
+    \\ETX\EOT\137\SOH\DC2\ACK\182\ESC\NUL\183\ESC\SOH\n\
     \\f\n\
-    \\EOT\EOT\134\SOH\SOH\DC2\EOT\161\SUB\b\FS\n\
+    \\EOT\EOT\137\SOH\SOH\DC2\EOT\182\ESC\b\FS\n\
     \\r\n\
-    \\ETX\EOT\135\SOH\DC2\ACK\164\SUB\NUL\182\SUB\SOH\n\
+    \\ETX\EOT\138\SOH\DC2\ACK\185\ESC\NUL\203\ESC\SOH\n\
     \\f\n\
-    \\EOT\EOT\135\SOH\SOH\DC2\EOT\164\SUB\b \n\
+    \\EOT\EOT\138\SOH\SOH\DC2\EOT\185\ESC\b \n\
     \\182\SOH\n\
-    \\ENQ\EOT\135\SOH\STX\NUL\DC2\EOT\168\SUB\EOT\SUB\SUB\166\SOH Start time is the starting point of the forwarding history request. All\n\
+    \\ENQ\EOT\138\SOH\STX\NUL\DC2\EOT\189\ESC\EOT\SUB\SUB\166\SOH Start time is the starting point of the forwarding history request. All\n\
     \ records beyond this point will be included, respecting the end time, and\n\
     \ the index offset.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\135\SOH\STX\NUL\EOT\DC2\ACK\168\SUB\EOT\164\SUB\"\n\
+    \\ACK\EOT\138\SOH\STX\NUL\EOT\DC2\ACK\189\ESC\EOT\185\ESC\"\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\NUL\ENQ\DC2\EOT\168\SUB\EOT\n\
+    \\ACK\EOT\138\SOH\STX\NUL\ENQ\DC2\EOT\189\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\NUL\SOH\DC2\EOT\168\SUB\v\NAK\n\
+    \\ACK\EOT\138\SOH\STX\NUL\SOH\DC2\EOT\189\ESC\v\NAK\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\NUL\ETX\DC2\EOT\168\SUB\CAN\EM\n\
+    \\ACK\EOT\138\SOH\STX\NUL\ETX\DC2\EOT\189\ESC\CAN\EM\n\
     \\219\SOH\n\
-    \\ENQ\EOT\135\SOH\STX\SOH\DC2\EOT\173\SUB\EOT\CAN\SUB\203\SOH End time is the end point of the forwarding history request. The\n\
+    \\ENQ\EOT\138\SOH\STX\SOH\DC2\EOT\194\ESC\EOT\CAN\SUB\203\SOH End time is the end point of the forwarding history request. The\n\
     \ response will carry at most 50k records between the start time and the\n\
     \ end time. The index offset can be used to implement pagination.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\135\SOH\STX\SOH\EOT\DC2\ACK\173\SUB\EOT\168\SUB\SUB\n\
+    \\ACK\EOT\138\SOH\STX\SOH\EOT\DC2\ACK\194\ESC\EOT\189\ESC\SUB\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\SOH\ENQ\DC2\EOT\173\SUB\EOT\n\
+    \\ACK\EOT\138\SOH\STX\SOH\ENQ\DC2\EOT\194\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\SOH\SOH\DC2\EOT\173\SUB\v\DC3\n\
+    \\ACK\EOT\138\SOH\STX\SOH\SOH\DC2\EOT\194\ESC\v\DC3\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\SOH\ETX\DC2\EOT\173\SUB\SYN\ETB\n\
+    \\ACK\EOT\138\SOH\STX\SOH\ETX\DC2\EOT\194\ESC\SYN\ETB\n\
     \\190\SOH\n\
-    \\ENQ\EOT\135\SOH\STX\STX\DC2\EOT\178\SUB\EOT\FS\SUB\174\SOH Index offset is the offset in the time series to start at. As each\n\
+    \\ENQ\EOT\138\SOH\STX\STX\DC2\EOT\199\ESC\EOT\FS\SUB\174\SOH Index offset is the offset in the time series to start at. As each\n\
     \ response can only contain 50k records, callers can use this to skip\n\
     \ around within a packed time series.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\135\SOH\STX\STX\EOT\DC2\ACK\178\SUB\EOT\173\SUB\CAN\n\
+    \\ACK\EOT\138\SOH\STX\STX\EOT\DC2\ACK\199\ESC\EOT\194\ESC\CAN\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\STX\ENQ\DC2\EOT\178\SUB\EOT\n\
+    \\ACK\EOT\138\SOH\STX\STX\ENQ\DC2\EOT\199\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\STX\SOH\DC2\EOT\178\SUB\v\ETB\n\
+    \\ACK\EOT\138\SOH\STX\STX\SOH\DC2\EOT\199\ESC\v\ETB\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\STX\ETX\DC2\EOT\178\SUB\SUB\ESC\n\
+    \\ACK\EOT\138\SOH\STX\STX\ETX\DC2\EOT\199\ESC\SUB\ESC\n\
     \R\n\
-    \\ENQ\EOT\135\SOH\STX\ETX\DC2\EOT\181\SUB\EOT\RS\SUBC The max number of events to return in the response to this query.\n\
+    \\ENQ\EOT\138\SOH\STX\ETX\DC2\EOT\202\ESC\EOT\RS\SUBC The max number of events to return in the response to this query.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\135\SOH\STX\ETX\EOT\DC2\ACK\181\SUB\EOT\178\SUB\FS\n\
+    \\ACK\EOT\138\SOH\STX\ETX\EOT\DC2\ACK\202\ESC\EOT\199\ESC\FS\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\ETX\ENQ\DC2\EOT\181\SUB\EOT\n\
+    \\ACK\EOT\138\SOH\STX\ETX\ENQ\DC2\EOT\202\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\ETX\SOH\DC2\EOT\181\SUB\v\EM\n\
+    \\ACK\EOT\138\SOH\STX\ETX\SOH\DC2\EOT\202\ESC\v\EM\n\
     \\SO\n\
-    \\ACK\EOT\135\SOH\STX\ETX\ETX\DC2\EOT\181\SUB\FS\GS\n\
+    \\ACK\EOT\138\SOH\STX\ETX\ETX\DC2\EOT\202\ESC\FS\GS\n\
     \\r\n\
-    \\ETX\EOT\136\SOH\DC2\ACK\183\SUB\NUL\220\SUB\SOH\n\
+    \\ETX\EOT\139\SOH\DC2\ACK\204\ESC\NUL\245\ESC\SOH\n\
     \\f\n\
-    \\EOT\EOT\136\SOH\SOH\DC2\EOT\183\SUB\b\ETB\n\
-    \\\\n\
-    \\ENQ\EOT\136\SOH\STX\NUL\DC2\EOT\186\SUB\EOT\EM\SUBM Timestamp is the time (unix epoch offset) that this circuit was\n\
-    \ completed.\n\
+    \\EOT\EOT\139\SOH\SOH\DC2\EOT\204\ESC\b\ETB\n\
+    \x\n\
+    \\ENQ\EOT\139\SOH\STX\NUL\DC2\EOT\207\ESC\EOT-\SUBi Timestamp is the time (unix epoch offset) that this circuit was\n\
+    \ completed. Deprecated by timestamp_ns.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\NUL\EOT\DC2\ACK\186\SUB\EOT\183\SUB\EM\n\
+    \\ACK\EOT\139\SOH\STX\NUL\EOT\DC2\ACK\207\ESC\EOT\204\ESC\EM\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\NUL\ENQ\DC2\EOT\186\SUB\EOT\n\
+    \\ACK\EOT\139\SOH\STX\NUL\ENQ\DC2\EOT\207\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\NUL\SOH\DC2\EOT\186\SUB\v\DC4\n\
+    \\ACK\EOT\139\SOH\STX\NUL\SOH\DC2\EOT\207\ESC\v\DC4\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\NUL\ETX\DC2\EOT\186\SUB\ETB\CAN\n\
-    \X\n\
-    \\ENQ\EOT\136\SOH\STX\SOH\DC2\EOT\189\SUB\EOT/\SUBI The incoming channel ID that carried the HTLC that created the circuit.\n\
-    \\n\
-    \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\SOH\EOT\DC2\ACK\189\SUB\EOT\186\SUB\EM\n\
+    \\ACK\EOT\139\SOH\STX\NUL\ETX\DC2\EOT\207\ESC\ETB\CAN\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\SOH\ENQ\DC2\EOT\189\SUB\EOT\n\
-    \\n\
-    \\SO\n\
-    \\ACK\EOT\136\SOH\STX\SOH\SOH\DC2\EOT\189\SUB\v\NAK\n\
-    \\SO\n\
-    \\ACK\EOT\136\SOH\STX\SOH\ETX\DC2\EOT\189\SUB\CAN\EM\n\
-    \\SO\n\
-    \\ACK\EOT\136\SOH\STX\SOH\b\DC2\EOT\189\SUB\SUB.\n\
+    \\ACK\EOT\139\SOH\STX\NUL\b\DC2\EOT\207\ESC\EM,\n\
     \\SI\n\
-    \\a\EOT\136\SOH\STX\SOH\b\ACK\DC2\EOT\189\SUB\ESC-\n\
+    \\a\EOT\139\SOH\STX\NUL\b\ETX\DC2\EOT\207\ESC\SUB+\n\
+    \X\n\
+    \\ENQ\EOT\139\SOH\STX\SOH\DC2\EOT\210\ESC\EOT/\SUBI The incoming channel ID that carried the HTLC that created the circuit.\n\
+    \\n\
+    \\DLE\n\
+    \\ACK\EOT\139\SOH\STX\SOH\EOT\DC2\ACK\210\ESC\EOT\207\ESC-\n\
+    \\SO\n\
+    \\ACK\EOT\139\SOH\STX\SOH\ENQ\DC2\EOT\210\ESC\EOT\n\
+    \\n\
+    \\SO\n\
+    \\ACK\EOT\139\SOH\STX\SOH\SOH\DC2\EOT\210\ESC\v\NAK\n\
+    \\SO\n\
+    \\ACK\EOT\139\SOH\STX\SOH\ETX\DC2\EOT\210\ESC\CAN\EM\n\
+    \\SO\n\
+    \\ACK\EOT\139\SOH\STX\SOH\b\DC2\EOT\210\ESC\SUB.\n\
+    \\SI\n\
+    \\a\EOT\139\SOH\STX\SOH\b\ACK\DC2\EOT\210\ESC\ESC-\n\
     \_\n\
-    \\ENQ\EOT\136\SOH\STX\STX\DC2\EOT\193\SUB\EOT0\SUBP The outgoing channel ID that carried the preimage that completed the\n\
+    \\ENQ\EOT\139\SOH\STX\STX\DC2\EOT\214\ESC\EOT0\SUBP The outgoing channel ID that carried the preimage that completed the\n\
     \ circuit.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\STX\EOT\DC2\ACK\193\SUB\EOT\189\SUB/\n\
+    \\ACK\EOT\139\SOH\STX\STX\EOT\DC2\ACK\214\ESC\EOT\210\ESC/\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\STX\ENQ\DC2\EOT\193\SUB\EOT\n\
+    \\ACK\EOT\139\SOH\STX\STX\ENQ\DC2\EOT\214\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\STX\SOH\DC2\EOT\193\SUB\v\SYN\n\
+    \\ACK\EOT\139\SOH\STX\STX\SOH\DC2\EOT\214\ESC\v\SYN\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\STX\ETX\DC2\EOT\193\SUB\EM\SUB\n\
+    \\ACK\EOT\139\SOH\STX\STX\ETX\DC2\EOT\214\ESC\EM\SUB\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\STX\b\DC2\EOT\193\SUB\ESC/\n\
+    \\ACK\EOT\139\SOH\STX\STX\b\DC2\EOT\214\ESC\ESC/\n\
     \\SI\n\
-    \\a\EOT\136\SOH\STX\STX\b\ACK\DC2\EOT\193\SUB\FS.\n\
+    \\a\EOT\139\SOH\STX\STX\b\ACK\DC2\EOT\214\ESC\FS.\n\
     \d\n\
-    \\ENQ\EOT\136\SOH\STX\ETX\DC2\EOT\197\SUB\EOT\SYN\SUBU The total amount (in satoshis) of the incoming HTLC that created half\n\
+    \\ENQ\EOT\139\SOH\STX\ETX\DC2\EOT\218\ESC\EOT\SYN\SUBU The total amount (in satoshis) of the incoming HTLC that created half\n\
     \ the circuit.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\ETX\EOT\DC2\ACK\197\SUB\EOT\193\SUB0\n\
+    \\ACK\EOT\139\SOH\STX\ETX\EOT\DC2\ACK\218\ESC\EOT\214\ESC0\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\ETX\ENQ\DC2\EOT\197\SUB\EOT\n\
+    \\ACK\EOT\139\SOH\STX\ETX\ENQ\DC2\EOT\218\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\ETX\SOH\DC2\EOT\197\SUB\v\DC1\n\
+    \\ACK\EOT\139\SOH\STX\ETX\SOH\DC2\EOT\218\ESC\v\DC1\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\ETX\ETX\DC2\EOT\197\SUB\DC4\NAK\n\
+    \\ACK\EOT\139\SOH\STX\ETX\ETX\DC2\EOT\218\ESC\DC4\NAK\n\
     \r\n\
-    \\ENQ\EOT\136\SOH\STX\EOT\DC2\EOT\201\SUB\EOT\ETB\SUBc The total amount (in satoshis) of the outgoing HTLC that created the\n\
+    \\ENQ\EOT\139\SOH\STX\EOT\DC2\EOT\222\ESC\EOT\ETB\SUBc The total amount (in satoshis) of the outgoing HTLC that created the\n\
     \ second half of the circuit.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\EOT\EOT\DC2\ACK\201\SUB\EOT\197\SUB\SYN\n\
+    \\ACK\EOT\139\SOH\STX\EOT\EOT\DC2\ACK\222\ESC\EOT\218\ESC\SYN\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\EOT\ENQ\DC2\EOT\201\SUB\EOT\n\
+    \\ACK\EOT\139\SOH\STX\EOT\ENQ\DC2\EOT\222\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\EOT\SOH\DC2\EOT\201\SUB\v\DC2\n\
+    \\ACK\EOT\139\SOH\STX\EOT\SOH\DC2\EOT\222\ESC\v\DC2\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\EOT\ETX\DC2\EOT\201\SUB\NAK\SYN\n\
+    \\ACK\EOT\139\SOH\STX\EOT\ETX\DC2\EOT\222\ESC\NAK\SYN\n\
     \O\n\
-    \\ENQ\EOT\136\SOH\STX\ENQ\DC2\EOT\204\SUB\EOT\DC3\SUB@ The total fee (in satoshis) that this payment circuit carried.\n\
+    \\ENQ\EOT\139\SOH\STX\ENQ\DC2\EOT\225\ESC\EOT\DC3\SUB@ The total fee (in satoshis) that this payment circuit carried.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\ENQ\EOT\DC2\ACK\204\SUB\EOT\201\SUB\ETB\n\
+    \\ACK\EOT\139\SOH\STX\ENQ\EOT\DC2\ACK\225\ESC\EOT\222\ESC\ETB\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\ENQ\ENQ\DC2\EOT\204\SUB\EOT\n\
+    \\ACK\EOT\139\SOH\STX\ENQ\ENQ\DC2\EOT\225\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\ENQ\SOH\DC2\EOT\204\SUB\v\SO\n\
+    \\ACK\EOT\139\SOH\STX\ENQ\SOH\DC2\EOT\225\ESC\v\SO\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\ENQ\ETX\DC2\EOT\204\SUB\DC1\DC2\n\
+    \\ACK\EOT\139\SOH\STX\ENQ\ETX\DC2\EOT\225\ESC\DC1\DC2\n\
     \U\n\
-    \\ENQ\EOT\136\SOH\STX\ACK\DC2\EOT\207\SUB\EOT\CAN\SUBF The total fee (in milli-satoshis) that this payment circuit carried.\n\
+    \\ENQ\EOT\139\SOH\STX\ACK\DC2\EOT\228\ESC\EOT\CAN\SUBF The total fee (in milli-satoshis) that this payment circuit carried.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\ACK\EOT\DC2\ACK\207\SUB\EOT\204\SUB\DC3\n\
+    \\ACK\EOT\139\SOH\STX\ACK\EOT\DC2\ACK\228\ESC\EOT\225\ESC\DC3\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\ACK\ENQ\DC2\EOT\207\SUB\EOT\n\
+    \\ACK\EOT\139\SOH\STX\ACK\ENQ\DC2\EOT\228\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\ACK\SOH\DC2\EOT\207\SUB\v\DC3\n\
+    \\ACK\EOT\139\SOH\STX\ACK\SOH\DC2\EOT\228\ESC\v\DC3\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\ACK\ETX\DC2\EOT\207\SUB\SYN\ETB\n\
+    \\ACK\EOT\139\SOH\STX\ACK\ETX\DC2\EOT\228\ESC\SYN\ETB\n\
     \j\n\
-    \\ENQ\EOT\136\SOH\STX\a\DC2\EOT\211\SUB\EOT\ESC\SUB[ The total amount (in milli-satoshis) of the incoming HTLC that created\n\
+    \\ENQ\EOT\139\SOH\STX\a\DC2\EOT\232\ESC\EOT\ESC\SUB[ The total amount (in milli-satoshis) of the incoming HTLC that created\n\
     \ half the circuit.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\a\EOT\DC2\ACK\211\SUB\EOT\207\SUB\CAN\n\
+    \\ACK\EOT\139\SOH\STX\a\EOT\DC2\ACK\232\ESC\EOT\228\ESC\CAN\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\a\ENQ\DC2\EOT\211\SUB\EOT\n\
+    \\ACK\EOT\139\SOH\STX\a\ENQ\DC2\EOT\232\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\a\SOH\DC2\EOT\211\SUB\v\SYN\n\
+    \\ACK\EOT\139\SOH\STX\a\SOH\DC2\EOT\232\ESC\v\SYN\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\a\ETX\DC2\EOT\211\SUB\EM\SUB\n\
+    \\ACK\EOT\139\SOH\STX\a\ETX\DC2\EOT\232\ESC\EM\SUB\n\
     \x\n\
-    \\ENQ\EOT\136\SOH\STX\b\DC2\EOT\215\SUB\EOT\GS\SUBi The total amount (in milli-satoshis) of the outgoing HTLC that created\n\
+    \\ENQ\EOT\139\SOH\STX\b\DC2\EOT\236\ESC\EOT\GS\SUBi The total amount (in milli-satoshis) of the outgoing HTLC that created\n\
     \ the second half of the circuit.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\b\EOT\DC2\ACK\215\SUB\EOT\211\SUB\ESC\n\
+    \\ACK\EOT\139\SOH\STX\b\EOT\DC2\ACK\236\ESC\EOT\232\ESC\ESC\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\b\ENQ\DC2\EOT\215\SUB\EOT\n\
+    \\ACK\EOT\139\SOH\STX\b\ENQ\DC2\EOT\236\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\b\SOH\DC2\EOT\215\SUB\v\ETB\n\
+    \\ACK\EOT\139\SOH\STX\b\SOH\DC2\EOT\236\ESC\v\ETB\n\
     \\SO\n\
-    \\ACK\EOT\136\SOH\STX\b\ETX\DC2\EOT\215\SUB\SUB\FS\n\
-    \\r\n\
-    \\ETX\EOT\137\SOH\DC2\ACK\221\SUB\NUL\229\SUB\SOH\n\
-    \\f\n\
-    \\EOT\EOT\137\SOH\SOH\DC2\EOT\221\SUB\b!\n\
+    \\ACK\EOT\139\SOH\STX\b\ETX\DC2\EOT\236\ESC\SUB\FS\n\
     \n\n\
-    \\ENQ\EOT\137\SOH\STX\NUL\DC2\EOT\224\SUB\EOT3\SUB_ A list of forwarding events from the time slice of the time series\n\
+    \\ENQ\EOT\139\SOH\STX\t\DC2\EOT\240\ESC\EOT\GS\SUB_ The number of nanoseconds elapsed since January 1, 1970 UTC when this\n\
+    \ circuit was completed.\n\
+    \\n\
+    \\DLE\n\
+    \\ACK\EOT\139\SOH\STX\t\EOT\DC2\ACK\240\ESC\EOT\236\ESC\GS\n\
+    \\SO\n\
+    \\ACK\EOT\139\SOH\STX\t\ENQ\DC2\EOT\240\ESC\EOT\n\
+    \\n\
+    \\SO\n\
+    \\ACK\EOT\139\SOH\STX\t\SOH\DC2\EOT\240\ESC\v\ETB\n\
+    \\SO\n\
+    \\ACK\EOT\139\SOH\STX\t\ETX\DC2\EOT\240\ESC\SUB\FS\n\
+    \\r\n\
+    \\ETX\EOT\140\SOH\DC2\ACK\246\ESC\NUL\254\ESC\SOH\n\
+    \\f\n\
+    \\EOT\EOT\140\SOH\SOH\DC2\EOT\246\ESC\b!\n\
+    \n\n\
+    \\ENQ\EOT\140\SOH\STX\NUL\DC2\EOT\249\ESC\EOT3\SUB_ A list of forwarding events from the time slice of the time series\n\
     \ specified in the request.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\137\SOH\STX\NUL\EOT\DC2\EOT\224\SUB\EOT\f\n\
+    \\ACK\EOT\140\SOH\STX\NUL\EOT\DC2\EOT\249\ESC\EOT\f\n\
     \\SO\n\
-    \\ACK\EOT\137\SOH\STX\NUL\ACK\DC2\EOT\224\SUB\r\FS\n\
+    \\ACK\EOT\140\SOH\STX\NUL\ACK\DC2\EOT\249\ESC\r\FS\n\
     \\SO\n\
-    \\ACK\EOT\137\SOH\STX\NUL\SOH\DC2\EOT\224\SUB\GS.\n\
+    \\ACK\EOT\140\SOH\STX\NUL\SOH\DC2\EOT\249\ESC\GS.\n\
     \\SO\n\
-    \\ACK\EOT\137\SOH\STX\NUL\ETX\DC2\EOT\224\SUB12\n\
+    \\ACK\EOT\140\SOH\STX\NUL\ETX\DC2\EOT\249\ESC12\n\
     \\133\SOH\n\
-    \\ENQ\EOT\137\SOH\STX\SOH\DC2\EOT\228\SUB\EOT!\SUBv The index of the last time in the set of returned forwarding events. Can\n\
+    \\ENQ\EOT\140\SOH\STX\SOH\DC2\EOT\253\ESC\EOT!\SUBv The index of the last time in the set of returned forwarding events. Can\n\
     \ be used to seek further, pagination style.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\137\SOH\STX\SOH\EOT\DC2\ACK\228\SUB\EOT\224\SUB3\n\
+    \\ACK\EOT\140\SOH\STX\SOH\EOT\DC2\ACK\253\ESC\EOT\249\ESC3\n\
     \\SO\n\
-    \\ACK\EOT\137\SOH\STX\SOH\ENQ\DC2\EOT\228\SUB\EOT\n\
+    \\ACK\EOT\140\SOH\STX\SOH\ENQ\DC2\EOT\253\ESC\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\137\SOH\STX\SOH\SOH\DC2\EOT\228\SUB\v\FS\n\
+    \\ACK\EOT\140\SOH\STX\SOH\SOH\DC2\EOT\253\ESC\v\FS\n\
     \\SO\n\
-    \\ACK\EOT\137\SOH\STX\SOH\ETX\DC2\EOT\228\SUB\US \n\
+    \\ACK\EOT\140\SOH\STX\SOH\ETX\DC2\EOT\253\ESC\US \n\
     \\r\n\
-    \\ETX\EOT\138\SOH\DC2\ACK\231\SUB\NUL\234\SUB\SOH\n\
+    \\ETX\EOT\141\SOH\DC2\ACK\128\FS\NUL\131\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\138\SOH\SOH\DC2\EOT\231\SUB\b\"\n\
+    \\EOT\EOT\141\SOH\SOH\DC2\EOT\128\FS\b\"\n\
     \B\n\
-    \\ENQ\EOT\138\SOH\STX\NUL\DC2\EOT\233\SUB\EOT \SUB3 The target channel point to obtain a back up for.\n\
+    \\ENQ\EOT\141\SOH\STX\NUL\DC2\EOT\130\FS\EOT \SUB3 The target channel point to obtain a back up for.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\138\SOH\STX\NUL\EOT\DC2\ACK\233\SUB\EOT\231\SUB$\n\
+    \\ACK\EOT\141\SOH\STX\NUL\EOT\DC2\ACK\130\FS\EOT\128\FS$\n\
     \\SO\n\
-    \\ACK\EOT\138\SOH\STX\NUL\ACK\DC2\EOT\233\SUB\EOT\DLE\n\
+    \\ACK\EOT\141\SOH\STX\NUL\ACK\DC2\EOT\130\FS\EOT\DLE\n\
     \\SO\n\
-    \\ACK\EOT\138\SOH\STX\NUL\SOH\DC2\EOT\233\SUB\DC1\ESC\n\
+    \\ACK\EOT\141\SOH\STX\NUL\SOH\DC2\EOT\130\FS\DC1\ESC\n\
     \\SO\n\
-    \\ACK\EOT\138\SOH\STX\NUL\ETX\DC2\EOT\233\SUB\RS\US\n\
+    \\ACK\EOT\141\SOH\STX\NUL\ETX\DC2\EOT\130\FS\RS\US\n\
     \\r\n\
-    \\ETX\EOT\139\SOH\DC2\ACK\236\SUB\NUL\249\SUB\SOH\n\
+    \\ETX\EOT\142\SOH\DC2\ACK\133\FS\NUL\146\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\139\SOH\SOH\DC2\EOT\236\SUB\b\NAK\n\
+    \\EOT\EOT\142\SOH\SOH\DC2\EOT\133\FS\b\NAK\n\
     \D\n\
-    \\ENQ\EOT\139\SOH\STX\NUL\DC2\EOT\240\SUB\EOT \SUB5\n\
+    \\ENQ\EOT\142\SOH\STX\NUL\DC2\EOT\137\FS\EOT \SUB5\n\
     \Identifies the channel that this backup belongs to.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\NUL\EOT\DC2\ACK\240\SUB\EOT\236\SUB\ETB\n\
+    \\ACK\EOT\142\SOH\STX\NUL\EOT\DC2\ACK\137\FS\EOT\133\FS\ETB\n\
     \\SO\n\
-    \\ACK\EOT\139\SOH\STX\NUL\ACK\DC2\EOT\240\SUB\EOT\DLE\n\
+    \\ACK\EOT\142\SOH\STX\NUL\ACK\DC2\EOT\137\FS\EOT\DLE\n\
     \\SO\n\
-    \\ACK\EOT\139\SOH\STX\NUL\SOH\DC2\EOT\240\SUB\DC1\ESC\n\
+    \\ACK\EOT\142\SOH\STX\NUL\SOH\DC2\EOT\137\FS\DC1\ESC\n\
     \\SO\n\
-    \\ACK\EOT\139\SOH\STX\NUL\ETX\DC2\EOT\240\SUB\RS\US\n\
+    \\ACK\EOT\142\SOH\STX\NUL\ETX\DC2\EOT\137\FS\RS\US\n\
     \\242\SOH\n\
-    \\ENQ\EOT\139\SOH\STX\SOH\DC2\EOT\248\SUB\EOT\SUB\SUB\226\SOH\n\
+    \\ENQ\EOT\142\SOH\STX\SOH\DC2\EOT\145\FS\EOT\SUB\SUB\226\SOH\n\
     \Is an encrypted single-chan backup. this can be passed to\n\
     \RestoreChannelBackups, or the WalletUnlocker Init and Unlock methods in\n\
     \order to trigger the recovery protocol. When using REST, this field must be\n\
     \encoded as base64.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\SOH\EOT\DC2\ACK\248\SUB\EOT\240\SUB \n\
+    \\ACK\EOT\142\SOH\STX\SOH\EOT\DC2\ACK\145\FS\EOT\137\FS \n\
     \\SO\n\
-    \\ACK\EOT\139\SOH\STX\SOH\ENQ\DC2\EOT\248\SUB\EOT\t\n\
+    \\ACK\EOT\142\SOH\STX\SOH\ENQ\DC2\EOT\145\FS\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\139\SOH\STX\SOH\SOH\DC2\EOT\248\SUB\n\
+    \\ACK\EOT\142\SOH\STX\SOH\SOH\DC2\EOT\145\FS\n\
     \\NAK\n\
     \\SO\n\
-    \\ACK\EOT\139\SOH\STX\SOH\ETX\DC2\EOT\248\SUB\CAN\EM\n\
+    \\ACK\EOT\142\SOH\STX\SOH\ETX\DC2\EOT\145\FS\CAN\EM\n\
     \\r\n\
-    \\ETX\EOT\140\SOH\DC2\ACK\251\SUB\NUL\136\ESC\SOH\n\
+    \\ETX\EOT\143\SOH\DC2\ACK\148\FS\NUL\161\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\140\SOH\SOH\DC2\EOT\251\SUB\b\ETB\n\
+    \\EOT\EOT\143\SOH\SOH\DC2\EOT\148\FS\b\ETB\n\
     \[\n\
-    \\ENQ\EOT\140\SOH\STX\NUL\DC2\EOT\255\SUB\EOT*\SUBL\n\
+    \\ENQ\EOT\143\SOH\STX\NUL\DC2\EOT\152\FS\EOT*\SUBL\n\
     \Is the set of all channels that are included in this multi-channel backup.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\140\SOH\STX\NUL\EOT\DC2\EOT\255\SUB\EOT\f\n\
+    \\ACK\EOT\143\SOH\STX\NUL\EOT\DC2\EOT\152\FS\EOT\f\n\
     \\SO\n\
-    \\ACK\EOT\140\SOH\STX\NUL\ACK\DC2\EOT\255\SUB\r\EM\n\
+    \\ACK\EOT\143\SOH\STX\NUL\ACK\DC2\EOT\152\FS\r\EM\n\
     \\SO\n\
-    \\ACK\EOT\140\SOH\STX\NUL\SOH\DC2\EOT\255\SUB\SUB%\n\
+    \\ACK\EOT\143\SOH\STX\NUL\SOH\DC2\EOT\152\FS\SUB%\n\
     \\SO\n\
-    \\ACK\EOT\140\SOH\STX\NUL\ETX\DC2\EOT\255\SUB()\n\
+    \\ACK\EOT\143\SOH\STX\NUL\ETX\DC2\EOT\152\FS()\n\
     \\139\STX\n\
-    \\ENQ\EOT\140\SOH\STX\SOH\DC2\EOT\135\ESC\EOT \SUB\251\SOH\n\
+    \\ENQ\EOT\143\SOH\STX\SOH\DC2\EOT\160\FS\EOT \SUB\251\SOH\n\
     \A single encrypted blob containing all the static channel backups of the\n\
     \channel listed above. This can be stored as a single file or blob, and\n\
     \safely be replaced with any prior/future versions. When using REST, this\n\
     \field must be encoded as base64.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\140\SOH\STX\SOH\EOT\DC2\ACK\135\ESC\EOT\255\SUB*\n\
+    \\ACK\EOT\143\SOH\STX\SOH\EOT\DC2\ACK\160\FS\EOT\152\FS*\n\
     \\SO\n\
-    \\ACK\EOT\140\SOH\STX\SOH\ENQ\DC2\EOT\135\ESC\EOT\t\n\
+    \\ACK\EOT\143\SOH\STX\SOH\ENQ\DC2\EOT\160\FS\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\140\SOH\STX\SOH\SOH\DC2\EOT\135\ESC\n\
+    \\ACK\EOT\143\SOH\STX\SOH\SOH\DC2\EOT\160\FS\n\
     \\ESC\n\
     \\SO\n\
-    \\ACK\EOT\140\SOH\STX\SOH\ETX\DC2\EOT\135\ESC\RS\US\n\
+    \\ACK\EOT\143\SOH\STX\SOH\ETX\DC2\EOT\160\FS\RS\US\n\
     \\r\n\
-    \\ETX\EOT\141\SOH\DC2\ACK\138\ESC\NUL\139\ESC\SOH\n\
+    \\ETX\EOT\144\SOH\DC2\ACK\163\FS\NUL\164\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\141\SOH\SOH\DC2\EOT\138\ESC\b\US\n\
+    \\EOT\EOT\144\SOH\SOH\DC2\EOT\163\FS\b\US\n\
     \\r\n\
-    \\ETX\EOT\142\SOH\DC2\ACK\140\ESC\NUL\152\ESC\SOH\n\
+    \\ETX\EOT\145\SOH\DC2\ACK\165\FS\NUL\177\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\142\SOH\SOH\DC2\EOT\140\ESC\b\SUB\n\
+    \\EOT\EOT\145\SOH\SOH\DC2\EOT\165\FS\b\SUB\n\
     \s\n\
-    \\ENQ\EOT\142\SOH\STX\NUL\DC2\EOT\145\ESC\EOT+\SUBd\n\
+    \\ENQ\EOT\145\SOH\STX\NUL\DC2\EOT\170\FS\EOT+\SUBd\n\
     \The set of new channels that have been added since the last channel backup\n\
     \snapshot was requested.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\142\SOH\STX\NUL\EOT\DC2\ACK\145\ESC\EOT\140\ESC\FS\n\
+    \\ACK\EOT\145\SOH\STX\NUL\EOT\DC2\ACK\170\FS\EOT\165\FS\FS\n\
     \\SO\n\
-    \\ACK\EOT\142\SOH\STX\NUL\ACK\DC2\EOT\145\ESC\EOT\DC2\n\
+    \\ACK\EOT\145\SOH\STX\NUL\ACK\DC2\EOT\170\FS\EOT\DC2\n\
     \\SO\n\
-    \\ACK\EOT\142\SOH\STX\NUL\SOH\DC2\EOT\145\ESC\DC3&\n\
+    \\ACK\EOT\145\SOH\STX\NUL\SOH\DC2\EOT\170\FS\DC3&\n\
     \\SO\n\
-    \\ACK\EOT\142\SOH\STX\NUL\ETX\DC2\EOT\145\ESC)*\n\
+    \\ACK\EOT\145\SOH\STX\NUL\ETX\DC2\EOT\170\FS)*\n\
     \]\n\
-    \\ENQ\EOT\142\SOH\STX\SOH\DC2\EOT\151\ESC\EOT*\SUBN\n\
+    \\ENQ\EOT\145\SOH\STX\SOH\DC2\EOT\176\FS\EOT*\SUBN\n\
     \A multi-channel backup that covers all open channels currently known to\n\
     \lnd.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\142\SOH\STX\SOH\EOT\DC2\ACK\151\ESC\EOT\145\ESC+\n\
+    \\ACK\EOT\145\SOH\STX\SOH\EOT\DC2\ACK\176\FS\EOT\170\FS+\n\
     \\SO\n\
-    \\ACK\EOT\142\SOH\STX\SOH\ACK\DC2\EOT\151\ESC\EOT\DC3\n\
+    \\ACK\EOT\145\SOH\STX\SOH\ACK\DC2\EOT\176\FS\EOT\DC3\n\
     \\SO\n\
-    \\ACK\EOT\142\SOH\STX\SOH\SOH\DC2\EOT\151\ESC\DC4%\n\
+    \\ACK\EOT\145\SOH\STX\SOH\SOH\DC2\EOT\176\FS\DC4%\n\
     \\SO\n\
-    \\ACK\EOT\142\SOH\STX\SOH\ETX\DC2\EOT\151\ESC()\n\
+    \\ACK\EOT\145\SOH\STX\SOH\ETX\DC2\EOT\176\FS()\n\
     \\r\n\
-    \\ETX\EOT\143\SOH\DC2\ACK\154\ESC\NUL\159\ESC\SOH\n\
+    \\ETX\EOT\146\SOH\DC2\ACK\179\FS\NUL\184\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\143\SOH\SOH\DC2\EOT\154\ESC\b\SYN\n\
+    \\EOT\EOT\146\SOH\SOH\DC2\EOT\179\FS\b\SYN\n\
     \=\n\
-    \\ENQ\EOT\143\SOH\STX\NUL\DC2\EOT\158\ESC\EOT,\SUB.\n\
+    \\ENQ\EOT\146\SOH\STX\NUL\DC2\EOT\183\FS\EOT,\SUB.\n\
     \A set of single-chan static channel backups.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\143\SOH\STX\NUL\EOT\DC2\EOT\158\ESC\EOT\f\n\
+    \\ACK\EOT\146\SOH\STX\NUL\EOT\DC2\EOT\183\FS\EOT\f\n\
     \\SO\n\
-    \\ACK\EOT\143\SOH\STX\NUL\ACK\DC2\EOT\158\ESC\r\SUB\n\
+    \\ACK\EOT\146\SOH\STX\NUL\ACK\DC2\EOT\183\FS\r\SUB\n\
     \\SO\n\
-    \\ACK\EOT\143\SOH\STX\NUL\SOH\DC2\EOT\158\ESC\ESC'\n\
+    \\ACK\EOT\146\SOH\STX\NUL\SOH\DC2\EOT\183\FS\ESC'\n\
     \\SO\n\
-    \\ACK\EOT\143\SOH\STX\NUL\ETX\DC2\EOT\158\ESC*+\n\
+    \\ACK\EOT\146\SOH\STX\NUL\ETX\DC2\EOT\183\FS*+\n\
     \\r\n\
-    \\ETX\EOT\144\SOH\DC2\ACK\161\ESC\NUL\174\ESC\SOH\n\
+    \\ETX\EOT\147\SOH\DC2\ACK\186\FS\NUL\199\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\144\SOH\SOH\DC2\EOT\161\ESC\b \n\
+    \\EOT\EOT\147\SOH\SOH\DC2\EOT\186\FS\b \n\
     \\SI\n\
-    \\ENQ\EOT\144\SOH\b\NUL\DC2\ACK\162\ESC\EOT\173\ESC\ENQ\n\
+    \\ENQ\EOT\147\SOH\b\NUL\DC2\ACK\187\FS\EOT\198\FS\ENQ\n\
     \\SO\n\
-    \\ACK\EOT\144\SOH\b\NUL\SOH\DC2\EOT\162\ESC\n\
+    \\ACK\EOT\147\SOH\b\NUL\SOH\DC2\EOT\187\FS\n\
     \\DLE\n\
     \K\n\
-    \\ENQ\EOT\144\SOH\STX\NUL\DC2\EOT\166\ESC\b(\SUB<\n\
+    \\ENQ\EOT\147\SOH\STX\NUL\DC2\EOT\191\FS\b(\SUB<\n\
     \The channels to restore as a list of channel/backup pairs.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\144\SOH\STX\NUL\ACK\DC2\EOT\166\ESC\b\SYN\n\
+    \\ACK\EOT\147\SOH\STX\NUL\ACK\DC2\EOT\191\FS\b\SYN\n\
     \\SO\n\
-    \\ACK\EOT\144\SOH\STX\NUL\SOH\DC2\EOT\166\ESC\ETB#\n\
+    \\ACK\EOT\147\SOH\STX\NUL\SOH\DC2\EOT\191\FS\ETB#\n\
     \\SO\n\
-    \\ACK\EOT\144\SOH\STX\NUL\ETX\DC2\EOT\166\ESC&'\n\
+    \\ACK\EOT\147\SOH\STX\NUL\ETX\DC2\EOT\191\FS&'\n\
     \\130\SOH\n\
-    \\ENQ\EOT\144\SOH\STX\SOH\DC2\EOT\172\ESC\b$\SUBs\n\
+    \\ENQ\EOT\147\SOH\STX\SOH\DC2\EOT\197\FS\b$\SUBs\n\
     \The channels to restore in the packed multi backup format. When using\n\
     \REST, this field must be encoded as base64.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\144\SOH\STX\SOH\ENQ\DC2\EOT\172\ESC\b\r\n\
+    \\ACK\EOT\147\SOH\STX\SOH\ENQ\DC2\EOT\197\FS\b\r\n\
     \\SO\n\
-    \\ACK\EOT\144\SOH\STX\SOH\SOH\DC2\EOT\172\ESC\SO\US\n\
+    \\ACK\EOT\147\SOH\STX\SOH\SOH\DC2\EOT\197\FS\SO\US\n\
     \\SO\n\
-    \\ACK\EOT\144\SOH\STX\SOH\ETX\DC2\EOT\172\ESC\"#\n\
+    \\ACK\EOT\147\SOH\STX\SOH\ETX\DC2\EOT\197\FS\"#\n\
     \\r\n\
-    \\ETX\EOT\145\SOH\DC2\ACK\175\ESC\NUL\176\ESC\SOH\n\
+    \\ETX\EOT\148\SOH\DC2\ACK\200\FS\NUL\201\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\145\SOH\SOH\DC2\EOT\175\ESC\b\GS\n\
+    \\EOT\EOT\148\SOH\SOH\DC2\EOT\200\FS\b\GS\n\
     \\r\n\
-    \\ETX\EOT\146\SOH\DC2\ACK\178\ESC\NUL\179\ESC\SOH\n\
+    \\ETX\EOT\149\SOH\DC2\ACK\203\FS\NUL\204\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\146\SOH\SOH\DC2\EOT\178\ESC\b!\n\
+    \\EOT\EOT\149\SOH\SOH\DC2\EOT\203\FS\b!\n\
     \\r\n\
-    \\ETX\EOT\147\SOH\DC2\ACK\181\ESC\NUL\182\ESC\SOH\n\
+    \\ETX\EOT\150\SOH\DC2\ACK\206\FS\NUL\207\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\147\SOH\SOH\DC2\EOT\181\ESC\b \n\
+    \\EOT\EOT\150\SOH\SOH\DC2\EOT\206\FS\b \n\
     \\r\n\
-    \\ETX\EOT\148\SOH\DC2\ACK\184\ESC\NUL\190\ESC\SOH\n\
+    \\ETX\EOT\151\SOH\DC2\ACK\209\FS\NUL\215\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\148\SOH\SOH\DC2\EOT\184\ESC\b\SUB\n\
+    \\EOT\EOT\151\SOH\SOH\DC2\EOT\209\FS\b\SUB\n\
     \:\n\
-    \\ENQ\EOT\148\SOH\STX\NUL\DC2\EOT\186\ESC\EOT\SYN\SUB+ The entity a permission grants access to.\n\
+    \\ENQ\EOT\151\SOH\STX\NUL\DC2\EOT\211\FS\EOT\SYN\SUB+ The entity a permission grants access to.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\148\SOH\STX\NUL\EOT\DC2\ACK\186\ESC\EOT\184\ESC\FS\n\
+    \\ACK\EOT\151\SOH\STX\NUL\EOT\DC2\ACK\211\FS\EOT\209\FS\FS\n\
     \\SO\n\
-    \\ACK\EOT\148\SOH\STX\NUL\ENQ\DC2\EOT\186\ESC\EOT\n\
+    \\ACK\EOT\151\SOH\STX\NUL\ENQ\DC2\EOT\211\FS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\148\SOH\STX\NUL\SOH\DC2\EOT\186\ESC\v\DC1\n\
+    \\ACK\EOT\151\SOH\STX\NUL\SOH\DC2\EOT\211\FS\v\DC1\n\
     \\SO\n\
-    \\ACK\EOT\148\SOH\STX\NUL\ETX\DC2\EOT\186\ESC\DC4\NAK\n\
+    \\ACK\EOT\151\SOH\STX\NUL\ETX\DC2\EOT\211\FS\DC4\NAK\n\
     \,\n\
-    \\ENQ\EOT\148\SOH\STX\SOH\DC2\EOT\189\ESC\EOT\SYN\SUB\GS The action that is granted.\n\
+    \\ENQ\EOT\151\SOH\STX\SOH\DC2\EOT\214\FS\EOT\SYN\SUB\GS The action that is granted.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\148\SOH\STX\SOH\EOT\DC2\ACK\189\ESC\EOT\186\ESC\SYN\n\
+    \\ACK\EOT\151\SOH\STX\SOH\EOT\DC2\ACK\214\FS\EOT\211\FS\SYN\n\
     \\SO\n\
-    \\ACK\EOT\148\SOH\STX\SOH\ENQ\DC2\EOT\189\ESC\EOT\n\
+    \\ACK\EOT\151\SOH\STX\SOH\ENQ\DC2\EOT\214\FS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\148\SOH\STX\SOH\SOH\DC2\EOT\189\ESC\v\DC1\n\
+    \\ACK\EOT\151\SOH\STX\SOH\SOH\DC2\EOT\214\FS\v\DC1\n\
     \\SO\n\
-    \\ACK\EOT\148\SOH\STX\SOH\ETX\DC2\EOT\189\ESC\DC4\NAK\n\
+    \\ACK\EOT\151\SOH\STX\SOH\ETX\DC2\EOT\214\FS\DC4\NAK\n\
     \\r\n\
-    \\ETX\EOT\149\SOH\DC2\ACK\191\ESC\NUL\197\ESC\SOH\n\
+    \\ETX\EOT\152\SOH\DC2\ACK\216\FS\NUL\222\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\149\SOH\SOH\DC2\EOT\191\ESC\b\ESC\n\
+    \\EOT\EOT\152\SOH\SOH\DC2\EOT\216\FS\b\ESC\n\
     \G\n\
-    \\ENQ\EOT\149\SOH\STX\NUL\DC2\EOT\193\ESC\EOT0\SUB8 The list of permissions the new macaroon should grant.\n\
+    \\ENQ\EOT\152\SOH\STX\NUL\DC2\EOT\218\FS\EOT0\SUB8 The list of permissions the new macaroon should grant.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\149\SOH\STX\NUL\EOT\DC2\EOT\193\ESC\EOT\f\n\
+    \\ACK\EOT\152\SOH\STX\NUL\EOT\DC2\EOT\218\FS\EOT\f\n\
     \\SO\n\
-    \\ACK\EOT\149\SOH\STX\NUL\ACK\DC2\EOT\193\ESC\r\US\n\
+    \\ACK\EOT\152\SOH\STX\NUL\ACK\DC2\EOT\218\FS\r\US\n\
     \\SO\n\
-    \\ACK\EOT\149\SOH\STX\NUL\SOH\DC2\EOT\193\ESC +\n\
+    \\ACK\EOT\152\SOH\STX\NUL\SOH\DC2\EOT\218\FS +\n\
     \\SO\n\
-    \\ACK\EOT\149\SOH\STX\NUL\ETX\DC2\EOT\193\ESC./\n\
+    \\ACK\EOT\152\SOH\STX\NUL\ETX\DC2\EOT\218\FS./\n\
     \Y\n\
-    \\ENQ\EOT\149\SOH\STX\SOH\DC2\EOT\196\ESC\EOT\ESC\SUBJ The root key ID used to create the macaroon, must be a positive integer.\n\
+    \\ENQ\EOT\152\SOH\STX\SOH\DC2\EOT\221\FS\EOT\ESC\SUBJ The root key ID used to create the macaroon, must be a positive integer.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\149\SOH\STX\SOH\EOT\DC2\ACK\196\ESC\EOT\193\ESC0\n\
+    \\ACK\EOT\152\SOH\STX\SOH\EOT\DC2\ACK\221\FS\EOT\218\FS0\n\
     \\SO\n\
-    \\ACK\EOT\149\SOH\STX\SOH\ENQ\DC2\EOT\196\ESC\EOT\n\
+    \\ACK\EOT\152\SOH\STX\SOH\ENQ\DC2\EOT\221\FS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\149\SOH\STX\SOH\SOH\DC2\EOT\196\ESC\v\SYN\n\
+    \\ACK\EOT\152\SOH\STX\SOH\SOH\DC2\EOT\221\FS\v\SYN\n\
     \\SO\n\
-    \\ACK\EOT\149\SOH\STX\SOH\ETX\DC2\EOT\196\ESC\EM\SUB\n\
+    \\ACK\EOT\152\SOH\STX\SOH\ETX\DC2\EOT\221\FS\EM\SUB\n\
     \\r\n\
-    \\ETX\EOT\150\SOH\DC2\ACK\198\ESC\NUL\201\ESC\SOH\n\
+    \\ETX\EOT\153\SOH\DC2\ACK\223\FS\NUL\226\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\150\SOH\SOH\DC2\EOT\198\ESC\b\FS\n\
+    \\EOT\EOT\153\SOH\SOH\DC2\EOT\223\FS\b\FS\n\
     \G\n\
-    \\ENQ\EOT\150\SOH\STX\NUL\DC2\EOT\200\ESC\EOT\CAN\SUB8 The hex encoded macaroon, serialized in binary format.\n\
+    \\ENQ\EOT\153\SOH\STX\NUL\DC2\EOT\225\FS\EOT\CAN\SUB8 The hex encoded macaroon, serialized in binary format.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\150\SOH\STX\NUL\EOT\DC2\ACK\200\ESC\EOT\198\ESC\RS\n\
+    \\ACK\EOT\153\SOH\STX\NUL\EOT\DC2\ACK\225\FS\EOT\223\FS\RS\n\
     \\SO\n\
-    \\ACK\EOT\150\SOH\STX\NUL\ENQ\DC2\EOT\200\ESC\EOT\n\
+    \\ACK\EOT\153\SOH\STX\NUL\ENQ\DC2\EOT\225\FS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\150\SOH\STX\NUL\SOH\DC2\EOT\200\ESC\v\DC3\n\
+    \\ACK\EOT\153\SOH\STX\NUL\SOH\DC2\EOT\225\FS\v\DC3\n\
     \\SO\n\
-    \\ACK\EOT\150\SOH\STX\NUL\ETX\DC2\EOT\200\ESC\SYN\ETB\n\
+    \\ACK\EOT\153\SOH\STX\NUL\ETX\DC2\EOT\225\FS\SYN\ETB\n\
     \\r\n\
-    \\ETX\EOT\151\SOH\DC2\ACK\203\ESC\NUL\204\ESC\SOH\n\
+    \\ETX\EOT\154\SOH\DC2\ACK\228\FS\NUL\229\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\151\SOH\SOH\DC2\EOT\203\ESC\b\RS\n\
+    \\EOT\EOT\154\SOH\SOH\DC2\EOT\228\FS\b\RS\n\
     \\r\n\
-    \\ETX\EOT\152\SOH\DC2\ACK\205\ESC\NUL\208\ESC\SOH\n\
+    \\ETX\EOT\155\SOH\DC2\ACK\230\FS\NUL\233\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\152\SOH\SOH\DC2\EOT\205\ESC\b\US\n\
+    \\EOT\EOT\155\SOH\SOH\DC2\EOT\230\FS\b\US\n\
     \:\n\
-    \\ENQ\EOT\152\SOH\STX\NUL\DC2\EOT\207\ESC\EOT%\SUB+ The list of root key IDs that are in use.\n\
+    \\ENQ\EOT\155\SOH\STX\NUL\DC2\EOT\232\FS\EOT%\SUB+ The list of root key IDs that are in use.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\152\SOH\STX\NUL\EOT\DC2\EOT\207\ESC\EOT\f\n\
+    \\ACK\EOT\155\SOH\STX\NUL\EOT\DC2\EOT\232\FS\EOT\f\n\
     \\SO\n\
-    \\ACK\EOT\152\SOH\STX\NUL\ENQ\DC2\EOT\207\ESC\r\DC3\n\
+    \\ACK\EOT\155\SOH\STX\NUL\ENQ\DC2\EOT\232\FS\r\DC3\n\
     \\SO\n\
-    \\ACK\EOT\152\SOH\STX\NUL\SOH\DC2\EOT\207\ESC\DC4 \n\
+    \\ACK\EOT\155\SOH\STX\NUL\SOH\DC2\EOT\232\FS\DC4 \n\
     \\SO\n\
-    \\ACK\EOT\152\SOH\STX\NUL\ETX\DC2\EOT\207\ESC#$\n\
+    \\ACK\EOT\155\SOH\STX\NUL\ETX\DC2\EOT\232\FS#$\n\
     \\r\n\
-    \\ETX\EOT\153\SOH\DC2\ACK\210\ESC\NUL\213\ESC\SOH\n\
+    \\ETX\EOT\156\SOH\DC2\ACK\235\FS\NUL\238\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\153\SOH\SOH\DC2\EOT\210\ESC\b\US\n\
+    \\EOT\EOT\156\SOH\SOH\DC2\EOT\235\FS\b\US\n\
     \/\n\
-    \\ENQ\EOT\153\SOH\STX\NUL\DC2\EOT\212\ESC\EOT\ESC\SUB  The root key ID to be removed.\n\
+    \\ENQ\EOT\156\SOH\STX\NUL\DC2\EOT\237\FS\EOT\ESC\SUB  The root key ID to be removed.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\153\SOH\STX\NUL\EOT\DC2\ACK\212\ESC\EOT\210\ESC!\n\
+    \\ACK\EOT\156\SOH\STX\NUL\EOT\DC2\ACK\237\FS\EOT\235\FS!\n\
     \\SO\n\
-    \\ACK\EOT\153\SOH\STX\NUL\ENQ\DC2\EOT\212\ESC\EOT\n\
+    \\ACK\EOT\156\SOH\STX\NUL\ENQ\DC2\EOT\237\FS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\153\SOH\STX\NUL\SOH\DC2\EOT\212\ESC\v\SYN\n\
+    \\ACK\EOT\156\SOH\STX\NUL\SOH\DC2\EOT\237\FS\v\SYN\n\
     \\SO\n\
-    \\ACK\EOT\153\SOH\STX\NUL\ETX\DC2\EOT\212\ESC\EM\SUB\n\
+    \\ACK\EOT\156\SOH\STX\NUL\ETX\DC2\EOT\237\FS\EM\SUB\n\
     \\r\n\
-    \\ETX\EOT\154\SOH\DC2\ACK\214\ESC\NUL\217\ESC\SOH\n\
+    \\ETX\EOT\157\SOH\DC2\ACK\239\FS\NUL\242\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\154\SOH\SOH\DC2\EOT\214\ESC\b \n\
+    \\EOT\EOT\157\SOH\SOH\DC2\EOT\239\FS\b \n\
     \E\n\
-    \\ENQ\EOT\154\SOH\STX\NUL\DC2\EOT\216\ESC\EOT\NAK\SUB6 A boolean indicates that the deletion is successful.\n\
+    \\ENQ\EOT\157\SOH\STX\NUL\DC2\EOT\241\FS\EOT\NAK\SUB6 A boolean indicates that the deletion is successful.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\154\SOH\STX\NUL\EOT\DC2\ACK\216\ESC\EOT\214\ESC\"\n\
+    \\ACK\EOT\157\SOH\STX\NUL\EOT\DC2\ACK\241\FS\EOT\239\FS\"\n\
     \\SO\n\
-    \\ACK\EOT\154\SOH\STX\NUL\ENQ\DC2\EOT\216\ESC\EOT\b\n\
+    \\ACK\EOT\157\SOH\STX\NUL\ENQ\DC2\EOT\241\FS\EOT\b\n\
     \\SO\n\
-    \\ACK\EOT\154\SOH\STX\NUL\SOH\DC2\EOT\216\ESC\t\DLE\n\
+    \\ACK\EOT\157\SOH\STX\NUL\SOH\DC2\EOT\241\FS\t\DLE\n\
     \\SO\n\
-    \\ACK\EOT\154\SOH\STX\NUL\ETX\DC2\EOT\216\ESC\DC3\DC4\n\
+    \\ACK\EOT\157\SOH\STX\NUL\ETX\DC2\EOT\241\FS\DC3\DC4\n\
     \\r\n\
-    \\ETX\EOT\155\SOH\DC2\ACK\219\ESC\NUL\222\ESC\SOH\n\
+    \\ETX\EOT\158\SOH\DC2\ACK\244\FS\NUL\247\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\155\SOH\SOH\DC2\EOT\219\ESC\b\RS\n\
+    \\EOT\EOT\158\SOH\SOH\DC2\EOT\244\FS\b\RS\n\
     \0\n\
-    \\ENQ\EOT\155\SOH\STX\NUL\DC2\EOT\221\ESC\EOT0\SUB! A list of macaroon permissions.\n\
+    \\ENQ\EOT\158\SOH\STX\NUL\DC2\EOT\246\FS\EOT0\SUB! A list of macaroon permissions.\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\155\SOH\STX\NUL\EOT\DC2\EOT\221\ESC\EOT\f\n\
+    \\ACK\EOT\158\SOH\STX\NUL\EOT\DC2\EOT\246\FS\EOT\f\n\
     \\SO\n\
-    \\ACK\EOT\155\SOH\STX\NUL\ACK\DC2\EOT\221\ESC\r\US\n\
+    \\ACK\EOT\158\SOH\STX\NUL\ACK\DC2\EOT\246\FS\r\US\n\
     \\SO\n\
-    \\ACK\EOT\155\SOH\STX\NUL\SOH\DC2\EOT\221\ESC +\n\
+    \\ACK\EOT\158\SOH\STX\NUL\SOH\DC2\EOT\246\FS +\n\
     \\SO\n\
-    \\ACK\EOT\155\SOH\STX\NUL\ETX\DC2\EOT\221\ESC./\n\
+    \\ACK\EOT\158\SOH\STX\NUL\ETX\DC2\EOT\246\FS./\n\
     \\r\n\
-    \\ETX\EOT\156\SOH\DC2\ACK\224\ESC\NUL\225\ESC\SOH\n\
+    \\ETX\EOT\159\SOH\DC2\ACK\249\FS\NUL\250\FS\SOH\n\
     \\f\n\
-    \\EOT\EOT\156\SOH\SOH\DC2\EOT\224\ESC\b\RS\n\
+    \\EOT\EOT\159\SOH\SOH\DC2\EOT\249\FS\b\RS\n\
     \\r\n\
-    \\ETX\EOT\157\SOH\DC2\ACK\226\ESC\NUL\232\ESC\SOH\n\
+    \\ETX\EOT\160\SOH\DC2\ACK\251\FS\NUL\129\GS\SOH\n\
     \\f\n\
-    \\EOT\EOT\157\SOH\SOH\DC2\EOT\226\ESC\b\US\n\
+    \\EOT\EOT\160\SOH\SOH\DC2\EOT\251\FS\b\US\n\
     \j\n\
-    \\ENQ\EOT\157\SOH\STX\NUL\DC2\EOT\231\ESC\EOT?\SUB[\n\
+    \\ENQ\EOT\160\SOH\STX\NUL\DC2\EOT\128\GS\EOT?\SUB[\n\
     \A map between all RPC method URIs and their required macaroon permissions to\n\
     \access them.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\157\SOH\STX\NUL\EOT\DC2\ACK\231\ESC\EOT\226\ESC!\n\
+    \\ACK\EOT\160\SOH\STX\NUL\EOT\DC2\ACK\128\GS\EOT\251\FS!\n\
     \\SO\n\
-    \\ACK\EOT\157\SOH\STX\NUL\ACK\DC2\EOT\231\ESC\EOT'\n\
+    \\ACK\EOT\160\SOH\STX\NUL\ACK\DC2\EOT\128\GS\EOT'\n\
     \\SO\n\
-    \\ACK\EOT\157\SOH\STX\NUL\SOH\DC2\EOT\231\ESC(:\n\
+    \\ACK\EOT\160\SOH\STX\NUL\SOH\DC2\EOT\128\GS(:\n\
     \\SO\n\
-    \\ACK\EOT\157\SOH\STX\NUL\ETX\DC2\EOT\231\ESC=>\n\
+    \\ACK\EOT\160\SOH\STX\NUL\ETX\DC2\EOT\128\GS=>\n\
     \\r\n\
-    \\ETX\EOT\158\SOH\DC2\ACK\234\ESC\NUL\184\FS\SOH\n\
+    \\ETX\EOT\161\SOH\DC2\ACK\131\GS\NUL\210\GS\SOH\n\
     \\f\n\
-    \\EOT\EOT\158\SOH\SOH\DC2\EOT\234\ESC\b\SI\n\
+    \\EOT\EOT\161\SOH\SOH\DC2\EOT\131\GS\b\SI\n\
     \\SI\n\
-    \\ENQ\EOT\158\SOH\EOT\NUL\DC2\ACK\235\ESC\EOT\154\FS\ENQ\n\
+    \\ENQ\EOT\161\SOH\EOT\NUL\DC2\ACK\132\GS\EOT\180\GS\ENQ\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\EOT\NUL\SOH\DC2\EOT\235\ESC\t\DC4\n\
+    \\ACK\EOT\161\SOH\EOT\NUL\SOH\DC2\EOT\132\GS\t\DC4\n\
     \\185\SOH\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\NUL\DC2\EOT\241\ESC\b\NAK\SUB\167\SOH\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\NUL\DC2\EOT\138\GS\b\NAK\SUB\167\SOH\n\
     \The numbers assigned in this enumeration match the failure codes as\n\
     \defined in BOLT #4. Because protobuf 3 requires enums to start with 0,\n\
     \a RESERVED value is added.\n\
     \\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\NUL\SOH\DC2\EOT\241\ESC\b\DLE\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\NUL\SOH\DC2\EOT\138\GS\b\DLE\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\NUL\STX\DC2\EOT\241\ESC\DC3\DC4\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\NUL\STX\DC2\EOT\138\GS\DC3\DC4\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\SOH\DC2\EOT\243\ESC\b1\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\SOH\DC2\EOT\140\GS\b1\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\SOH\SOH\DC2\EOT\243\ESC\b,\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\SOH\SOH\DC2\EOT\140\GS\b,\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\SOH\STX\DC2\EOT\243\ESC/0\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\SOH\STX\DC2\EOT\140\GS/0\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\STX\DC2\EOT\244\ESC\b%\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\STX\DC2\EOT\141\GS\b%\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\STX\SOH\DC2\EOT\244\ESC\b \n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\STX\SOH\DC2\EOT\141\GS\b \n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\STX\STX\DC2\EOT\244\ESC#$\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\STX\STX\DC2\EOT\141\GS#$\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\ETX\DC2\EOT\245\ESC\b(\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\ETX\DC2\EOT\142\GS\b(\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\ETX\SOH\DC2\EOT\245\ESC\b#\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\ETX\SOH\DC2\EOT\142\GS\b#\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\ETX\STX\DC2\EOT\245\ESC&'\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\ETX\STX\DC2\EOT\142\GS&'\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\EOT\DC2\EOT\246\ESC\b(\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\EOT\DC2\EOT\143\GS\b(\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\EOT\SOH\DC2\EOT\246\ESC\b#\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\EOT\SOH\DC2\EOT\143\GS\b#\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\EOT\STX\DC2\EOT\246\ESC&'\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\EOT\STX\DC2\EOT\143\GS&'\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\ENQ\DC2\EOT\247\ESC\b\"\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\ENQ\DC2\EOT\144\GS\b\"\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\ENQ\SOH\DC2\EOT\247\ESC\b\GS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\ENQ\SOH\DC2\EOT\144\GS\b\GS\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\ENQ\STX\DC2\EOT\247\ESC !\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\ENQ\STX\DC2\EOT\144\GS !\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\ACK\DC2\EOT\248\ESC\b\SUB\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\ACK\DC2\EOT\145\GS\b\SUB\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\ACK\SOH\DC2\EOT\248\ESC\b\NAK\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\ACK\SOH\DC2\EOT\145\GS\b\NAK\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\ACK\STX\DC2\EOT\248\ESC\CAN\EM\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\ACK\STX\DC2\EOT\145\GS\CAN\EM\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\a\DC2\EOT\249\ESC\b\FS\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\a\DC2\EOT\146\GS\b\FS\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\a\SOH\DC2\EOT\249\ESC\b\ETB\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\a\SOH\DC2\EOT\146\GS\b\ETB\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\a\STX\DC2\EOT\249\ESC\SUB\ESC\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\a\STX\DC2\EOT\146\GS\SUB\ESC\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\b\DC2\EOT\250\ESC\b\"\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\b\DC2\EOT\147\GS\b\"\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\b\SOH\DC2\EOT\250\ESC\b\GS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\b\SOH\DC2\EOT\147\GS\b\GS\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\b\STX\DC2\EOT\250\ESC !\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\b\STX\DC2\EOT\147\GS !\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\t\DC2\EOT\251\ESC\b\US\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\t\DC2\EOT\148\GS\b\US\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\t\SOH\DC2\EOT\251\ESC\b\SUB\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\t\SOH\DC2\EOT\148\GS\b\SUB\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\t\STX\DC2\EOT\251\ESC\GS\RS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\t\STX\DC2\EOT\148\GS\GS\RS\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\n\
-    \\DC2\EOT\252\ESC\b\US\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\n\
+    \\DC2\EOT\149\GS\b\US\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\n\
-    \\SOH\DC2\EOT\252\ESC\b\EM\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\n\
+    \\SOH\DC2\EOT\149\GS\b\EM\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\n\
-    \\STX\DC2\EOT\252\ESC\FS\RS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\n\
+    \\STX\DC2\EOT\149\GS\FS\RS\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\v\DC2\EOT\253\ESC\b\"\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\v\DC2\EOT\150\GS\b\"\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\v\SOH\DC2\EOT\253\ESC\b\FS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\v\SOH\DC2\EOT\150\GS\b\FS\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\v\STX\DC2\EOT\253\ESC\US!\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\v\STX\DC2\EOT\150\GS\US!\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\f\DC2\EOT\254\ESC\b\RS\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\f\DC2\EOT\151\GS\b\RS\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\f\SOH\DC2\EOT\254\ESC\b\CAN\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\f\SOH\DC2\EOT\151\GS\b\CAN\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\f\STX\DC2\EOT\254\ESC\ESC\GS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\f\STX\DC2\EOT\151\GS\ESC\GS\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\r\DC2\EOT\255\ESC\b#\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\r\DC2\EOT\152\GS\b#\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\r\SOH\DC2\EOT\255\ESC\b\GS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\r\SOH\DC2\EOT\152\GS\b\GS\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\r\STX\DC2\EOT\255\ESC \"\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\r\STX\DC2\EOT\152\GS \"\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\SO\DC2\EOT\128\FS\b\RS\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\SO\DC2\EOT\153\GS\b\RS\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\SO\SOH\DC2\EOT\128\FS\b\CAN\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\SO\SOH\DC2\EOT\153\GS\b\CAN\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\SO\STX\DC2\EOT\128\FS\ESC\GS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\SO\STX\DC2\EOT\153\GS\ESC\GS\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\SI\DC2\EOT\129\FS\b'\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\SI\DC2\EOT\154\GS\b'\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\SI\SOH\DC2\EOT\129\FS\b!\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\SI\SOH\DC2\EOT\154\GS\b!\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\SI\STX\DC2\EOT\129\FS$&\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\SI\STX\DC2\EOT\154\GS$&\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\DLE\DC2\EOT\130\FS\b+\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\DLE\DC2\EOT\155\GS\b+\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\DLE\SOH\DC2\EOT\130\FS\b%\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\DLE\SOH\DC2\EOT\155\GS\b%\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\DLE\STX\DC2\EOT\130\FS(*\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\DLE\STX\DC2\EOT\155\GS(*\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\DC1\DC2\EOT\131\FS\b.\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\DC1\DC2\EOT\156\GS\b.\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\DC1\SOH\DC2\EOT\131\FS\b(\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\DC1\SOH\DC2\EOT\156\GS\b(\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\DC1\STX\DC2\EOT\131\FS+-\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\DC1\STX\DC2\EOT\156\GS+-\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\DC2\DC2\EOT\132\FS\b\US\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\DC2\DC2\EOT\157\GS\b\US\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\DC2\SOH\DC2\EOT\132\FS\b\EM\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\DC2\SOH\DC2\EOT\157\GS\b\EM\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\DC2\STX\DC2\EOT\132\FS\FS\RS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\DC2\STX\DC2\EOT\157\GS\FS\RS\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\DC3\DC2\EOT\133\FS\b$\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\DC3\DC2\EOT\158\GS\b$\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\DC3\SOH\DC2\EOT\133\FS\b\RS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\DC3\SOH\DC2\EOT\158\GS\b\RS\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\DC3\STX\DC2\EOT\133\FS!#\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\DC3\STX\DC2\EOT\158\GS!#\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\DC4\DC2\EOT\134\FS\b$\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\DC4\DC2\EOT\159\GS\b$\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\DC4\SOH\DC2\EOT\134\FS\b\RS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\DC4\SOH\DC2\EOT\159\GS\b\RS\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\DC4\STX\DC2\EOT\134\FS!#\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\DC4\STX\DC2\EOT\159\GS!#\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\NAK\DC2\EOT\135\FS\b'\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\NAK\DC2\EOT\160\GS\b'\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\NAK\SOH\DC2\EOT\135\FS\b!\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\NAK\SOH\DC2\EOT\160\GS\b!\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\NAK\STX\DC2\EOT\135\FS$&\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\NAK\STX\DC2\EOT\160\GS$&\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\SYN\DC2\EOT\136\FS\b\FS\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\SYN\DC2\EOT\161\GS\b\FS\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\SYN\SOH\DC2\EOT\136\FS\b\SYN\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\SYN\SOH\DC2\EOT\161\GS\b\SYN\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\SYN\STX\DC2\EOT\136\FS\EM\ESC\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\SYN\STX\DC2\EOT\161\GS\EM\ESC\n\
     \\SI\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\ETB\DC2\EOT\137\FS\b\EM\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\ETB\DC2\EOT\162\GS\b\EM\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\ETB\SOH\DC2\EOT\137\FS\b\DC3\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\ETB\SOH\DC2\EOT\162\GS\b\DC3\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\ETB\STX\DC2\EOT\137\FS\SYN\CAN\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\ETB\STX\DC2\EOT\162\GS\SYN\CAN\n\
+    \\SI\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\CAN\DC2\EOT\163\GS\b#\n\
+    \\DLE\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\CAN\SOH\DC2\EOT\163\GS\b\GS\n\
+    \\DLE\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\CAN\STX\DC2\EOT\163\GS \"\n\
     \.\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\CAN\DC2\EOT\142\FS\b\US\SUB\GS\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\EM\DC2\EOT\168\GS\b\US\SUB\GS\n\
     \An internal error occurred.\n\
     \\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\CAN\SOH\DC2\EOT\142\FS\b\CAN\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\EM\SOH\DC2\EOT\168\GS\b\CAN\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\CAN\STX\DC2\EOT\142\FS\ESC\RS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\EM\STX\DC2\EOT\168\GS\ESC\RS\n\
     \Y\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\EM\DC2\EOT\147\FS\b\RS\SUBH\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\SUB\DC2\EOT\173\GS\b\RS\SUBH\n\
     \The error source is known, but the failure itself couldn't be decoded.\n\
     \\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\EM\SOH\DC2\EOT\147\FS\b\ETB\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\SUB\SOH\DC2\EOT\173\GS\b\ETB\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\EM\STX\DC2\EOT\147\FS\SUB\GS\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\SUB\STX\DC2\EOT\173\GS\SUB\GS\n\
     \\155\SOH\n\
-    \\a\EOT\158\SOH\EOT\NUL\STX\SUB\DC2\EOT\153\FS\b!\SUB\137\SOH\n\
+    \\a\EOT\161\SOH\EOT\NUL\STX\ESC\DC2\EOT\179\GS\b!\SUB\137\SOH\n\
     \An unreadable failure result is returned if the received failure message\n\
     \cannot be decrypted. In that case the error source is unknown.\n\
     \\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\SUB\SOH\DC2\EOT\153\FS\b\SUB\n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\ESC\SOH\DC2\EOT\179\GS\b\SUB\n\
     \\DLE\n\
-    \\b\EOT\158\SOH\EOT\NUL\STX\SUB\STX\DC2\EOT\153\FS\GS \n\
+    \\b\EOT\161\SOH\EOT\NUL\STX\ESC\STX\DC2\EOT\179\GS\GS \n\
     \>\n\
-    \\ENQ\EOT\158\SOH\STX\NUL\DC2\EOT\157\FS\EOT\EM\SUB/ Failure code as defined in the Lightning spec\n\
+    \\ENQ\EOT\161\SOH\STX\NUL\DC2\EOT\183\GS\EOT\EM\SUB/ Failure code as defined in the Lightning spec\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\158\SOH\STX\NUL\EOT\DC2\ACK\157\FS\EOT\154\FS\ENQ\n\
+    \\ACK\EOT\161\SOH\STX\NUL\EOT\DC2\ACK\183\GS\EOT\180\GS\ENQ\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\NUL\ACK\DC2\EOT\157\FS\EOT\SI\n\
+    \\ACK\EOT\161\SOH\STX\NUL\ACK\DC2\EOT\183\GS\EOT\SI\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\NUL\SOH\DC2\EOT\157\FS\DLE\DC4\n\
+    \\ACK\EOT\161\SOH\STX\NUL\SOH\DC2\EOT\183\GS\DLE\DC4\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\NUL\ETX\DC2\EOT\157\FS\ETB\CAN\n\
+    \\ACK\EOT\161\SOH\STX\NUL\ETX\DC2\EOT\183\GS\ETB\CAN\n\
     \\f\n\
-    \\EOT\EOT\158\SOH\t\DC2\EOT\159\FS\EOT\SI\n\
+    \\EOT\EOT\161\SOH\t\DC2\EOT\185\GS\EOT\SI\n\
     \\r\n\
-    \\ENQ\EOT\158\SOH\t\NUL\DC2\EOT\159\FS\r\SO\n\
+    \\ENQ\EOT\161\SOH\t\NUL\DC2\EOT\185\GS\r\SO\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\t\NUL\SOH\DC2\EOT\159\FS\r\SO\n\
+    \\ACK\EOT\161\SOH\t\NUL\SOH\DC2\EOT\185\GS\r\SO\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\t\NUL\STX\DC2\EOT\159\FS\r\SO\n\
+    \\ACK\EOT\161\SOH\t\NUL\STX\DC2\EOT\185\GS\r\SO\n\
     \4\n\
-    \\ENQ\EOT\158\SOH\STX\SOH\DC2\EOT\162\FS\EOT%\SUB% An optional channel update message.\n\
+    \\ENQ\EOT\161\SOH\STX\SOH\DC2\EOT\188\GS\EOT%\SUB% An optional channel update message.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\158\SOH\STX\SOH\EOT\DC2\ACK\162\FS\EOT\159\FS\SI\n\
+    \\ACK\EOT\161\SOH\STX\SOH\EOT\DC2\ACK\188\GS\EOT\185\GS\SI\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\SOH\ACK\DC2\EOT\162\FS\EOT\DC1\n\
+    \\ACK\EOT\161\SOH\STX\SOH\ACK\DC2\EOT\188\GS\EOT\DC1\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\SOH\SOH\DC2\EOT\162\FS\DC2 \n\
+    \\ACK\EOT\161\SOH\STX\SOH\SOH\DC2\EOT\188\GS\DC2 \n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\SOH\ETX\DC2\EOT\162\FS#$\n\
+    \\ACK\EOT\161\SOH\STX\SOH\ETX\DC2\EOT\188\GS#$\n\
     \5\n\
-    \\ENQ\EOT\158\SOH\STX\STX\DC2\EOT\165\FS\EOT\EM\SUB& A failure type-dependent htlc value.\n\
+    \\ENQ\EOT\161\SOH\STX\STX\DC2\EOT\191\GS\EOT\EM\SUB& A failure type-dependent htlc value.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\158\SOH\STX\STX\EOT\DC2\ACK\165\FS\EOT\162\FS%\n\
+    \\ACK\EOT\161\SOH\STX\STX\EOT\DC2\ACK\191\GS\EOT\188\GS%\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\STX\ENQ\DC2\EOT\165\FS\EOT\n\
+    \\ACK\EOT\161\SOH\STX\STX\ENQ\DC2\EOT\191\GS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\STX\SOH\DC2\EOT\165\FS\v\DC4\n\
+    \\ACK\EOT\161\SOH\STX\STX\SOH\DC2\EOT\191\GS\v\DC4\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\STX\ETX\DC2\EOT\165\FS\ETB\CAN\n\
+    \\ACK\EOT\161\SOH\STX\STX\ETX\DC2\EOT\191\GS\ETB\CAN\n\
     \5\n\
-    \\ENQ\EOT\158\SOH\STX\ETX\DC2\EOT\168\FS\EOT\FS\SUB& The sha256 sum of the onion payload.\n\
+    \\ENQ\EOT\161\SOH\STX\ETX\DC2\EOT\194\GS\EOT\FS\SUB& The sha256 sum of the onion payload.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\158\SOH\STX\ETX\EOT\DC2\ACK\168\FS\EOT\165\FS\EM\n\
+    \\ACK\EOT\161\SOH\STX\ETX\EOT\DC2\ACK\194\GS\EOT\191\GS\EM\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\ETX\ENQ\DC2\EOT\168\FS\EOT\t\n\
+    \\ACK\EOT\161\SOH\STX\ETX\ENQ\DC2\EOT\194\GS\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\ETX\SOH\DC2\EOT\168\FS\n\
+    \\ACK\EOT\161\SOH\STX\ETX\SOH\DC2\EOT\194\GS\n\
     \\ETB\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\ETX\ETX\DC2\EOT\168\FS\SUB\ESC\n\
+    \\ACK\EOT\161\SOH\STX\ETX\ETX\DC2\EOT\194\GS\SUB\ESC\n\
     \<\n\
-    \\ENQ\EOT\158\SOH\STX\EOT\DC2\EOT\171\FS\EOT\ESC\SUB- A failure type-dependent cltv expiry value.\n\
+    \\ENQ\EOT\161\SOH\STX\EOT\DC2\EOT\197\GS\EOT\ESC\SUB- A failure type-dependent cltv expiry value.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\158\SOH\STX\EOT\EOT\DC2\ACK\171\FS\EOT\168\FS\FS\n\
+    \\ACK\EOT\161\SOH\STX\EOT\EOT\DC2\ACK\197\GS\EOT\194\GS\FS\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\EOT\ENQ\DC2\EOT\171\FS\EOT\n\
+    \\ACK\EOT\161\SOH\STX\EOT\ENQ\DC2\EOT\197\GS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\EOT\SOH\DC2\EOT\171\FS\v\SYN\n\
+    \\ACK\EOT\161\SOH\STX\EOT\SOH\DC2\EOT\197\GS\v\SYN\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\EOT\ETX\DC2\EOT\171\FS\EM\SUB\n\
+    \\ACK\EOT\161\SOH\STX\EOT\ETX\DC2\EOT\197\GS\EM\SUB\n\
     \6\n\
-    \\ENQ\EOT\158\SOH\STX\ENQ\DC2\EOT\174\FS\EOT\NAK\SUB' A failure type-dependent flags value.\n\
+    \\ENQ\EOT\161\SOH\STX\ENQ\DC2\EOT\200\GS\EOT\NAK\SUB' A failure type-dependent flags value.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\158\SOH\STX\ENQ\EOT\DC2\ACK\174\FS\EOT\171\FS\ESC\n\
+    \\ACK\EOT\161\SOH\STX\ENQ\EOT\DC2\ACK\200\GS\EOT\197\GS\ESC\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\ENQ\ENQ\DC2\EOT\174\FS\EOT\n\
+    \\ACK\EOT\161\SOH\STX\ENQ\ENQ\DC2\EOT\200\GS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\ENQ\SOH\DC2\EOT\174\FS\v\DLE\n\
+    \\ACK\EOT\161\SOH\STX\ENQ\SOH\DC2\EOT\200\GS\v\DLE\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\ENQ\ETX\DC2\EOT\174\FS\DC3\DC4\n\
+    \\ACK\EOT\161\SOH\STX\ENQ\ETX\DC2\EOT\200\GS\DC3\DC4\n\
     \\146\SOH\n\
-    \\ENQ\EOT\158\SOH\STX\ACK\DC2\EOT\180\FS\EOT$\SUB\130\SOH\n\
+    \\ENQ\EOT\161\SOH\STX\ACK\DC2\EOT\206\GS\EOT$\SUB\130\SOH\n\
     \The position in the path of the intermediate or final node that generated\n\
     \the failure message. Position zero is the sender node.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\158\SOH\STX\ACK\EOT\DC2\ACK\180\FS\EOT\174\FS\NAK\n\
+    \\ACK\EOT\161\SOH\STX\ACK\EOT\DC2\ACK\206\GS\EOT\200\GS\NAK\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\ACK\ENQ\DC2\EOT\180\FS\EOT\n\
+    \\ACK\EOT\161\SOH\STX\ACK\ENQ\DC2\EOT\206\GS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\ACK\SOH\DC2\EOT\180\FS\v\US\n\
+    \\ACK\EOT\161\SOH\STX\ACK\SOH\DC2\EOT\206\GS\v\US\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\ACK\ETX\DC2\EOT\180\FS\"#\n\
+    \\ACK\EOT\161\SOH\STX\ACK\ETX\DC2\EOT\206\GS\"#\n\
     \7\n\
-    \\ENQ\EOT\158\SOH\STX\a\DC2\EOT\183\FS\EOT\SYN\SUB( A failure type-dependent block height.\n\
+    \\ENQ\EOT\161\SOH\STX\a\DC2\EOT\209\GS\EOT\SYN\SUB( A failure type-dependent block height.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\158\SOH\STX\a\EOT\DC2\ACK\183\FS\EOT\180\FS$\n\
+    \\ACK\EOT\161\SOH\STX\a\EOT\DC2\ACK\209\GS\EOT\206\GS$\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\a\ENQ\DC2\EOT\183\FS\EOT\n\
+    \\ACK\EOT\161\SOH\STX\a\ENQ\DC2\EOT\209\GS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\a\SOH\DC2\EOT\183\FS\v\DC1\n\
+    \\ACK\EOT\161\SOH\STX\a\SOH\DC2\EOT\209\GS\v\DC1\n\
     \\SO\n\
-    \\ACK\EOT\158\SOH\STX\a\ETX\DC2\EOT\183\FS\DC4\NAK\n\
+    \\ACK\EOT\161\SOH\STX\a\ETX\DC2\EOT\209\GS\DC4\NAK\n\
     \\r\n\
-    \\ETX\EOT\159\SOH\DC2\ACK\186\FS\NUL\139\GS\SOH\n\
+    \\ETX\EOT\162\SOH\DC2\ACK\212\GS\NUL\165\RS\SOH\n\
     \\f\n\
-    \\EOT\EOT\159\SOH\SOH\DC2\EOT\186\FS\b\NAK\n\
+    \\EOT\EOT\162\SOH\SOH\DC2\EOT\212\GS\b\NAK\n\
     \e\n\
-    \\ENQ\EOT\159\SOH\STX\NUL\DC2\EOT\191\FS\EOT\CAN\SUBV\n\
+    \\ENQ\EOT\162\SOH\STX\NUL\DC2\EOT\217\GS\EOT\CAN\SUBV\n\
     \The signature that validates the announced data and proves the ownership\n\
     \of node id.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\NUL\EOT\DC2\ACK\191\FS\EOT\186\FS\ETB\n\
+    \\ACK\EOT\162\SOH\STX\NUL\EOT\DC2\ACK\217\GS\EOT\212\GS\ETB\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\NUL\ENQ\DC2\EOT\191\FS\EOT\t\n\
+    \\ACK\EOT\162\SOH\STX\NUL\ENQ\DC2\EOT\217\GS\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\NUL\SOH\DC2\EOT\191\FS\n\
+    \\ACK\EOT\162\SOH\STX\NUL\SOH\DC2\EOT\217\GS\n\
     \\DC3\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\NUL\ETX\DC2\EOT\191\FS\SYN\ETB\n\
+    \\ACK\EOT\162\SOH\STX\NUL\ETX\DC2\EOT\217\GS\SYN\ETB\n\
     \\226\SOH\n\
-    \\ENQ\EOT\159\SOH\STX\SOH\DC2\EOT\199\FS\EOT\EM\SUB\210\SOH\n\
+    \\ENQ\EOT\162\SOH\STX\SOH\DC2\EOT\225\GS\EOT\EM\SUB\210\SOH\n\
     \The target chain that this channel was opened within. This value\n\
     \should be the genesis hash of the target chain. Along with the short\n\
     \channel ID, this uniquely identifies the channel globally in a\n\
     \blockchain.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\SOH\EOT\DC2\ACK\199\FS\EOT\191\FS\CAN\n\
+    \\ACK\EOT\162\SOH\STX\SOH\EOT\DC2\ACK\225\GS\EOT\217\GS\CAN\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\SOH\ENQ\DC2\EOT\199\FS\EOT\t\n\
+    \\ACK\EOT\162\SOH\STX\SOH\ENQ\DC2\EOT\225\GS\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\SOH\SOH\DC2\EOT\199\FS\n\
+    \\ACK\EOT\162\SOH\STX\SOH\SOH\DC2\EOT\225\GS\n\
     \\DC4\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\SOH\ETX\DC2\EOT\199\FS\ETB\CAN\n\
+    \\ACK\EOT\162\SOH\STX\SOH\ETX\DC2\EOT\225\GS\ETB\CAN\n\
     \C\n\
-    \\ENQ\EOT\159\SOH\STX\STX\DC2\EOT\204\FS\EOT,\SUB4\n\
+    \\ENQ\EOT\162\SOH\STX\STX\DC2\EOT\230\GS\EOT,\SUB4\n\
     \The unique description of the funding transaction.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\STX\EOT\DC2\ACK\204\FS\EOT\199\FS\EM\n\
+    \\ACK\EOT\162\SOH\STX\STX\EOT\DC2\ACK\230\GS\EOT\225\GS\EM\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\STX\ENQ\DC2\EOT\204\FS\EOT\n\
+    \\ACK\EOT\162\SOH\STX\STX\ENQ\DC2\EOT\230\GS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\STX\SOH\DC2\EOT\204\FS\v\DC2\n\
+    \\ACK\EOT\162\SOH\STX\STX\SOH\DC2\EOT\230\GS\v\DC2\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\STX\ETX\DC2\EOT\204\FS\NAK\SYN\n\
+    \\ACK\EOT\162\SOH\STX\STX\ETX\DC2\EOT\230\GS\NAK\SYN\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\STX\b\DC2\EOT\204\FS\ETB+\n\
+    \\ACK\EOT\162\SOH\STX\STX\b\DC2\EOT\230\GS\ETB+\n\
     \\SI\n\
-    \\a\EOT\159\SOH\STX\STX\b\ACK\DC2\EOT\204\FS\CAN*\n\
+    \\a\EOT\162\SOH\STX\STX\b\ACK\DC2\EOT\230\GS\CAN*\n\
     \\170\SOH\n\
-    \\ENQ\EOT\159\SOH\STX\ETX\DC2\EOT\211\FS\EOT\EM\SUB\154\SOH\n\
+    \\ENQ\EOT\162\SOH\STX\ETX\DC2\EOT\237\GS\EOT\EM\SUB\154\SOH\n\
     \A timestamp that allows ordering in the case of multiple announcements.\n\
     \We should ignore the message if timestamp is not greater than the\n\
     \last-received.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\ETX\EOT\DC2\ACK\211\FS\EOT\204\FS,\n\
+    \\ACK\EOT\162\SOH\STX\ETX\EOT\DC2\ACK\237\GS\EOT\230\GS,\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\ETX\ENQ\DC2\EOT\211\FS\EOT\n\
+    \\ACK\EOT\162\SOH\STX\ETX\ENQ\DC2\EOT\237\GS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\ETX\SOH\DC2\EOT\211\FS\v\DC4\n\
+    \\ACK\EOT\162\SOH\STX\ETX\SOH\DC2\EOT\237\GS\v\DC4\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\ETX\ETX\DC2\EOT\211\FS\ETB\CAN\n\
+    \\ACK\EOT\162\SOH\STX\ETX\ETX\DC2\EOT\237\GS\ETB\CAN\n\
     \\193\SOH\n\
-    \\ENQ\EOT\159\SOH\STX\EOT\DC2\EOT\218\FS\EOT\RS\SUB\177\SOH\n\
+    \\ENQ\EOT\162\SOH\STX\EOT\DC2\EOT\244\GS\EOT\RS\SUB\177\SOH\n\
     \The bitfield that describes whether optional fields are present in this\n\
     \update. Currently, the least-significant bit must be set to 1 if the\n\
     \optional field MaxHtlc is present.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\EOT\EOT\DC2\ACK\218\FS\EOT\211\FS\EM\n\
+    \\ACK\EOT\162\SOH\STX\EOT\EOT\DC2\ACK\244\GS\EOT\237\GS\EM\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\EOT\ENQ\DC2\EOT\218\FS\EOT\n\
+    \\ACK\EOT\162\SOH\STX\EOT\ENQ\DC2\EOT\244\GS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\EOT\SOH\DC2\EOT\218\FS\v\CAN\n\
+    \\ACK\EOT\162\SOH\STX\EOT\SOH\DC2\EOT\244\GS\v\CAN\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\EOT\ETX\DC2\EOT\218\FS\ESC\GS\n\
+    \\ACK\EOT\162\SOH\STX\EOT\ETX\DC2\EOT\244\GS\ESC\GS\n\
     \\218\STX\n\
-    \\ENQ\EOT\159\SOH\STX\ENQ\DC2\EOT\227\FS\EOT\GS\SUB\202\STX\n\
+    \\ENQ\EOT\162\SOH\STX\ENQ\DC2\EOT\253\GS\EOT\GS\SUB\202\STX\n\
     \The bitfield that describes additional meta-data concerning how the\n\
     \update is to be interpreted. Currently, the least-significant bit must be\n\
     \set to 0 if the creating node corresponds to the first node in the\n\
@@ -60802,91 +63315,91 @@ packedFileDescriptor
     \is set, then the channel is set to be disabled.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\ENQ\EOT\DC2\ACK\227\FS\EOT\218\FS\RS\n\
+    \\ACK\EOT\162\SOH\STX\ENQ\EOT\DC2\ACK\253\GS\EOT\244\GS\RS\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\ENQ\ENQ\DC2\EOT\227\FS\EOT\n\
+    \\ACK\EOT\162\SOH\STX\ENQ\ENQ\DC2\EOT\253\GS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\ENQ\SOH\DC2\EOT\227\FS\v\CAN\n\
+    \\ACK\EOT\162\SOH\STX\ENQ\SOH\DC2\EOT\253\GS\v\CAN\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\ENQ\ETX\DC2\EOT\227\FS\ESC\FS\n\
+    \\ACK\EOT\162\SOH\STX\ENQ\ETX\DC2\EOT\253\GS\ESC\FS\n\
     \\151\STX\n\
-    \\ENQ\EOT\159\SOH\STX\ACK\DC2\EOT\235\FS\EOT\US\SUB\135\STX\n\
+    \\ENQ\EOT\162\SOH\STX\ACK\DC2\EOT\133\RS\EOT\US\SUB\135\STX\n\
     \The minimum number of blocks this node requires to be added to the expiry\n\
     \of HTLCs. This is a security parameter determined by the node operator.\n\
     \This value represents the required gap between the time locks of the\n\
     \incoming and outgoing HTLC's set to this node.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\ACK\EOT\DC2\ACK\235\FS\EOT\227\FS\GS\n\
+    \\ACK\EOT\162\SOH\STX\ACK\EOT\DC2\ACK\133\RS\EOT\253\GS\GS\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\ACK\ENQ\DC2\EOT\235\FS\EOT\n\
+    \\ACK\EOT\162\SOH\STX\ACK\ENQ\DC2\EOT\133\RS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\ACK\SOH\DC2\EOT\235\FS\v\SUB\n\
+    \\ACK\EOT\162\SOH\STX\ACK\SOH\DC2\EOT\133\RS\v\SUB\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\ACK\ETX\DC2\EOT\235\FS\GS\RS\n\
+    \\ACK\EOT\162\SOH\STX\ACK\ETX\DC2\EOT\133\RS\GS\RS\n\
     \?\n\
-    \\ENQ\EOT\159\SOH\STX\a\DC2\EOT\240\FS\EOT!\SUB0\n\
+    \\ENQ\EOT\162\SOH\STX\a\DC2\EOT\138\RS\EOT!\SUB0\n\
     \The minimum HTLC value which will be accepted.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\a\EOT\DC2\ACK\240\FS\EOT\235\FS\US\n\
+    \\ACK\EOT\162\SOH\STX\a\EOT\DC2\ACK\138\RS\EOT\133\RS\US\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\a\ENQ\DC2\EOT\240\FS\EOT\n\
+    \\ACK\EOT\162\SOH\STX\a\ENQ\DC2\EOT\138\RS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\a\SOH\DC2\EOT\240\FS\v\FS\n\
+    \\ACK\EOT\162\SOH\STX\a\SOH\DC2\EOT\138\RS\v\FS\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\a\ETX\DC2\EOT\240\FS\US \n\
+    \\ACK\EOT\162\SOH\STX\a\ETX\DC2\EOT\138\RS\US \n\
     \\194\SOH\n\
-    \\ENQ\EOT\159\SOH\STX\b\DC2\EOT\247\FS\EOT\CAN\SUB\178\SOH\n\
+    \\ENQ\EOT\162\SOH\STX\b\DC2\EOT\145\RS\EOT\CAN\SUB\178\SOH\n\
     \The base fee that must be used for incoming HTLC's to this particular\n\
     \channel. This value will be tacked onto the required for a payment\n\
     \independent of the size of the payment.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\b\EOT\DC2\ACK\247\FS\EOT\240\FS!\n\
+    \\ACK\EOT\162\SOH\STX\b\EOT\DC2\ACK\145\RS\EOT\138\RS!\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\b\ENQ\DC2\EOT\247\FS\EOT\n\
+    \\ACK\EOT\162\SOH\STX\b\ENQ\DC2\EOT\145\RS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\b\SOH\DC2\EOT\247\FS\v\DC3\n\
+    \\ACK\EOT\162\SOH\STX\b\SOH\DC2\EOT\145\RS\v\DC3\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\b\ETX\DC2\EOT\247\FS\SYN\ETB\n\
+    \\ACK\EOT\162\SOH\STX\b\ETX\DC2\EOT\145\RS\SYN\ETB\n\
     \N\n\
-    \\ENQ\EOT\159\SOH\STX\t\DC2\EOT\252\FS\EOT\CAN\SUB?\n\
+    \\ENQ\EOT\162\SOH\STX\t\DC2\EOT\150\RS\EOT\CAN\SUB?\n\
     \The fee rate that will be charged per millionth of a satoshi.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\t\EOT\DC2\ACK\252\FS\EOT\247\FS\CAN\n\
+    \\ACK\EOT\162\SOH\STX\t\EOT\DC2\ACK\150\RS\EOT\145\RS\CAN\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\t\ENQ\DC2\EOT\252\FS\EOT\n\
+    \\ACK\EOT\162\SOH\STX\t\ENQ\DC2\EOT\150\RS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\t\SOH\DC2\EOT\252\FS\v\DC3\n\
+    \\ACK\EOT\162\SOH\STX\t\SOH\DC2\EOT\150\RS\v\DC3\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\t\ETX\DC2\EOT\252\FS\SYN\ETB\n\
+    \\ACK\EOT\162\SOH\STX\t\ETX\DC2\EOT\150\RS\SYN\ETB\n\
     \?\n\
-    \\ENQ\EOT\159\SOH\STX\n\
-    \\DC2\EOT\129\GS\EOT\"\SUB0\n\
+    \\ENQ\EOT\162\SOH\STX\n\
+    \\DC2\EOT\155\RS\EOT\"\SUB0\n\
     \The maximum HTLC value which will be accepted.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\n\
-    \\EOT\DC2\ACK\129\GS\EOT\252\FS\CAN\n\
+    \\ACK\EOT\162\SOH\STX\n\
+    \\EOT\DC2\ACK\155\RS\EOT\150\RS\CAN\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\n\
-    \\ENQ\DC2\EOT\129\GS\EOT\n\
+    \\ACK\EOT\162\SOH\STX\n\
+    \\ENQ\DC2\EOT\155\RS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\n\
-    \\SOH\DC2\EOT\129\GS\v\FS\n\
+    \\ACK\EOT\162\SOH\STX\n\
+    \\SOH\DC2\EOT\155\RS\v\FS\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\n\
-    \\ETX\DC2\EOT\129\GS\US!\n\
+    \\ACK\EOT\162\SOH\STX\n\
+    \\ETX\DC2\EOT\155\RS\US!\n\
     \\216\STX\n\
-    \\ENQ\EOT\159\SOH\STX\v\DC2\EOT\138\GS\EOT!\SUB\200\STX\n\
+    \\ENQ\EOT\162\SOH\STX\v\DC2\EOT\164\RS\EOT!\SUB\200\STX\n\
     \The set of data that was appended to this message, some of which we may\n\
     \not actually know how to iterate or parse. By holding onto this data, we\n\
     \ensure that we're able to properly validate the set of signatures that\n\
@@ -60894,73 +63407,73 @@ packedFileDescriptor
     \network in a forwards compatible manner.\n\
     \\n\
     \\DLE\n\
-    \\ACK\EOT\159\SOH\STX\v\EOT\DC2\ACK\138\GS\EOT\129\GS\"\n\
+    \\ACK\EOT\162\SOH\STX\v\EOT\DC2\ACK\164\RS\EOT\155\RS\"\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\v\ENQ\DC2\EOT\138\GS\EOT\t\n\
+    \\ACK\EOT\162\SOH\STX\v\ENQ\DC2\EOT\164\RS\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\v\SOH\DC2\EOT\138\GS\n\
+    \\ACK\EOT\162\SOH\STX\v\SOH\DC2\EOT\164\RS\n\
     \\ESC\n\
     \\SO\n\
-    \\ACK\EOT\159\SOH\STX\v\ETX\DC2\EOT\138\GS\RS \n\
+    \\ACK\EOT\162\SOH\STX\v\ETX\DC2\EOT\164\RS\RS \n\
     \\r\n\
-    \\ETX\EOT\160\SOH\DC2\ACK\141\GS\NUL\145\GS\SOH\n\
+    \\ETX\EOT\163\SOH\DC2\ACK\167\RS\NUL\171\RS\SOH\n\
     \\f\n\
-    \\EOT\EOT\160\SOH\SOH\DC2\EOT\141\GS\b\DC2\n\
+    \\EOT\EOT\163\SOH\SOH\DC2\EOT\167\RS\b\DC2\n\
     \\r\n\
-    \\ENQ\EOT\160\SOH\STX\NUL\DC2\EOT\142\GS\EOT\DC4\n\
+    \\ENQ\EOT\163\SOH\STX\NUL\DC2\EOT\168\RS\EOT\DC4\n\
     \\DLE\n\
-    \\ACK\EOT\160\SOH\STX\NUL\EOT\DC2\ACK\142\GS\EOT\141\GS\DC4\n\
+    \\ACK\EOT\163\SOH\STX\NUL\EOT\DC2\ACK\168\RS\EOT\167\RS\DC4\n\
     \\SO\n\
-    \\ACK\EOT\160\SOH\STX\NUL\ENQ\DC2\EOT\142\GS\EOT\t\n\
+    \\ACK\EOT\163\SOH\STX\NUL\ENQ\DC2\EOT\168\RS\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\160\SOH\STX\NUL\SOH\DC2\EOT\142\GS\n\
+    \\ACK\EOT\163\SOH\STX\NUL\SOH\DC2\EOT\168\RS\n\
     \\SI\n\
     \\SO\n\
-    \\ACK\EOT\160\SOH\STX\NUL\ETX\DC2\EOT\142\GS\DC2\DC3\n\
+    \\ACK\EOT\163\SOH\STX\NUL\ETX\DC2\EOT\168\RS\DC2\DC3\n\
     \\r\n\
-    \\ENQ\EOT\160\SOH\STX\SOH\DC2\EOT\143\GS\EOT\CAN\n\
+    \\ENQ\EOT\163\SOH\STX\SOH\DC2\EOT\169\RS\EOT\CAN\n\
     \\DLE\n\
-    \\ACK\EOT\160\SOH\STX\SOH\EOT\DC2\ACK\143\GS\EOT\142\GS\DC4\n\
+    \\ACK\EOT\163\SOH\STX\SOH\EOT\DC2\ACK\169\RS\EOT\168\RS\DC4\n\
     \\SO\n\
-    \\ACK\EOT\160\SOH\STX\SOH\ENQ\DC2\EOT\143\GS\EOT\t\n\
+    \\ACK\EOT\163\SOH\STX\SOH\ENQ\DC2\EOT\169\RS\EOT\t\n\
     \\SO\n\
-    \\ACK\EOT\160\SOH\STX\SOH\SOH\DC2\EOT\143\GS\n\
+    \\ACK\EOT\163\SOH\STX\SOH\SOH\DC2\EOT\169\RS\n\
     \\DC3\n\
     \\SO\n\
-    \\ACK\EOT\160\SOH\STX\SOH\ETX\DC2\EOT\143\GS\SYN\ETB\n\
+    \\ACK\EOT\163\SOH\STX\SOH\ETX\DC2\EOT\169\RS\SYN\ETB\n\
     \\r\n\
-    \\ENQ\EOT\160\SOH\STX\STX\DC2\EOT\144\GS\EOT\CAN\n\
+    \\ENQ\EOT\163\SOH\STX\STX\DC2\EOT\170\RS\EOT\CAN\n\
     \\SO\n\
-    \\ACK\EOT\160\SOH\STX\STX\EOT\DC2\EOT\144\GS\EOT\f\n\
+    \\ACK\EOT\163\SOH\STX\STX\EOT\DC2\EOT\170\RS\EOT\f\n\
     \\SO\n\
-    \\ACK\EOT\160\SOH\STX\STX\ACK\DC2\EOT\144\GS\r\SI\n\
+    \\ACK\EOT\163\SOH\STX\STX\ACK\DC2\EOT\170\RS\r\SI\n\
     \\SO\n\
-    \\ACK\EOT\160\SOH\STX\STX\SOH\DC2\EOT\144\GS\DLE\DC3\n\
+    \\ACK\EOT\163\SOH\STX\STX\SOH\DC2\EOT\170\RS\DLE\DC3\n\
     \\SO\n\
-    \\ACK\EOT\160\SOH\STX\STX\ETX\DC2\EOT\144\GS\SYN\ETB\n\
+    \\ACK\EOT\163\SOH\STX\STX\ETX\DC2\EOT\170\RS\SYN\ETB\n\
     \\r\n\
-    \\ETX\EOT\161\SOH\DC2\ACK\147\GS\NUL\150\GS\SOH\n\
+    \\ETX\EOT\164\SOH\DC2\ACK\173\RS\NUL\176\RS\SOH\n\
     \\f\n\
-    \\EOT\EOT\161\SOH\SOH\DC2\EOT\147\GS\b\n\
+    \\EOT\EOT\164\SOH\SOH\DC2\EOT\173\RS\b\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\161\SOH\STX\NUL\DC2\EOT\148\GS\EOT\SYN\n\
+    \\ENQ\EOT\164\SOH\STX\NUL\DC2\EOT\174\RS\EOT\SYN\n\
     \\DLE\n\
-    \\ACK\EOT\161\SOH\STX\NUL\EOT\DC2\ACK\148\GS\EOT\147\GS\f\n\
+    \\ACK\EOT\164\SOH\STX\NUL\EOT\DC2\ACK\174\RS\EOT\173\RS\f\n\
     \\SO\n\
-    \\ACK\EOT\161\SOH\STX\NUL\ENQ\DC2\EOT\148\GS\EOT\n\
+    \\ACK\EOT\164\SOH\STX\NUL\ENQ\DC2\EOT\174\RS\EOT\n\
     \\n\
     \\SO\n\
-    \\ACK\EOT\161\SOH\STX\NUL\SOH\DC2\EOT\148\GS\v\DC1\n\
+    \\ACK\EOT\164\SOH\STX\NUL\SOH\DC2\EOT\174\RS\v\DC1\n\
     \\SO\n\
-    \\ACK\EOT\161\SOH\STX\NUL\ETX\DC2\EOT\148\GS\DC4\NAK\n\
+    \\ACK\EOT\164\SOH\STX\NUL\ETX\DC2\EOT\174\RS\DC4\NAK\n\
     \\r\n\
-    \\ENQ\EOT\161\SOH\STX\SOH\DC2\EOT\149\GS\EOT \n\
+    \\ENQ\EOT\164\SOH\STX\SOH\DC2\EOT\175\RS\EOT \n\
     \\SO\n\
-    \\ACK\EOT\161\SOH\STX\SOH\EOT\DC2\EOT\149\GS\EOT\f\n\
+    \\ACK\EOT\164\SOH\STX\SOH\EOT\DC2\EOT\175\RS\EOT\f\n\
     \\SO\n\
-    \\ACK\EOT\161\SOH\STX\SOH\ENQ\DC2\EOT\149\GS\r\DC3\n\
+    \\ACK\EOT\164\SOH\STX\SOH\ENQ\DC2\EOT\175\RS\r\DC3\n\
     \\SO\n\
-    \\ACK\EOT\161\SOH\STX\SOH\SOH\DC2\EOT\149\GS\DC4\ESC\n\
+    \\ACK\EOT\164\SOH\STX\SOH\SOH\DC2\EOT\175\RS\DC4\ESC\n\
     \\SO\n\
-    \\ACK\EOT\161\SOH\STX\SOH\ETX\DC2\EOT\149\GS\RS\USb\ACKproto3"
+    \\ACK\EOT\164\SOH\STX\SOH\ETX\DC2\EOT\175\RS\RS\USb\ACKproto3"

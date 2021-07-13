@@ -1262,308 +1262,307 @@ packedFileDescriptor
     \\SYNSubscribeSingleInvoice\DC2*.invoicesrpc.SubscribeSingleInvoiceRequest\SUB\SO.lnrpc.Invoice0\SOH\DC2N\n\
     \\rCancelInvoice\DC2\GS.invoicesrpc.CancelInvoiceMsg\SUB\RS.invoicesrpc.CancelInvoiceResp\DC2U\n\
     \\SOAddHoldInvoice\DC2\".invoicesrpc.AddHoldInvoiceRequest\SUB\US.invoicesrpc.AddHoldInvoiceResp\DC2N\n\
-    \\rSettleInvoice\DC2\GS.invoicesrpc.SettleInvoiceMsg\SUB\RS.invoicesrpc.SettleInvoiceRespB3Z1github.com/lightningnetwork/lnd/lnrpc/invoicesrpcJ\230\ESC\n\
-    \\ACK\DC2\EOT\NUL\NULy\SOH\n\
-    \\b\n\
-    \\SOH\f\DC2\ETX\NUL\NUL\DC2\n\
+    \\rSettleInvoice\DC2\GS.invoicesrpc.SettleInvoiceMsg\SUB\RS.invoicesrpc.SettleInvoiceRespB3Z1github.com/lightningnetwork/lnd/lnrpc/invoicesrpcJ\242\FS\n\
+    \\ACK\DC2\EOT\STX\NUL{\SOH\n\
+    \\147\SOH\n\
+    \\SOH\f\DC2\ETX\STX\NUL\DC22\136\SOHsource https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/invoicesrpc/invoices.proto\n\
+    \\n\
     \\t\n\
-    \\STX\ETX\NUL\DC2\ETX\STX\NUL\CAN\n\
+    \\STX\ETX\NUL\DC2\ETX\EOT\NUL\CAN\n\
     \\b\n\
-    \\SOH\STX\DC2\ETX\EOT\NUL\DC4\n\
+    \\SOH\STX\DC2\ETX\ACK\NUL\DC4\n\
     \\b\n\
-    \\SOH\b\DC2\ETX\ACK\NULH\n\
+    \\SOH\b\DC2\ETX\b\NULH\n\
     \\t\n\
-    \\STX\b\v\DC2\ETX\ACK\NULH\n\
+    \\STX\b\v\DC2\ETX\b\NULH\n\
     \d\n\
-    \\STX\ACK\NUL\DC2\EOT\n\
-    \\NUL%\SOH\SUBX Invoices is a service that can be used to create, accept, settle and cancel\n\
+    \\STX\ACK\NUL\DC2\EOT\f\NUL'\SOH\SUBX Invoices is a service that can be used to create, accept, settle and cancel\n\
     \ invoices.\n\
     \\n\
     \\n\
     \\n\
-    \\ETX\ACK\NUL\SOH\DC2\ETX\n\
-    \\b\DLE\n\
+    \\ETX\ACK\NUL\SOH\DC2\ETX\f\b\DLE\n\
     \\215\SOH\n\
-    \\EOT\ACK\NUL\STX\NUL\DC2\EOT\DLE\EOT\DC1'\SUB\200\SOH\n\
+    \\EOT\ACK\NUL\STX\NUL\DC2\EOT\DC2\EOT\DC3'\SUB\200\SOH\n\
     \SubscribeSingleInvoice returns a uni-directional stream (server -> client)\n\
     \to notify the client of state transitions of the specified invoice.\n\
     \Initially the current invoice state is always sent out.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX\DLE\b\RS\n\
+    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX\DC2\b\RS\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX\DLE =\n\
+    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX\DC2 =\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\ACK\DC2\ETX\DC1\DC1\ETB\n\
+    \\ENQ\ACK\NUL\STX\NUL\ACK\DC2\ETX\DC3\DC1\ETB\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX\DC1\CAN%\n\
+    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX\DC3\CAN%\n\
     \\172\SOH\n\
-    \\EOT\ACK\NUL\STX\SOH\DC2\ETX\CAN\EOTE\SUB\158\SOH\n\
+    \\EOT\ACK\NUL\STX\SOH\DC2\ETX\SUB\EOTE\SUB\158\SOH\n\
     \CancelInvoice cancels a currently open invoice. If the invoice is already\n\
     \canceled, this call will succeed. If the invoice is already settled, it will\n\
     \fail.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX\CAN\b\NAK\n\
+    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX\SUB\b\NAK\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX\CAN\ETB'\n\
+    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX\SUB\ETB'\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX\CAN2C\n\
+    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX\SUB2C\n\
     \n\n\
-    \\EOT\ACK\NUL\STX\STX\DC2\ETX\RS\EOTL\SUBa\n\
+    \\EOT\ACK\NUL\STX\STX\DC2\ETX \EOTL\SUBa\n\
     \AddHoldInvoice creates a hold invoice. It ties the invoice to the hash\n\
     \supplied in the request.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX\RS\b\SYN\n\
+    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX \b\SYN\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX\RS\CAN-\n\
+    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX \CAN-\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX\RS8J\n\
+    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX 8J\n\
     \t\n\
-    \\EOT\ACK\NUL\STX\ETX\DC2\ETX$\EOTE\SUBg\n\
+    \\EOT\ACK\NUL\STX\ETX\DC2\ETX&\EOTE\SUBg\n\
     \SettleInvoice settles an accepted invoice. If the invoice is already\n\
     \settled, this call will succeed.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETX$\b\NAK\n\
+    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETX&\b\NAK\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETX$\ETB'\n\
+    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETX&\ETB'\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETX$2C\n\
+    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETX&2C\n\
     \\n\
     \\n\
-    \\STX\EOT\NUL\DC2\EOT'\NUL*\SOH\n\
+    \\STX\EOT\NUL\DC2\EOT)\NUL,\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\NUL\SOH\DC2\ETX'\b\CAN\n\
+    \\ETX\EOT\NUL\SOH\DC2\ETX)\b\CAN\n\
     \B\n\
-    \\EOT\EOT\NUL\STX\NUL\DC2\ETX)\EOT\ESC\SUB5 Hash corresponding to the (hold) invoice to cancel.\n\
+    \\EOT\EOT\NUL\STX\NUL\DC2\ETX+\EOT\ESC\SUB5 Hash corresponding to the (hold) invoice to cancel.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\NUL\EOT\DC2\EOT)\EOT'\SUB\n\
+    \\ENQ\EOT\NUL\STX\NUL\EOT\DC2\EOT+\EOT)\SUB\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETX)\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETX+\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\ETX)\n\
+    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\ETX+\n\
     \\SYN\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\ETX)\EM\SUB\n\
+    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\ETX+\EM\SUB\n\
     \\n\
     \\n\
-    \\STX\EOT\SOH\DC2\EOT+\NUL,\SOH\n\
+    \\STX\EOT\SOH\DC2\EOT-\NUL.\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\SOH\SOH\DC2\ETX+\b\EM\n\
+    \\ETX\EOT\SOH\SOH\DC2\ETX-\b\EM\n\
     \\n\
     \\n\
-    \\STX\EOT\STX\DC2\EOT.\NUL`\SOH\n\
+    \\STX\EOT\STX\DC2\EOT0\NULb\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\STX\SOH\DC2\ETX.\b\GS\n\
+    \\ETX\EOT\STX\SOH\DC2\ETX0\b\GS\n\
     \\252\SOH\n\
-    \\EOT\EOT\STX\STX\NUL\DC2\ETX5\EOT\DC4\SUB\238\SOH\n\
+    \\EOT\EOT\STX\STX\NUL\DC2\ETX7\EOT\DC4\SUB\238\SOH\n\
     \An optional memo to attach along with the invoice. Used for record keeping\n\
     \purposes for the invoice's creator, and will also be set in the description\n\
     \field of the encoded payment request if the description_hash field is not\n\
     \being used.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\NUL\EOT\DC2\EOT5\EOT.\US\n\
+    \\ENQ\EOT\STX\STX\NUL\EOT\DC2\EOT7\EOT0\US\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETX5\EOT\n\
+    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETX7\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\ETX5\v\SI\n\
+    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\ETX7\v\SI\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\ETX5\DC2\DC3\n\
+    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\ETX7\DC2\DC3\n\
     \'\n\
-    \\EOT\EOT\STX\STX\SOH\DC2\ETX8\EOT\DC3\SUB\SUB The hash of the preimage\n\
+    \\EOT\EOT\STX\STX\SOH\DC2\ETX:\EOT\DC3\SUB\SUB The hash of the preimage\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\EOT8\EOT5\DC4\n\
+    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\EOT:\EOT7\DC4\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETX8\EOT\t\n\
+    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETX:\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\ETX8\n\
+    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\ETX:\n\
     \\SO\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\ETX8\DC1\DC2\n\
+    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\ETX:\DC1\DC2\n\
     \m\n\
-    \\EOT\EOT\STX\STX\STX\DC2\ETX?\EOT\DC4\SUB`\n\
+    \\EOT\EOT\STX\STX\STX\DC2\ETXA\EOT\DC4\SUB`\n\
     \The value of this invoice in satoshis\n\
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\STX\EOT\DC2\EOT?\EOT8\DC3\n\
+    \\ENQ\EOT\STX\STX\STX\EOT\DC2\EOTA\EOT:\DC3\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETX?\EOT\t\n\
+    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETXA\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\SOH\DC2\ETX?\n\
+    \\ENQ\EOT\STX\STX\STX\SOH\DC2\ETXA\n\
     \\SI\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\ETX\DC2\ETX?\DC2\DC3\n\
+    \\ENQ\EOT\STX\STX\STX\ETX\DC2\ETXA\DC2\DC3\n\
     \r\n\
-    \\EOT\EOT\STX\STX\ETX\DC2\ETXF\EOT\SUB\SUBe\n\
+    \\EOT\EOT\STX\STX\ETX\DC2\ETXH\EOT\SUB\SUBe\n\
     \The value of this invoice in millisatoshis\n\
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ETX\EOT\DC2\EOTF\EOT?\DC4\n\
+    \\ENQ\EOT\STX\STX\ETX\EOT\DC2\EOTH\EOTA\DC4\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\ETXF\EOT\t\n\
+    \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\ETXH\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ETX\SOH\DC2\ETXF\n\
+    \\ENQ\EOT\STX\STX\ETX\SOH\DC2\ETXH\n\
     \\DC4\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ETX\ETX\DC2\ETXF\ETB\EM\n\
+    \\ENQ\EOT\STX\STX\ETX\ETX\DC2\ETXH\ETB\EM\n\
     \\194\SOH\n\
-    \\EOT\EOT\STX\STX\EOT\DC2\ETXM\EOT\US\SUB\180\SOH\n\
+    \\EOT\EOT\STX\STX\EOT\DC2\ETXO\EOT\US\SUB\180\SOH\n\
     \Hash (SHA-256) of a description of the payment. Used if the description of\n\
     \payment (memo) is too long to naturally fit within the description field\n\
     \of an encoded payment request.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\EOT\EOT\DC2\EOTM\EOTF\SUB\n\
+    \\ENQ\EOT\STX\STX\EOT\EOT\DC2\EOTO\EOTH\SUB\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\EOT\ENQ\DC2\ETXM\EOT\t\n\
+    \\ENQ\EOT\STX\STX\EOT\ENQ\DC2\ETXO\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\EOT\SOH\DC2\ETXM\n\
+    \\ENQ\EOT\STX\STX\EOT\SOH\DC2\ETXO\n\
     \\SUB\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\EOT\ETX\DC2\ETXM\GS\RS\n\
+    \\ENQ\EOT\STX\STX\EOT\ETX\DC2\ETXO\GS\RS\n\
     \P\n\
-    \\EOT\EOT\STX\STX\ENQ\DC2\ETXP\EOT\NAK\SUBC Payment request expiry time in seconds. Default is 3600 (1 hour).\n\
+    \\EOT\EOT\STX\STX\ENQ\DC2\ETXR\EOT\NAK\SUBC Payment request expiry time in seconds. Default is 3600 (1 hour).\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ENQ\EOT\DC2\EOTP\EOTM\US\n\
+    \\ENQ\EOT\STX\STX\ENQ\EOT\DC2\EOTR\EOTO\US\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\ETXP\EOT\t\n\
+    \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\ETXR\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ENQ\SOH\DC2\ETXP\n\
+    \\ENQ\EOT\STX\STX\ENQ\SOH\DC2\ETXR\n\
     \\DLE\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ENQ\ETX\DC2\ETXP\DC3\DC4\n\
+    \\ENQ\EOT\STX\STX\ENQ\ETX\DC2\ETXR\DC3\DC4\n\
     \)\n\
-    \\EOT\EOT\STX\STX\ACK\DC2\ETXS\EOT\GS\SUB\FS Fallback on-chain address.\n\
+    \\EOT\EOT\STX\STX\ACK\DC2\ETXU\EOT\GS\SUB\FS Fallback on-chain address.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ACK\EOT\DC2\EOTS\EOTP\NAK\n\
+    \\ENQ\EOT\STX\STX\ACK\EOT\DC2\EOTU\EOTR\NAK\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ACK\ENQ\DC2\ETXS\EOT\n\
+    \\ENQ\EOT\STX\STX\ACK\ENQ\DC2\ETXU\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ACK\SOH\DC2\ETXS\v\CAN\n\
+    \\ENQ\EOT\STX\STX\ACK\SOH\DC2\ETXU\v\CAN\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ACK\ETX\DC2\ETXS\ESC\FS\n\
+    \\ENQ\EOT\STX\STX\ACK\ETX\DC2\ETXU\ESC\FS\n\
     \T\n\
-    \\EOT\EOT\STX\STX\a\DC2\ETXV\EOT\ESC\SUBG Delta to use for the time-lock of the CLTV extended to the final hop.\n\
+    \\EOT\EOT\STX\STX\a\DC2\ETXX\EOT\ESC\SUBG Delta to use for the time-lock of the CLTV extended to the final hop.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\a\EOT\DC2\EOTV\EOTS\GS\n\
+    \\ENQ\EOT\STX\STX\a\EOT\DC2\EOTX\EOTU\GS\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\a\ENQ\DC2\ETXV\EOT\n\
+    \\ENQ\EOT\STX\STX\a\ENQ\DC2\ETXX\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\a\SOH\DC2\ETXV\v\SYN\n\
+    \\ENQ\EOT\STX\STX\a\SOH\DC2\ETXX\v\SYN\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\a\ETX\DC2\ETXV\EM\SUB\n\
+    \\ENQ\EOT\STX\STX\a\ETX\DC2\ETXX\EM\SUB\n\
     \n\n\
-    \\EOT\EOT\STX\STX\b\DC2\ETX\\\EOT-\SUBa\n\
+    \\EOT\EOT\STX\STX\b\DC2\ETX^\EOT-\SUBa\n\
     \Route hints that can each be individually used to assist in reaching the\n\
     \invoice's destination.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\EOT\DC2\ETX\\\EOT\f\n\
+    \\ENQ\EOT\STX\STX\b\EOT\DC2\ETX^\EOT\f\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\ACK\DC2\ETX\\\r\FS\n\
+    \\ENQ\EOT\STX\STX\b\ACK\DC2\ETX^\r\FS\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\SOH\DC2\ETX\\\GS(\n\
+    \\ENQ\EOT\STX\STX\b\SOH\DC2\ETX^\GS(\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\ETX\DC2\ETX\\+,\n\
+    \\ENQ\EOT\STX\STX\b\ETX\DC2\ETX^+,\n\
     \V\n\
-    \\EOT\EOT\STX\STX\t\DC2\ETX_\EOT\NAK\SUBI Whether this invoice should include routing hints for private channels.\n\
+    \\EOT\EOT\STX\STX\t\DC2\ETXa\EOT\NAK\SUBI Whether this invoice should include routing hints for private channels.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\t\EOT\DC2\EOT_\EOT\\-\n\
+    \\ENQ\EOT\STX\STX\t\EOT\DC2\EOTa\EOT^-\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\t\ENQ\DC2\ETX_\EOT\b\n\
+    \\ENQ\EOT\STX\STX\t\ENQ\DC2\ETXa\EOT\b\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\t\SOH\DC2\ETX_\t\DLE\n\
+    \\ENQ\EOT\STX\STX\t\SOH\DC2\ETXa\t\DLE\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\t\ETX\DC2\ETX_\DC3\DC4\n\
+    \\ENQ\EOT\STX\STX\t\ETX\DC2\ETXa\DC3\DC4\n\
     \\n\
     \\n\
-    \\STX\EOT\ETX\DC2\EOTb\NULi\SOH\n\
+    \\STX\EOT\ETX\DC2\EOTd\NULk\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\ETX\SOH\DC2\ETXb\b\SUB\n\
+    \\ETX\EOT\ETX\SOH\DC2\ETXd\b\SUB\n\
     \\188\SOH\n\
-    \\EOT\EOT\ETX\STX\NUL\DC2\ETXh\EOT\US\SUB\174\SOH\n\
+    \\EOT\EOT\ETX\STX\NUL\DC2\ETXj\EOT\US\SUB\174\SOH\n\
     \A bare-bones invoice for a payment within the Lightning Network.  With the\n\
     \details of the invoice, the sender has all the data necessary to send a\n\
     \payment to the recipient.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\EOT\DC2\EOTh\EOTb\FS\n\
+    \\ENQ\EOT\ETX\STX\NUL\EOT\DC2\EOTj\EOTd\FS\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\ETXh\EOT\n\
+    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\ETXj\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\ETXh\v\SUB\n\
+    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\ETXj\v\SUB\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\ETXh\GS\RS\n\
+    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\ETXj\GS\RS\n\
     \\n\
     \\n\
-    \\STX\EOT\EOT\DC2\EOTk\NULo\SOH\n\
+    \\STX\EOT\EOT\DC2\EOTm\NULq\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\EOT\SOH\DC2\ETXk\b\CAN\n\
+    \\ETX\EOT\EOT\SOH\DC2\ETXm\b\CAN\n\
     \_\n\
-    \\EOT\EOT\EOT\STX\NUL\DC2\ETXn\EOT\ETB\SUBR Externally discovered pre-image that should be used to settle the hold\n\
+    \\EOT\EOT\EOT\STX\NUL\DC2\ETXp\EOT\ETB\SUBR Externally discovered pre-image that should be used to settle the hold\n\
     \ invoice.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\EOT\DC2\EOTn\EOTk\SUB\n\
+    \\ENQ\EOT\EOT\STX\NUL\EOT\DC2\EOTp\EOTm\SUB\n\
     \\f\n\
-    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\ETXn\EOT\t\n\
+    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\ETXp\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\ETXn\n\
+    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\ETXp\n\
     \\DC2\n\
     \\f\n\
-    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\ETXn\NAK\SYN\n\
+    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\ETXp\NAK\SYN\n\
     \\n\
     \\n\
-    \\STX\EOT\ENQ\DC2\EOTq\NULr\SOH\n\
+    \\STX\EOT\ENQ\DC2\EOTs\NULt\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\ENQ\SOH\DC2\ETXq\b\EM\n\
+    \\ETX\EOT\ENQ\SOH\DC2\ETXs\b\EM\n\
     \\n\
     \\n\
-    \\STX\EOT\ACK\DC2\EOTt\NULy\SOH\n\
+    \\STX\EOT\ACK\DC2\EOTv\NUL{\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\ACK\SOH\DC2\ETXt\b%\n\
+    \\ETX\EOT\ACK\SOH\DC2\ETXv\b%\n\
     \\n\
     \\n\
-    \\ETX\EOT\ACK\t\DC2\ETXu\EOT\SI\n\
+    \\ETX\EOT\ACK\t\DC2\ETXw\EOT\SI\n\
     \\v\n\
-    \\EOT\EOT\ACK\t\NUL\DC2\ETXu\r\SO\n\
+    \\EOT\EOT\ACK\t\NUL\DC2\ETXw\r\SO\n\
     \\f\n\
-    \\ENQ\EOT\ACK\t\NUL\SOH\DC2\ETXu\r\SO\n\
+    \\ENQ\EOT\ACK\t\NUL\SOH\DC2\ETXw\r\SO\n\
     \\f\n\
-    \\ENQ\EOT\ACK\t\NUL\STX\DC2\ETXu\r\SO\n\
+    \\ENQ\EOT\ACK\t\NUL\STX\DC2\ETXw\r\SO\n\
     \H\n\
-    \\EOT\EOT\ACK\STX\NUL\DC2\ETXx\EOT\NAK\SUB; Hash corresponding to the (hold) invoice to subscribe to.\n\
+    \\EOT\EOT\ACK\STX\NUL\DC2\ETXz\EOT\NAK\SUB; Hash corresponding to the (hold) invoice to subscribe to.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\EOT\DC2\EOTx\EOTu\SI\n\
+    \\ENQ\EOT\ACK\STX\NUL\EOT\DC2\EOTz\EOTw\SI\n\
     \\f\n\
-    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\ETXx\EOT\t\n\
+    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\ETXz\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\ETXx\n\
+    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\ETXz\n\
     \\DLE\n\
     \\f\n\
-    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\ETXx\DC3\DC4b\ACKproto3"
+    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\ETXz\DC3\DC4b\ACKproto3"

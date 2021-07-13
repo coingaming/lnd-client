@@ -53,27 +53,16 @@ instance FromGrpc Invoice GRPC.Invoice where
 instance C2.FromGrpc Invoice LnGRPC.Invoice where
   fromGrpc x =
     Invoice
-      <$> invoiceRHash
-      <*> invoiceAmtPaidMsat
-      <*> invoiceValueMsat
-      <*> invoiceSettled
-      <*> invoiceSettleIndex
-      <*> invoiceMemo
-      <*> invoicePaymentRequest
-      <*> invoicePrivate
-      <*> invoiceAddIndex
-      <*> invoiceState
-    where
-      invoiceRHash = Right . RHash $ x ^. LnGRPC.rHash
-      invoiceAmtPaidMsat = fromGrpc $ x ^. LnGRPC.amtPaidMsat
-      invoiceValueMsat = fromGrpc $ x ^. LnGRPC.valueMsat
-      invoiceSettled = Right $ x ^. LnGRPC.settled
-      invoiceSettleIndex = Right . Just . SettleIndex $ x ^. LnGRPC.settleIndex
-      invoiceMemo = Right . fromStrict $ x ^. LnGRPC.memo
-      invoicePaymentRequest = Right . PaymentRequest . fromStrict $ x ^. LnGRPC.paymentRequest
-      invoicePrivate = Right $ x ^. LnGRPC.private
-      invoiceAddIndex = Right . AddIndex $ x ^. LnGRPC.addIndex
-      invoiceState = C2.fromGrpc $ x ^. LnGRPC.state
+      <$> fromGrpc (x ^. LnGRPC.rHash)
+      <*> fromGrpc (x ^. LnGRPC.amtPaidMsat)
+      <*> fromGrpc (x ^. LnGRPC.valueMsat)
+      <*> fromGrpc (x ^. LnGRPC.settled)
+      <*> fromGrpc (x ^. LnGRPC.settleIndex)
+      <*> fromGrpc (x ^. LnGRPC.memo)
+      <*> fromGrpc (fromStrict $ x ^. LnGRPC.paymentRequest)
+      <*> fromGrpc (x ^. LnGRPC.private)
+      <*> fromGrpc (x ^. LnGRPC.addIndex)
+      <*> C2.fromGrpc (x ^. LnGRPC.state)
 
 instance C2.FromGrpc InvoiceState LnGRPC.Invoice'InvoiceState where
   fromGrpc x =

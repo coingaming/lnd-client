@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 87d295355dbfa4ce4eb6aa3982d524e1d8f0f7924de04e8271637f4d03a102dc
+-- hash: 8ef6a1e3f5ffd9d3e0673792b65984a7ccf1e450e49dbe955e16e93cc7eecdba
 
 name:           lnd-client
 version:        0.1.0.0
@@ -66,6 +66,7 @@ library
       LndClient.Import
       LndClient.Import.External
       LndClient.LndTest
+      LndClient.Orphan
       LndClient.QRCode
       LndClient.RPC.Generic
       LndClient.RPC.Katip
@@ -76,12 +77,6 @@ library
       LndGrpc
       LndGrpc.Client
       LndGrpc.Orphan
-      Proto.Google.Api.Annotations
-      Proto.Google.Api.Annotations_Fields
-      Proto.Google.Api.Http
-      Proto.Google.Api.Http_Fields
-      Proto.Google.Protobuf.Descriptor
-      Proto.Google.Protobuf.Descriptor_Fields
       Proto.InvoiceGrpc
       Proto.InvoiceGrpc_Fields
       Proto.LndGrpc

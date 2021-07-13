@@ -68,7 +68,9 @@ import LndClient.Data.Invoice as Invoice (Invoice (..), InvoiceState (..))
 import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
 import qualified LndClient.Data.ListInvoices as ListInvoices
 import qualified LndClient.Data.NewAddress as Lnd
-  ( NewAddressResponse (..),
+  ( AddressType (..),
+    NewAddressRequest (..),
+    NewAddressResponse (..),
   )
 import LndClient.Data.OpenChannel as OpenChannel
   ( OpenChannelRequest (..),
@@ -88,7 +90,6 @@ import LndClient.Data.SubscribeInvoices
 import LndClient.Import
 import qualified LndClient.RPC.Katip as Lnd
 import LndClient.Watcher as Watcher
-import qualified LndGrpc as GRPC
 import qualified Network.Bitcoin as BTC (Client, getClient)
 import qualified Network.Bitcoin.BlockChain as BTC (getBlockCount)
 import qualified Network.Bitcoin.Mining as BTC (generateToAddress)
@@ -197,7 +198,7 @@ walletAddress owner = do
     liftLndResult
       =<< Lnd.newAddress
         lnd
-        GRPC.AddressTypeWITNESS_PUBKEY_HASH
+        (Lnd.NewAddressRequest Lnd.WITNESS_PUBKEY_HASH Nothing)
   pure x
 
 lazyMineInitialCoins :: forall m owner. LndTest m owner => Proxy owner -> m ()

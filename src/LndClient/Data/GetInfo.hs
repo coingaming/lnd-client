@@ -29,10 +29,6 @@ instance FromGrpc GetInfoResponse GRPC.GetInfoResponse where
 instance C2.FromGrpc GetInfoResponse LnGRPC.GetInfoResponse where
   fromGrpc x =
     GetInfoResponse
-      <$> mPubKey
-      <*> mSyncedToChain
-      <*> mSyncedToGraph
-    where
-      mSyncedToChain = Right $ x ^. LnGRPC.syncedToChain
-      mSyncedToGraph = Right $ x ^. LnGRPC.syncedToGraph
-      mPubKey = fromGrpc . fromStrict $ x ^. LnGRPC.identityPubkey
+      <$> fromGrpc (fromStrict $ x ^. LnGRPC.identityPubkey)
+      <*> fromGrpc (x ^. LnGRPC.syncedToChain)
+      <*> fromGrpc (x ^. LnGRPC.syncedToGraph)

@@ -1678,20 +1678,21 @@ packedFileDescriptor
     \\n\
     \InitWallet\DC2\CAN.lnrpc.InitWalletRequest\SUB\EM.lnrpc.InitWalletResponse\DC2G\n\
     \\fUnlockWallet\DC2\SUB.lnrpc.UnlockWalletRequest\SUB\ESC.lnrpc.UnlockWalletResponse\DC2M\n\
-    \\SOChangePassword\DC2\FS.lnrpc.ChangePasswordRequest\SUB\GS.lnrpc.ChangePasswordResponseB'Z%github.com/lightningnetwork/lnd/lnrpcJ\226H\n\
-    \\a\DC2\ENQ\NUL\NUL\237\SOH\SOH\n\
-    \\b\n\
-    \\SOH\f\DC2\ETX\NUL\NUL\DC2\n\
+    \\SOChangePassword\DC2\FS.lnrpc.ChangePasswordRequest\SUB\GS.lnrpc.ChangePasswordResponseB'Z%github.com/lightningnetwork/lnd/lnrpcJ\232I\n\
+    \\a\DC2\ENQ\STX\NUL\239\SOH\SOH\n\
+    \\141\SOH\n\
+    \\SOH\f\DC2\ETX\STX\NUL\DC22\130\SOHsource https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/walletunlocker.proto\n\
+    \\n\
     \\t\n\
-    \\STX\ETX\NUL\DC2\ETX\STX\NUL\CAN\n\
+    \\STX\ETX\NUL\DC2\ETX\EOT\NUL\CAN\n\
     \\b\n\
-    \\SOH\STX\DC2\ETX\EOT\NUL\SO\n\
+    \\SOH\STX\DC2\ETX\ACK\NUL\SO\n\
     \\b\n\
-    \\SOH\b\DC2\ETX\ACK\NUL<\n\
+    \\SOH\b\DC2\ETX\b\NUL<\n\
     \\t\n\
-    \\STX\b\v\DC2\ETX\ACK\NUL<\n\
+    \\STX\b\v\DC2\ETX\b\NUL<\n\
     \\187\ACK\n\
-    \\STX\ACK\NUL\DC2\EOT\FS\NULD\SOH\SUB\136\SOH WalletUnlocker is a service that is used to set up a wallet password for\n\
+    \\STX\ACK\NUL\DC2\EOT\RS\NULF\SOH\SUB\136\SOH WalletUnlocker is a service that is used to set up a wallet password for\n\
     \ lnd at first startup, and unlock a previously set up wallet.\n\
     \2\163\ENQ\n\
     \ Comments in this file will be directly parsed into the API\n\
@@ -1712,9 +1713,9 @@ packedFileDescriptor
     \\n\
     \\n\
     \\n\
-    \\ETX\ACK\NUL\SOH\DC2\ETX\FS\b\SYN\n\
+    \\ETX\ACK\NUL\SOH\DC2\ETX\RS\b\SYN\n\
     \\200\ETX\n\
-    \\EOT\ACK\NUL\STX\NUL\DC2\ETX'\EOT;\SUB\186\ETX\n\
+    \\EOT\ACK\NUL\STX\NUL\DC2\ETX)\EOT;\SUB\186\ETX\n\
     \GenSeed is the first method that should be used to instantiate a new lnd\n\
     \instance. This method allows a caller to generate a new aezeed cipher seed\n\
     \given an optional passphrase. If provided, the passphrase will be necessary\n\
@@ -1725,13 +1726,13 @@ packedFileDescriptor
     \wallet.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX'\b\SI\n\
+    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX)\b\SI\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX'\DC1\US\n\
+    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX)\DC1\US\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX'*9\n\
+    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX)*9\n\
     \\133\ENQ\n\
-    \\EOT\ACK\NUL\STX\SOH\DC2\ETX7\EOTD\SUB\247\EOT\n\
+    \\EOT\ACK\NUL\STX\SOH\DC2\ETX9\EOTD\SUB\247\EOT\n\
     \InitWallet is used when lnd is starting up for the first time to fully\n\
     \initialize the daemon and its internal wallet. At the very least a wallet\n\
     \password must be provided. This will be used to encrypt sensitive material\n\
@@ -1746,77 +1747,77 @@ packedFileDescriptor
     \the seed can be fed into this RPC in order to commit the new wallet.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX7\b\DC2\n\
+    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX9\b\DC2\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX7\DC4%\n\
+    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX9\DC4%\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX70B\n\
+    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX90B\n\
     \z\n\
-    \\EOT\ACK\NUL\STX\STX\DC2\ETX=\EOTJ\SUBm lncli: `unlock`\n\
+    \\EOT\ACK\NUL\STX\STX\DC2\ETX?\EOTJ\SUBm lncli: `unlock`\n\
     \UnlockWallet is used at startup of lnd to provide a password to unlock\n\
     \the wallet database.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX=\b\DC4\n\
+    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX?\b\DC4\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX=\SYN)\n\
+    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX?\SYN)\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX=4H\n\
+    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX?4H\n\
     \\166\SOH\n\
-    \\EOT\ACK\NUL\STX\ETX\DC2\ETXC\EOTP\SUB\152\SOH lncli: `changepassword`\n\
+    \\EOT\ACK\NUL\STX\ETX\DC2\ETXE\EOTP\SUB\152\SOH lncli: `changepassword`\n\
     \ChangePassword changes the password of the encrypted wallet. This will\n\
     \automatically unlock the wallet database if successful.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETXC\b\SYN\n\
+    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETXE\b\SYN\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETXC\CAN-\n\
+    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETXE\CAN-\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETXC8N\n\
+    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETXE8N\n\
     \\n\
     \\n\
-    \\STX\EOT\NUL\DC2\EOTF\NULT\SOH\n\
+    \\STX\EOT\NUL\DC2\EOTH\NULV\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\NUL\SOH\DC2\ETXF\b\SYN\n\
+    \\ETX\EOT\NUL\SOH\DC2\ETXH\b\SYN\n\
     \\191\SOH\n\
-    \\EOT\EOT\NUL\STX\NUL\DC2\ETXL\EOT \SUB\177\SOH\n\
+    \\EOT\EOT\NUL\STX\NUL\DC2\ETXN\EOT \SUB\177\SOH\n\
     \aezeed_passphrase is an optional user provided passphrase that will be used\n\
     \to encrypt the generated aezeed cipher seed. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\NUL\EOT\DC2\EOTL\EOTF\CAN\n\
+    \\ENQ\EOT\NUL\STX\NUL\EOT\DC2\EOTN\EOTH\CAN\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETXL\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETXN\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\ETXL\n\
+    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\ETXN\n\
     \\ESC\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\ETXL\RS\US\n\
+    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\ETXN\RS\US\n\
     \\211\SOH\n\
-    \\EOT\EOT\NUL\STX\SOH\DC2\ETXS\EOT\ESC\SUB\197\SOH\n\
+    \\EOT\EOT\NUL\STX\SOH\DC2\ETXU\EOT\ESC\SUB\197\SOH\n\
     \seed_entropy is an optional 16-bytes generated via CSPRNG. If not\n\
     \specified, then a fresh set of randomness will be used to create the seed.\n\
     \When using REST, this field must be encoded as base64.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\SOH\EOT\DC2\EOTS\EOTL \n\
+    \\ENQ\EOT\NUL\STX\SOH\EOT\DC2\EOTU\EOTN \n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\ETXS\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\ETXU\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\SOH\SOH\DC2\ETXS\n\
+    \\ENQ\EOT\NUL\STX\SOH\SOH\DC2\ETXU\n\
     \\SYN\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\SOH\ETX\DC2\ETXS\EM\SUB\n\
+    \\ENQ\EOT\NUL\STX\SOH\ETX\DC2\ETXU\EM\SUB\n\
     \\n\
     \\n\
-    \\STX\EOT\SOH\DC2\EOTU\NULd\SOH\n\
+    \\STX\EOT\SOH\DC2\EOTW\NULf\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\SOH\SOH\DC2\ETXU\b\ETB\n\
+    \\ETX\EOT\SOH\SOH\DC2\ETXW\b\ETB\n\
     \\194\STX\n\
-    \\EOT\EOT\SOH\STX\NUL\DC2\ETX]\EOT-\SUB\180\STX\n\
+    \\EOT\EOT\SOH\STX\NUL\DC2\ETX_\EOT-\SUB\180\STX\n\
     \cipher_seed_mnemonic is a 24-word mnemonic that encodes a prior aezeed\n\
     \cipher seed obtained by the user. This field is optional, as if not\n\
     \provided, then the daemon will generate a new cipher seed for the user.\n\
@@ -1824,79 +1825,79 @@ packedFileDescriptor
     \to this cipher seed.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\NUL\EOT\DC2\ETX]\EOT\f\n\
+    \\ENQ\EOT\SOH\STX\NUL\EOT\DC2\ETX_\EOT\f\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\NUL\ENQ\DC2\ETX]\r\DC3\n\
+    \\ENQ\EOT\SOH\STX\NUL\ENQ\DC2\ETX_\r\DC3\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\NUL\SOH\DC2\ETX]\DC4(\n\
+    \\ENQ\EOT\SOH\STX\NUL\SOH\DC2\ETX_\DC4(\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\NUL\ETX\DC2\ETX]+,\n\
+    \\ENQ\EOT\SOH\STX\NUL\ETX\DC2\ETX_+,\n\
     \\146\SOH\n\
-    \\EOT\EOT\SOH\STX\SOH\DC2\ETXc\EOT\RS\SUB\132\SOH\n\
+    \\EOT\EOT\SOH\STX\SOH\DC2\ETXe\EOT\RS\SUB\132\SOH\n\
     \enciphered_seed are the raw aezeed cipher seed bytes. This is the raw\n\
     \cipher text before run through our mnemonic encoding scheme.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\SOH\EOT\DC2\EOTc\EOT]-\n\
+    \\ENQ\EOT\SOH\STX\SOH\EOT\DC2\EOTe\EOT_-\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\SOH\ENQ\DC2\ETXc\EOT\t\n\
+    \\ENQ\EOT\SOH\STX\SOH\ENQ\DC2\ETXe\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\SOH\SOH\DC2\ETXc\n\
+    \\ENQ\EOT\SOH\STX\SOH\SOH\DC2\ETXe\n\
     \\EM\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\SOH\ETX\DC2\ETXc\FS\GS\n\
+    \\ENQ\EOT\SOH\STX\SOH\ETX\DC2\ETXe\FS\GS\n\
     \\v\n\
-    \\STX\EOT\STX\DC2\ENQf\NUL\151\SOH\SOH\n\
+    \\STX\EOT\STX\DC2\ENQh\NUL\153\SOH\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\STX\SOH\DC2\ETXf\b\EM\n\
+    \\ETX\EOT\STX\SOH\DC2\ETXh\b\EM\n\
     \\252\SOH\n\
-    \\EOT\EOT\STX\STX\NUL\DC2\ETXm\EOT\RS\SUB\238\SOH\n\
+    \\EOT\EOT\STX\STX\NUL\DC2\ETXo\EOT\RS\SUB\238\SOH\n\
     \wallet_password is the passphrase that should be used to encrypt the\n\
     \wallet. This MUST be at least 8 chars in length. After creation, this\n\
     \password is required to unlock the daemon. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\NUL\EOT\DC2\EOTm\EOTf\ESC\n\
+    \\ENQ\EOT\STX\STX\NUL\EOT\DC2\EOTo\EOTh\ESC\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETXm\EOT\t\n\
+    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETXo\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\ETXm\n\
+    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\ETXo\n\
     \\EM\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\ETXm\FS\GS\n\
+    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\ETXo\FS\GS\n\
     \\196\SOH\n\
-    \\EOT\EOT\STX\STX\SOH\DC2\ETXt\EOT-\SUB\182\SOH\n\
+    \\EOT\EOT\STX\STX\SOH\DC2\ETXv\EOT-\SUB\182\SOH\n\
     \cipher_seed_mnemonic is a 24-word mnemonic that encodes a prior aezeed\n\
     \cipher seed obtained by the user. This may have been generated by the\n\
     \GenSeed method, or be an existing seed.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\ETXt\EOT\f\n\
+    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\ETXv\EOT\f\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETXt\r\DC3\n\
+    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETXv\r\DC3\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\ETXt\DC4(\n\
+    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\ETXv\DC4(\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\ETXt+,\n\
+    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\ETXv+,\n\
     \\191\SOH\n\
-    \\EOT\EOT\STX\STX\STX\DC2\ETX{\EOT \SUB\177\SOH\n\
+    \\EOT\EOT\STX\STX\STX\DC2\ETX}\EOT \SUB\177\SOH\n\
     \aezeed_passphrase is an optional user provided passphrase that will be used\n\
     \to encrypt the generated aezeed cipher seed. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\STX\EOT\DC2\EOT{\EOTt-\n\
+    \\ENQ\EOT\STX\STX\STX\EOT\DC2\EOT}\EOTv-\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETX{\EOT\t\n\
+    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETX}\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\SOH\DC2\ETX{\n\
+    \\ENQ\EOT\STX\STX\STX\SOH\DC2\ETX}\n\
     \\ESC\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\ETX\DC2\ETX{\RS\US\n\
+    \\ENQ\EOT\STX\STX\STX\ETX\DC2\ETX}\RS\US\n\
     \\212\STX\n\
-    \\EOT\EOT\STX\STX\ETX\DC2\EOT\132\SOH\EOT\RS\SUB\197\STX\n\
+    \\EOT\EOT\STX\STX\ETX\DC2\EOT\134\SOH\EOT\RS\SUB\197\STX\n\
     \recovery_window is an optional argument specifying the address lookahead\n\
     \when restoring a wallet seed. The recovery window applies to each\n\
     \individual branch of the BIP44 derivation paths. Supplying a recovery\n\
@@ -1904,16 +1905,16 @@ packedFileDescriptor
     \the first initialization of the wallet.\n\
     \\n\
     \\SO\n\
-    \\ENQ\EOT\STX\STX\ETX\EOT\DC2\ENQ\132\SOH\EOT{ \n\
+    \\ENQ\EOT\STX\STX\ETX\EOT\DC2\ENQ\134\SOH\EOT} \n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\EOT\132\SOH\EOT\t\n\
+    \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\EOT\134\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ETX\SOH\DC2\EOT\132\SOH\n\
+    \\ENQ\EOT\STX\STX\ETX\SOH\DC2\EOT\134\SOH\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ETX\ETX\DC2\EOT\132\SOH\FS\GS\n\
+    \\ENQ\EOT\STX\STX\ETX\ETX\DC2\EOT\134\SOH\FS\GS\n\
     \\203\ETX\n\
-    \\EOT\EOT\STX\STX\EOT\DC2\EOT\142\SOH\EOT+\SUB\188\ETX\n\
+    \\EOT\EOT\STX\STX\EOT\DC2\EOT\144\SOH\EOT+\SUB\188\ETX\n\
     \channel_backups is an optional argument that allows clients to recover the\n\
     \settled funds within a set of channels. This should be populated if the\n\
     \user was unable to close out all channels and sweep funds before partial or\n\
@@ -1922,34 +1923,34 @@ packedFileDescriptor
     \recover the funds in each channel from a remote force closed transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\STX\STX\EOT\EOT\DC2\ACK\142\SOH\EOT\132\SOH\RS\n\
+    \\ENQ\EOT\STX\STX\EOT\EOT\DC2\ACK\144\SOH\EOT\134\SOH\RS\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\EOT\ACK\DC2\EOT\142\SOH\EOT\SYN\n\
+    \\ENQ\EOT\STX\STX\EOT\ACK\DC2\EOT\144\SOH\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\EOT\SOH\DC2\EOT\142\SOH\ETB&\n\
+    \\ENQ\EOT\STX\STX\EOT\SOH\DC2\EOT\144\SOH\ETB&\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\EOT\ETX\DC2\EOT\142\SOH)*\n\
+    \\ENQ\EOT\STX\STX\EOT\ETX\DC2\EOT\144\SOH)*\n\
     \\171\STX\n\
-    \\EOT\EOT\STX\STX\ENQ\DC2\EOT\150\SOH\EOT\FS\SUB\156\STX\n\
+    \\EOT\EOT\STX\STX\ENQ\DC2\EOT\152\SOH\EOT\FS\SUB\156\STX\n\
     \stateless_init is an optional argument instructing the daemon NOT to create\n\
     \any *.macaroon files in its filesystem. If this parameter is set, then the\n\
     \admin macaroon returned in the response MUST be stored by the caller of the\n\
     \RPC as otherwise all access to the daemon will be lost!\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\STX\STX\ENQ\EOT\DC2\ACK\150\SOH\EOT\142\SOH+\n\
+    \\ENQ\EOT\STX\STX\ENQ\EOT\DC2\ACK\152\SOH\EOT\144\SOH+\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\EOT\150\SOH\EOT\b\n\
+    \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\EOT\152\SOH\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ENQ\SOH\DC2\EOT\150\SOH\t\ETB\n\
+    \\ENQ\EOT\STX\STX\ENQ\SOH\DC2\EOT\152\SOH\t\ETB\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ENQ\ETX\DC2\EOT\150\SOH\SUB\ESC\n\
+    \\ENQ\EOT\STX\STX\ENQ\ETX\DC2\EOT\152\SOH\SUB\ESC\n\
     \\f\n\
-    \\STX\EOT\ETX\DC2\ACK\152\SOH\NUL\161\SOH\SOH\n\
+    \\STX\EOT\ETX\DC2\ACK\154\SOH\NUL\163\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\ETX\SOH\DC2\EOT\152\SOH\b\SUB\n\
+    \\ETX\EOT\ETX\SOH\DC2\EOT\154\SOH\b\SUB\n\
     \\229\STX\n\
-    \\EOT\EOT\ETX\STX\NUL\DC2\EOT\160\SOH\EOT\GS\SUB\214\STX\n\
+    \\EOT\EOT\ETX\STX\NUL\DC2\EOT\162\SOH\EOT\GS\SUB\214\STX\n\
     \The binary serialized admin macaroon that can be used to access the daemon\n\
     \after creating the wallet. If the stateless_init parameter was set to true,\n\
     \this is the ONLY copy of the macaroon and MUST be stored safely by the\n\
@@ -1957,35 +1958,35 @@ packedFileDescriptor
     \daemon, together with other macaroon files.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ETX\STX\NUL\EOT\DC2\ACK\160\SOH\EOT\152\SOH\FS\n\
+    \\ENQ\EOT\ETX\STX\NUL\EOT\DC2\ACK\162\SOH\EOT\154\SOH\FS\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\EOT\160\SOH\EOT\t\n\
+    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\EOT\162\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\EOT\160\SOH\n\
+    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\EOT\162\SOH\n\
     \\CAN\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\EOT\160\SOH\ESC\FS\n\
+    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\EOT\162\SOH\ESC\FS\n\
     \\f\n\
-    \\STX\EOT\EOT\DC2\ACK\163\SOH\NUL\195\SOH\SOH\n\
+    \\STX\EOT\EOT\DC2\ACK\165\SOH\NUL\197\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\EOT\SOH\DC2\EOT\163\SOH\b\ESC\n\
+    \\ETX\EOT\EOT\SOH\DC2\EOT\165\SOH\b\ESC\n\
     \\239\SOH\n\
-    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\169\SOH\EOT\RS\SUB\224\SOH\n\
+    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\171\SOH\EOT\RS\SUB\224\SOH\n\
     \wallet_password should be the current valid passphrase for the daemon. This\n\
     \will be required to decrypt on-disk material that the daemon requires to\n\
     \function properly. When using REST, this field must be encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\EOT\STX\NUL\EOT\DC2\ACK\169\SOH\EOT\163\SOH\GS\n\
+    \\ENQ\EOT\EOT\STX\NUL\EOT\DC2\ACK\171\SOH\EOT\165\SOH\GS\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\169\SOH\EOT\t\n\
+    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\171\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\169\SOH\n\
+    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\171\SOH\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\169\SOH\FS\GS\n\
+    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\171\SOH\FS\GS\n\
     \\212\STX\n\
-    \\EOT\EOT\EOT\STX\SOH\DC2\EOT\178\SOH\EOT\RS\SUB\197\STX\n\
+    \\EOT\EOT\EOT\STX\SOH\DC2\EOT\180\SOH\EOT\RS\SUB\197\STX\n\
     \recovery_window is an optional argument specifying the address lookahead\n\
     \when restoring a wallet seed. The recovery window applies to each\n\
     \individual branch of the BIP44 derivation paths. Supplying a recovery\n\
@@ -1993,16 +1994,16 @@ packedFileDescriptor
     \the first initialization of the wallet.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\EOT\STX\SOH\EOT\DC2\ACK\178\SOH\EOT\169\SOH\RS\n\
+    \\ENQ\EOT\EOT\STX\SOH\EOT\DC2\ACK\180\SOH\EOT\171\SOH\RS\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\ENQ\DC2\EOT\178\SOH\EOT\t\n\
+    \\ENQ\EOT\EOT\STX\SOH\ENQ\DC2\EOT\180\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\SOH\DC2\EOT\178\SOH\n\
+    \\ENQ\EOT\EOT\STX\SOH\SOH\DC2\EOT\180\SOH\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\ETX\DC2\EOT\178\SOH\FS\GS\n\
+    \\ENQ\EOT\EOT\STX\SOH\ETX\DC2\EOT\180\SOH\FS\GS\n\
     \\203\ETX\n\
-    \\EOT\EOT\EOT\STX\STX\DC2\EOT\188\SOH\EOT+\SUB\188\ETX\n\
+    \\EOT\EOT\EOT\STX\STX\DC2\EOT\190\SOH\EOT+\SUB\188\ETX\n\
     \channel_backups is an optional argument that allows clients to recover the\n\
     \settled funds within a set of channels. This should be populated if the\n\
     \user was unable to close out all channels and sweep funds before partial or\n\
@@ -2011,97 +2012,97 @@ packedFileDescriptor
     \recover the funds in each channel from a remote force closed transaction.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\EOT\STX\STX\EOT\DC2\ACK\188\SOH\EOT\178\SOH\RS\n\
+    \\ENQ\EOT\EOT\STX\STX\EOT\DC2\ACK\190\SOH\EOT\180\SOH\RS\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\STX\ACK\DC2\EOT\188\SOH\EOT\SYN\n\
+    \\ENQ\EOT\EOT\STX\STX\ACK\DC2\EOT\190\SOH\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\STX\SOH\DC2\EOT\188\SOH\ETB&\n\
+    \\ENQ\EOT\EOT\STX\STX\SOH\DC2\EOT\190\SOH\ETB&\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\STX\ETX\DC2\EOT\188\SOH)*\n\
+    \\ENQ\EOT\EOT\STX\STX\ETX\DC2\EOT\190\SOH)*\n\
     \\132\SOH\n\
-    \\EOT\EOT\EOT\STX\ETX\DC2\EOT\194\SOH\EOT\FS\SUBv\n\
+    \\EOT\EOT\EOT\STX\ETX\DC2\EOT\196\SOH\EOT\FS\SUBv\n\
     \stateless_init is an optional argument instructing the daemon NOT to create\n\
     \any *.macaroon files in its file system.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\EOT\STX\ETX\EOT\DC2\ACK\194\SOH\EOT\188\SOH+\n\
+    \\ENQ\EOT\EOT\STX\ETX\EOT\DC2\ACK\196\SOH\EOT\190\SOH+\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\ETX\ENQ\DC2\EOT\194\SOH\EOT\b\n\
+    \\ENQ\EOT\EOT\STX\ETX\ENQ\DC2\EOT\196\SOH\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\ETX\SOH\DC2\EOT\194\SOH\t\ETB\n\
+    \\ENQ\EOT\EOT\STX\ETX\SOH\DC2\EOT\196\SOH\t\ETB\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\ETX\ETX\DC2\EOT\194\SOH\SUB\ESC\n\
+    \\ENQ\EOT\EOT\STX\ETX\ETX\DC2\EOT\196\SOH\SUB\ESC\n\
     \\f\n\
-    \\STX\EOT\ENQ\DC2\ACK\196\SOH\NUL\197\SOH\SOH\n\
+    \\STX\EOT\ENQ\DC2\ACK\198\SOH\NUL\199\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\ENQ\SOH\DC2\EOT\196\SOH\b\FS\n\
+    \\ETX\EOT\ENQ\SOH\DC2\EOT\198\SOH\b\FS\n\
     \\f\n\
-    \\STX\EOT\ACK\DC2\ACK\199\SOH\NUL\226\SOH\SOH\n\
+    \\STX\EOT\ACK\DC2\ACK\201\SOH\NUL\228\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\ACK\SOH\DC2\EOT\199\SOH\b\GS\n\
+    \\ETX\EOT\ACK\SOH\DC2\EOT\201\SOH\b\GS\n\
     \\154\SOH\n\
-    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\204\SOH\EOT\US\SUB\139\SOH\n\
+    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\206\SOH\EOT\US\SUB\139\SOH\n\
     \current_password should be the current valid passphrase used to unlock the\n\
     \daemon. When using REST, this field must be encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ACK\STX\NUL\EOT\DC2\ACK\204\SOH\EOT\199\SOH\US\n\
+    \\ENQ\EOT\ACK\STX\NUL\EOT\DC2\ACK\206\SOH\EOT\201\SOH\US\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\204\SOH\EOT\t\n\
+    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\206\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\204\SOH\n\
+    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\206\SOH\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\204\SOH\GS\RS\n\
+    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\206\SOH\GS\RS\n\
     \\155\SOH\n\
-    \\EOT\EOT\ACK\STX\SOH\DC2\EOT\210\SOH\EOT\ESC\SUB\140\SOH\n\
+    \\EOT\EOT\ACK\STX\SOH\DC2\EOT\212\SOH\EOT\ESC\SUB\140\SOH\n\
     \new_password should be the new passphrase that will be needed to unlock the\n\
     \daemon. When using REST, this field must be encoded as base64.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ACK\STX\SOH\EOT\DC2\ACK\210\SOH\EOT\204\SOH\US\n\
+    \\ENQ\EOT\ACK\STX\SOH\EOT\DC2\ACK\212\SOH\EOT\206\SOH\US\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\ENQ\DC2\EOT\210\SOH\EOT\t\n\
+    \\ENQ\EOT\ACK\STX\SOH\ENQ\DC2\EOT\212\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\SOH\DC2\EOT\210\SOH\n\
+    \\ENQ\EOT\ACK\STX\SOH\SOH\DC2\EOT\212\SOH\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\ETX\DC2\EOT\210\SOH\EM\SUB\n\
+    \\ENQ\EOT\ACK\STX\SOH\ETX\DC2\EOT\212\SOH\EM\SUB\n\
     \\171\STX\n\
-    \\EOT\EOT\ACK\STX\STX\DC2\EOT\218\SOH\EOT\FS\SUB\156\STX\n\
+    \\EOT\EOT\ACK\STX\STX\DC2\EOT\220\SOH\EOT\FS\SUB\156\STX\n\
     \stateless_init is an optional argument instructing the daemon NOT to create\n\
     \any *.macaroon files in its filesystem. If this parameter is set, then the\n\
     \admin macaroon returned in the response MUST be stored by the caller of the\n\
     \RPC as otherwise all access to the daemon will be lost!\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ACK\STX\STX\EOT\DC2\ACK\218\SOH\EOT\210\SOH\ESC\n\
+    \\ENQ\EOT\ACK\STX\STX\EOT\DC2\ACK\220\SOH\EOT\212\SOH\ESC\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\STX\ENQ\DC2\EOT\218\SOH\EOT\b\n\
+    \\ENQ\EOT\ACK\STX\STX\ENQ\DC2\EOT\220\SOH\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\STX\SOH\DC2\EOT\218\SOH\t\ETB\n\
+    \\ENQ\EOT\ACK\STX\STX\SOH\DC2\EOT\220\SOH\t\ETB\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\STX\ETX\DC2\EOT\218\SOH\SUB\ESC\n\
+    \\ENQ\EOT\ACK\STX\STX\ETX\DC2\EOT\220\SOH\SUB\ESC\n\
     \\192\SOH\n\
-    \\EOT\EOT\ACK\STX\ETX\DC2\EOT\225\SOH\EOT#\SUB\177\SOH\n\
+    \\EOT\EOT\ACK\STX\ETX\DC2\EOT\227\SOH\EOT#\SUB\177\SOH\n\
     \new_macaroon_root_key is an optional argument instructing the daemon to\n\
     \rotate the macaroon root key when set to true. This will invalidate all\n\
     \previously generated macaroons.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\ACK\STX\ETX\EOT\DC2\ACK\225\SOH\EOT\218\SOH\FS\n\
+    \\ENQ\EOT\ACK\STX\ETX\EOT\DC2\ACK\227\SOH\EOT\220\SOH\FS\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\ETX\ENQ\DC2\EOT\225\SOH\EOT\b\n\
+    \\ENQ\EOT\ACK\STX\ETX\ENQ\DC2\EOT\227\SOH\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\ETX\SOH\DC2\EOT\225\SOH\t\RS\n\
+    \\ENQ\EOT\ACK\STX\ETX\SOH\DC2\EOT\227\SOH\t\RS\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\ETX\ETX\DC2\EOT\225\SOH!\"\n\
+    \\ENQ\EOT\ACK\STX\ETX\ETX\DC2\EOT\227\SOH!\"\n\
     \\f\n\
-    \\STX\EOT\a\DC2\ACK\227\SOH\NUL\237\SOH\SOH\n\
+    \\STX\EOT\a\DC2\ACK\229\SOH\NUL\239\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\a\SOH\DC2\EOT\227\SOH\b\RS\n\
+    \\ETX\EOT\a\SOH\DC2\EOT\229\SOH\b\RS\n\
     \\183\ETX\n\
-    \\EOT\EOT\a\STX\NUL\DC2\EOT\236\SOH\EOT\GS\SUB\168\ETX\n\
+    \\EOT\EOT\a\STX\NUL\DC2\EOT\238\SOH\EOT\GS\SUB\168\ETX\n\
     \The binary serialized admin macaroon that can be used to access the daemon\n\
     \after rotating the macaroon root key. If both the stateless_init and\n\
     \new_macaroon_root_key parameter were set to true, this is the ONLY copy of\n\
@@ -2110,11 +2111,11 @@ packedFileDescriptor
     \disk by the daemon, together with other macaroon files.\n\
     \\n\
     \\SI\n\
-    \\ENQ\EOT\a\STX\NUL\EOT\DC2\ACK\236\SOH\EOT\227\SOH \n\
+    \\ENQ\EOT\a\STX\NUL\EOT\DC2\ACK\238\SOH\EOT\229\SOH \n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\236\SOH\EOT\t\n\
+    \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\238\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\SOH\DC2\EOT\236\SOH\n\
+    \\ENQ\EOT\a\STX\NUL\SOH\DC2\EOT\238\SOH\n\
     \\CAN\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\ETX\DC2\EOT\236\SOH\ESC\FSb\ACKproto3"
+    \\ENQ\EOT\a\STX\NUL\ETX\DC2\EOT\238\SOH\ESC\FSb\ACKproto3"

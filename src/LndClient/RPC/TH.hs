@@ -25,7 +25,7 @@ import qualified LndClient.Data.InitWallet as IW
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (ListChannelsRequest (..))
 import LndClient.Data.ListInvoices (ListInvoiceRequest (..), ListInvoiceResponse (..))
-import LndClient.Data.NewAddress (NewAddressResponse (..))
+import LndClient.Data.NewAddress (NewAddressRequest (..), NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq (PayReq (..))
 import LndClient.Data.Payment (Payment (..))
@@ -112,16 +112,13 @@ mkRpc k = do
     newAddress ::
       ($(tcc) m) =>
       LndEnv ->
-      GRPC.AddressType ->
+      NewAddressRequest ->
       m (Either LndError NewAddressResponse)
-    newAddress env req =
-      $(grpcRetry) $
-        $(grpcSync)
-          NewAddress
-          GRPC.lightningClient
-          GRPC.lightningNewAddress
+    newAddress env =
+      $(grpcRetry)
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "newAddress")
           env
-          (GRPC.NewAddressRequest $ Enumerated $ Right req)
 
     addInvoice ::
       ($(tcc) m) =>
