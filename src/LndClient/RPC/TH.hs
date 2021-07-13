@@ -46,6 +46,7 @@ import LndClient.Import
 import LndClient.RPC.Generic
 import qualified LndGrpc as GRPC
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
+import qualified Proto.InvoiceGrpc as LnGRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc as LnGRPC
 import qualified RouterGrpc as GRPC
@@ -138,10 +139,8 @@ mkRpc k = do
       m (Either LndError PaymentRequest)
     addHodlInvoice env =
       $(grpcRetry)
-        . $(grpcSync)
-          AddHodlInvoice
-          GRPC.invoicesClient
-          GRPC.invoicesAddHoldInvoice
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Invoices "addHoldInvoice")
           env
 
     cancelInvoice ::

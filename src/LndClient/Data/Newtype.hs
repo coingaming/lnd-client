@@ -40,11 +40,14 @@ import Data.Text.Lazy as TL
 import Data.Vector (fromList)
 import qualified InvoiceGrpc as GRPC
 import LndClient.Class
+import qualified LndClient.Class2 as C2
 import LndClient.Data.Kind
 import LndClient.Data.Type
 import LndClient.Import.External
 import LndClient.Util
 import qualified LndGrpc as GRPC
+import qualified Proto.InvoiceGrpc as LnGRPC
+import qualified Proto.InvoiceGrpc_Fields as LnGRPC
 import Prelude (Show)
 
 newtype Vout (a :: TxKind) = Vout Word32
@@ -208,6 +211,9 @@ instance FromGrpc PaymentRequest T.Text where
 
 instance FromGrpc PaymentRequest GRPC.AddHoldInvoiceResp where
   fromGrpc = fromGrpc . GRPC.addHoldInvoiceRespPaymentRequest
+
+instance C2.FromGrpc PaymentRequest LnGRPC.AddHoldInvoiceResp where
+  fromGrpc x = fromGrpc (x ^. LnGRPC.paymentRequest)
 
 instance FromGrpc Seconds Int64 where
   fromGrpc =
