@@ -1,11 +1,17 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module LndClient.Data.AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
 where
 
+import Data.ProtoLens.Message
+import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data AddInvoiceRequest
   = AddInvoiceRequest
@@ -43,3 +49,23 @@ instance FromGrpc AddInvoiceResponse GRPC.AddInvoiceResponse where
       <$> fromGrpc (GRPC.addInvoiceResponseRHash x)
       <*> fromGrpc (GRPC.addInvoiceResponsePaymentRequest x)
       <*> fromGrpc (GRPC.addInvoiceResponseAddIndex x)
+
+instance C2.ToGrpc AddInvoiceRequest LnGRPC.Invoice where
+  toGrpc x =
+    msg
+      <$> toGrpc (memo x)
+      <*> toGrpc (valueMsat x)
+      <*> toGrpc (expiry x)
+    where
+      msg gMemo gValue gExp =
+        defMessage
+          & LnGRPC.memo .~ gMemo
+          & LnGRPC.valueMsat .~ gValue
+          & LnGRPC.expiry .~ gExp
+
+instance C2.FromGrpc AddInvoiceResponse LnGRPC.AddInvoiceResponse where
+  fromGrpc x =
+    AddInvoiceResponse
+      <$> fromGrpc (x ^. LnGRPC.rHash)
+      <*> fromGrpc (x ^. LnGRPC.paymentRequest)
+      <*> fromGrpc (x ^. LnGRPC.addIndex)

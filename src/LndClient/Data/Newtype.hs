@@ -35,6 +35,7 @@ import Crypto.Random (getRandomBytes)
 import Data.Aeson (FromJSON (..))
 import Data.ByteString.Base16 as B16 (decode, encode)
 import Data.ByteString.Char8 as C8
+import qualified Data.Text.Internal as T
 import Data.Text.Lazy as TL
 import Data.Vector (fromList)
 import qualified InvoiceGrpc as GRPC
@@ -201,6 +202,9 @@ instance FromGrpc SettleIndex Word64 where
 
 instance FromGrpc PaymentRequest Text where
   fromGrpc = Right . PaymentRequest
+
+instance FromGrpc PaymentRequest T.Text where
+  fromGrpc = Right . PaymentRequest . fromStrict
 
 instance FromGrpc PaymentRequest GRPC.AddHoldInvoiceResp where
   fromGrpc = fromGrpc . GRPC.addHoldInvoiceRespPaymentRequest

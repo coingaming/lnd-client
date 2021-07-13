@@ -21,7 +21,7 @@ data Invoice
         paymentRequest :: PaymentRequest,
         private :: Bool,
         addIndex :: AddIndex,
-        state :: InvoiceState --GRPC.Invoice_InvoiceState
+        state :: InvoiceState
       }
   deriving (Eq, Show)
 

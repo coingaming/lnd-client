@@ -127,10 +127,8 @@ mkRpc k = do
       m (Either LndError AddInvoiceResponse)
     addInvoice env =
       $(grpcRetry)
-        . $(grpcSync)
-          AddInvoice
-          GRPC.lightningClient
-          GRPC.lightningAddInvoice
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "addInvoice")
           env
 
     addHodlInvoice ::

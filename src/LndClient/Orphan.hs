@@ -10,3 +10,6 @@ import LndClient.Import.External
 
 instance FromGrpc Text T.Text where
   fromGrpc = Right . fromStrict
+
+instance ToGrpc Text T.Text where
+  toGrpc = Right . toStrict
