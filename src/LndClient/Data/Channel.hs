@@ -61,6 +61,9 @@ instance C2.FromGrpc Channel LnGRPC.Channel where
 instance FromGrpc [Channel] GRPC.ListChannelsResponse where
   fromGrpc = fromGrpc . GRPC.listChannelsResponseChannels
 
+instance C2.FromGrpc [Channel] LnGRPC.ListChannelsResponse where
+  fromGrpc x = C2.fromGrpc (x ^. LnGRPC.channels)
+
 instance FromGrpc (PendingUpdate a) GRPC.PendingUpdate where
   fromGrpc x =
     PendingUpdate

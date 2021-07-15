@@ -249,11 +249,10 @@ mkRpc k = do
       LndEnv ->
       OpenChannelRequest ->
       m (Either LndError ChannelPoint)
-    openChannelSync =
-      $(grpcSync)
-        OpenChannelSync
-        GRPC.lightningClient
-        GRPC.lightningOpenChannelSync
+    openChannelSync env =
+      $(grpcSync2)
+        (RPC :: RPC LnGRPC.Lightning "openChannelSync")
+        env
 
     listChannels ::
       ($(tcc) m) =>
@@ -262,10 +261,8 @@ mkRpc k = do
       m (Either LndError [Channel])
     listChannels env =
       $(grpcRetry)
-        . $(grpcSync)
-          ListChannels
-          GRPC.lightningClient
-          GRPC.lightningListChannels
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "listChannels")
           env
 
     listInvoices ::
@@ -275,10 +272,8 @@ mkRpc k = do
       m (Either LndError ListInvoiceResponse)
     listInvoices env =
       $(grpcRetry)
-        . $(grpcSync)
-          ListInvoices
-          GRPC.lightningClient
-          GRPC.lightningListInvoices
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "listInvoices")
           env
 
     closedChannels ::
