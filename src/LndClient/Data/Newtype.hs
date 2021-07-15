@@ -35,6 +35,7 @@ import Crypto.Random (getRandomBytes)
 import Data.Aeson (FromJSON (..))
 import Data.ByteString.Base16 as B16 (decode, encode)
 import Data.ByteString.Char8 as C8
+import Data.ProtoLens.Message
 import qualified Data.Text.Internal as T
 import Data.Text.Lazy as TL
 import Data.Vector (fromList)
@@ -254,11 +255,21 @@ instance ToGrpc RHash ByteString where
 instance ToGrpc RHash GRPC.CancelInvoiceMsg where
   toGrpc x = GRPC.CancelInvoiceMsg <$> toGrpc x
 
+instance C2.ToGrpc RHash LnGRPC.CancelInvoiceMsg where
+  toGrpc x = do
+    ph <- toGrpc x
+    Right $ defMessage & LnGRPC.paymentHash .~ ph
+
 instance ToGrpc RPreimage GRPC.SettleInvoiceMsg where
   toGrpc x = GRPC.SettleInvoiceMsg <$> toGrpc x
 
 instance ToGrpc RPreimage ByteString where
   toGrpc = Right . coerce
+
+instance C2.ToGrpc RPreimage LnGRPC.SettleInvoiceMsg where
+  toGrpc x = do
+    p <- toGrpc x
+    Right $ defMessage & LnGRPC.preimage .~ p
 
 instance ToGrpc PaymentRequest GRPC.PayReqString where
   toGrpc = Right . GRPC.PayReqString . coerce
@@ -268,6 +279,11 @@ instance ToGrpc RHash GRPC.PaymentHash where
 
 instance ToGrpc RHash GRPC.SubscribeSingleInvoiceRequest where
   toGrpc = Right . GRPC.SubscribeSingleInvoiceRequest . coerce
+
+instance C2.ToGrpc RHash LnGRPC.SubscribeSingleInvoiceRequest where
+  toGrpc x = do
+    rh <- toGrpc x
+    Right $ defMessage & LnGRPC.rHash .~ rh
 
 newRHash :: RPreimage -> RHash
 newRHash = RHash . SHA256.hash . coerce

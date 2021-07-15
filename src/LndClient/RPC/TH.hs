@@ -7,7 +7,6 @@ module LndClient.RPC.TH
   )
 where
 
-import qualified InvoiceGrpc as GRPC
 import Language.Haskell.TH.Syntax
 import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
@@ -26,6 +25,7 @@ import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (ListChannelsRequest (..))
 import LndClient.Data.ListInvoices (ListInvoiceRequest (..), ListInvoiceResponse (..))
 import LndClient.Data.NewAddress (NewAddressRequest (..), NewAddressResponse (..))
+import LndClient.Data.OpenChannel
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq (PayReq (..))
 import LndClient.Data.Payment (Payment (..))
@@ -150,10 +150,8 @@ mkRpc k = do
       m (Either LndError ())
     cancelInvoice env =
       $(grpcRetry)
-        . $(grpcSync)
-          CancelInvoice
-          GRPC.invoicesClient
-          GRPC.invoicesCancelInvoice
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Invoices "cancelInvoice")
           env
 
     settleInvoice ::
@@ -163,10 +161,8 @@ mkRpc k = do
       m (Either LndError ())
     settleInvoice env =
       $(grpcRetry)
-        . $(grpcSync)
-          SettleInvoice
-          GRPC.invoicesClient
-          GRPC.invoicesSettleInvoice
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Invoices "settleInvoice")
           env
 
     subscribeSingleInvoice ::
@@ -176,10 +172,8 @@ mkRpc k = do
       RHash ->
       m (Either LndError ())
     subscribeSingleInvoice =
-      $(grpcSubscribe)
-        SubscribeSingleInvoice
-        GRPC.invoicesClient
-        GRPC.invoicesSubscribeSingleInvoice
+      $(grpcSubscribe2)
+        (RPC :: RPC LnGRPC.Invoices "subscribeSingleInvoice")
 
     subscribeSingleInvoiceChan ::
       ($(tcc) m) =>
@@ -223,13 +217,11 @@ mkRpc k = do
       LndEnv ->
       m (Either LndError ())
     subscribeChannelEvents handler env =
-      $(grpcSubscribe)
-        SubscribeChannelEvents
-        GRPC.lightningClient
-        GRPC.lightningSubscribeChannelEvents
+      $(grpcSubscribe2)
+        (RPC :: RPC LnGRPC.Lightning "subscribeChannelEvents")
         handler
         env
-        GRPC.ChannelEventSubscription {}
+        (defMessage :: LnGRPC.ChannelEventSubscription)
 
     subscribeChannelEventsChan ::
       ($(tcc) m) =>
@@ -244,15 +236,13 @@ mkRpc k = do
 
     openChannel ::
       ($(tcc) m) =>
-      (GRPC.OpenStatusUpdate -> IO ()) ->
+      (OpenStatusUpdate -> IO ()) ->
       LndEnv ->
       OpenChannelRequest ->
       m (Either LndError ())
     openChannel =
-      $(grpcSubscribe)
-        OpenChannel
-        GRPC.lightningClient
-        GRPC.lightningOpenChannel
+      $(grpcSubscribe2)
+        (RPC :: RPC LnGRPC.Lightning "openChannel")
 
     openChannelSync ::
       ($(tcc) m) =>

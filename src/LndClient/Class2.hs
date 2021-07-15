@@ -45,3 +45,8 @@ instance (FieldDefault b, FromGrpc a b) => FromGrpc (Maybe a) b where
     if x == fieldDefault
       then Right Nothing
       else Just <$> fromGrpc x
+--instance (FromGrpc a b) => FromGrpc (Maybe a) (Maybe b) where
+--  fromGrpc x =
+--    case x of
+--      Just x' -> Just <$> fromGrpc x'
+--      Nothing -> Right Nothing

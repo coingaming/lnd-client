@@ -8,10 +8,13 @@ module LndClient.Data.CloseChannel
   )
 where
 
+import qualified LndClient.Class2 as C2
 import LndClient.Data.Channel (PendingUpdate)
 import LndClient.Data.ChannelPoint
 import LndClient.Import
 import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data CloseChannelRequest
   = CloseChannelRequest
@@ -91,3 +94,11 @@ instance FromGrpc ChannelCloseUpdate GRPC.ChannelCloseUpdate where
     ChannelCloseUpdate
       <$> fromGrpc (GRPC.channelCloseUpdateClosingTxid x)
       <*> fromGrpc (GRPC.channelCloseUpdateSuccess x)
+
+instance C2.FromGrpc ChannelCloseSummary LnGRPC.ChannelCloseSummary where
+  fromGrpc x =
+    ChannelCloseSummary
+      <$> fromGrpc (fromStrict $ x ^. LnGRPC.remotePubkey)
+      <*> channelPointParser (fromStrict $ x ^. LnGRPC.channelPoint)
+      <*> fromGrpc (x ^. LnGRPC.settledBalance)
+      <*> fromGrpc (fromStrict $ x ^. LnGRPC.closingTxHash)

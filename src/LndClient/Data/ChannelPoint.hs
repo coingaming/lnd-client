@@ -7,9 +7,13 @@ where
 import qualified Data.ByteString as BS (reverse)
 import qualified Data.ByteString.Base16 as B16 (decode)
 import qualified Data.ByteString.Char8 as C8 (split)
+--import Data.ProtoLens.Message
 import qualified Data.Text as TS (unpack)
+import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data ChannelPoint
   = ChannelPoint
@@ -23,6 +27,12 @@ instance FromGrpc ChannelPoint GRPC.ChannelPoint where
     ChannelPoint
       <$> fromGrpc (GRPC.channelPointFundingTxid x)
       <*> fromGrpc (GRPC.channelPointOutputIndex x)
+
+instance C2.FromGrpc ChannelPoint LnGRPC.ChannelPoint where
+  fromGrpc x =
+    ChannelPoint
+      <$> fromGrpc (x ^. LnGRPC.fundingTxidBytes)
+      <*> fromGrpc (x ^. LnGRPC.outputIndex)
 
 instance ToGrpc ChannelPoint GRPC.ChannelPoint where
   toGrpc x =
