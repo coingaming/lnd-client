@@ -343,10 +343,8 @@ mkRpc k = do
       m (Either LndError SendPaymentResponse)
     sendPayment env =
       $(grpcRetry)
-        . $(grpcSync)
-          SendPayment
-          GRPC.lightningClient
-          GRPC.lightningSendPaymentSync
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "sendPaymentSync")
           env
 
     subscribeHtlcEvents ::
