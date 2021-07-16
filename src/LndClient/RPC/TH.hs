@@ -283,10 +283,8 @@ mkRpc k = do
       m (Either LndError [ChannelCloseSummary])
     closedChannels env =
       $(grpcRetry)
-        . $(grpcSync)
-          ClosedChannels
-          GRPC.lightningClient
-          GRPC.lightningClosedChannels
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "closedChannels")
           env
 
     closeChannel ::

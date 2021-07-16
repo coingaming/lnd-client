@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module LndClient.Data.ChannelPoint
   ( ChannelPoint (..),
     channelPointParser,
@@ -7,7 +9,7 @@ where
 import qualified Data.ByteString as BS (reverse)
 import qualified Data.ByteString.Base16 as B16 (decode)
 import qualified Data.ByteString.Char8 as C8 (split)
---import Data.ProtoLens.Message
+import Data.ProtoLens.Message
 import qualified Data.Text as TS (unpack)
 import qualified LndClient.Class2 as C2
 import LndClient.Import
@@ -48,6 +50,17 @@ instance ToGrpc ChannelPoint GRPC.ChannelPoint where
             GRPC.channelPointOutputIndex =
               gOutputIndex
           }
+
+instance C2.ToGrpc ChannelPoint LnGRPC.ChannelPoint where
+  toGrpc x =
+    msg
+      <$> toGrpc (fundingTxId x)
+      <*> toGrpc (outputIndex x)
+    where
+      msg gFundingTxIdBytes gOutputIndex =
+        defMessage
+          & LnGRPC.fundingTxidBytes .~ gFundingTxIdBytes
+          & LnGRPC.outputIndex .~ gOutputIndex
 
 channelPointParser :: Text -> Either LndError ChannelPoint
 channelPointParser x =
