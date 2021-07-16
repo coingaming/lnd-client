@@ -280,12 +280,13 @@ instance ToGrpc PaymentRequest GRPC.PayReqString where
   toGrpc = Right . GRPC.PayReqString . coerce
 
 instance C2.ToGrpc PaymentRequest LnGrpc.PayReqString where
-  toGrpc x = do
-    let x' = toStrict $ coerce x
-    Right $ defMessage & LnGrpc.payReq .~ x'
+  toGrpc x = Right $ defMessage & LnGrpc.payReq .~ toStrict (coerce x)
 
 instance ToGrpc RHash GRPC.PaymentHash where
   toGrpc = Right . GRPC.PaymentHash mempty . coerce
+
+instance C2.ToGrpc RHash LnGrpc.PaymentHash where
+  toGrpc x = Right $ defMessage & LnGrpc.rHash .~ coerce x
 
 instance ToGrpc RHash GRPC.SubscribeSingleInvoiceRequest where
   toGrpc = Right . GRPC.SubscribeSingleInvoiceRequest . coerce
