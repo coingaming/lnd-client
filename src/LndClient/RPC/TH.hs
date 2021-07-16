@@ -315,10 +315,8 @@ mkRpc k = do
       m (Either LndError ())
     connectPeer env =
       $(grpcRetry)
-        . $(grpcSync)
-          ConnectPeer
-          GRPC.lightningClient
-          GRPC.lightningConnectPeer
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "connectPeer")
           env
 
     lazyConnectPeer ::

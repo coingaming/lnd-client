@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 module LndClient.Data.Peer
@@ -7,10 +8,9 @@ module LndClient.Data.Peer
   )
 where
 
---import Data.ProtoLens.Message
+import Data.ProtoLens.Message
 import qualified LndClient.Class2 as C2
 import LndClient.Import
-import qualified LndGrpc as GRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
@@ -34,17 +34,16 @@ data LightningAddress
       }
   deriving (Eq, Show, Read)
 
-instance ToGrpc LightningAddress GRPC.LightningAddress where
+instance C2.ToGrpc LightningAddress LnGRPC.LightningAddress where
   toGrpc x =
     msg
       <$> toGrpc (pubkey x)
       <*> toGrpc (host x)
     where
       msg gPubkey gHost =
-        def
-          { GRPC.lightningAddressPubkey = gPubkey,
-            GRPC.lightningAddressHost = gHost
-          }
+        defMessage
+          & LnGRPC.pubkey .~ toStrict gPubkey
+          & LnGRPC.host .~ toStrict gHost
 
 data ConnectPeerRequest
   = ConnectPeerRequest
@@ -53,17 +52,16 @@ data ConnectPeerRequest
       }
   deriving (Eq, Show)
 
-instance ToGrpc ConnectPeerRequest GRPC.ConnectPeerRequest where
+instance C2.ToGrpc ConnectPeerRequest LnGRPC.ConnectPeerRequest where
   toGrpc x =
     msg
-      <$> toGrpc (addr x)
+      <$> C2.toGrpc (addr x)
       <*> toGrpc (perm x)
     where
       msg gAddr gPerm =
-        def
-          { GRPC.connectPeerRequestAddr = gAddr,
-            GRPC.connectPeerRequestPerm = gPerm
-          }
+        defMessage
+          & LnGRPC.addr .~ gAddr
+          & LnGRPC.perm .~ gPerm
 
 instance C2.FromGrpc [Peer] LnGRPC.ListPeersResponse where
   fromGrpc x = sequence $ C2.fromGrpc <$> (x ^. LnGRPC.peers)
