@@ -303,12 +303,10 @@ mkRpc k = do
       m (Either LndError [Peer])
     listPeers env =
       $(grpcRetry) $
-        $(grpcSync)
-          ListPeers
-          GRPC.lightningClient
-          GRPC.lightningListPeers
+        $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "listPeers")
           env
-          (def :: GRPC.ListPeersRequest)
+          (defMessage :: LnGRPC.ListPeersRequest)
 
     connectPeer ::
       ($(tcc) m) =>
