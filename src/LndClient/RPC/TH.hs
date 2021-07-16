@@ -367,10 +367,8 @@ mkRpc k = do
       m (Either LndError PayReq)
     decodePayReq env =
       $(grpcRetry)
-        . $(grpcSync)
-          DecodePayReq
-          GRPC.lightningClient
-          GRPC.lightningDecodePayReq
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "decodePayReq")
           env
 
     lookupInvoice ::
