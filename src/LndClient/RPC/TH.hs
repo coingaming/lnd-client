@@ -48,6 +48,7 @@ import qualified LndGrpc as GRPC
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
 import qualified Proto.InvoiceGrpc as LnGRPC
 import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.RouterGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc as LnGRPC
 import qualified RouterGrpc as GRPC
 
@@ -353,13 +354,11 @@ mkRpc k = do
       LndEnv ->
       m (Either LndError ())
     subscribeHtlcEvents handler env =
-      $(grpcSubscribe)
-        SubscribeHtlcEvents
-        GRPC.routerClient
-        GRPC.routerSubscribeHtlcEvents
+      $(grpcSubscribe2)
+        (RPC :: RPC LnGRPC.Router "subscribeHtlcEvents")
         handler
         env
-        GRPC.SubscribeHtlcEventsRequest {}
+        (defMessage :: LnGRPC.SubscribeHtlcEventsRequest)
 
     decodePayReq ::
       ($(tcc) m) =>
