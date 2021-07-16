@@ -294,10 +294,8 @@ mkRpc k = do
       CloseChannelRequest ->
       m (Either LndError ())
     closeChannel =
-      $(grpcSubscribe)
-        CloseChannel
-        GRPC.lightningClient
-        GRPC.lightningCloseChannel
+      $(grpcSubscribe2)
+        (RPC :: RPC LnGRPC.Lightning "closeChannel")
 
     listPeers ::
       ($(tcc) m) =>

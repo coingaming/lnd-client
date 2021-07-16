@@ -14,7 +14,6 @@ import qualified LndClient.Class2 as C2
 import LndClient.Data.Channel (PendingUpdate)
 import LndClient.Data.ChannelPoint
 import LndClient.Import
-import qualified LndGrpc as GRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
@@ -50,37 +49,8 @@ data ChannelCloseSummary
       }
   deriving (Eq, Ord, Show)
 
---instance FromGrpc ChannelCloseSummary GRPC.ChannelCloseSummary where
---  fromGrpc x =
---    ChannelCloseSummary
---      <$> fromGrpc (GRPC.channelCloseSummaryRemotePubkey x)
---      <*> channelPointParser (GRPC.channelCloseSummaryChannelPoint x)
---      <*> (toMSat <$> fromGrpc (GRPC.channelCloseSummarySettledBalance x))
---      <*> fromGrpc (GRPC.channelCloseSummaryClosingTxHash x)
---
---instance FromGrpc [ChannelCloseSummary] GRPC.ClosedChannelsResponse where
---  fromGrpc = fromGrpc . GRPC.closedChannelsResponseChannels
---
 instance C2.FromGrpc [ChannelCloseSummary] LnGRPC.ClosedChannelsResponse where
   fromGrpc x = sequence $ C2.fromGrpc <$> (x ^. LnGRPC.channels)
-
-instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
-  toGrpc x =
-    msg
-      <$> toGrpc (channelPoint x)
-      <*> toGrpc (LndClient.Data.CloseChannel.force x)
-      <*> toGrpc (targetConf x)
-      <*> toGrpc (satPerByte x)
-      <*> toGrpc (deliveryAddress x)
-    where
-      msg gChannelPoint gForce gTargetConf gSatPerByte gDeliveryAddress =
-        def
-          { GRPC.closeChannelRequestChannelPoint = Just gChannelPoint,
-            GRPC.closeChannelRequestForce = gForce,
-            GRPC.closeChannelRequestTargetConf = gTargetConf,
-            GRPC.closeChannelRequestSatPerByte = gSatPerByte,
-            GRPC.closeChannelRequestDeliveryAddress = gDeliveryAddress
-          }
 
 instance C2.ToGrpc CloseChannelRequest LnGRPC.CloseChannelRequest where
   toGrpc x =
@@ -99,23 +69,19 @@ instance C2.ToGrpc CloseChannelRequest LnGRPC.CloseChannelRequest where
           & LnGRPC.satPerByte .~ gSatPerByte
           & LnGRPC.deliveryAddress .~ gDeliveryAddress
 
-instance FromGrpc CloseStatusUpdate GRPC.CloseStatusUpdate where
-  fromGrpc x =
-    case x of
-      GRPC.CloseStatusUpdate
-        (Just (GRPC.CloseStatusUpdateUpdateChanClose a)) ->
-          Close <$> fromGrpc a
-      GRPC.CloseStatusUpdate
-        (Just (GRPC.CloseStatusUpdateUpdateClosePending a)) ->
-          Pending <$> fromGrpc a
-      GRPC.CloseStatusUpdate Nothing ->
-        Right NothingUpdate
+instance C2.FromGrpc CloseStatusUpdate LnGRPC.CloseStatusUpdate where
+  fromGrpc x = do
+    let update = x ^. LnGRPC.maybe'update
+    case update of
+      Just (LnGRPC.CloseStatusUpdate'ClosePending a) -> Pending <$> C2.fromGrpc a
+      Just (LnGRPC.CloseStatusUpdate'ChanClose a) -> Close <$> C2.fromGrpc a
+      Nothing -> Right NothingUpdate
 
-instance FromGrpc ChannelCloseUpdate GRPC.ChannelCloseUpdate where
+instance C2.FromGrpc ChannelCloseUpdate LnGRPC.ChannelCloseUpdate where
   fromGrpc x =
     ChannelCloseUpdate
-      <$> fromGrpc (GRPC.channelCloseUpdateClosingTxid x)
-      <*> fromGrpc (GRPC.channelCloseUpdateSuccess x)
+      <$> fromGrpc (x ^. LnGRPC.closingTxid)
+      <*> fromGrpc (x ^. LnGRPC.success)
 
 instance C2.FromGrpc ChannelCloseSummary LnGRPC.ChannelCloseSummary where
   fromGrpc x =
