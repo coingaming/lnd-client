@@ -13,7 +13,6 @@ import LndClient.Data.ChannelPoint
   )
 import LndClient.Data.Newtype
 import LndClient.Import
-import qualified LndGrpc as GRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
@@ -36,17 +35,6 @@ data PendingUpdate (a :: TxKind)
       }
   deriving (Eq, Ord, Show)
 
-instance FromGrpc Channel GRPC.Channel where
-  fromGrpc x =
-    Channel
-      <$> fromGrpc (GRPC.channelRemotePubkey x)
-      <*> channelPointParser (GRPC.channelChannelPoint x)
-      <*> (toMSat <$> fromGrpc (GRPC.channelCapacity x))
-      <*> (toMSat <$> fromGrpc (GRPC.channelLocalBalance x))
-      <*> (toMSat <$> fromGrpc (GRPC.channelRemoteBalance x))
-      <*> (toMSat <$> fromGrpc (GRPC.channelCommitFee x))
-      <*> fromGrpc (GRPC.channelActive x)
-
 instance C2.FromGrpc Channel LnGRPC.Channel where
   fromGrpc x =
     Channel
@@ -58,17 +46,8 @@ instance C2.FromGrpc Channel LnGRPC.Channel where
       <*> (toMSat <$> fromGrpc (x ^. LnGRPC.commitFee))
       <*> fromGrpc (x ^. LnGRPC.active)
 
-instance FromGrpc [Channel] GRPC.ListChannelsResponse where
-  fromGrpc = fromGrpc . GRPC.listChannelsResponseChannels
-
 instance C2.FromGrpc [Channel] LnGRPC.ListChannelsResponse where
   fromGrpc x = C2.fromGrpc (x ^. LnGRPC.channels)
-
-instance FromGrpc (PendingUpdate a) GRPC.PendingUpdate where
-  fromGrpc x =
-    PendingUpdate
-      <$> fromGrpc (GRPC.pendingUpdateTxid x)
-      <*> fromGrpc (GRPC.pendingUpdateOutputIndex x)
 
 instance C2.FromGrpc (PendingUpdate a) LnGRPC.PendingUpdate where
   fromGrpc x =

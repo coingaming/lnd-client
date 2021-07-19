@@ -8,7 +8,6 @@ import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.WalletUnlockerGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc_Fields as LnGRPC
-import qualified WalletUnlockerGrpc as GRPC
 import Prelude (Show (..))
 
 data UnlockWalletRequest
@@ -23,18 +22,6 @@ data UnlockWalletRequest
 
 instance Show UnlockWalletRequest where
   show = const "SECRET"
-
-instance ToGrpc UnlockWalletRequest GRPC.UnlockWalletRequest where
-  toGrpc x =
-    msg
-      <$> toGrpc (walletPassword x)
-      <*> toGrpc (recoveryWindow x)
-    where
-      msg gWalletPassword gRecoveryWindow =
-        def
-          { GRPC.unlockWalletRequestWalletPassword = gWalletPassword,
-            GRPC.unlockWalletRequestRecoveryWindow = gRecoveryWindow
-          }
 
 instance C2.ToGrpc UnlockWalletRequest LnGRPC.UnlockWalletRequest where
   toGrpc x =

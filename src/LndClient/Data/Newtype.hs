@@ -39,14 +39,12 @@ import Data.ProtoLens.Message
 import qualified Data.Text.Internal as T
 import Data.Text.Lazy as TL
 import Data.Vector (fromList)
-import qualified InvoiceGrpc as GRPC
 import LndClient.Class
 import qualified LndClient.Class2 as C2
 import LndClient.Data.Kind
 import LndClient.Data.Type
 import LndClient.Import.External
 import LndClient.Util
-import qualified LndGrpc as GRPC
 import qualified Proto.InvoiceGrpc as IGrpc
 import qualified Proto.InvoiceGrpc_Fields as IGrpc
 import qualified Proto.LndGrpc as LnGrpc
@@ -133,13 +131,6 @@ instance FromGrpc (TxId a) Text where
 instance FromGrpc (Vout a) Word32 where
   fromGrpc = Right . Vout
 
-instance FromGrpc (TxId a) GRPC.ChannelPointFundingTxid where
-  fromGrpc = \case
-    GRPC.ChannelPointFundingTxidFundingTxidBytes x ->
-      fromGrpc x
-    GRPC.ChannelPointFundingTxidFundingTxidStr _ ->
-      Left $ FromGrpcError "UNSUPPORTED_TXID_STR"
-
 instance FromGrpc NodePubKey ByteString where
   fromGrpc = Right . NodePubKey
 
@@ -212,9 +203,6 @@ instance FromGrpc PaymentRequest Text where
 instance FromGrpc PaymentRequest T.Text where
   fromGrpc = Right . PaymentRequest . fromStrict
 
-instance FromGrpc PaymentRequest GRPC.AddHoldInvoiceResp where
-  fromGrpc = fromGrpc . GRPC.addHoldInvoiceRespPaymentRequest
-
 instance C2.FromGrpc PaymentRequest IGrpc.AddHoldInvoiceResp where
   fromGrpc x = fromGrpc (x ^. IGrpc.paymentRequest)
 
@@ -257,16 +245,10 @@ instance ToGrpc AezeedPassphrase ByteString where
 instance ToGrpc RHash ByteString where
   toGrpc = Right . coerce
 
-instance ToGrpc RHash GRPC.CancelInvoiceMsg where
-  toGrpc x = GRPC.CancelInvoiceMsg <$> toGrpc x
-
 instance C2.ToGrpc RHash IGrpc.CancelInvoiceMsg where
   toGrpc x = do
     ph <- toGrpc x
     Right $ defMessage & IGrpc.paymentHash .~ ph
-
-instance ToGrpc RPreimage GRPC.SettleInvoiceMsg where
-  toGrpc x = GRPC.SettleInvoiceMsg <$> toGrpc x
 
 instance ToGrpc RPreimage ByteString where
   toGrpc = Right . coerce
@@ -276,20 +258,11 @@ instance C2.ToGrpc RPreimage IGrpc.SettleInvoiceMsg where
     p <- toGrpc x
     Right $ defMessage & IGrpc.preimage .~ p
 
-instance ToGrpc PaymentRequest GRPC.PayReqString where
-  toGrpc = Right . GRPC.PayReqString . coerce
-
 instance C2.ToGrpc PaymentRequest LnGrpc.PayReqString where
   toGrpc x = Right $ defMessage & LnGrpc.payReq .~ toStrict (coerce x)
 
-instance ToGrpc RHash GRPC.PaymentHash where
-  toGrpc = Right . GRPC.PaymentHash mempty . coerce
-
 instance C2.ToGrpc RHash LnGrpc.PaymentHash where
   toGrpc x = Right $ defMessage & LnGrpc.rHash .~ coerce x
-
-instance ToGrpc RHash GRPC.SubscribeSingleInvoiceRequest where
-  toGrpc = Right . GRPC.SubscribeSingleInvoiceRequest . coerce
 
 instance C2.ToGrpc RHash IGrpc.SubscribeSingleInvoiceRequest where
   toGrpc x = do

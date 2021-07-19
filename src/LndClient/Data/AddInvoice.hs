@@ -9,7 +9,6 @@ where
 import Data.ProtoLens.Message
 import qualified LndClient.Class2 as C2
 import LndClient.Import
-import qualified LndGrpc as GRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
@@ -28,27 +27,6 @@ data AddInvoiceResponse
         addIndex :: AddIndex
       }
   deriving (Eq, Show)
-
-instance ToGrpc AddInvoiceRequest GRPC.Invoice where
-  toGrpc x =
-    msg
-      <$> toGrpc (memo x)
-      <*> toGrpc (valueMsat x)
-      <*> toGrpc (expiry x)
-    where
-      msg gMemo gValue gExp =
-        def
-          { GRPC.invoiceMemo = gMemo,
-            GRPC.invoiceValueMsat = gValue,
-            GRPC.invoiceExpiry = gExp
-          }
-
-instance FromGrpc AddInvoiceResponse GRPC.AddInvoiceResponse where
-  fromGrpc x =
-    AddInvoiceResponse
-      <$> fromGrpc (GRPC.addInvoiceResponseRHash x)
-      <*> fromGrpc (GRPC.addInvoiceResponsePaymentRequest x)
-      <*> fromGrpc (GRPC.addInvoiceResponseAddIndex x)
 
 instance C2.ToGrpc AddInvoiceRequest LnGRPC.Invoice where
   toGrpc x =

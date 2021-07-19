@@ -6,7 +6,6 @@ where
 import qualified LndClient.Class2 as C2
 import LndClient.Data.ChannelPoint
 import LndClient.Import
-import qualified LndGrpc as GRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
@@ -21,35 +20,6 @@ data PendingChannel
         remoteChanReserveSat :: MSat
       }
   deriving (Eq, Show)
-
-instance
-  FromGrpc
-    PendingChannel
-    GRPC.PendingChannelsResponse_PendingChannel
-  where
-  fromGrpc x =
-    PendingChannel
-      <$> fromGrpc
-        (GRPC.pendingChannelsResponse_PendingChannelRemoteNodePub x)
-      <*> channelPointParser
-        (GRPC.pendingChannelsResponse_PendingChannelChannelPoint x)
-      <*> (toMSat <$> fromGrpc (GRPC.pendingChannelsResponse_PendingChannelCapacity x))
-      <*> ( toMSat
-              <$> fromGrpc
-                (GRPC.pendingChannelsResponse_PendingChannelLocalBalance x)
-          )
-      <*> ( toMSat
-              <$> fromGrpc
-                (GRPC.pendingChannelsResponse_PendingChannelRemoteBalance x)
-          )
-      <*> ( toMSat
-              <$> fromGrpc
-                (GRPC.pendingChannelsResponse_PendingChannelLocalChanReserveSat x)
-          )
-      <*> ( toMSat
-              <$> fromGrpc
-                (GRPC.pendingChannelsResponse_PendingChannelRemoteChanReserveSat x)
-          )
 
 instance
   C2.FromGrpc

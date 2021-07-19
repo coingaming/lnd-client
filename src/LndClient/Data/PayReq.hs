@@ -5,7 +5,6 @@ where
 
 import qualified LndClient.Class2 as C2
 import LndClient.Import
-import qualified LndGrpc as GRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
@@ -16,13 +15,6 @@ data PayReq
         expiry :: Seconds
       }
   deriving (Eq, Show)
-
-instance FromGrpc PayReq GRPC.PayReq where
-  fromGrpc x =
-    PayReq
-      <$> fromGrpc (GRPC.payReqPaymentHash x)
-      <*> fromGrpc (GRPC.payReqNumMsat x)
-      <*> fromGrpc (GRPC.payReqExpiry x)
 
 instance C2.FromGrpc PayReq LnGRPC.PayReq where
   fromGrpc x =

@@ -6,12 +6,10 @@ module LndClient.Data.InitWallet
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class as C
 import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.WalletUnlockerGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc_Fields as LnGRPC
-import qualified WalletUnlockerGrpc as GRPC
 import Prelude (Show (..))
 
 data InitWalletRequest
@@ -24,23 +22,6 @@ data InitWalletRequest
 
 instance Show InitWalletRequest where
   show = const "SECRET"
-
-instance ToGrpc InitWalletRequest GRPC.InitWalletRequest where
-  toGrpc x =
-    msg
-      <$> toGrpc (walletPassword x)
-      <*> toGrpc (cipherSeedMnemonic x)
-      <*> toGrpc (aezeedPassphrase x)
-    where
-      msg gWalletPassword gCipherSeedMnemonic gAezeedPassphrase =
-        def
-          { GRPC.initWalletRequestWalletPassword =
-              gWalletPassword,
-            GRPC.initWalletRequestCipherSeedMnemonic =
-              gCipherSeedMnemonic,
-            GRPC.initWalletRequestAezeedPassphrase =
-              gAezeedPassphrase
-          }
 
 instance C2.ToGrpc InitWalletRequest LnGRPC.InitWalletRequest where
   toGrpc x =
