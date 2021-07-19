@@ -9,7 +9,6 @@ module LndClient.Data.Peer
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -21,7 +20,7 @@ data Peer
       }
   deriving (Eq, Show)
 
-instance C2.FromGrpc Peer LnGRPC.Peer where
+instance FromGrpc Peer LnGRPC.Peer where
   fromGrpc x =
     Peer
       <$> fromGrpc (fromStrict $ x ^. LnGRPC.pubKey)
@@ -34,7 +33,7 @@ data LightningAddress
       }
   deriving (Eq, Show, Read)
 
-instance C2.ToGrpc LightningAddress LnGRPC.LightningAddress where
+instance ToGrpc LightningAddress LnGRPC.LightningAddress where
   toGrpc x =
     msg
       <$> toGrpc (pubkey x)
@@ -52,10 +51,10 @@ data ConnectPeerRequest
       }
   deriving (Eq, Show)
 
-instance C2.ToGrpc ConnectPeerRequest LnGRPC.ConnectPeerRequest where
+instance ToGrpc ConnectPeerRequest LnGRPC.ConnectPeerRequest where
   toGrpc x =
     msg
-      <$> C2.toGrpc (addr x)
+      <$> toGrpc (addr x)
       <*> toGrpc (perm x)
     where
       msg gAddr gPerm =
@@ -63,5 +62,5 @@ instance C2.ToGrpc ConnectPeerRequest LnGRPC.ConnectPeerRequest where
           & LnGRPC.addr .~ gAddr
           & LnGRPC.perm .~ gPerm
 
-instance C2.FromGrpc [Peer] LnGRPC.ListPeersResponse where
-  fromGrpc x = sequence $ C2.fromGrpc <$> (x ^. LnGRPC.peers)
+instance FromGrpc [Peer] LnGRPC.ListPeersResponse where
+  fromGrpc x = sequence $ fromGrpc <$> (x ^. LnGRPC.peers)

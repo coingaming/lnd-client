@@ -3,7 +3,6 @@ module LndClient.Data.Payment
   )
 where
 
-import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -24,15 +23,15 @@ data PaymentStatus
   | FAILED
   deriving (Eq, Show)
 
-instance C2.FromGrpc Payment LnGRPC.Payment where
+instance FromGrpc Payment LnGRPC.Payment where
   fromGrpc x =
     Payment
       <$> fromGrpc (fromStrict $ x ^. LnGRPC.paymentHash)
       <*> fromGrpc (fromStrict $ x ^. LnGRPC.paymentPreimage)
       <*> fromGrpc (x ^. LnGRPC.valueMsat)
-      <*> C2.fromGrpc (x ^. LnGRPC.status)
+      <*> fromGrpc (x ^. LnGRPC.status)
 
-instance C2.FromGrpc PaymentStatus LnGRPC.Payment'PaymentStatus where
+instance FromGrpc PaymentStatus LnGRPC.Payment'PaymentStatus where
   fromGrpc x =
     case x of
       LnGRPC.Payment'UNKNOWN -> Right UNKNOWN

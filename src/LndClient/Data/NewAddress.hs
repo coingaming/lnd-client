@@ -9,7 +9,7 @@ where
 
 import Data.ProtoLens.Message
 import Data.Text (pack)
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -34,10 +34,10 @@ newtype NewAddressResponse
       }
   deriving (Show, Eq)
 
-instance C2.ToGrpc NewAddressRequest LnGRPC.NewAddressRequest where
+instance ToGrpc NewAddressRequest LnGRPC.NewAddressRequest where
   toGrpc x =
     msg
-      <$> C2.toGrpc (addrType x)
+      <$> toGrpc (addrType x)
       <*> toGrpc (pack <$> account x)
     where
       msg gAddrType gAccount =
@@ -45,7 +45,7 @@ instance C2.ToGrpc NewAddressRequest LnGRPC.NewAddressRequest where
           & LnGRPC.type' .~ gAddrType
           & LnGRPC.account .~ gAccount
 
-instance C2.ToGrpc AddressType LnGRPC.AddressType where
+instance ToGrpc AddressType LnGRPC.AddressType where
   toGrpc x =
     case x of
       WITNESS_PUBKEY_HASH -> Right LnGRPC.WITNESS_PUBKEY_HASH
@@ -53,6 +53,6 @@ instance C2.ToGrpc AddressType LnGRPC.AddressType where
       UNUSED_WITNESS_PUBKEY_HASH -> Right LnGRPC.UNUSED_WITNESS_PUBKEY_HASH
       UNUSED_NESTED_PUBKEY_HASH -> Right LnGRPC.UNUSED_NESTED_PUBKEY_HASH
 
-instance C2.FromGrpc NewAddressResponse LnGRPC.NewAddressResponse where
+instance FromGrpc NewAddressResponse LnGRPC.NewAddressResponse where
   fromGrpc x =
     NewAddressResponse <$> Right (fromStrict $ x ^. LnGRPC.address)

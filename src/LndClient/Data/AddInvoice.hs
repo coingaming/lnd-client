@@ -7,7 +7,7 @@ module LndClient.Data.AddInvoice
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -28,7 +28,7 @@ data AddInvoiceResponse
       }
   deriving (Eq, Show)
 
-instance C2.ToGrpc AddInvoiceRequest LnGRPC.Invoice where
+instance ToGrpc AddInvoiceRequest LnGRPC.Invoice where
   toGrpc x =
     msg
       <$> toGrpc (memo x)
@@ -41,7 +41,7 @@ instance C2.ToGrpc AddInvoiceRequest LnGRPC.Invoice where
           & LnGRPC.valueMsat .~ gValue
           & LnGRPC.expiry .~ gExp
 
-instance C2.FromGrpc AddInvoiceResponse LnGRPC.AddInvoiceResponse where
+instance FromGrpc AddInvoiceResponse LnGRPC.AddInvoiceResponse where
   fromGrpc x =
     AddInvoiceResponse
       <$> fromGrpc (x ^. LnGRPC.rHash)

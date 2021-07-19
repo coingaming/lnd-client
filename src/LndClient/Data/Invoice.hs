@@ -4,7 +4,7 @@ module LndClient.Data.Invoice
   )
 where
 
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -31,7 +31,7 @@ data InvoiceState
   | ACCEPTED
   deriving (Eq, Show)
 
-instance C2.FromGrpc Invoice LnGRPC.Invoice where
+instance FromGrpc Invoice LnGRPC.Invoice where
   fromGrpc x =
     Invoice
       <$> fromGrpc (x ^. LnGRPC.rHash)
@@ -43,9 +43,9 @@ instance C2.FromGrpc Invoice LnGRPC.Invoice where
       <*> fromGrpc (fromStrict $ x ^. LnGRPC.paymentRequest)
       <*> fromGrpc (x ^. LnGRPC.private)
       <*> fromGrpc (x ^. LnGRPC.addIndex)
-      <*> C2.fromGrpc (x ^. LnGRPC.state)
+      <*> fromGrpc (x ^. LnGRPC.state)
 
-instance C2.FromGrpc InvoiceState LnGRPC.Invoice'InvoiceState where
+instance FromGrpc InvoiceState LnGRPC.Invoice'InvoiceState where
   fromGrpc x =
     case x of
       LnGRPC.Invoice'OPEN -> Right OPEN

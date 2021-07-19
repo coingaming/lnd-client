@@ -7,7 +7,7 @@ module LndClient.Data.ClosedChannels
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -23,7 +23,7 @@ data ClosedChannelsRequest
       }
   deriving (Eq, Ord, Show)
 
-instance C2.ToGrpc ClosedChannelsRequest LnGRPC.ClosedChannelsRequest where
+instance ToGrpc ClosedChannelsRequest LnGRPC.ClosedChannelsRequest where
   toGrpc x =
     msg
       <$> toGrpc (cooperative x)

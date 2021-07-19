@@ -7,7 +7,6 @@ module LndClient.Data.SendPayment
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -27,7 +26,7 @@ data SendPaymentResponse
       }
   deriving (Eq, Show)
 
-instance C2.ToGrpc SendPaymentRequest LnGRPC.SendRequest where
+instance ToGrpc SendPaymentRequest LnGRPC.SendRequest where
   toGrpc x =
     msg
       <$> toGrpc (amt x)
@@ -38,11 +37,11 @@ instance C2.ToGrpc SendPaymentRequest LnGRPC.SendRequest where
           & LnGRPC.amtMsat .~ gAmt
           & LnGRPC.paymentRequest .~ toStrict gPaymentRequest
 
-instance C2.FromGrpc SendPaymentResponse LnGRPC.SendResponse where
+instance FromGrpc SendPaymentResponse LnGRPC.SendResponse where
   fromGrpc x = do
     res <-
       SendPaymentResponse
-        <$> fromGrpc (x ^. LnGRPC.paymentError)
+        <$> fromGrpc (fromStrict $ x ^. LnGRPC.paymentError)
         <*> fromGrpc (x ^. LnGRPC.paymentPreimage)
         <*> fromGrpc (x ^. LnGRPC.paymentHash)
     if newRHash (paymentPreimage res) == paymentHash res

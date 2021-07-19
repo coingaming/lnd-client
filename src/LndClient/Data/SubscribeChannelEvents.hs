@@ -7,7 +7,6 @@ module LndClient.Data.SubscribeChannelEvents
 where
 
 import Data.Either.Extra (maybeToEither)
-import qualified LndClient.Class2 as C2
 import LndClient.Data.Channel
 import LndClient.Data.ChannelPoint
 import LndClient.Data.CloseChannel
@@ -38,7 +37,7 @@ data UpdateType
   | PENDING_OPEN_CHANNEL
   deriving (Eq, Ord, Show)
 
-instance C2.FromGrpc UpdateType LnGRPC.ChannelEventUpdate'UpdateType where
+instance FromGrpc UpdateType LnGRPC.ChannelEventUpdate'UpdateType where
   fromGrpc x = case x of
     LnGRPC.ChannelEventUpdate'OPEN_CHANNEL -> Right OPEN_CHANNEL
     LnGRPC.ChannelEventUpdate'ACTIVE_CHANNEL -> Right ACTIVE_CHANNEL
@@ -47,21 +46,21 @@ instance C2.FromGrpc UpdateType LnGRPC.ChannelEventUpdate'UpdateType where
     LnGRPC.ChannelEventUpdate'CLOSED_CHANNEL -> Right CLOSED_CHANNEL
     _ -> Left $ FromGrpcError "Wrong ChannelUpdateType"
 
-instance C2.FromGrpc UpdateChannel LnGRPC.ChannelEventUpdate'Channel where
+instance FromGrpc UpdateChannel LnGRPC.ChannelEventUpdate'Channel where
   fromGrpc x = case x of
-    LnGRPC.ChannelEventUpdate'OpenChannel c -> ChannelEventUpdateChannelOpenChannel <$> C2.fromGrpc c
-    LnGRPC.ChannelEventUpdate'ActiveChannel cp -> ChannelEventUpdateChannelActiveChannel <$> C2.fromGrpc cp
-    LnGRPC.ChannelEventUpdate'InactiveChannel cp -> ChannelEventUpdateChannelActiveChannel <$> C2.fromGrpc cp
-    LnGRPC.ChannelEventUpdate'PendingOpenChannel pa -> ChannelEventUpdateChannelPendingOpenChannel <$> C2.fromGrpc pa
-    LnGRPC.ChannelEventUpdate'ClosedChannel cc -> ChannelEventUpdateChannelClosedChannel <$> C2.fromGrpc cc
+    LnGRPC.ChannelEventUpdate'OpenChannel c -> ChannelEventUpdateChannelOpenChannel <$> fromGrpc c
+    LnGRPC.ChannelEventUpdate'ActiveChannel cp -> ChannelEventUpdateChannelActiveChannel <$> fromGrpc cp
+    LnGRPC.ChannelEventUpdate'InactiveChannel cp -> ChannelEventUpdateChannelActiveChannel <$> fromGrpc cp
+    LnGRPC.ChannelEventUpdate'PendingOpenChannel pa -> ChannelEventUpdateChannelPendingOpenChannel <$> fromGrpc pa
+    LnGRPC.ChannelEventUpdate'ClosedChannel cc -> ChannelEventUpdateChannelClosedChannel <$> fromGrpc cc
 
-instance C2.FromGrpc ChannelEventUpdate LnGRPC.ChannelEventUpdate where
+instance FromGrpc ChannelEventUpdate LnGRPC.ChannelEventUpdate where
   fromGrpc x =
     ChannelEventUpdate
       <$> join
-        ( C2.fromGrpc
+        ( fromGrpc
             <$> maybeToEither
               (FromGrpcError "Empty channelUpdate")
               (x ^. LnGRPC.maybe'channel)
         )
-        <*> C2.fromGrpc (x ^. LnGRPC.type')
+        <*> fromGrpc (x ^. LnGRPC.type')

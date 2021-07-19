@@ -10,7 +10,7 @@ module LndClient.Data.CloseChannel
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Data.Channel (PendingUpdate)
 import LndClient.Data.ChannelPoint
 import LndClient.Import
@@ -49,13 +49,13 @@ data ChannelCloseSummary
       }
   deriving (Eq, Ord, Show)
 
-instance C2.FromGrpc [ChannelCloseSummary] LnGRPC.ClosedChannelsResponse where
-  fromGrpc x = sequence $ C2.fromGrpc <$> (x ^. LnGRPC.channels)
+instance FromGrpc [ChannelCloseSummary] LnGRPC.ClosedChannelsResponse where
+  fromGrpc x = sequence $ fromGrpc <$> (x ^. LnGRPC.channels)
 
-instance C2.ToGrpc CloseChannelRequest LnGRPC.CloseChannelRequest where
+instance ToGrpc CloseChannelRequest LnGRPC.CloseChannelRequest where
   toGrpc x =
     msg
-      <$> C2.toGrpc (channelPoint x)
+      <$> toGrpc (channelPoint x)
       <*> toGrpc (LndClient.Data.CloseChannel.force x)
       <*> toGrpc (targetConf x)
       <*> toGrpc (satPerByte x)
@@ -69,21 +69,21 @@ instance C2.ToGrpc CloseChannelRequest LnGRPC.CloseChannelRequest where
           & LnGRPC.satPerByte .~ gSatPerByte
           & LnGRPC.deliveryAddress .~ gDeliveryAddress
 
-instance C2.FromGrpc CloseStatusUpdate LnGRPC.CloseStatusUpdate where
+instance FromGrpc CloseStatusUpdate LnGRPC.CloseStatusUpdate where
   fromGrpc x = do
     let update = x ^. LnGRPC.maybe'update
     case update of
-      Just (LnGRPC.CloseStatusUpdate'ClosePending a) -> Pending <$> C2.fromGrpc a
-      Just (LnGRPC.CloseStatusUpdate'ChanClose a) -> Close <$> C2.fromGrpc a
+      Just (LnGRPC.CloseStatusUpdate'ClosePending a) -> Pending <$> fromGrpc a
+      Just (LnGRPC.CloseStatusUpdate'ChanClose a) -> Close <$> fromGrpc a
       Nothing -> Right NothingUpdate
 
-instance C2.FromGrpc ChannelCloseUpdate LnGRPC.ChannelCloseUpdate where
+instance FromGrpc ChannelCloseUpdate LnGRPC.ChannelCloseUpdate where
   fromGrpc x =
     ChannelCloseUpdate
       <$> fromGrpc (x ^. LnGRPC.closingTxid)
       <*> fromGrpc (x ^. LnGRPC.success)
 
-instance C2.FromGrpc ChannelCloseSummary LnGRPC.ChannelCloseSummary where
+instance FromGrpc ChannelCloseSummary LnGRPC.ChannelCloseSummary where
   fromGrpc x =
     ChannelCloseSummary
       <$> fromGrpc (fromStrict $ x ^. LnGRPC.remotePubkey)

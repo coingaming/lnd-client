@@ -5,7 +5,7 @@
 module LndClient.Orphan where
 
 import qualified Data.Text.Internal as T
-import LndClient.Class
+import LndClient.Class2
 import LndClient.Import.External
 
 instance FromGrpc Text T.Text where

@@ -11,7 +11,7 @@ import qualified Data.ByteString.Base16 as B16 (decode)
 import qualified Data.ByteString.Char8 as C8 (split)
 import Data.ProtoLens.Message
 import qualified Data.Text as TS (unpack)
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -23,13 +23,13 @@ data ChannelPoint
       }
   deriving (Eq, Ord, Show)
 
-instance C2.FromGrpc ChannelPoint LnGRPC.ChannelPoint where
+instance FromGrpc ChannelPoint LnGRPC.ChannelPoint where
   fromGrpc x =
     ChannelPoint
       <$> fromGrpc (x ^. LnGRPC.fundingTxidBytes)
       <*> fromGrpc (x ^. LnGRPC.outputIndex)
 
-instance C2.ToGrpc ChannelPoint LnGRPC.ChannelPoint where
+instance ToGrpc ChannelPoint LnGRPC.ChannelPoint where
   toGrpc x =
     msg
       <$> toGrpc (fundingTxId x)

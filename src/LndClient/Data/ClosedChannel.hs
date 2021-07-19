@@ -3,7 +3,7 @@ module LndClient.Data.ClosedChannel
   )
 where
 
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Data.PendingChannel
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
@@ -17,7 +17,7 @@ data ClosedChannel
   deriving (Eq, Show)
 
 instance
-  C2.FromGrpc
+  FromGrpc
     ClosedChannel
     LnGRPC.PendingChannelsResponse'ClosedChannel
   where
@@ -27,7 +27,7 @@ instance
               Nothing ->
                 Left $ FromGrpcError "PendingChannel is required"
               Just this ->
-                C2.fromGrpc this
+                fromGrpc this
           )
       <*> fromGrpc
         (fromStrict $ x ^. LnGRPC.closingTxid)

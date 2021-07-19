@@ -6,7 +6,7 @@ module LndClient.Data.Channel
   )
 where
 
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Data.ChannelPoint
   ( ChannelPoint (..),
     channelPointParser,
@@ -35,7 +35,7 @@ data PendingUpdate (a :: TxKind)
       }
   deriving (Eq, Ord, Show)
 
-instance C2.FromGrpc Channel LnGRPC.Channel where
+instance FromGrpc Channel LnGRPC.Channel where
   fromGrpc x =
     Channel
       <$> fromGrpc (fromStrict $ x ^. LnGRPC.remotePubkey)
@@ -46,10 +46,10 @@ instance C2.FromGrpc Channel LnGRPC.Channel where
       <*> (toMSat <$> fromGrpc (x ^. LnGRPC.commitFee))
       <*> fromGrpc (x ^. LnGRPC.active)
 
-instance C2.FromGrpc [Channel] LnGRPC.ListChannelsResponse where
-  fromGrpc x = C2.fromGrpc (x ^. LnGRPC.channels)
+instance FromGrpc [Channel] LnGRPC.ListChannelsResponse where
+  fromGrpc x = fromGrpc (x ^. LnGRPC.channels)
 
-instance C2.FromGrpc (PendingUpdate a) LnGRPC.PendingUpdate where
+instance FromGrpc (PendingUpdate a) LnGRPC.PendingUpdate where
   fromGrpc x =
     PendingUpdate
       <$> fromGrpc (x ^. LnGRPC.txid)

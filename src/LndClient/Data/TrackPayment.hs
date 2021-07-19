@@ -6,7 +6,6 @@ module LndClient.Data.TrackPayment
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.RouterGrpc as LnGRPC
 import qualified Proto.RouterGrpc_Fields as LnGRPC
@@ -18,7 +17,7 @@ data TrackPaymentRequest
       }
   deriving (Eq, Ord, Show)
 
-instance C2.ToGrpc TrackPaymentRequest LnGRPC.TrackPaymentRequest where
+instance ToGrpc TrackPaymentRequest LnGRPC.TrackPaymentRequest where
   toGrpc x =
     msg
       <$> toGrpc (paymentHash x)

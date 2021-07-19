@@ -3,7 +3,6 @@ module LndClient.Data.PayReq
   )
 where
 
-import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -16,7 +15,7 @@ data PayReq
       }
   deriving (Eq, Show)
 
-instance C2.FromGrpc PayReq LnGRPC.PayReq where
+instance FromGrpc PayReq LnGRPC.PayReq where
   fromGrpc x =
     PayReq
       <$> fromGrpc (fromStrict $ x ^. LnGRPC.paymentHash)

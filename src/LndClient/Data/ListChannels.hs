@@ -8,7 +8,7 @@ module LndClient.Data.ListChannels
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -23,7 +23,7 @@ data ListChannelsRequest
       }
   deriving (Generic, Show)
 
-instance C2.ToGrpc ListChannelsRequest LnGRPC.ListChannelsRequest where
+instance ToGrpc ListChannelsRequest LnGRPC.ListChannelsRequest where
   toGrpc x =
     msg
       <$> toGrpc (activeOnly x)

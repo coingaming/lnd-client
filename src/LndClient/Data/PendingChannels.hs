@@ -5,7 +5,6 @@ module LndClient.Data.PendingChannels
   )
 where
 
-import qualified LndClient.Class2 as C2
 import LndClient.Data.ClosedChannel
 import LndClient.Data.ForceClosedChannel
 import LndClient.Data.PendingOpenChannel
@@ -24,18 +23,18 @@ data PendingChannelsResponse
       }
   deriving (Eq, Show)
 
-instance C2.FromGrpc PendingChannelsResponse LnGRPC.PendingChannelsResponse where
+instance FromGrpc PendingChannelsResponse LnGRPC.PendingChannelsResponse where
   fromGrpc x =
     PendingChannelsResponse
       <$> ( toMSat
               <$> fromGrpc
                 (x ^. LnGRPC.totalLimboBalance)
           )
-      <*> C2.fromGrpc
+      <*> fromGrpc
         (x ^. LnGRPC.pendingOpenChannels)
-      <*> C2.fromGrpc
+      <*> fromGrpc
         (x ^. LnGRPC.pendingClosingChannels)
-      <*> C2.fromGrpc
+      <*> fromGrpc
         (x ^. LnGRPC.pendingForceClosingChannels)
-      <*> C2.fromGrpc
+      <*> fromGrpc
         (x ^. LnGRPC.waitingCloseChannels)

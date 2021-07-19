@@ -7,7 +7,6 @@ module LndClient.Data.OpenChannel
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
 import LndClient.Data.Channel
 import LndClient.Data.ChannelPoint
 import LndClient.Import
@@ -54,32 +53,32 @@ data ReadyForPsbtFunding
       }
   deriving (Eq, Show)
 
-instance C2.FromGrpc OpenStatusUpdate LnGRPC.OpenStatusUpdate where
+instance FromGrpc OpenStatusUpdate LnGRPC.OpenStatusUpdate where
   fromGrpc x =
     OpenStatusUpdate
       <$> fromGrpc (x ^. LnGRPC.pendingChanId)
       <*> case x ^. LnGRPC.maybe'update of
-        Just upd -> Just <$> C2.fromGrpc upd
+        Just upd -> Just <$> fromGrpc upd
         Nothing -> Right Nothing
 
-instance C2.FromGrpc OpenStatusUpdate' LnGRPC.OpenStatusUpdate'Update where
+instance FromGrpc OpenStatusUpdate' LnGRPC.OpenStatusUpdate'Update where
   fromGrpc x =
     case x of
-      LnGRPC.OpenStatusUpdate'ChanPending pu -> OpenStatusUpdateChanPending <$> C2.fromGrpc pu
-      LnGRPC.OpenStatusUpdate'ChanOpen cou -> OpenStatusUpdateChanOpen <$> C2.fromGrpc cou
-      LnGRPC.OpenStatusUpdate'PsbtFund pf -> OpenStatusUpdatePsbtFund <$> C2.fromGrpc pf
+      LnGRPC.OpenStatusUpdate'ChanPending pu -> OpenStatusUpdateChanPending <$> fromGrpc pu
+      LnGRPC.OpenStatusUpdate'ChanOpen cou -> OpenStatusUpdateChanOpen <$> fromGrpc cou
+      LnGRPC.OpenStatusUpdate'PsbtFund pf -> OpenStatusUpdatePsbtFund <$> fromGrpc pf
 
-instance C2.FromGrpc ChannelOpenUpdate LnGRPC.ChannelOpenUpdate where
-  fromGrpc x = ChannelOpenUpdate <$> C2.fromGrpc (x ^. LnGRPC.channelPoint)
+instance FromGrpc ChannelOpenUpdate LnGRPC.ChannelOpenUpdate where
+  fromGrpc x = ChannelOpenUpdate <$> fromGrpc (x ^. LnGRPC.channelPoint)
 
-instance C2.FromGrpc ReadyForPsbtFunding LnGRPC.ReadyForPsbtFunding where
+instance FromGrpc ReadyForPsbtFunding LnGRPC.ReadyForPsbtFunding where
   fromGrpc x =
     ReadyForPsbtFunding
       <$> fromGrpc (x ^. LnGRPC.fundingAddress)
       <*> fromGrpc (x ^. LnGRPC.fundingAmount)
       <*> fromGrpc (x ^. LnGRPC.psbt)
 
-instance C2.ToGrpc OpenChannelRequest LnGRPC.OpenChannelRequest where
+instance ToGrpc OpenChannelRequest LnGRPC.OpenChannelRequest where
   toGrpc x =
     msg
       <$> toGrpc (nodePubkey x)

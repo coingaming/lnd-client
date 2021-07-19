@@ -39,8 +39,7 @@ import Data.ProtoLens.Message
 import qualified Data.Text.Internal as T
 import Data.Text.Lazy as TL
 import Data.Vector (fromList)
-import LndClient.Class
-import qualified LndClient.Class2 as C2
+import LndClient.Class2
 import LndClient.Data.Kind
 import LndClient.Data.Type
 import LndClient.Import.External
@@ -203,7 +202,7 @@ instance FromGrpc PaymentRequest Text where
 instance FromGrpc PaymentRequest T.Text where
   fromGrpc = Right . PaymentRequest . fromStrict
 
-instance C2.FromGrpc PaymentRequest IGrpc.AddHoldInvoiceResp where
+instance FromGrpc PaymentRequest IGrpc.AddHoldInvoiceResp where
   fromGrpc x = fromGrpc (x ^. IGrpc.paymentRequest)
 
 instance FromGrpc Seconds Int64 where
@@ -227,9 +226,6 @@ instance FromGrpc RPreimage Text where
 instance ToGrpc PaymentRequest Text where
   toGrpc x = Right (coerce x :: Text)
 
-instance C2.ToGrpc PaymentRequest Text where
-  toGrpc x = Right (coerce x :: Text)
-
 instance ToGrpc Seconds Int64 where
   toGrpc x =
     maybeToRight
@@ -245,7 +241,7 @@ instance ToGrpc AezeedPassphrase ByteString where
 instance ToGrpc RHash ByteString where
   toGrpc = Right . coerce
 
-instance C2.ToGrpc RHash IGrpc.CancelInvoiceMsg where
+instance ToGrpc RHash IGrpc.CancelInvoiceMsg where
   toGrpc x = do
     ph <- toGrpc x
     Right $ defMessage & IGrpc.paymentHash .~ ph
@@ -253,18 +249,18 @@ instance C2.ToGrpc RHash IGrpc.CancelInvoiceMsg where
 instance ToGrpc RPreimage ByteString where
   toGrpc = Right . coerce
 
-instance C2.ToGrpc RPreimage IGrpc.SettleInvoiceMsg where
+instance ToGrpc RPreimage IGrpc.SettleInvoiceMsg where
   toGrpc x = do
     p <- toGrpc x
     Right $ defMessage & IGrpc.preimage .~ p
 
-instance C2.ToGrpc PaymentRequest LnGrpc.PayReqString where
+instance ToGrpc PaymentRequest LnGrpc.PayReqString where
   toGrpc x = Right $ defMessage & LnGrpc.payReq .~ toStrict (coerce x)
 
-instance C2.ToGrpc RHash LnGrpc.PaymentHash where
+instance ToGrpc RHash LnGrpc.PaymentHash where
   toGrpc x = Right $ defMessage & LnGrpc.rHash .~ coerce x
 
-instance C2.ToGrpc RHash IGrpc.SubscribeSingleInvoiceRequest where
+instance ToGrpc RHash IGrpc.SubscribeSingleInvoiceRequest where
   toGrpc x = do
     rh <- toGrpc x
     Right $ defMessage & IGrpc.rHash .~ rh

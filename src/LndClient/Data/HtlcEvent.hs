@@ -3,7 +3,7 @@ module LndClient.Data.HtlcEvent
   )
 where
 
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.RouterGrpc as LnGRPC
 import qualified Proto.RouterGrpc_Fields as LnGRPC
@@ -26,7 +26,7 @@ data EventType
   | FORWARD
   deriving (Eq)
 
-instance C2.FromGrpc HtlcEvent LnGRPC.HtlcEvent where
+instance FromGrpc HtlcEvent LnGRPC.HtlcEvent where
   fromGrpc x =
     HtlcEvent
       <$> fromGrpc (x ^. LnGRPC.incomingChannelId)
@@ -34,9 +34,9 @@ instance C2.FromGrpc HtlcEvent LnGRPC.HtlcEvent where
       <*> fromGrpc (x ^. LnGRPC.incomingHtlcId)
       <*> fromGrpc (x ^. LnGRPC.outgoingHtlcId)
       <*> fromGrpc (x ^. LnGRPC.timestampNs)
-      <*> C2.fromGrpc (x ^. LnGRPC.eventType)
+      <*> fromGrpc (x ^. LnGRPC.eventType)
 
-instance C2.FromGrpc EventType LnGRPC.HtlcEvent'EventType where
+instance FromGrpc EventType LnGRPC.HtlcEvent'EventType where
   fromGrpc x =
     case x of
       LnGRPC.HtlcEvent'UNKNOWN -> Right UNKNOWN

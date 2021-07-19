@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8ef6a1e3f5ffd9d3e0673792b65984a7ccf1e450e49dbe955e16e93cc7eecdba
+-- hash: 13d3b9e447762feb83196ae833901d4d288b90000cd59d9abe2842182111d3e3
 
 name:           lnd-client
 version:        0.1.0.0
@@ -29,7 +29,6 @@ library
   exposed-modules:
       InvoiceGrpc
       LndClient
-      LndClient.Class
       LndClient.Class2
       LndClient.Data.AddHodlInvoice
       LndClient.Data.AddInvoice

@@ -3,7 +3,6 @@ module LndClient.Data.PendingOpenChannel
   )
 where
 
-import qualified LndClient.Class2 as C2
 import LndClient.Data.PendingChannel
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
@@ -20,13 +19,13 @@ data PendingOpenChannel
   deriving (Eq, Show)
 
 instance
-  C2.FromGrpc
+  FromGrpc
     PendingOpenChannel
     LnGRPC.PendingChannelsResponse'PendingOpenChannel
   where
   fromGrpc x =
     PendingOpenChannel
-      <$> C2.fromGrpc
+      <$> fromGrpc
         (x ^. LnGRPC.channel)
       <*> fromGrpc
         (x ^. LnGRPC.confirmationHeight)

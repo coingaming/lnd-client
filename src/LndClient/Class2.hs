@@ -6,7 +6,6 @@ module LndClient.Class2
   )
 where
 
---import Data.ProtoLens.FieldDefault
 import Data.ProtoLens.Message
 import LndClient.Data.Type
 import LndClient.Import.External
@@ -48,8 +47,3 @@ instance (FieldDefault b, FromGrpc a b) => FromGrpc (Maybe a) b where
 
 instance FromGrpc a b => FromGrpc [a] [b] where
   fromGrpc x = sequence $ fromGrpc <$> x
---instance (FromGrpc a b) => FromGrpc (Maybe a) (Maybe b) where
---  fromGrpc x =
---    case x of
---      Just x' -> Just <$> fromGrpc x'
---      Nothing -> Right Nothing

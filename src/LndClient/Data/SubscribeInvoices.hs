@@ -6,7 +6,6 @@ module LndClient.Data.SubscribeInvoices
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -18,7 +17,7 @@ data SubscribeInvoicesRequest
       }
   deriving (Eq, Ord, Show)
 
-instance C2.ToGrpc SubscribeInvoicesRequest LnGRPC.InvoiceSubscription where
+instance ToGrpc SubscribeInvoicesRequest LnGRPC.InvoiceSubscription where
   toGrpc x =
     msg
       <$> toGrpc (addIndex x)

@@ -4,7 +4,6 @@ module LndClient.Data.UnlockWallet
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.WalletUnlockerGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc_Fields as LnGRPC
@@ -23,7 +22,7 @@ data UnlockWalletRequest
 instance Show UnlockWalletRequest where
   show = const "SECRET"
 
-instance C2.ToGrpc UnlockWalletRequest LnGRPC.UnlockWalletRequest where
+instance ToGrpc UnlockWalletRequest LnGRPC.UnlockWalletRequest where
   toGrpc x =
     msg
       <$> toGrpc (walletPassword x)

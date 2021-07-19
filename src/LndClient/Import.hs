@@ -1,6 +1,6 @@
 module LndClient.Import (module Import) where
 
-import LndClient.Class as Import
+import LndClient.Class2 as Import
 import LndClient.Data.Kind as Import
 import LndClient.Data.LndEnv as Import
 import LndClient.Data.Newtype as Import

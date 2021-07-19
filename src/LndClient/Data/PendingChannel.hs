@@ -3,7 +3,6 @@ module LndClient.Data.PendingChannel
   )
 where
 
-import qualified LndClient.Class2 as C2
 import LndClient.Data.ChannelPoint
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
@@ -22,7 +21,7 @@ data PendingChannel
   deriving (Eq, Show)
 
 instance
-  C2.FromGrpc
+  FromGrpc
     PendingChannel
     LnGRPC.PendingChannelsResponse'PendingChannel
   where

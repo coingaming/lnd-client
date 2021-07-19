@@ -9,7 +9,7 @@ module LndClient.Data.ListInvoices
 where
 
 import Data.ProtoLens.Message
-import qualified LndClient.Class2 as C2
+--import qualified LndClient.Class2 as C2
 import LndClient.Data.Invoice (Invoice)
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
@@ -32,7 +32,7 @@ data ListInvoiceResponse
       }
   deriving (Generic, Show)
 
-instance C2.ToGrpc ListInvoiceRequest LnGRPC.ListInvoiceRequest where
+instance ToGrpc ListInvoiceRequest LnGRPC.ListInvoiceRequest where
   toGrpc x =
     msg
       <$> toGrpc (pendingOnly x)
@@ -47,9 +47,9 @@ instance C2.ToGrpc ListInvoiceRequest LnGRPC.ListInvoiceRequest where
           & LnGRPC.numMaxInvoices .~ gNumMaxInvoices
           & LnGRPC.reversed .~ gReversed
 
-instance C2.FromGrpc ListInvoiceResponse LnGRPC.ListInvoiceResponse where
+instance FromGrpc ListInvoiceResponse LnGRPC.ListInvoiceResponse where
   fromGrpc x =
     ListInvoiceResponse
-      <$> C2.fromGrpc (x ^. LnGRPC.invoices)
+      <$> fromGrpc (x ^. LnGRPC.invoices)
       <*> fromGrpc (x ^. LnGRPC.lastIndexOffset)
       <*> fromGrpc (x ^. LnGRPC.firstIndexOffset)
