@@ -50,7 +50,6 @@ import qualified Proto.InvoiceGrpc as LnGRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.RouterGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc as LnGRPC
-import qualified RouterGrpc as GRPC
 
 data RpcKind = RpcSilent | RpcKatip
 
@@ -378,10 +377,8 @@ mkRpc k = do
       m (Either LndError Invoice)
     lookupInvoice env =
       $(grpcRetry)
-        . $(grpcSync)
-          LookupInvoice
-          GRPC.lightningClient
-          GRPC.lightningLookupInvoice
+        . $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "lookupInvoice")
           env
 
     trackPaymentV2 ::
@@ -391,10 +388,8 @@ mkRpc k = do
       TrackPaymentRequest ->
       m (Either LndError ())
     trackPaymentV2 =
-      $(grpcSubscribe)
-        TrackPaymentV2
-        GRPC.routerClient
-        GRPC.routerTrackPaymentV2
+      $(grpcSubscribe2)
+        (RPC :: RPC LnGRPC.Router "trackPaymentV2")
 
     trackPaymentV2Chan ::
       ($(tcc) m) =>
@@ -435,9 +430,9 @@ mkRpc k = do
     grpcSync2 = case k of
       RpcSilent -> [e|grpcSync2Silent|]
       RpcKatip -> [e|grpcSync2Katip|]
-    grpcSubscribe = case k of
-      RpcSilent -> [e|grpcSubscribeSilent|]
-      RpcKatip -> [e|grpcSubscribeKatip|]
+    --   grpcSubscribe = case k of
+    --     RpcSilent -> [e|grpcSubscribeSilent|]
+    --     RpcKatip -> [e|grpcSubscribeKatip|]
     grpcSubscribe2 = case k of
       RpcSilent -> [e|grpcSubscribe2Silent|]
       RpcKatip -> [e|grpcSubscribe2Katip|]
