@@ -44,7 +44,7 @@ import LndClient.Data.TrackPayment (TrackPaymentRequest (..))
 import qualified LndClient.Data.UnlockWallet as UW
 import LndClient.Import
 import LndClient.RPC.Generic
-import qualified LndGrpc as GRPC
+--import qualified LndGrpc as GRPC
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
 import qualified Proto.InvoiceGrpc as LnGRPC
 import qualified Proto.LndGrpc as LnGRPC
@@ -410,12 +410,10 @@ mkRpc k = do
       m (Either LndError PendingChannelsResponse)
     pendingChannels env =
       $(grpcRetry) $
-        $(grpcSync)
-          PendingChannels
-          GRPC.lightningClient
-          GRPC.lightningPendingChannels
+        $(grpcSync2)
+          (RPC :: RPC LnGRPC.Lightning "pendingChannels")
           env
-          GRPC.PendingChannelsRequest
+          (defMessage :: LnGRPC.PendingChannelsRequest)
     |]
   where
     tcc = case k of
@@ -424,9 +422,9 @@ mkRpc k = do
     grpcRetry = case k of
       RpcSilent -> [e|retrySilent|]
       RpcKatip -> [e|retryKatip|]
-    grpcSync = case k of
-      RpcSilent -> [e|grpcSyncSilent|]
-      RpcKatip -> [e|grpcSyncKatip|]
+    --grpcSync = case k of
+    --  RpcSilent -> [e|grpcSyncSilent|]
+    --  RpcKatip -> [e|grpcSyncKatip|]
     grpcSync2 = case k of
       RpcSilent -> [e|grpcSync2Silent|]
       RpcKatip -> [e|grpcSync2Katip|]

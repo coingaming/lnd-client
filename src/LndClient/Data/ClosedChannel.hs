@@ -3,9 +3,12 @@ module LndClient.Data.ClosedChannel
   )
 where
 
+import qualified LndClient.Class2 as C2
 import LndClient.Data.PendingChannel
 import LndClient.Import
-import qualified LndGrpc as GRPC
+--import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data ClosedChannel
   = ClosedChannel
@@ -14,10 +17,29 @@ data ClosedChannel
       }
   deriving (Eq, Show)
 
+--instance
+--  FromGrpc
+--    ClosedChannel
+--    GRPC.PendingChannelsResponse_ClosedChannel
+--  where
+--  fromGrpc x =
+--    ClosedChannel
+--      <$> ( case pendingChannel of
+--              Nothing ->
+--                Left $ FromGrpcError "PendingChannel is required"
+--              Just this ->
+--                fromGrpc this
+--          )
+--      <*> fromGrpc
+--        (GRPC.pendingChannelsResponse_ClosedChannelClosingTxid x)
+--    where
+--      pendingChannel =
+--        GRPC.pendingChannelsResponse_ClosedChannelChannel x
+
 instance
-  FromGrpc
+  C2.FromGrpc
     ClosedChannel
-    GRPC.PendingChannelsResponse_ClosedChannel
+    LnGRPC.PendingChannelsResponse'ClosedChannel
   where
   fromGrpc x =
     ClosedChannel
@@ -25,10 +47,10 @@ instance
               Nothing ->
                 Left $ FromGrpcError "PendingChannel is required"
               Just this ->
-                fromGrpc this
+                C2.fromGrpc this
           )
       <*> fromGrpc
-        (GRPC.pendingChannelsResponse_ClosedChannelClosingTxid x)
+        (fromStrict $ x ^. LnGRPC.closingTxid)
     where
       pendingChannel =
-        GRPC.pendingChannelsResponse_ClosedChannelChannel x
+        x ^. LnGRPC.maybe'channel
