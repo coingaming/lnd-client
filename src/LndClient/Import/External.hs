@@ -60,7 +60,5 @@ import Katip as Import
     runKatipContextT,
     sl,
   )
-import Proto3.Suite.Class as Import (HasDefault (..), def)
-import Proto3.Suite.Types as Import (Enumerated (..))
 import Universum as Import hiding (Text)
 import UnliftIO as Import (MonadUnliftIO (..), UnliftIO (..))

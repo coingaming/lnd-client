@@ -9,7 +9,6 @@ where
 import Data.ProtoLens.Message
 import LndClient.Data.Type
 import LndClient.Import.External
-import LndGrpc.Orphan ()
 
 class ToGrpc a b where
   toGrpc :: a -> Either LndError b

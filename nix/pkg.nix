@@ -4,10 +4,9 @@
 , extra, grpc-haskell, grpc-haskell-core, hpack, hspec, http2
 , http2-client, http2-client-grpc, http2-grpc-proto-lens
 , http2-grpc-types, JuicyPixels, katip, microlens, network-bitcoin
-, pem, persistent, proto-lens, proto-lens-runtime, proto3-suite
-, proto3-wire, qrcode-core, qrcode-juicypixels, scientific, stdenv
-, stm, template-haskell, text, unbounded-delays, universum
-, unliftio, vector, x509
+, pem, persistent, proto-lens, proto-lens-runtime, qrcode-core
+, qrcode-juicypixels, scientific, stdenv, stm, template-haskell
+, text, unbounded-delays, universum, unliftio, vector, x509
 }:
 mkDerivation {
   pname = "lnd-client";
@@ -19,8 +18,8 @@ mkDerivation {
     cryptonite deepseq envparse extra grpc-haskell grpc-haskell-core
     hspec http2 http2-client http2-client-grpc http2-grpc-proto-lens
     http2-grpc-types JuicyPixels katip microlens network-bitcoin pem
-    persistent proto-lens proto-lens-runtime proto3-suite proto3-wire
-    qrcode-core qrcode-juicypixels scientific stm template-haskell text
+    persistent proto-lens proto-lens-runtime qrcode-core
+    qrcode-juicypixels scientific stm template-haskell text
     unbounded-delays universum unliftio vector x509
   ];
   libraryToolDepends = [ hpack ];
@@ -30,8 +29,8 @@ mkDerivation {
     cryptonite deepseq envparse extra grpc-haskell grpc-haskell-core
     hspec http2 http2-client http2-client-grpc http2-grpc-proto-lens
     http2-grpc-types JuicyPixels katip microlens network-bitcoin pem
-    persistent proto-lens proto-lens-runtime proto3-suite proto3-wire
-    qrcode-core qrcode-juicypixels scientific stm template-haskell text
+    persistent proto-lens proto-lens-runtime qrcode-core
+    qrcode-juicypixels scientific stm template-haskell text
     unbounded-delays universum unliftio vector x509
   ];
   prePatch = "hpack";

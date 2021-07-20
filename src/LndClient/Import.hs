@@ -8,4 +8,3 @@ import LndClient.Data.Type as Import
 import LndClient.Import.External as Import
 import LndClient.Orphan ()
 import LndClient.Util as Import
-import LndGrpc.Orphan ()

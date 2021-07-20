@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6f099e97138b46ae272f5481a34b462514bed84ff1cc9c974008e2e4867124ba
+-- hash: aae77059d2334af4b895ad187709c83499bce7cd357df2c9632396ac6de9d825
 
 name:           lnd-client
 version:        0.1.0.0
@@ -27,7 +27,6 @@ source-repository head
 
 library
   exposed-modules:
-      InvoiceGrpc
       LndClient
       LndClient.Class
       LndClient.Data.AddHodlInvoice
@@ -73,9 +72,7 @@ library
       LndClient.RPC.TH
       LndClient.Util
       LndClient.Watcher
-      LndGrpc
       LndGrpc.Client
-      LndGrpc.Orphan
       Proto.InvoiceGrpc
       Proto.InvoiceGrpc_Fields
       Proto.LndGrpc
@@ -84,8 +81,6 @@ library
       Proto.RouterGrpc_Fields
       Proto.WalletUnlockerGrpc
       Proto.WalletUnlockerGrpc_Fields
-      RouterGrpc
-      WalletUnlockerGrpc
   other-modules:
       Paths_lnd_client
   hs-source-dirs:
@@ -124,8 +119,6 @@ library
     , persistent
     , proto-lens >=0.7.0 && <0.8
     , proto-lens-runtime >=0.7.0 && <0.8
-    , proto3-suite
-    , proto3-wire
     , qrcode-core
     , qrcode-juicypixels
     , scientific
@@ -183,8 +176,6 @@ test-suite lnd-client-test
     , persistent
     , proto-lens >=0.7.0 && <0.8
     , proto-lens-runtime >=0.7.0 && <0.8
-    , proto3-suite
-    , proto3-wire
     , qrcode-core
     , qrcode-juicypixels
     , scientific
