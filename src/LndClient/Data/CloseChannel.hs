@@ -10,7 +10,6 @@ module LndClient.Data.CloseChannel
 where
 
 import Data.ProtoLens.Message
---import qualified LndClient.Class2 as C2
 import LndClient.Data.Channel (PendingUpdate)
 import LndClient.Data.ChannelPoint
 import LndClient.Import

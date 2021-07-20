@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module LndClient.Class2
+module LndClient.Class
   ( FromGrpc (..),
     ToGrpc (..),
   )

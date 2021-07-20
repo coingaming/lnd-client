@@ -52,10 +52,10 @@ self: super:
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
           });
-          proto3-suite = dontCheck (doJailbreak (callPackage ./overlay/proto3-suite.nix {
+          /*proto3-suite = dontCheck (doJailbreak (callPackage ./overlay/proto3-suite.nix {
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
-          }));
+          }));*/
           http2-grpc-proto-lens = doJailbreak (
             callPackage ./overlay/http2-grpc-proto-lens.nix {
               stdenv = self.stdenv;

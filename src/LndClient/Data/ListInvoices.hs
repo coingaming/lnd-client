@@ -9,7 +9,6 @@ module LndClient.Data.ListInvoices
 where
 
 import Data.ProtoLens.Message
---import qualified LndClient.Class2 as C2
 import LndClient.Data.Invoice (Invoice)
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC

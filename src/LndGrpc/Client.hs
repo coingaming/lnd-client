@@ -34,11 +34,11 @@ runUnary rpc env req = do
   res <- liftIO $ runClientIO $ do
     grpc <- makeClient env True False
     rawUnary rpc grpc req
-  case res of
-    Right (Right (Right (_, _, (Right x)))) -> return $ Right x
-    Left e -> return $ Left $ LndGrpcError e
-    Right (Right (Right (_, _, (Left e)))) -> return $ Left $ LndError $ pack e
-    _ -> return $ Left $ LndError "LndGrpc request error"
+  return $ case res of
+    Right (Right (Right (_, _, (Right x)))) -> Right x
+    Left e -> Left $ LndGrpcError e
+    Right (Right (Right (_, _, (Left e)))) -> Left $ LndError $ pack e
+    _ -> Left $ LndError "LndGrpc request error"
 
 runStreamServer ::
   ( MonadIO p,
@@ -55,10 +55,10 @@ runStreamServer rpc env req handler = do
   r <- liftIO $ runClientIO $ do
     grpc <- makeClient env True False
     rawStreamServer rpc grpc () req $ const handler
-  case r of
-    Right (Right ((), _, _)) -> return $ Right defMessage
-    Left e -> return $ Left $ LndGrpcError e
-    _ -> return $ Left $ LndError "LndGrpc request error"
+  return $ case r of
+    Right (Right ((), _, _)) -> Right defMessage
+    Left e -> Left $ LndGrpcError e
+    _ -> Left $ LndError "LndGrpc request error"
 
 makeClient ::
   LndEnv ->

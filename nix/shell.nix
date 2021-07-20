@@ -30,7 +30,7 @@ stdenv.mkDerivation {
     lnd
     /* Utils */
     grpc
-    proto3-suite.proto3-suite-linux
+    /* proto3-suite.proto3-suite-linux */
     git
     nix-prefetch-scripts
     openssl

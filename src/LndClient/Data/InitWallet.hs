@@ -6,7 +6,6 @@ module LndClient.Data.InitWallet
 where
 
 import Data.ProtoLens.Message
---import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.WalletUnlockerGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc_Fields as LnGRPC

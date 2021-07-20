@@ -39,7 +39,7 @@ import Data.Scientific
 import Data.Text.Lazy as LT
 import Data.X509
 import Env
-import LndClient.Class2
+import LndClient.Class
 import LndClient.Data.Newtype
 import LndClient.Data.Type
 import LndClient.Import.External as Ex

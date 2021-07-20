@@ -6,7 +6,6 @@ module LndClient.Data.Channel
   )
 where
 
---import qualified LndClient.Class2 as C2
 import LndClient.Data.ChannelPoint
   ( ChannelPoint (..),
     channelPointParser,

@@ -39,7 +39,7 @@ import Data.ProtoLens.Message
 import qualified Data.Text.Internal as T
 import Data.Text.Lazy as TL
 import Data.Vector (fromList)
-import LndClient.Class2
+import LndClient.Class
 import LndClient.Data.Kind
 import LndClient.Data.Type
 import LndClient.Import.External

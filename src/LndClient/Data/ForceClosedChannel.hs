@@ -3,7 +3,6 @@ module LndClient.Data.ForceClosedChannel
   )
 where
 
---import qualified LndClient.Class2 as C2
 import LndClient.Data.PendingChannel
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC

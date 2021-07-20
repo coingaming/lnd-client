@@ -11,7 +11,6 @@ import qualified Data.ByteString.Base16 as B16 (decode)
 import qualified Data.ByteString.Char8 as C8 (split)
 import Data.ProtoLens.Message
 import qualified Data.Text as TS (unpack)
---import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC

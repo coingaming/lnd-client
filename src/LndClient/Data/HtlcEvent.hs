@@ -3,7 +3,6 @@ module LndClient.Data.HtlcEvent
   )
 where
 
---import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.RouterGrpc as LnGRPC
 import qualified Proto.RouterGrpc_Fields as LnGRPC

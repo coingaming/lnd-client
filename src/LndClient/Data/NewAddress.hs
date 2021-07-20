@@ -9,7 +9,6 @@ where
 
 import Data.ProtoLens.Message
 import Data.Text (pack)
---import qualified LndClient.Class2 as C2
 import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
@@ -47,11 +46,11 @@ instance ToGrpc NewAddressRequest LnGRPC.NewAddressRequest where
 
 instance ToGrpc AddressType LnGRPC.AddressType where
   toGrpc x =
-    case x of
-      WITNESS_PUBKEY_HASH -> Right LnGRPC.WITNESS_PUBKEY_HASH
-      NESTED_PUBKEY_HASH -> Right LnGRPC.NESTED_PUBKEY_HASH
-      UNUSED_WITNESS_PUBKEY_HASH -> Right LnGRPC.UNUSED_WITNESS_PUBKEY_HASH
-      UNUSED_NESTED_PUBKEY_HASH -> Right LnGRPC.UNUSED_NESTED_PUBKEY_HASH
+    Right $ case x of
+      WITNESS_PUBKEY_HASH -> LnGRPC.WITNESS_PUBKEY_HASH
+      NESTED_PUBKEY_HASH -> LnGRPC.NESTED_PUBKEY_HASH
+      UNUSED_WITNESS_PUBKEY_HASH -> LnGRPC.UNUSED_WITNESS_PUBKEY_HASH
+      UNUSED_NESTED_PUBKEY_HASH -> LnGRPC.UNUSED_NESTED_PUBKEY_HASH
 
 instance FromGrpc NewAddressResponse LnGRPC.NewAddressResponse where
   fromGrpc x =
