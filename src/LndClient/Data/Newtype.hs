@@ -134,10 +134,8 @@ instance FromGrpc NodePubKey ByteString where
   fromGrpc = Right . NodePubKey
 
 instance FromGrpc NodePubKey Text where
-  fromGrpc x =
-    case B16.decode $ encodeUtf8 x of
-      Right y -> Right $ NodePubKey y
-      Left {} -> Left $ FromGrpcError "NodePubKey hex decoding error"
+  fromGrpc =
+    bimap (const $ FromGrpcError "") NodePubKey . B16.decode . encodeUtf8
 
 instance FromGrpc NodeLocation Text where
   fromGrpc = Right . NodeLocation
