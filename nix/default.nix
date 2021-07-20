@@ -1,4 +1,4 @@
-{pkgs ? null}:
+{pkgs ? null, profile ? false}:
 let overlays = [(import ./overlay.nix)];
     localPkgs = import ./nixpkgs.nix;
     nixpkgs = if pkgs == null then import localPkgs {inherit overlays;} else pkgs;
@@ -20,8 +20,8 @@ in
       then drv.testSystemDepends ++ testDeps
       else testDeps;
     isExecutable = false;
-    enableSharedExecutables = false;
-    enableLibraryProfiling = false;
+    enableSharedExecutables = profile;
+    enableLibraryProfiling = profile;
     isLibrary = true;
     doHaddock = false;
     prePatch = "hpack --force";
