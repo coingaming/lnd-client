@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: aae77059d2334af4b895ad187709c83499bce7cd357df2c9632396ac6de9d825
+-- hash: b3094233ab0e05932e6327d821c9f7c33c8154d787a99428a6b1aa2af2a7180a
 
 name:           lnd-client
 version:        0.1.0.0
@@ -104,8 +104,6 @@ library
     , deepseq
     , envparse
     , extra
-    , grpc-haskell
-    , grpc-haskell-core
     , hspec
     , http2
     , http2-client
@@ -160,8 +158,6 @@ test-suite lnd-client-test
     , deepseq
     , envparse
     , extra
-    , grpc-haskell
-    , grpc-haskell-core
     , hspec
     , http2
     , http2-client

@@ -44,8 +44,8 @@ import LndClient.Data.Newtype
 import LndClient.Data.Type
 import LndClient.Import.External as Ex
 import LndClient.Util as U
-import Network.GRPC.HighLevel.Generated
-import Network.GRPC.LowLevel.Client
+--import Network.GRPC.HighLevel.Generated
+--import Network.GRPC.LowLevel.Client
 import Network.HTTP2.Client
 
 newtype LndWalletPassword = LndWalletPassword Text
@@ -88,7 +88,7 @@ data LndEnv
   = LndEnv
       { envLndWalletPassword :: LndWalletPassword,
         envLndHexMacaroon :: LndHexMacaroon,
-        envLndGrpcConfig :: ClientConfig,
+        --        envLndGrpcConfig :: ClientConfig,
         envLndLogStrategy :: LoggingStrategy,
         envLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
         envLndAezeedPassphrase :: Maybe AezeedPassphrase,
@@ -196,7 +196,7 @@ newLndEnv ::
   Maybe CipherSeedMnemonic ->
   Maybe AezeedPassphrase ->
   LndEnv
-newLndEnv pwd cert mac host port seed aezeed =
+newLndEnv pwd _cert mac host port seed aezeed =
   LndEnv
     { envLndWalletPassword = pwd,
       envLndHexMacaroon = mac,
@@ -205,22 +205,22 @@ newLndEnv pwd cert mac host port seed aezeed =
       envLndAezeedPassphrase = aezeed,
       envLndSyncGrpcTimeout = Nothing,
       envLndAsyncGrpcTimeout = Nothing,
-      envLndGrpcConfig =
-        ClientConfig
-          { clientServerHost =
-              Host $
-                encodeUtf8 (coerce host :: Text),
-            clientServerPort = Port $ coerce port,
-            clientArgs = [],
-            clientSSLConfig =
-              Just $
-                ClientSSLConfig
-                  { serverRootCert = Just $ coerce cert,
-                    clientSSLKeyCertPair = Nothing,
-                    clientMetadataPlugin = Nothing
-                  },
-            clientAuthority = Nothing
-          },
+      --      envLndGrpcConfig =
+      --        ClientConfig
+      --          { clientServerHost =
+      --              Host $
+      --                encodeUtf8 (coerce host :: Text),
+      --            clientServerPort = Port $ coerce port,
+      --            clientArgs = [],
+      --            clientSSLConfig =
+      --              Just $
+      --                ClientSSLConfig
+      --                  { serverRootCert = Just $ coerce cert,
+      --                    clientSSLKeyCertPair = Nothing,
+      --                    clientMetadataPlugin = Nothing
+      --                  },
+      --            clientAuthority = Nothing
+      --          },
       envLndConfig =
         LndConfig
           { lndConfigHost = LT.unpack $ coerce host,
@@ -235,11 +235,9 @@ katipAddLndContext env =
   katipAddContext (sl "LndHost" h)
     . katipAddContext (sl "LndPort" p)
   where
-    c = envLndGrpcConfig env
-    h = case decodeUtf8' $ coerce $ clientServerHost c of
-      Left _ -> "NOT_UTF8"
-      Right x -> x
-    p = coerce $ clientServerPort c :: Int
+    c = envLndConfig env
+    h = coerce $ lndConfigHost c :: String
+    p = toInteger $ lndConfigPort c :: Integer
 
 newSeverity :: LndEnv -> Severity -> Maybe Timespan -> Maybe LndError -> Severity
 newSeverity = coerce . envLndLogStrategy

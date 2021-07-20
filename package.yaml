@@ -40,8 +40,6 @@ dependencies:
 - text
 - aeson
 # protobuf and gRPC
-- grpc-haskell
-- grpc-haskell-core
 - containers
 - deepseq
 - vector

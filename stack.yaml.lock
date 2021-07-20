@@ -138,52 +138,6 @@ packages:
   original:
     hackage: proto-lens-arbitrary-0.1.2.9
 - completed:
-    size: 109675
-    subdir: core
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
-    name: grpc-haskell-core
-    version: 0.0.0.0
-    sha256: 0a56b54cbffbb3d81bd631183bcd68207b1edf899fa573556cf313476232360b
-    pantry-tree:
-      size: 2543
-      sha256: d967256967b693a9ca31a62d4d6e22024f536170d9b48886a9a1af1b1fc35813
-  original:
-    subdir: core
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
-- completed:
-    size: 109675
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
-    name: grpc-haskell
-    version: 0.0.2.0
-    sha256: 0a56b54cbffbb3d81bd631183bcd68207b1edf899fa573556cf313476232360b
-    pantry-tree:
-      size: 7414
-      sha256: f42884e753d0feef8381b23ccf57f5fce19df844c8699a9c35d48880af6a4772
-  original:
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
-- completed:
-    size: 91728
-    url: https://github.com/coingaming/proto3-suite/archive/19d83b67f90a7be67bc1d062828d84ae68f3efe0.tar.gz
-    name: proto3-suite
-    version: 0.4.2.0
-    sha256: d763f2f9eef1778806a96e1760826a594698cdfdc812fd96d981c4ac59373cb9
-    pantry-tree:
-      size: 7180
-      sha256: d36fc7ed3ee8e42e85d0c0ee643e8f9e95eeff911b691e56de75f206c7802181
-  original:
-    url: https://github.com/coingaming/proto3-suite/archive/19d83b67f90a7be67bc1d062828d84ae68f3efe0.tar.gz
-- completed:
-    size: 47562
-    url: https://github.com/coingaming/proto3-wire/archive/3672ded8b16baa9a9fdf4e4fa5109e2a6cf8a809.tar.gz
-    name: proto3-wire
-    version: 1.2.0
-    sha256: 2853a4221e3b8c2835857c3e6ce5263e5e08a2647ade6d415621bf5b9d83b887
-    pantry-tree:
-      size: 1811
-      sha256: c8a3e11f57e013f488a2f4495adb40eea1abb06cbb8af8dcc69b2a9715916919
-  original:
-    url: https://github.com/coingaming/proto3-wire/archive/3672ded8b16baa9a9fdf4e4fa5109e2a6cf8a809.tar.gz
-- completed:
     hackage: http2-client-0.10.0.0@sha256:85b8771e9e8d4fd0b4327373ebb4a7bc7f9a293e5d7a7dc581ca4153a841da67,2604
     pantry-tree:
       size: 853
