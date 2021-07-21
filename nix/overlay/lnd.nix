@@ -12,10 +12,10 @@ buildGoModule rec {
     owner = "lightningnetwork";
     repo = "lnd";
     rev = "v${version}";
-    sha256 = "0fwidjkfzzd7k891x5z7jrx2arl0kwj6vm9z2acsyy7riv4zfjbq";
+    sha256 = "0rwsq1q2fb5g9fzn7i63k611pliz9csc4py9fbmnyd830d3k1bjj";
   };
 
-  vendorSha256 = "19myr9f5zh05y6lagd9pra60y8df7pz837310cbpq9a6zzwpdxk2";
+  vendorSha256 = "1ihxl6014hxs0my0wn012vlxs0y5gfhr0z9irwii0pa3zwaarjca";
 
   subPackages = ["cmd/lncli" "cmd/lnd"];
 
