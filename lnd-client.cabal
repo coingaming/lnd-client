@@ -1,10 +1,8 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: b3094233ab0e05932e6327d821c9f7c33c8154d787a99428a6b1aa2af2a7180a
 
 name:           lnd-client
 version:        0.1.0.0
@@ -85,13 +83,20 @@ library
       Paths_lnd_client
   hs-source-dirs:
       src
-  default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables DataKinds KindSignatures
+  default-extensions:
+      NoImplicitPrelude
+      MultiParamTypeClasses
+      LambdaCase
+      OverloadedStrings
+      ScopedTypeVariables
+      DataKinds
+      KindSignatures
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
   build-depends:
       JuicyPixels
     , aeson
     , asn1-encoding >=0.9.6 && <0.10
-    , asn1-types >=0.3 && <0.4
+    , asn1-types ==0.3.*
     , async
     , base >=4.7 && <5
     , base16-bytestring
@@ -115,8 +120,8 @@ library
     , network-bitcoin
     , pem >=0.2.4 && <0.3
     , persistent
-    , proto-lens >=0.7.0 && <0.8
-    , proto-lens-runtime >=0.7.0 && <0.8
+    , proto-lens
+    , proto-lens-runtime
     , qrcode-core
     , qrcode-juicypixels
     , scientific
@@ -139,13 +144,20 @@ test-suite lnd-client-test
       Paths_lnd_client
   hs-source-dirs:
       test
-  default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables DataKinds KindSignatures
+  default-extensions:
+      NoImplicitPrelude
+      MultiParamTypeClasses
+      LambdaCase
+      OverloadedStrings
+      ScopedTypeVariables
+      DataKinds
+      KindSignatures
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N -O0
   build-depends:
       JuicyPixels
     , aeson
     , asn1-encoding >=0.9.6 && <0.10
-    , asn1-types >=0.3 && <0.4
+    , asn1-types ==0.3.*
     , async
     , base >=4.7 && <5
     , base16-bytestring
@@ -170,8 +182,8 @@ test-suite lnd-client-test
     , network-bitcoin
     , pem >=0.2.4 && <0.3
     , persistent
-    , proto-lens >=0.7.0 && <0.8
-    , proto-lens-runtime >=0.7.0 && <0.8
+    , proto-lens
+    , proto-lens-runtime
     , qrcode-core
     , qrcode-juicypixels
     , scientific

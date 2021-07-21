@@ -1,22 +1,16 @@
-{ mkDerivation, base, fetchgit, ghc, ghc-paths, hpack, QuickCheck
-, stdenv, tasty, tasty-hunit, tasty-quickcheck
+{ mkDerivation, base, ghc, ghc-paths, QuickCheck, stdenv, tasty
+, tasty-hunit, tasty-quickcheck
 }:
 mkDerivation {
   pname = "ghc-source-gen";
-  version = "0.4.0.0";
-  src = fetchgit {
-    url = "https://github.com/coingaming/ghc-source-gen";
-    sha256 = "09mis9vr5yigvshb6jpcy3a33v0cbvl0x523b34cfyf6f1dm4b5n";
-    rev = "8cd230230de4412227f58d59f7beb06f3a35ebc3";
-    fetchSubmodules = true;
-  };                
+  version = "0.3.0.0";
+  sha256 = "13632a428d8e41c6359c61b3bad9d259722b33470517bd98fc2bb0bb38b735e5";
   libraryHaskellDepends = [ base ghc ];
-  libraryToolDepends = [ hpack ];
   testHaskellDepends = [
     base ghc ghc-paths QuickCheck tasty tasty-hunit tasty-quickcheck
   ];
-  prePatch = "hpack"; 
   homepage = "https://github.com/google/ghc-source-gen#readme";
   description = "Constructs Haskell syntax trees for the GHC API";
   license = stdenv.lib.licenses.bsd3;
 }
+

@@ -3,8 +3,8 @@
 }:
 mkDerivation {
   pname = "proto-lens-runtime";
-  version = "0.7.0.0";
-  sha256 = "4dc1aebe1755c0b831d3cb029c7bfea04f252d0b1cee8653dded37baeab3aa63";
+  version = "0.6.0.0";
+  sha256 = "96f17141f5927f28388ec5ff5937419c1698a1e1cbdbb4f1272d44843051ae73";
   libraryHaskellDepends = [
     base bytestring containers deepseq filepath lens-family proto-lens
     text vector

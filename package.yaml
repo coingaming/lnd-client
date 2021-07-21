@@ -67,8 +67,8 @@ dependencies:
 - template-haskell
 # protobuf
 - microlens >= 0.4.10 && < 0.5
-- proto-lens >= 0.7.0 && < 0.8
-- proto-lens-runtime >= 0.7.0 && < 0.8
+- proto-lens
+- proto-lens-runtime
 # proto-lens-grpc
 - http2-grpc-proto-lens
 - http2-client
