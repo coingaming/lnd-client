@@ -191,9 +191,6 @@ instance FromGrpc AddIndex Word64 where
 instance FromGrpc SettleIndex Word64 where
   fromGrpc = Right . SettleIndex
 
---instance FromGrpc PaymentRequest Text where
---  fromGrpc = Right . PaymentRequest
-
 instance FromGrpc PaymentRequest Text where
   fromGrpc = Right . PaymentRequest
 

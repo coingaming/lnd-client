@@ -10,7 +10,6 @@ where
 
 import Data.ProtoLens.Message
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
---import Data.Text.Lazy (pack)
 import GHC.TypeLits (Symbol)
 import LndClient.Data.LndEnv
 import LndClient.Import
