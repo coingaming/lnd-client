@@ -69,9 +69,8 @@ instance ToGrpc CloseChannelRequest LnGRPC.CloseChannelRequest where
           & LnGRPC.deliveryAddress .~ gDeliveryAddress
 
 instance FromGrpc CloseStatusUpdate LnGRPC.CloseStatusUpdate where
-  fromGrpc x = do
-    let update = x ^. LnGRPC.maybe'update
-    case update of
+  fromGrpc x =
+    case x ^. LnGRPC.maybe'update of
       Just (LnGRPC.CloseStatusUpdate'ClosePending a) -> Pending <$> fromGrpc a
       Just (LnGRPC.CloseStatusUpdate'ChanClose a) -> Close <$> fromGrpc a
       Nothing -> Right NothingUpdate

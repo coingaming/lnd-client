@@ -2,7 +2,6 @@
 
 module LndClient.Data.AddHodlInvoice
   ( AddHodlInvoiceRequest (..),
-    AddHodlInvoiceResponse (..),
   )
 where
 
@@ -20,12 +19,6 @@ data AddHodlInvoiceRequest
       }
   deriving (Eq, Show)
 
-newtype AddHodlInvoiceResponse
-  = AddHodlInvoiceResponse
-      { paymentRequest :: PaymentRequest
-      }
-  deriving (Eq, Show)
-
 instance ToGrpc AddHodlInvoiceRequest LnGRPC.AddHoldInvoiceRequest where
   toGrpc x =
     msg
@@ -40,8 +33,3 @@ instance ToGrpc AddHodlInvoiceRequest LnGRPC.AddHoldInvoiceRequest where
           & LnGRPC.hash .~ gHash
           & LnGRPC.valueMsat .~ gValue
           & LnGRPC.expiry .~ gExp
-
-instance FromGrpc AddHodlInvoiceResponse LnGRPC.AddHoldInvoiceResp where
-  fromGrpc x =
-    AddHodlInvoiceResponse
-      <$> fromGrpc (x ^. LnGRPC.paymentRequest)

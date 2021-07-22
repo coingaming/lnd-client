@@ -1,5 +1,6 @@
 let nixpkgs20 = import ./nixpkgs20.nix;
     pkgs20 = import nixpkgs20 {};
+    nixpkgs21 = import (import ./nixpkgs21.nix) {};
 in
 self: super:
   let
@@ -13,6 +14,7 @@ self: super:
         fetchFromGitHub = pkgs20.fetchFromGitHub;
         lib = pkgs20.lib;
       });
+      stack2cabal = doJailbreak nixpkgs21.haskellPackages.stack2cabal;
       haskellPackages = super.haskell.packages.ghc865.extend(
         self': super': {
           parameterized = dontCheck super'.parameterized;

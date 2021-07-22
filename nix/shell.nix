@@ -40,6 +40,7 @@ stdenv.mkDerivation {
     xxd
     haskellPackages.proto-lens-protoc
     which
+    stack2cabal
   ];
 
   TERM="xterm-256color";
