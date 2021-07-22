@@ -66,9 +66,9 @@ dependencies:
 - scientific            >= 0.3.6.2 && < 0.3.7
 - template-haskell      >= 2.14.0.0 && < 2.14.1
 # protobuf
-- microlens             >= 0.4.10 && < 0.5
-- proto-lens            >= 0.6.0.0 && < 0.6.1
-- proto-lens-runtime    >= 0.6.0.0 && < 0.6.1
+- microlens >= 0.4.10 && < 0.5
+- proto-lens >= 0.7.0 && < 0.8
+- proto-lens-runtime >= 0.7.0 && < 0.8
 # proto-lens-grpc
 - http2-grpc-proto-lens >= 0.1.0.0 && < 0.1.1
 - http2-client          >= 0.9.0.0 && < 0.9.1

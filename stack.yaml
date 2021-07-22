@@ -40,7 +40,7 @@ packages:
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
 # extra-deps: []
-#allow-newer: true
+allow-newer: true
 extra-deps:
   - base16-bytestring-1.0.1.0
   - esqueleto-3.4.0.1
@@ -55,15 +55,14 @@ extra-deps:
   - network-bitcoin-1.9.1@sha256:f950326eef853c8ce5a15a2fc65ed0291669b60b3138538629469fbeaf447d96,2420
   - parameterized-0.5.0.0@sha256:880717fbb958de1bac015f0a375ab6636f162a72483d987a11e305da6fac6c97,1969
   - swagger2-2.3.1.1
-  - ghc-source-gen-0.3.0.0@sha256:d44b5fedbdbbaecabb677f808198dca966858ca343735d907bad9dff11a58795,3437
-  - proto-lens-0.6.0.0@sha256:381073e7442260d3a0f6bf8fdb7371af1967927c2b20b535fcc64433bc8d055d,3036
-  - proto-lens-protoc-0.6.0.0
-  - proto-lens-runtime-0.6.0.0
+  - ghc-source-gen-0.4.0.0@sha256:b6cdde6b183e70f6fbed3b0a45ad6640204b636e9a7fb898c5d7ec79719f14a1,3698
+  - proto-lens-0.7.0.0@sha256:2c44a62375f7712f9381f84b1d30cee2f94384f1c98801db2f4450359a8e5036,3036
+  - proto-lens-protoc-0.7.0.0
+  - proto-lens-runtime-0.7.0.0
   - proto-lens-setup-0.4.0.4
   - proto-lens-arbitrary-0.1.2.9
   # proto-lens grpc overlay
-  - http2-1.6.5@sha256:09a9e07d34fba12bd0b871c5fbce3708b2e16a9445b080885df6fd53b72858b3,14079
-  - http2-client-0.9.0.0@sha256:b8885c89adcc8b9d4ebb9abf6ae0ac6336e3fdf947a2b1f2b95c4e2c8c4acf01,2685
+  - http2-client-0.10.0.0@sha256:85b8771e9e8d4fd0b4327373ebb4a7bc7f9a293e5d7a7dc581ca4153a841da67,2604
   - http2-client-grpc-0.8.0.0@sha256:5bea1edf5fa3572155f55c5b38cfab7063cbde613702898986c26d70bc9f3f9e,1861
   - http2-grpc-types-0.5.0.0@sha256:4d34edc06a48496130f19245817a7cd7ea15c78ac8815570c3795ffc4503cf27,1445
   - http2-grpc-proto-lens-0.1.0.0@sha256:7745c53a22a59c5a9456eef11160365ab8d80a306b785881ce26141fe6c9f2fc,1479
