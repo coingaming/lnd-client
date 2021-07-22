@@ -38,7 +38,6 @@ import Data.ByteString.Char8 as C8
 import Data.ProtoLens.Message
 import qualified Data.Text.Internal as T
 import Data.Text.Lazy as TL
-import Data.Vector (fromList)
 import LndClient.Class
 import LndClient.Data.Kind
 import LndClient.Data.Type
@@ -230,8 +229,8 @@ instance ToGrpc Seconds Int64 where
       (ToGrpcError "Seconds overflow")
       $ safeFromIntegral (coerce x :: Word64)
 
-instance ToGrpc CipherSeedMnemonic (Vector Text) where
-  toGrpc = Right . fromList . coerce
+instance ToGrpc CipherSeedMnemonic [Text] where
+  toGrpc = Right . coerce
 
 instance ToGrpc AezeedPassphrase ByteString where
   toGrpc x = Right $ encodeUtf8 (coerce x :: Text)

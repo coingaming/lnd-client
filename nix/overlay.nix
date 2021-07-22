@@ -19,9 +19,6 @@ self: super:
         self': super': {
           parameterized = dontCheck super'.parameterized;
           universum = dontCheck super'.universum;
-          cryptonite = callPackage ./overlay/cryptonite.nix {
-            stdenv = self.stdenv;
-          };
           swagger2 = callPackage ./overlay/swagger2.nix {
             stdenv = self.stdenv;
           };

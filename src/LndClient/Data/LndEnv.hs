@@ -44,8 +44,6 @@ import LndClient.Data.Newtype
 import LndClient.Data.Type
 import LndClient.Import.External as Ex
 import LndClient.Util as U
---import Network.GRPC.HighLevel.Generated
---import Network.GRPC.LowLevel.Client
 import Network.HTTP2.Client
 
 newtype LndWalletPassword = LndWalletPassword Text
@@ -88,7 +86,6 @@ data LndEnv
   = LndEnv
       { envLndWalletPassword :: LndWalletPassword,
         envLndHexMacaroon :: LndHexMacaroon,
-        --        envLndGrpcConfig :: ClientConfig,
         envLndLogStrategy :: LoggingStrategy,
         envLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
         envLndAezeedPassphrase :: Maybe AezeedPassphrase,
@@ -205,22 +202,6 @@ newLndEnv pwd _cert mac host port seed aezeed =
       envLndAezeedPassphrase = aezeed,
       envLndSyncGrpcTimeout = Nothing,
       envLndAsyncGrpcTimeout = Nothing,
-      --      envLndGrpcConfig =
-      --        ClientConfig
-      --          { clientServerHost =
-      --              Host $
-      --                encodeUtf8 (coerce host :: Text),
-      --            clientServerPort = Port $ coerce port,
-      --            clientArgs = [],
-      --            clientSSLConfig =
-      --              Just $
-      --                ClientSSLConfig
-      --                  { serverRootCert = Just $ coerce cert,
-      --                    clientSSLKeyCertPair = Nothing,
-      --                    clientMetadataPlugin = Nothing
-      --                  },
-      --            clientAuthority = Nothing
-      --          },
       envLndConfig =
         LndConfig
           { lndConfigHost = LT.unpack $ coerce host,

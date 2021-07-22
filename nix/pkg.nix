@@ -6,7 +6,7 @@
 , microlens, network-bitcoin, pem, persistent, proto-lens
 , proto-lens-runtime, qrcode-core, qrcode-juicypixels, scientific
 , stdenv, stm, template-haskell, text, unbounded-delays, universum
-, unliftio, vector, x509
+, unliftio, x509
 }:
 mkDerivation {
   pname = "lnd-client";
@@ -20,7 +20,7 @@ mkDerivation {
     JuicyPixels katip microlens network-bitcoin pem persistent
     proto-lens proto-lens-runtime qrcode-core qrcode-juicypixels
     scientific stm template-haskell text unbounded-delays universum
-    unliftio vector x509
+    unliftio x509
   ];
   libraryToolDepends = [ hpack ];
   testHaskellDepends = [
@@ -31,7 +31,7 @@ mkDerivation {
     JuicyPixels katip microlens network-bitcoin pem persistent
     proto-lens proto-lens-runtime qrcode-core qrcode-juicypixels
     scientific stm template-haskell text unbounded-delays universum
-    unliftio vector x509
+    unliftio x509
   ];
   prePatch = "hpack";
   homepage = "https://github.com/githubuser/lnd-client#readme";

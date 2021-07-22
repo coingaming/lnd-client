@@ -29,7 +29,7 @@ instance ToGrpc InitWalletRequest LnGRPC.InitWalletRequest where
       <*> toGrpc (cipherSeedMnemonic x)
       <*> toGrpc (aezeedPassphrase x)
     where
-      msg :: ByteString -> Vector Text -> ByteString -> LnGRPC.InitWalletRequest
+      msg :: ByteString -> [Text] -> ByteString -> LnGRPC.InitWalletRequest
       msg gWalletPassword gCipherSeedMnemonic gAezeedPassphrase =
         defMessage
           & LnGRPC.walletPassword .~ gWalletPassword

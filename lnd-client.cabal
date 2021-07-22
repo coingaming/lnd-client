@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: da939fd5b55ab18f406f26b58df07c586553486e7d8fade1ea81b03f1a977560
+-- hash: c1488674faa0b9c85e324bb41c826d7031ba91af46d15b645aca12ac2c38e66b
 
 name:           lnd-client
 version:        0.1.0.0
@@ -95,36 +95,36 @@ library
       KindSignatures
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
   build-depends:
-      JuicyPixels ==3.3.4.*
-    , aeson >=1.4.6.0 && <1.4.7
+      JuicyPixels >=3.3.3 && <3.4
+    , aeson >=1.4.4.0 && <1.4.8
     , asn1-encoding >=0.9.6 && <0.10
     , asn1-types ==0.3.*
     , async ==2.2.2.*
     , base >=4.7 && <5
     , base16-bytestring >=1.0.1.0 && <1.0.2
-    , base64-bytestring >=1.0.0.3 && <1.0.1
+    , base64-bytestring >=1.0.0.2 && <1.0.1
     , bytestring >=0.10.8.2 && <0.10.9
-    , chronos ==1.0.9.*
+    , chronos >=1.0.7 && <1.0.10
     , containers >=0.6.0.1 && <0.6.1
     , cryptohash-sha256 >=0.11.101.0 && <0.11.102
-    , cryptonite ==0.26.*
+    , cryptonite >=0.25 && <0.27
     , deepseq >=1.4.4.0 && <1.4.5
     , envparse ==0.4.1.*
-    , extra ==1.6.19.*
+    , extra >=1.6.18 && <1.6.20
     , hspec ==2.7.1.*
-    , http2 ==2.0.3.*
+    , http2 >=2.0.3 && <2.0.7
     , http2-client >=0.10.0.0 && <0.10.1
     , http2-client-grpc >=0.8.0.0 && <0.8.1
     , http2-grpc-proto-lens >=0.1.0.0 && <0.1.1
     , http2-grpc-types >=0.5.0.0 && <0.5.1
     , katip >=0.8.3.0 && <0.8.4
     , microlens >=0.4.10 && <0.5
-    , network-bitcoin ==1.9.1.*
+    , network-bitcoin >=1.8.3 && <1.9.2
     , pem >=0.2.4 && <0.3
     , persistent >=2.11.0.2 && <2.11.1
     , proto-lens >=0.7.0 && <0.8
     , proto-lens-runtime >=0.7.0 && <0.8
-    , qrcode-core ==0.9.2.*
+    , qrcode-core >=0.9 && <0.9.3
     , qrcode-juicypixels ==0.8.0.*
     , scientific >=0.3.6.2 && <0.3.7
     , stm >=2.5.0.0 && <2.5.1
@@ -133,7 +133,6 @@ library
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum ==1.5.0.*
     , unliftio ==0.2.12.*
-    , vector >=0.12.1.2 && <0.12.2
     , x509 ==1.7.5.*
   default-language: Haskell2010
 
@@ -156,24 +155,24 @@ test-suite lnd-client-test
       KindSignatures
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N -O0
   build-depends:
-      JuicyPixels ==3.3.4.*
-    , aeson >=1.4.6.0 && <1.4.7
+      JuicyPixels >=3.3.3 && <3.4
+    , aeson >=1.4.4.0 && <1.4.8
     , asn1-encoding >=0.9.6 && <0.10
     , asn1-types ==0.3.*
     , async ==2.2.2.*
     , base >=4.7 && <5
     , base16-bytestring >=1.0.1.0 && <1.0.2
-    , base64-bytestring >=1.0.0.3 && <1.0.1
+    , base64-bytestring >=1.0.0.2 && <1.0.1
     , bytestring >=0.10.8.2 && <0.10.9
-    , chronos ==1.0.9.*
+    , chronos >=1.0.7 && <1.0.10
     , containers >=0.6.0.1 && <0.6.1
     , cryptohash-sha256 >=0.11.101.0 && <0.11.102
-    , cryptonite ==0.26.*
+    , cryptonite >=0.25 && <0.27
     , deepseq >=1.4.4.0 && <1.4.5
     , envparse ==0.4.1.*
-    , extra ==1.6.19.*
+    , extra >=1.6.18 && <1.6.20
     , hspec ==2.7.1.*
-    , http2 ==2.0.3.*
+    , http2 >=2.0.3 && <2.0.7
     , http2-client >=0.10.0.0 && <0.10.1
     , http2-client-grpc >=0.8.0.0 && <0.8.1
     , http2-grpc-proto-lens >=0.1.0.0 && <0.1.1
@@ -181,12 +180,12 @@ test-suite lnd-client-test
     , katip >=0.8.3.0 && <0.8.4
     , lnd-client
     , microlens >=0.4.10 && <0.5
-    , network-bitcoin ==1.9.1.*
+    , network-bitcoin >=1.8.3 && <1.9.2
     , pem >=0.2.4 && <0.3
     , persistent >=2.11.0.2 && <2.11.1
     , proto-lens >=0.7.0 && <0.8
     , proto-lens-runtime >=0.7.0 && <0.8
-    , qrcode-core ==0.9.2.*
+    , qrcode-core >=0.9 && <0.9.3
     , qrcode-juicypixels ==0.8.0.*
     , scientific >=0.3.6.2 && <0.3.7
     , stm >=2.5.0.0 && <2.5.1
@@ -195,6 +194,5 @@ test-suite lnd-client-test
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum ==1.5.0.*
     , unliftio ==0.2.12.*
-    , vector >=0.12.1.2 && <0.12.2
     , x509 ==1.7.5.*
   default-language: Haskell2010

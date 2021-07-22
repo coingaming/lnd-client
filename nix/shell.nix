@@ -41,6 +41,7 @@ stdenv.mkDerivation {
     haskellPackages.proto-lens-protoc
     which
     stack2cabal
+    juicypixels
   ];
 
   TERM="xterm-256color";
