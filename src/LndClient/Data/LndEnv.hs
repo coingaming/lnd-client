@@ -33,10 +33,9 @@ import Data.Aeson as A
     genericParseJSON,
     withObject,
   )
-import Data.ByteString.Char8 as C8
+import qualified Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
 import Data.Scientific
-import Data.Text.Lazy as LT
 import Data.X509
 import Env
 import LndClient.Class
@@ -155,11 +154,11 @@ instance FromJSON LndEnv where
 
 createLndTlsCert :: ByteString -> Either LndError LndTlsCert
 createLndTlsCert bs = do
-  pemsM <- first (LndEnvError . LT.pack) $ Pem.pemParseBS bs
+  pemsM <- first (LndEnvError . pack) $ Pem.pemParseBS bs
   pem <-
-    note (LndEnvError $ LT.pack "No pem found") $ safeHead pemsM
+    note (LndEnvError $ pack "No pem found") $ safeHead pemsM
   bimap
-    (LndEnvError . LT.pack . ("Certificate is not valid: " <>))
+    (LndEnvError . pack . ("Certificate is not valid: " <>))
     (const $ LndTlsCert bs)
     (decodeSignedCertificate $ Pem.pemContent pem)
 
@@ -204,7 +203,7 @@ newLndEnv pwd _cert mac host port seed aezeed =
       envLndAsyncGrpcTimeout = Nothing,
       envLndConfig =
         LndConfig
-          { lndConfigHost = LT.unpack $ coerce host,
+          { lndConfigHost = unpack $ coerce host,
             lndConfigPort = fromInteger (toInteger (coerce port :: Int)),
             lndConfigTlsEnabled = True,
             lndConfigCompression = False

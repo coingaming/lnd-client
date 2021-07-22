@@ -84,7 +84,7 @@ instance FromGrpc ChannelCloseUpdate LnGRPC.ChannelCloseUpdate where
 instance FromGrpc ChannelCloseSummary LnGRPC.ChannelCloseSummary where
   fromGrpc x =
     ChannelCloseSummary
-      <$> fromGrpc (fromStrict $ x ^. LnGRPC.remotePubkey)
-      <*> channelPointParser (fromStrict $ x ^. LnGRPC.channelPoint)
+      <$> fromGrpc (x ^. LnGRPC.remotePubkey)
+      <*> channelPointParser (x ^. LnGRPC.channelPoint)
       <*> fromGrpc (x ^. LnGRPC.settledBalance)
-      <*> fromGrpc (fromStrict $ x ^. LnGRPC.closingTxHash)
+      <*> fromGrpc (x ^. LnGRPC.closingTxHash)

@@ -26,8 +26,8 @@ data PaymentStatus
 instance FromGrpc Payment LnGRPC.Payment where
   fromGrpc x =
     Payment
-      <$> fromGrpc (fromStrict $ x ^. LnGRPC.paymentHash)
-      <*> fromGrpc (fromStrict $ x ^. LnGRPC.paymentPreimage)
+      <$> fromGrpc (x ^. LnGRPC.paymentHash)
+      <*> fromGrpc (x ^. LnGRPC.paymentPreimage)
       <*> fromGrpc (x ^. LnGRPC.valueMsat)
       <*> fromGrpc (x ^. LnGRPC.status)
 

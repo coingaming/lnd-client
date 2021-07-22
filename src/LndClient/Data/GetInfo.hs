@@ -20,6 +20,6 @@ data GetInfoResponse
 instance FromGrpc GetInfoResponse LnGRPC.GetInfoResponse where
   fromGrpc x =
     GetInfoResponse
-      <$> fromGrpc (fromStrict $ x ^. LnGRPC.identityPubkey)
+      <$> fromGrpc (x ^. LnGRPC.identityPubkey)
       <*> fromGrpc (x ^. LnGRPC.syncedToChain)
       <*> fromGrpc (x ^. LnGRPC.syncedToGraph)

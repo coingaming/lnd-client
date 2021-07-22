@@ -36,8 +36,6 @@ import Data.Aeson (FromJSON (..))
 import Data.ByteString.Base16 as B16 (decode, encode)
 import Data.ByteString.Char8 as C8
 import Data.ProtoLens.Message
-import qualified Data.Text.Internal as T
-import Data.Text.Lazy as TL
 import LndClient.Class
 import LndClient.Data.Kind
 import LndClient.Data.Type
@@ -108,7 +106,7 @@ instance ToGrpc NodePubKey ByteString where
 
 instance ToGrpc NodePubKey Text where
   toGrpc =
-    bimap (const $ ToGrpcError "UTF8_DECODE_ERROR") TL.fromStrict
+    bimap (const $ ToGrpcError "UTF8_DECODE_ERROR") id
       . decodeUtf8'
       . B16.encode
       . coerce
@@ -193,11 +191,11 @@ instance FromGrpc AddIndex Word64 where
 instance FromGrpc SettleIndex Word64 where
   fromGrpc = Right . SettleIndex
 
+--instance FromGrpc PaymentRequest Text where
+--  fromGrpc = Right . PaymentRequest
+
 instance FromGrpc PaymentRequest Text where
   fromGrpc = Right . PaymentRequest
-
-instance FromGrpc PaymentRequest T.Text where
-  fromGrpc = Right . PaymentRequest . fromStrict
 
 instance FromGrpc PaymentRequest IGrpc.AddHoldInvoiceResp where
   fromGrpc x = fromGrpc (x ^. IGrpc.paymentRequest)
@@ -252,7 +250,7 @@ instance ToGrpc RPreimage IGrpc.SettleInvoiceMsg where
     Right $ defMessage & IGrpc.preimage .~ p
 
 instance ToGrpc PaymentRequest LnGrpc.PayReqString where
-  toGrpc x = Right $ defMessage & LnGrpc.payReq .~ toStrict (coerce x)
+  toGrpc x = Right $ defMessage & LnGrpc.payReq .~ coerce x
 
 instance ToGrpc RHash LnGrpc.PaymentHash where
   toGrpc x = Right $ defMessage & LnGrpc.rHash .~ coerce x

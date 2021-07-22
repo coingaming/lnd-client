@@ -29,7 +29,7 @@ instance
                 fromGrpc this
           )
       <*> fromGrpc
-        (fromStrict $ x ^. LnGRPC.closingTxid)
+        (x ^. LnGRPC.closingTxid)
     where
       pendingChannel =
         x ^. LnGRPC.maybe'channel

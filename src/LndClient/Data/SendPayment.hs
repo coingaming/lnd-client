@@ -35,13 +35,13 @@ instance ToGrpc SendPaymentRequest LnGRPC.SendRequest where
       msg gAmt gPaymentRequest =
         defMessage
           & LnGRPC.amtMsat .~ gAmt
-          & LnGRPC.paymentRequest .~ toStrict gPaymentRequest
+          & LnGRPC.paymentRequest .~ gPaymentRequest
 
 instance FromGrpc SendPaymentResponse LnGRPC.SendResponse where
   fromGrpc x = do
     res <-
       SendPaymentResponse
-        <$> fromGrpc (fromStrict $ x ^. LnGRPC.paymentError)
+        <$> fromGrpc (x ^. LnGRPC.paymentError)
         <*> fromGrpc (x ^. LnGRPC.paymentPreimage)
         <*> fromGrpc (x ^. LnGRPC.paymentHash)
     if newRHash (paymentPreimage res) == paymentHash res

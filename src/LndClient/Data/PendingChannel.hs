@@ -28,9 +28,9 @@ instance
   fromGrpc x =
     PendingChannel
       <$> fromGrpc
-        (fromStrict $ x ^. LnGRPC.remoteNodePub)
+        (x ^. LnGRPC.remoteNodePub)
       <*> channelPointParser
-        (fromStrict $ x ^. LnGRPC.channelPoint)
+        (x ^. LnGRPC.channelPoint)
       <*> (toMSat <$> fromGrpc (x ^. LnGRPC.capacity))
       <*> ( toMSat
               <$> fromGrpc

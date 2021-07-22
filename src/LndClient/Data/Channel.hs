@@ -37,12 +37,12 @@ data PendingUpdate (a :: TxKind)
 instance FromGrpc Channel LnGRPC.Channel where
   fromGrpc x =
     Channel
-      <$> fromGrpc (fromStrict $ x ^. LnGRPC.remotePubkey)
-      <*> channelPointParser (fromStrict $ x ^. LnGRPC.channelPoint)
-      <*> (toMSat <$> fromGrpc (x ^. LnGRPC.capacity))
-      <*> (toMSat <$> fromGrpc (x ^. LnGRPC.localBalance))
-      <*> (toMSat <$> fromGrpc (x ^. LnGRPC.remoteBalance))
-      <*> (toMSat <$> fromGrpc (x ^. LnGRPC.commitFee))
+      <$> fromGrpc (x ^. LnGRPC.remotePubkey)
+      <*> channelPointParser (x ^. LnGRPC.channelPoint)
+      <*> fromGrpc (x ^. LnGRPC.capacity)
+      <*> fromGrpc (x ^. LnGRPC.localBalance)
+      <*> fromGrpc (x ^. LnGRPC.remoteBalance)
+      <*> fromGrpc (x ^. LnGRPC.commitFee)
       <*> fromGrpc (x ^. LnGRPC.active)
 
 instance FromGrpc [Channel] LnGRPC.ListChannelsResponse where

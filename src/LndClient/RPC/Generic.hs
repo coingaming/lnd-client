@@ -57,7 +57,7 @@ data RpcName
 instance ToJSON RpcName
 
 showElapsedSeconds :: Timespan -> Text
-showElapsedSeconds = fromStrict . encodeTimespan SubsecondPrecisionAuto
+showElapsedSeconds = encodeTimespan SubsecondPrecisionAuto
 
 grpcSyncSilent ::
   ( MonadIO m,

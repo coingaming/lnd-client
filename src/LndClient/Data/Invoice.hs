@@ -39,7 +39,7 @@ instance FromGrpc Invoice LnGRPC.Invoice where
       <*> fromGrpc (x ^. LnGRPC.settled)
       <*> fromGrpc (x ^. LnGRPC.settleIndex)
       <*> fromGrpc (x ^. LnGRPC.memo)
-      <*> fromGrpc (fromStrict $ x ^. LnGRPC.paymentRequest)
+      <*> fromGrpc (x ^. LnGRPC.paymentRequest)
       <*> fromGrpc (x ^. LnGRPC.private)
       <*> fromGrpc (x ^. LnGRPC.addIndex)
       <*> fromGrpc (x ^. LnGRPC.state)

@@ -32,8 +32,7 @@ instance
               Just this ->
                 fromGrpc this
           )
-      <*> fromGrpc
-        (fromStrict $ x ^. LnGRPC.closingTxid)
+      <*> fromGrpc (x ^. LnGRPC.closingTxid)
       <*> ( toMSat
               <$> fromGrpc
                 (x ^. LnGRPC.limboBalance)

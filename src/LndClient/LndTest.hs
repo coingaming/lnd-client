@@ -264,7 +264,7 @@ mine blocks owner = do
     BTC.generateToAddress
       bc
       blocks
-      (toStrict btcAddr)
+      btcAddr
       Nothing
   liftLndResult =<< syncWallets (Proxy :: Proxy owner)
 

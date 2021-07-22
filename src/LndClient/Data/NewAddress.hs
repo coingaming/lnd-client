@@ -54,4 +54,4 @@ instance ToGrpc AddressType LnGRPC.AddressType where
 
 instance FromGrpc NewAddressResponse LnGRPC.NewAddressResponse where
   fromGrpc x =
-    NewAddressResponse <$> Right (fromStrict $ x ^. LnGRPC.address)
+    NewAddressResponse <$> Right (x ^. LnGRPC.address)

@@ -23,8 +23,8 @@ data Peer
 instance FromGrpc Peer LnGRPC.Peer where
   fromGrpc x =
     Peer
-      <$> fromGrpc (fromStrict $ x ^. LnGRPC.pubKey)
-      <*> fromGrpc (fromStrict $ x ^. LnGRPC.address)
+      <$> fromGrpc (x ^. LnGRPC.pubKey)
+      <*> fromGrpc (x ^. LnGRPC.address)
 
 data LightningAddress
   = LightningAddress
@@ -41,8 +41,8 @@ instance ToGrpc LightningAddress LnGRPC.LightningAddress where
     where
       msg gPubkey gHost =
         defMessage
-          & LnGRPC.pubkey .~ toStrict gPubkey
-          & LnGRPC.host .~ toStrict gHost
+          & LnGRPC.pubkey .~ gPubkey
+          & LnGRPC.host .~ gHost
 
 data ConnectPeerRequest
   = ConnectPeerRequest
