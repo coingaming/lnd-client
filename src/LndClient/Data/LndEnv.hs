@@ -212,7 +212,7 @@ newLndEnv pwd _cert mac host port seed aezeed =
 
 katipAddLndContext :: (KatipContext m) => LndEnv -> m a -> m a
 katipAddLndContext env =
-  katipAddContext (sl "LndAddress:" h)
+  katipAddContext (sl "LndHost:" h)
     . katipAddContext (sl "LndPort" p)
   where
     h = _grpcClientConfigHost $ envLndConfig env
