@@ -43,6 +43,8 @@ import LndClient.Data.Newtype
 import LndClient.Data.Type
 import LndClient.Import.External as Ex
 import LndClient.Util as U
+import Network.GRPC.Client.Helpers (GrpcClientConfig (..), grpcClientConfigSimple)
+import Network.GRPC.HTTP2.Encoding (uncompressed)
 import Network.HTTP2.Client
 
 newtype LndWalletPassword = LndWalletPassword Text
@@ -90,7 +92,7 @@ data LndEnv
         envLndAezeedPassphrase :: Maybe AezeedPassphrase,
         envLndSyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
         envLndAsyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
-        envLndConfig :: LndConfig
+        envLndConfig :: GrpcClientConfig
       }
 
 instance ToGrpc LndWalletPassword ByteString where
@@ -202,22 +204,19 @@ newLndEnv pwd _cert mac host port seed aezeed =
       envLndSyncGrpcTimeout = Nothing,
       envLndAsyncGrpcTimeout = Nothing,
       envLndConfig =
-        LndConfig
-          { lndConfigHost = unpack $ coerce host,
-            lndConfigPort = fromInteger (toInteger (coerce port :: Int)),
-            lndConfigTlsEnabled = True,
-            lndConfigCompression = False
+        (grpcClientConfigSimple (unpack $ coerce host) (fromInteger (toInteger (coerce port :: Int))) True)
+          { _grpcClientConfigCompression = uncompressed,
+            _grpcClientConfigHeaders = [("macaroon", encodeUtf8 (coerce mac :: Text))]
           }
     }
 
 katipAddLndContext :: (KatipContext m) => LndEnv -> m a -> m a
 katipAddLndContext env =
-  katipAddContext (sl "LndHost" h)
+  katipAddContext (sl "LndAddress:" h)
     . katipAddContext (sl "LndPort" p)
   where
-    c = envLndConfig env
-    h = coerce $ lndConfigHost c :: String
-    p = toInteger $ lndConfigPort c :: Integer
+    h = _grpcClientConfigHost $ envLndConfig env
+    p = toInteger $ _grpcClientConfigPort $ envLndConfig env
 
 newSeverity :: LndEnv -> Severity -> Maybe Timespan -> Maybe LndError -> Severity
 newSeverity = coerce . envLndLogStrategy
