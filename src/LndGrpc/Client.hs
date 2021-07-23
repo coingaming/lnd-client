@@ -14,7 +14,6 @@ import GHC.TypeLits (Symbol)
 import LndClient.Data.LndEnv
 import LndClient.Import
 import Network.GRPC.Client.Helpers
---import Network.GRPC.HTTP2.Encoding (gzip, uncompressed)
 import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
 import Network.HPACK (HeaderList)
 import Network.HTTP2.Client
@@ -31,7 +30,7 @@ runUnary ::
   p (Either LndError res)
 runUnary rpc env req = do
   res <- liftIO $ runClientIO $ do
-    grpc <- makeClient env
+    grpc <- setupGrpcClient $ envLndConfig env
     rawUnary rpc grpc req
   return $ case res of
     Right (Right (Right (_, _, (Right x)))) -> Right x
@@ -53,15 +52,9 @@ runStreamServer ::
   p (Either LndError res)
 runStreamServer rpc env req handler = do
   r <- liftIO $ runClientIO $ do
-    grpc <- makeClient env
+    grpc <- setupGrpcClient $ envLndConfig env
     rawStreamServer rpc grpc () req $ const handler
   return $ case r of
     Right (Right ((), _, _)) -> Right defMessage
     Right (Left e) -> Left $ LndError ("LndGrpc response error: " <> show e)
     Left e -> Left $ LndGrpcError e
-
-makeClient ::
-  LndEnv ->
-  ClientIO GrpcClient
-makeClient env =
-  setupGrpcClient $ envLndConfig env
