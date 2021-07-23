@@ -26,10 +26,10 @@ stdenv.mkDerivation {
     haskell-ide
     /* Apps */
     bitcoin
+    gzip
     lnd
     /* Utils */
     grpc
-    proto3-suite.proto3-suite-linux
     git
     nix-prefetch-scripts
     openssl
@@ -38,6 +38,9 @@ stdenv.mkDerivation {
     protobuf
     cacert
     xxd
+    haskellPackages.proto-lens-protoc
+    which
+    stack2cabal
   ];
 
   TERM="xterm-256color";

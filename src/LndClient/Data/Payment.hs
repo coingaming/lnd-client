@@ -4,23 +4,38 @@ module LndClient.Data.Payment
 where
 
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data Payment
   = Payment
       { paymentHash :: RHash,
         paymentPreimage :: RPreimage,
         valueMsat :: MSat,
-        state :: GRPC.Payment_PaymentStatus
+        state :: PaymentStatus
       }
   deriving (Eq, Show)
 
-instance FromGrpc Payment GRPC.Payment where
+data PaymentStatus
+  = UNKNOWN
+  | IN_FLIGHT
+  | SUCCEEDED
+  | FAILED
+  deriving (Eq, Show)
+
+instance FromGrpc Payment LnGRPC.Payment where
   fromGrpc x =
     Payment
-      <$> fromGrpc (GRPC.paymentPaymentHash x)
-      <*> fromGrpc (GRPC.paymentPaymentPreimage x)
-      <*> fromGrpc (GRPC.paymentValueMsat x)
-      <*> first
-        (\e -> FromGrpcError $ "Invalid Payment State" <> show e)
-        (enumerated $ GRPC.paymentStatus x)
+      <$> fromGrpc (x ^. LnGRPC.paymentHash)
+      <*> fromGrpc (x ^. LnGRPC.paymentPreimage)
+      <*> fromGrpc (x ^. LnGRPC.valueMsat)
+      <*> fromGrpc (x ^. LnGRPC.status)
+
+instance FromGrpc PaymentStatus LnGRPC.Payment'PaymentStatus where
+  fromGrpc x =
+    case x of
+      LnGRPC.Payment'UNKNOWN -> Right UNKNOWN
+      LnGRPC.Payment'IN_FLIGHT -> Right IN_FLIGHT
+      LnGRPC.Payment'SUCCEEDED -> Right SUCCEEDED
+      LnGRPC.Payment'FAILED -> Right FAILED
+      LnGRPC.Payment'PaymentStatus'Unrecognized v -> Left $ FromGrpcError ("Cannot parse PaymentStatus, value:" <> show v)

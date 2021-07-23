@@ -31,7 +31,8 @@ import Data.Aeson as Import (FromJSON (..), ToJSON, fromJSON)
 import Data.ByteString as Import (ByteString)
 import Data.Coerce as Import (coerce)
 import Data.List.Extra as Import (enumerate)
-import Data.Text.Lazy as Import (Text, fromStrict, toStrict, unpack)
+import Data.Text as Import (Text, pack, unpack)
+import Data.Text.Lazy as Import (fromStrict, toStrict)
 import Data.Word as Import (Word64)
 import Database.Persist.Class as Import (PersistField)
 import Database.Persist.Sql as Import (PersistFieldSql)
@@ -60,7 +61,5 @@ import Katip as Import
     runKatipContextT,
     sl,
   )
-import Proto3.Suite.Class as Import (HasDefault (..), def)
-import Proto3.Suite.Types as Import (Enumerated (..))
 import Universum as Import hiding (Text)
 import UnliftIO as Import (MonadUnliftIO (..), UnliftIO (..))

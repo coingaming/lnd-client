@@ -1,3 +1,6 @@
+{-# LANGUAGE DeriveLift #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
 module LndClient.Data.Type
   ( LndError (..),
     LoggingStrategy (..),
@@ -9,12 +12,12 @@ where
 import Chronos (Timespan)
 import Control.Exception (Exception)
 import LndClient.Import.External
-import Network.GRPC.HighLevel.Generated
+import Network.HTTP2.Client.Exceptions as E
 
 data LndError
   = ToGrpcError Text
   | FromGrpcError Text
-  | GrpcError ClientError
+  | LndGrpcError E.ClientError
   | GrpcUnexpectedResult Text
   | GrpcEmptyResult
   | LndError Text

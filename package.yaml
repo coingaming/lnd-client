@@ -24,51 +24,56 @@ description:         Please see the README on GitHub at <https://github.com/gith
 #
 dependencies:
 # foundation
-- base >= 4.7 && < 5
-- universum
+- base                  >= 4.7 && < 5
+- universum             >= 1.5.0 && < 1.5.1
 # time
-- chronos
-- unbounded-delays
+- chronos               >= 1.0.7 && < 1.0.10
+- unbounded-delays      >= 0.1.1.0 && < 0.1.2
 # storage
-- persistent
+- persistent            >= 2.11.0.2 && < 2.11.1
 # logging
-- katip
+- katip                 >= 0.8.3.0 && < 0.8.4
 # byte and text
-- bytestring
-- base16-bytestring
-- base64-bytestring
-- text
-- aeson
+- bytestring            >= 0.10.8.2 && < 0.10.9
+- base16-bytestring     >= 1.0.1.0 && < 1.0.2
+- base64-bytestring     >= 1.0.0.2 && <  1.0.1
+- text                  >= 1.2.3.1 && < 1.2.4
+- aeson                 >= 1.4.4.0 && < 1.4.8
 # protobuf and gRPC
-- grpc-haskell
-- grpc-haskell-core
-- proto3-suite
-- proto3-wire
-- containers
-- deepseq
-- vector
+- containers            >= 0.6.0.1 && < 0.6.1
+- deepseq               >= 1.4.4.0 && < 1.4.5
 # images
-- qrcode-core
-- qrcode-juicypixels
-- JuicyPixels
+- qrcode-core           >= 0.9 && < 0.9.3
+- qrcode-juicypixels    >= 0.8.0 && < 0.8.1
+- JuicyPixels           >= 3.3.3 && < 3.4
 # system and threading
-- envparse
-- async
-- stm
+- envparse              >= 0.4.1 && < 0.4.2
+- async                 >= 2.2.2 && < 2.2.3
+- stm                   >= 2.5.0.0 && < 2.5.1
 # crypto
-- cryptonite
-- cryptohash-sha256
-- x509
+- cryptonite            >= 0.25 && < 0.27
+- cryptohash-sha256     >= 0.11.101.0 && < 0.11.102
+- x509                  >= 1.7.5 && < 1.7.6
 - asn1-encoding         >= 0.9.6 && < 0.10
 - asn1-types            >= 0.3 && < 0.4
 - pem                   >= 0.2.4 && < 0.3
 # bitcoin
-- network-bitcoin
+- network-bitcoin       >= 1.8.3 && < 1.9.2
 # general
-- unliftio
-- extra
-- scientific
-- template-haskell
+- unliftio              >= 0.2.12 && < 0.2.13
+- extra                 >= 1.6.18 && < 1.6.20
+- scientific            >= 0.3.6.2 && < 0.3.7
+- template-haskell      >= 2.14.0.0 && < 2.14.1
+# protobuf
+- microlens             >= 0.4.10 && < 0.5
+- proto-lens            >= 0.7.0 && < 0.8
+- proto-lens-runtime    >= 0.7.0 && < 0.8
+# proto-lens-grpc
+- http2-grpc-proto-lens >= 0.1.0.0 && < 0.1.1
+- http2-client          >= 0.10.0.0 && < 0.10.1
+- http2-client-grpc     >= 0.8.0.0 && < 0.8.1
+- http2-grpc-types      >= 0.5.0.0 && < 0.5.1
+- http2                 >= 2.0.3 && < 3.0.3
 
 library:
   source-dirs: src
@@ -85,6 +90,7 @@ library:
   # Enable all warnings with -Weverything, then disable the ones we don’t care about
   - -Weverything
   - -Werror
+  - -Wno-missing-export-lists
   - -Wno-missing-exported-signatures # missing-exported-signatures turns off the more strict -Wmissing-signatures. See https://ghc.haskell.org/trac/ghc/ticket/14794#ticket
   - -Wno-missing-import-lists # Requires explicit imports of _every_ function (e.g. ‘$’); too strict
   - -Wno-missed-specialisations # When GHC can’t specialize a polymorphic function. No big deal and requires fixing underlying libraries to solve.
@@ -97,7 +103,7 @@ library:
   #ld-options:
   #- -fuse-ld=gold
   dependencies:
-  - hspec
+  - hspec >= 2.7.1 && < 2.7.2
 
 tests:
   lnd-client-test:
@@ -133,4 +139,5 @@ tests:
     #- -fuse-ld=gold
     dependencies:
     - lnd-client
-    - hspec
+    - hspec >= 2.7.1 && < 2.7.2
+

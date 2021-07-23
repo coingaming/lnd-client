@@ -10,6 +10,7 @@ module LndClient.Data.LndEnv
     LndHexMacaroon (..),
     LndHost (..),
     LndPort,
+    LndConfig (..),
     newLndEnv,
     readLndEnv,
     createLndTlsCert,
@@ -32,10 +33,9 @@ import Data.Aeson as A
     genericParseJSON,
     withObject,
   )
-import Data.ByteString.Char8 as C8
+import qualified Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
 import Data.Scientific
-import Data.Text.Lazy as LT
 import Data.X509
 import Env
 import LndClient.Class
@@ -43,8 +43,9 @@ import LndClient.Data.Newtype
 import LndClient.Data.Type
 import LndClient.Import.External as Ex
 import LndClient.Util as U
-import Network.GRPC.HighLevel.Generated
-import Network.GRPC.LowLevel.Client
+import Network.GRPC.Client.Helpers (GrpcClientConfig (..), grpcClientConfigSimple)
+import Network.GRPC.HTTP2.Encoding (uncompressed)
+import Network.HTTP2.Client
 
 newtype LndWalletPassword = LndWalletPassword Text
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
@@ -60,6 +61,15 @@ newtype LndHost = LndHost Text
 
 newtype LndPort = LndPort Int
   deriving (PersistField, PersistFieldSql, Eq)
+
+data LndConfig
+  = LndConfig
+      { lndConfigHost :: HostName,
+        lndConfigPort :: PortNumber,
+        lndConfigTlsEnabled :: Bool,
+        lndConfigCompression :: Bool
+      }
+  deriving (Show)
 
 data RawConfig
   = RawConfig
@@ -77,12 +87,12 @@ data LndEnv
   = LndEnv
       { envLndWalletPassword :: LndWalletPassword,
         envLndHexMacaroon :: LndHexMacaroon,
-        envLndGrpcConfig :: ClientConfig,
         envLndLogStrategy :: LoggingStrategy,
         envLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
         envLndAezeedPassphrase :: Maybe AezeedPassphrase,
         envLndSyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
-        envLndAsyncGrpcTimeout :: Maybe GrpcTimeoutSeconds
+        envLndAsyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
+        envLndConfig :: GrpcClientConfig
       }
 
 instance ToGrpc LndWalletPassword ByteString where
@@ -146,11 +156,11 @@ instance FromJSON LndEnv where
 
 createLndTlsCert :: ByteString -> Either LndError LndTlsCert
 createLndTlsCert bs = do
-  pemsM <- first (LndEnvError . LT.pack) $ Pem.pemParseBS bs
+  pemsM <- first (LndEnvError . pack) $ Pem.pemParseBS bs
   pem <-
-    note (LndEnvError $ LT.pack "No pem found") $ safeHead pemsM
+    note (LndEnvError $ pack "No pem found") $ safeHead pemsM
   bimap
-    (LndEnvError . LT.pack . ("Certificate is not valid: " <>))
+    (LndEnvError . pack . ("Certificate is not valid: " <>))
     (const $ LndTlsCert bs)
     (decodeSignedCertificate $ Pem.pemContent pem)
 
@@ -184,7 +194,7 @@ newLndEnv ::
   Maybe CipherSeedMnemonic ->
   Maybe AezeedPassphrase ->
   LndEnv
-newLndEnv pwd cert mac host port seed aezeed =
+newLndEnv pwd _cert mac host port seed aezeed =
   LndEnv
     { envLndWalletPassword = pwd,
       envLndHexMacaroon = mac,
@@ -193,34 +203,20 @@ newLndEnv pwd cert mac host port seed aezeed =
       envLndAezeedPassphrase = aezeed,
       envLndSyncGrpcTimeout = Nothing,
       envLndAsyncGrpcTimeout = Nothing,
-      envLndGrpcConfig =
-        ClientConfig
-          { clientServerHost =
-              Host $
-                encodeUtf8 (coerce host :: Text),
-            clientServerPort = Port $ coerce port,
-            clientArgs = [],
-            clientSSLConfig =
-              Just $
-                ClientSSLConfig
-                  { serverRootCert = Just $ coerce cert,
-                    clientSSLKeyCertPair = Nothing,
-                    clientMetadataPlugin = Nothing
-                  },
-            clientAuthority = Nothing
+      envLndConfig =
+        (grpcClientConfigSimple (unpack $ coerce host) (fromInteger (toInteger (coerce port :: Int))) True)
+          { _grpcClientConfigCompression = uncompressed,
+            _grpcClientConfigHeaders = [("macaroon", encodeUtf8 (coerce mac :: Text))]
           }
     }
 
 katipAddLndContext :: (KatipContext m) => LndEnv -> m a -> m a
 katipAddLndContext env =
-  katipAddContext (sl "LndHost" h)
+  katipAddContext (sl "LndHost:" h)
     . katipAddContext (sl "LndPort" p)
   where
-    c = envLndGrpcConfig env
-    h = case decodeUtf8' $ coerce $ clientServerHost c of
-      Left _ -> "NOT_UTF8"
-      Right x -> x
-    p = coerce $ clientServerPort c :: Int
+    h = _grpcClientConfigHost $ envLndConfig env
+    p = toInteger $ _grpcClientConfigPort $ envLndConfig env
 
 newSeverity :: LndEnv -> Severity -> Maybe Timespan -> Maybe LndError -> Severity
 newSeverity = coerce . envLndLogStrategy

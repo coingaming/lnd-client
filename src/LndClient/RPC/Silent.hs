@@ -39,6 +39,7 @@ module LndClient.RPC.Silent
   )
 where
 
+import Data.ProtoLens.Message
 import LndClient.Data.AddHodlInvoice as AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice (AddInvoiceResponse (..))
 import qualified LndClient.Data.Channel as Channel

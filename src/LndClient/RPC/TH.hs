@@ -7,7 +7,6 @@ module LndClient.RPC.TH
   )
 where
 
-import qualified InvoiceGrpc as GRPC
 import Language.Haskell.TH.Syntax
 import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
@@ -19,13 +18,14 @@ import LndClient.Data.CloseChannel
     CloseStatusUpdate (..),
   )
 import LndClient.Data.ClosedChannels (ClosedChannelsRequest (..))
-import LndClient.Data.GetInfo
+import qualified LndClient.Data.GetInfo as GI
 import LndClient.Data.HtlcEvent (HtlcEvent (..))
-import LndClient.Data.InitWallet (InitWalletRequest (..))
+import qualified LndClient.Data.InitWallet as IW
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (ListChannelsRequest (..))
 import LndClient.Data.ListInvoices (ListInvoiceRequest (..), ListInvoiceResponse (..))
-import LndClient.Data.NewAddress (NewAddressResponse (..))
+import LndClient.Data.NewAddress (NewAddressRequest (..), NewAddressResponse (..))
+import LndClient.Data.OpenChannel
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq (PayReq (..))
 import LndClient.Data.Payment (Payment (..))
@@ -41,12 +41,14 @@ import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
 import LndClient.Data.TrackPayment (TrackPaymentRequest (..))
-import LndClient.Data.UnlockWallet (UnlockWalletRequest (..))
+import qualified LndClient.Data.UnlockWallet as UW
 import LndClient.Import
 import LndClient.RPC.Generic
-import qualified LndGrpc as GRPC
-import qualified RouterGrpc as GRPC
-import qualified WalletUnlockerGrpc as GRPC
+import Network.GRPC.HTTP2.ProtoLens (RPC (..))
+import qualified Proto.InvoiceGrpc as LnGRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.RouterGrpc as LnGRPC
+import qualified Proto.WalletUnlockerGrpc as LnGRPC
 
 data RpcKind = RpcSilent | RpcKatip
 
@@ -56,37 +58,33 @@ mkRpc k = do
     getInfo ::
       ($(tcc) m) =>
       LndEnv ->
-      m (Either LndError GetInfoResponse)
+      m (Either LndError GI.GetInfoResponse)
     getInfo env =
       $(grpcRetry) $
         $(grpcSync)
-          GetInfo
-          GRPC.lightningClient
-          GRPC.lightningGetInfo
+          (RPC :: RPC LnGRPC.Lightning "getInfo")
           env
-          GRPC.GetInfoRequest
+          (defMessage :: LnGRPC.GetInfoRequest)
 
     initWallet ::
       ($(tcc) m) =>
       LndEnv ->
       m (Either LndError ())
-    initWallet env =
+    initWallet env = do
       case envLndCipherSeedMnemonic env of
         Nothing -> pure . Left $ LndEnvError "CipherSeed is required for initWallet"
         Just seed -> do
           res <-
             $(grpcRetry) $
               $(grpcSync)
-                InitWallet
-                GRPC.walletUnlockerClient
-                GRPC.walletUnlockerInitWallet
+                (RPC :: RPC LnGRPC.WalletUnlocker "initWallet")
                 env
-                InitWalletRequest
-                  { walletPassword =
+                IW.InitWalletRequest
+                  { IW.walletPassword =
                       coerce $ envLndWalletPassword env,
-                    cipherSeedMnemonic =
+                    IW.cipherSeedMnemonic =
                       coerce seed,
-                    aezeedPassphrase =
+                    IW.aezeedPassphrase =
                       coerce $ envLndAezeedPassphrase env
                   }
           if isRight res
@@ -101,18 +99,11 @@ mkRpc k = do
       res <-
         $(grpcRetry) $
           $(grpcSync)
-            UnlockWallet
-            GRPC.walletUnlockerClient
-            GRPC.walletUnlockerUnlockWallet
+            (RPC :: RPC LnGRPC.WalletUnlocker "unlockWallet")
             env
-            UnlockWalletRequest
-              { walletPassword = coerce $ envLndWalletPassword env,
-                --
-                -- TODO : this is related to BIP44
-                -- hardcoded value will be sufficient for most cases
-                -- but maybe let's have it in LndEnv as well?
-                --
-                recoveryWindow = 100
+            UW.UnlockWalletRequest
+              { UW.walletPassword = coerce $ envLndWalletPassword env,
+                UW.recoveryWindow = 100
               }
       if isRight res
         then waitForGrpc env
@@ -121,16 +112,13 @@ mkRpc k = do
     newAddress ::
       ($(tcc) m) =>
       LndEnv ->
-      GRPC.AddressType ->
+      NewAddressRequest ->
       m (Either LndError NewAddressResponse)
-    newAddress env req =
-      $(grpcRetry) $
-        $(grpcSync)
-          NewAddress
-          GRPC.lightningClient
-          GRPC.lightningNewAddress
+    newAddress env =
+      $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.Lightning "newAddress")
           env
-          (GRPC.NewAddressRequest $ Enumerated $ Right req)
 
     addInvoice ::
       ($(tcc) m) =>
@@ -140,9 +128,7 @@ mkRpc k = do
     addInvoice env =
       $(grpcRetry)
         . $(grpcSync)
-          AddInvoice
-          GRPC.lightningClient
-          GRPC.lightningAddInvoice
+          (RPC :: RPC LnGRPC.Lightning "addInvoice")
           env
 
     addHodlInvoice ::
@@ -153,9 +139,7 @@ mkRpc k = do
     addHodlInvoice env =
       $(grpcRetry)
         . $(grpcSync)
-          AddHodlInvoice
-          GRPC.invoicesClient
-          GRPC.invoicesAddHoldInvoice
+          (RPC :: RPC LnGRPC.Invoices "addHoldInvoice")
           env
 
     cancelInvoice ::
@@ -166,9 +150,7 @@ mkRpc k = do
     cancelInvoice env =
       $(grpcRetry)
         . $(grpcSync)
-          CancelInvoice
-          GRPC.invoicesClient
-          GRPC.invoicesCancelInvoice
+          (RPC :: RPC LnGRPC.Invoices "cancelInvoice")
           env
 
     settleInvoice ::
@@ -179,9 +161,7 @@ mkRpc k = do
     settleInvoice env =
       $(grpcRetry)
         . $(grpcSync)
-          SettleInvoice
-          GRPC.invoicesClient
-          GRPC.invoicesSettleInvoice
+          (RPC :: RPC LnGRPC.Invoices "settleInvoice")
           env
 
     subscribeSingleInvoice ::
@@ -192,9 +172,7 @@ mkRpc k = do
       m (Either LndError ())
     subscribeSingleInvoice =
       $(grpcSubscribe)
-        SubscribeSingleInvoice
-        GRPC.invoicesClient
-        GRPC.invoicesSubscribeSingleInvoice
+        (RPC :: RPC LnGRPC.Invoices "subscribeSingleInvoice")
 
     subscribeSingleInvoiceChan ::
       ($(tcc) m) =>
@@ -217,9 +195,7 @@ mkRpc k = do
       m (Either LndError ())
     subscribeInvoices =
       $(grpcSubscribe)
-        SubscribeInvoices
-        GRPC.lightningClient
-        GRPC.lightningSubscribeInvoices
+        (RPC :: RPC LnGRPC.Lightning "subscribeInvoices")
 
     subscribeInvoicesChan ::
       ($(tcc) m) =>
@@ -241,12 +217,10 @@ mkRpc k = do
       m (Either LndError ())
     subscribeChannelEvents handler env =
       $(grpcSubscribe)
-        SubscribeChannelEvents
-        GRPC.lightningClient
-        GRPC.lightningSubscribeChannelEvents
+        (RPC :: RPC LnGRPC.Lightning "subscribeChannelEvents")
         handler
         env
-        GRPC.ChannelEventSubscription {}
+        (defMessage :: LnGRPC.ChannelEventSubscription)
 
     subscribeChannelEventsChan ::
       ($(tcc) m) =>
@@ -261,26 +235,23 @@ mkRpc k = do
 
     openChannel ::
       ($(tcc) m) =>
-      (GRPC.OpenStatusUpdate -> IO ()) ->
+      (OpenStatusUpdate -> IO ()) ->
       LndEnv ->
       OpenChannelRequest ->
       m (Either LndError ())
     openChannel =
       $(grpcSubscribe)
-        OpenChannel
-        GRPC.lightningClient
-        GRPC.lightningOpenChannel
+        (RPC :: RPC LnGRPC.Lightning "openChannel")
 
     openChannelSync ::
       ($(tcc) m) =>
       LndEnv ->
       OpenChannelRequest ->
       m (Either LndError ChannelPoint)
-    openChannelSync =
+    openChannelSync env =
       $(grpcSync)
-        OpenChannelSync
-        GRPC.lightningClient
-        GRPC.lightningOpenChannelSync
+        (RPC :: RPC LnGRPC.Lightning "openChannelSync")
+        env
 
     listChannels ::
       ($(tcc) m) =>
@@ -290,9 +261,7 @@ mkRpc k = do
     listChannels env =
       $(grpcRetry)
         . $(grpcSync)
-          ListChannels
-          GRPC.lightningClient
-          GRPC.lightningListChannels
+          (RPC :: RPC LnGRPC.Lightning "listChannels")
           env
 
     listInvoices ::
@@ -303,9 +272,7 @@ mkRpc k = do
     listInvoices env =
       $(grpcRetry)
         . $(grpcSync)
-          ListInvoices
-          GRPC.lightningClient
-          GRPC.lightningListInvoices
+          (RPC :: RPC LnGRPC.Lightning "listInvoices")
           env
 
     closedChannels ::
@@ -316,9 +283,7 @@ mkRpc k = do
     closedChannels env =
       $(grpcRetry)
         . $(grpcSync)
-          ClosedChannels
-          GRPC.lightningClient
-          GRPC.lightningClosedChannels
+          (RPC :: RPC LnGRPC.Lightning "closedChannels")
           env
 
     closeChannel ::
@@ -329,9 +294,7 @@ mkRpc k = do
       m (Either LndError ())
     closeChannel =
       $(grpcSubscribe)
-        CloseChannel
-        GRPC.lightningClient
-        GRPC.lightningCloseChannel
+        (RPC :: RPC LnGRPC.Lightning "closeChannel")
 
     listPeers ::
       ($(tcc) m) =>
@@ -340,11 +303,9 @@ mkRpc k = do
     listPeers env =
       $(grpcRetry) $
         $(grpcSync)
-          ListPeers
-          GRPC.lightningClient
-          GRPC.lightningListPeers
+          (RPC :: RPC LnGRPC.Lightning "listPeers")
           env
-          (def :: GRPC.ListPeersRequest)
+          (defMessage :: LnGRPC.ListPeersRequest)
 
     connectPeer ::
       ($(tcc) m) =>
@@ -354,9 +315,7 @@ mkRpc k = do
     connectPeer env =
       $(grpcRetry)
         . $(grpcSync)
-          ConnectPeer
-          GRPC.lightningClient
-          GRPC.lightningConnectPeer
+          (RPC :: RPC LnGRPC.Lightning "connectPeer")
           env
 
     lazyConnectPeer ::
@@ -384,9 +343,7 @@ mkRpc k = do
     sendPayment env =
       $(grpcRetry)
         . $(grpcSync)
-          SendPayment
-          GRPC.lightningClient
-          GRPC.lightningSendPaymentSync
+          (RPC :: RPC LnGRPC.Lightning "sendPaymentSync")
           env
 
     subscribeHtlcEvents ::
@@ -396,12 +353,10 @@ mkRpc k = do
       m (Either LndError ())
     subscribeHtlcEvents handler env =
       $(grpcSubscribe)
-        SubscribeHtlcEvents
-        GRPC.routerClient
-        GRPC.routerSubscribeHtlcEvents
+        (RPC :: RPC LnGRPC.Router "subscribeHtlcEvents")
         handler
         env
-        GRPC.SubscribeHtlcEventsRequest {}
+        (defMessage :: LnGRPC.SubscribeHtlcEventsRequest)
 
     decodePayReq ::
       ($(tcc) m) =>
@@ -411,9 +366,7 @@ mkRpc k = do
     decodePayReq env =
       $(grpcRetry)
         . $(grpcSync)
-          DecodePayReq
-          GRPC.lightningClient
-          GRPC.lightningDecodePayReq
+          (RPC :: RPC LnGRPC.Lightning "decodePayReq")
           env
 
     lookupInvoice ::
@@ -424,9 +377,7 @@ mkRpc k = do
     lookupInvoice env =
       $(grpcRetry)
         . $(grpcSync)
-          LookupInvoice
-          GRPC.lightningClient
-          GRPC.lightningLookupInvoice
+          (RPC :: RPC LnGRPC.Lightning "lookupInvoice")
           env
 
     trackPaymentV2 ::
@@ -437,9 +388,7 @@ mkRpc k = do
       m (Either LndError ())
     trackPaymentV2 =
       $(grpcSubscribe)
-        TrackPaymentV2
-        GRPC.routerClient
-        GRPC.routerTrackPaymentV2
+        (RPC :: RPC LnGRPC.Router "trackPaymentV2")
 
     trackPaymentV2Chan ::
       ($(tcc) m) =>
@@ -461,11 +410,9 @@ mkRpc k = do
     pendingChannels env =
       $(grpcRetry) $
         $(grpcSync)
-          PendingChannels
-          GRPC.lightningClient
-          GRPC.lightningPendingChannels
+          (RPC :: RPC LnGRPC.Lightning "pendingChannels")
           env
-          GRPC.PendingChannelsRequest
+          (defMessage :: LnGRPC.PendingChannelsRequest)
     |]
   where
     tcc = case k of

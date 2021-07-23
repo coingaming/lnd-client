@@ -49,5 +49,5 @@ qrPixels opts x = QRPixels . toImage (qrBorder opts) (qrScale opts) <$> qrGeneri
 
 qrPngDataUrl :: QR.ToText a => QROpts -> a -> Maybe QRPngDataUrl
 qrPngDataUrl opts x =
-  QRPngDataUrl . toPngDataUrlT (qrBorder opts) (qrScale opts)
+  QRPngDataUrl . toStrict . toPngDataUrlT (qrBorder opts) (qrScale opts)
     <$> qrGeneric x

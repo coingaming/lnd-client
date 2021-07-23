@@ -1,10 +1,14 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module LndClient.Data.AddHodlInvoice
   ( AddHodlInvoiceRequest (..),
   )
 where
 
-import qualified InvoiceGrpc as GRPC
+import Data.ProtoLens.Message
 import LndClient.Import
+import qualified Proto.InvoiceGrpc as LnGRPC
+import qualified Proto.InvoiceGrpc_Fields as LnGRPC
 
 data AddHodlInvoiceRequest
   = AddHodlInvoiceRequest
@@ -15,7 +19,7 @@ data AddHodlInvoiceRequest
       }
   deriving (Eq, Show)
 
-instance ToGrpc AddHodlInvoiceRequest GRPC.AddHoldInvoiceRequest where
+instance ToGrpc AddHodlInvoiceRequest LnGRPC.AddHoldInvoiceRequest where
   toGrpc x =
     msg
       <$> toGrpc (memo x)
@@ -24,9 +28,8 @@ instance ToGrpc AddHodlInvoiceRequest GRPC.AddHoldInvoiceRequest where
       <*> toGrpc (expiry x)
     where
       msg gMemo gHash gValue gExp =
-        def
-          { GRPC.addHoldInvoiceRequestMemo = gMemo,
-            GRPC.addHoldInvoiceRequestHash = gHash,
-            GRPC.addHoldInvoiceRequestValueMsat = gValue,
-            GRPC.addHoldInvoiceRequestExpiry = gExp
-          }
+        defMessage
+          & LnGRPC.memo .~ gMemo
+          & LnGRPC.hash .~ gHash
+          & LnGRPC.valueMsat .~ gValue
+          & LnGRPC.expiry .~ gExp

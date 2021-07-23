@@ -5,7 +5,8 @@ where
 
 import LndClient.Data.PendingChannel
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data ClosedChannel
   = ClosedChannel
@@ -17,7 +18,7 @@ data ClosedChannel
 instance
   FromGrpc
     ClosedChannel
-    GRPC.PendingChannelsResponse_ClosedChannel
+    LnGRPC.PendingChannelsResponse'ClosedChannel
   where
   fromGrpc x =
     ClosedChannel
@@ -28,7 +29,7 @@ instance
                 fromGrpc this
           )
       <*> fromGrpc
-        (GRPC.pendingChannelsResponse_ClosedChannelClosingTxid x)
+        (x ^. LnGRPC.closingTxid)
     where
       pendingChannel =
-        GRPC.pendingChannelsResponse_ClosedChannelChannel x
+        x ^. LnGRPC.maybe'channel

@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 module LndClient.Data.ListInvoices
@@ -7,9 +8,11 @@ module LndClient.Data.ListInvoices
   )
 where
 
+import Data.ProtoLens.Message
 import LndClient.Data.Invoice (Invoice)
 import LndClient.Import
-import qualified LndGrpc as Grpc
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data ListInvoiceRequest
   = ListInvoiceRequest
@@ -28,7 +31,7 @@ data ListInvoiceResponse
       }
   deriving (Generic, Show)
 
-instance ToGrpc ListInvoiceRequest Grpc.ListInvoiceRequest where
+instance ToGrpc ListInvoiceRequest LnGRPC.ListInvoiceRequest where
   toGrpc x =
     msg
       <$> toGrpc (pendingOnly x)
@@ -36,17 +39,16 @@ instance ToGrpc ListInvoiceRequest Grpc.ListInvoiceRequest where
       <*> toGrpc (numMaxInvoices x)
       <*> toGrpc (reversed x)
     where
-      msg x0 x1 x2 x3 =
-        def
-          { Grpc.listInvoiceRequestPendingOnly = x0,
-            Grpc.listInvoiceRequestIndexOffset = x1,
-            Grpc.listInvoiceRequestNumMaxInvoices = x2,
-            Grpc.listInvoiceRequestReversed = x3
-          }
+      msg gPendingOnly gIndexOffset gNumMaxInvoices gReversed =
+        defMessage
+          & LnGRPC.pendingOnly .~ gPendingOnly
+          & LnGRPC.indexOffset .~ gIndexOffset
+          & LnGRPC.numMaxInvoices .~ gNumMaxInvoices
+          & LnGRPC.reversed .~ gReversed
 
-instance FromGrpc ListInvoiceResponse Grpc.ListInvoiceResponse where
+instance FromGrpc ListInvoiceResponse LnGRPC.ListInvoiceResponse where
   fromGrpc x =
     ListInvoiceResponse
-      <$> fromGrpc (Grpc.listInvoiceResponseInvoices x)
-      <*> fromGrpc (Grpc.listInvoiceResponseLastIndexOffset x)
-      <*> fromGrpc (Grpc.listInvoiceResponseFirstIndexOffset x)
+      <$> fromGrpc (x ^. LnGRPC.invoices)
+      <*> fromGrpc (x ^. LnGRPC.lastIndexOffset)
+      <*> fromGrpc (x ^. LnGRPC.firstIndexOffset)

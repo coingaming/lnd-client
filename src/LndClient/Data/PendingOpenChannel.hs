@@ -5,7 +5,8 @@ where
 
 import LndClient.Data.PendingChannel
 import LndClient.Import
-import qualified LndGrpc as G
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data PendingOpenChannel
   = PendingOpenChannel
@@ -20,21 +21,21 @@ data PendingOpenChannel
 instance
   FromGrpc
     PendingOpenChannel
-    G.PendingChannelsResponse_PendingOpenChannel
+    LnGRPC.PendingChannelsResponse'PendingOpenChannel
   where
   fromGrpc x =
     PendingOpenChannel
       <$> fromGrpc
-        (G.pendingChannelsResponse_PendingOpenChannelChannel x)
+        (x ^. LnGRPC.channel)
       <*> fromGrpc
-        (G.pendingChannelsResponse_PendingOpenChannelConfirmationHeight x)
+        (x ^. LnGRPC.confirmationHeight)
       <*> ( toMSat
               <$> fromGrpc
-                (G.pendingChannelsResponse_PendingOpenChannelCommitFee x)
+                (x ^. LnGRPC.commitFee)
           )
       <*> fromGrpc
-        (G.pendingChannelsResponse_PendingOpenChannelCommitWeight x)
+        (x ^. LnGRPC.commitWeight)
       <*> ( toMSat
               <$> fromGrpc
-                (G.pendingChannelsResponse_PendingOpenChannelFeePerKw x)
+                (x ^. LnGRPC.feePerKw)
           )

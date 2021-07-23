@@ -4,7 +4,8 @@ module LndClient.Data.PayReq
 where
 
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data PayReq
   = PayReq
@@ -14,9 +15,9 @@ data PayReq
       }
   deriving (Eq, Show)
 
-instance FromGrpc PayReq GRPC.PayReq where
+instance FromGrpc PayReq LnGRPC.PayReq where
   fromGrpc x =
     PayReq
-      <$> fromGrpc (GRPC.payReqPaymentHash x)
-      <*> fromGrpc (GRPC.payReqNumMsat x)
-      <*> fromGrpc (GRPC.payReqExpiry x)
+      <$> fromGrpc (x ^. LnGRPC.paymentHash)
+      <*> fromGrpc (x ^. LnGRPC.numMsat)
+      <*> fromGrpc (x ^. LnGRPC.expiry)

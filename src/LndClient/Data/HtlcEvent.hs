@@ -4,7 +4,8 @@ module LndClient.Data.HtlcEvent
 where
 
 import LndClient.Import
-import qualified RouterGrpc as GRPC
+import qualified Proto.RouterGrpc as LnGRPC
+import qualified Proto.RouterGrpc_Fields as LnGRPC
 
 data HtlcEvent
   = HtlcEvent
@@ -13,16 +14,32 @@ data HtlcEvent
         incomingHtlcId :: Word64,
         outgoingHtlcId :: Word64,
         timestampNs :: Word64,
-        eventType :: Enumerated GRPC.HtlcEvent_EventType
+        eventType :: EventType
       }
   deriving (Eq)
 
-instance FromGrpc HtlcEvent GRPC.HtlcEvent where
+data EventType
+  = UNKNOWN
+  | SEND
+  | RECEIVE
+  | FORWARD
+  deriving (Eq)
+
+instance FromGrpc HtlcEvent LnGRPC.HtlcEvent where
   fromGrpc x =
     HtlcEvent
-      <$> fromGrpc (GRPC.htlcEventIncomingChannelId x)
-      <*> fromGrpc (GRPC.htlcEventOutgoingChannelId x)
-      <*> fromGrpc (GRPC.htlcEventIncomingHtlcId x)
-      <*> fromGrpc (GRPC.htlcEventOutgoingHtlcId x)
-      <*> fromGrpc (GRPC.htlcEventTimestampNs x)
-      <*> fromGrpc (GRPC.htlcEventEventType x)
+      <$> fromGrpc (x ^. LnGRPC.incomingChannelId)
+      <*> fromGrpc (x ^. LnGRPC.outgoingChannelId)
+      <*> fromGrpc (x ^. LnGRPC.incomingHtlcId)
+      <*> fromGrpc (x ^. LnGRPC.outgoingHtlcId)
+      <*> fromGrpc (x ^. LnGRPC.timestampNs)
+      <*> fromGrpc (x ^. LnGRPC.eventType)
+
+instance FromGrpc EventType LnGRPC.HtlcEvent'EventType where
+  fromGrpc x =
+    case x of
+      LnGRPC.HtlcEvent'UNKNOWN -> Right UNKNOWN
+      LnGRPC.HtlcEvent'SEND -> Right SEND
+      LnGRPC.HtlcEvent'RECEIVE -> Right RECEIVE
+      LnGRPC.HtlcEvent'FORWARD -> Right FORWARD
+      LnGRPC.HtlcEvent'EventType'Unrecognized v -> Left $ FromGrpcError ("Cannot parse EventType, value:" <> show v)

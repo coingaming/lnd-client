@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 module LndClient.Data.Peer
@@ -7,8 +8,10 @@ module LndClient.Data.Peer
   )
 where
 
+import Data.ProtoLens.Message
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data Peer
   = Peer
@@ -17,11 +20,11 @@ data Peer
       }
   deriving (Eq, Show)
 
-instance FromGrpc Peer GRPC.Peer where
+instance FromGrpc Peer LnGRPC.Peer where
   fromGrpc x =
     Peer
-      <$> fromGrpc (GRPC.peerPubKey x)
-      <*> fromGrpc (GRPC.peerAddress x)
+      <$> fromGrpc (x ^. LnGRPC.pubKey)
+      <*> fromGrpc (x ^. LnGRPC.address)
 
 data LightningAddress
   = LightningAddress
@@ -30,17 +33,16 @@ data LightningAddress
       }
   deriving (Eq, Show, Read)
 
-instance ToGrpc LightningAddress GRPC.LightningAddress where
+instance ToGrpc LightningAddress LnGRPC.LightningAddress where
   toGrpc x =
     msg
       <$> toGrpc (pubkey x)
       <*> toGrpc (host x)
     where
       msg gPubkey gHost =
-        def
-          { GRPC.lightningAddressPubkey = gPubkey,
-            GRPC.lightningAddressHost = gHost
-          }
+        defMessage
+          & LnGRPC.pubkey .~ gPubkey
+          & LnGRPC.host .~ gHost
 
 data ConnectPeerRequest
   = ConnectPeerRequest
@@ -49,17 +51,16 @@ data ConnectPeerRequest
       }
   deriving (Eq, Show)
 
-instance ToGrpc ConnectPeerRequest GRPC.ConnectPeerRequest where
+instance ToGrpc ConnectPeerRequest LnGRPC.ConnectPeerRequest where
   toGrpc x =
     msg
       <$> toGrpc (addr x)
       <*> toGrpc (perm x)
     where
       msg gAddr gPerm =
-        def
-          { GRPC.connectPeerRequestAddr = gAddr,
-            GRPC.connectPeerRequestPerm = gPerm
-          }
+        defMessage
+          & LnGRPC.addr .~ gAddr
+          & LnGRPC.perm .~ gPerm
 
-instance FromGrpc [Peer] GRPC.ListPeersResponse where
-  fromGrpc = fromGrpc . GRPC.listPeersResponsePeers
+instance FromGrpc [Peer] LnGRPC.ListPeersResponse where
+  fromGrpc x = sequence $ fromGrpc <$> (x ^. LnGRPC.peers)

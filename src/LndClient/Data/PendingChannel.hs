@@ -5,7 +5,8 @@ where
 
 import LndClient.Data.ChannelPoint
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data PendingChannel
   = PendingChannel
@@ -22,28 +23,28 @@ data PendingChannel
 instance
   FromGrpc
     PendingChannel
-    GRPC.PendingChannelsResponse_PendingChannel
+    LnGRPC.PendingChannelsResponse'PendingChannel
   where
   fromGrpc x =
     PendingChannel
       <$> fromGrpc
-        (GRPC.pendingChannelsResponse_PendingChannelRemoteNodePub x)
+        (x ^. LnGRPC.remoteNodePub)
       <*> channelPointParser
-        (GRPC.pendingChannelsResponse_PendingChannelChannelPoint x)
-      <*> (toMSat <$> fromGrpc (GRPC.pendingChannelsResponse_PendingChannelCapacity x))
+        (x ^. LnGRPC.channelPoint)
+      <*> (toMSat <$> fromGrpc (x ^. LnGRPC.capacity))
       <*> ( toMSat
               <$> fromGrpc
-                (GRPC.pendingChannelsResponse_PendingChannelLocalBalance x)
+                (x ^. LnGRPC.localBalance)
           )
       <*> ( toMSat
               <$> fromGrpc
-                (GRPC.pendingChannelsResponse_PendingChannelRemoteBalance x)
+                (x ^. LnGRPC.remoteBalance)
           )
       <*> ( toMSat
               <$> fromGrpc
-                (GRPC.pendingChannelsResponse_PendingChannelLocalChanReserveSat x)
+                (x ^. LnGRPC.localChanReserveSat)
           )
       <*> ( toMSat
               <$> fromGrpc
-                (GRPC.pendingChannelsResponse_PendingChannelRemoteChanReserveSat x)
+                (x ^. LnGRPC.remoteChanReserveSat)
           )

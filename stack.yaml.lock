@@ -96,51 +96,75 @@ packages:
   original:
     hackage: swagger2-2.3.1.1
 - completed:
-    size: 109675
-    subdir: core
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
-    name: grpc-haskell-core
-    version: 0.0.0.0
-    sha256: 0a56b54cbffbb3d81bd631183bcd68207b1edf899fa573556cf313476232360b
+    hackage: ghc-source-gen-0.4.1.0@sha256:6d0d242adcfaa0bf45dc45b6b65619e1423ee701a9c380ffb5751372492999cc,3693
     pantry-tree:
-      size: 2543
-      sha256: d967256967b693a9ca31a62d4d6e22024f536170d9b48886a9a1af1b1fc35813
+      size: 2304
+      sha256: 1ad1a14b1f19987df6707211f4c8b1e825a497e5c8fef1d1f88d622a7e8c1f21
   original:
-    subdir: core
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
+    hackage: ghc-source-gen-0.4.1.0@sha256:6d0d242adcfaa0bf45dc45b6b65619e1423ee701a9c380ffb5751372492999cc,3693
 - completed:
-    size: 109675
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
-    name: grpc-haskell
-    version: 0.0.2.0
-    sha256: 0a56b54cbffbb3d81bd631183bcd68207b1edf899fa573556cf313476232360b
+    hackage: proto-lens-0.7.0.0@sha256:2c44a62375f7712f9381f84b1d30cee2f94384f1c98801db2f4450359a8e5036,3036
     pantry-tree:
-      size: 7414
-      sha256: f42884e753d0feef8381b23ccf57f5fce19df844c8699a9c35d48880af6a4772
+      size: 1857
+      sha256: b8e95cae7459e6a601abe32df92c5b24685765f4dd402fd84d8fd1e5b04892d2
   original:
-    url: https://github.com/coingaming/gRPC-haskell/archive/1e5247e9efad3a2e52aca8cf176e885ead308be0.tar.gz
+    hackage: proto-lens-0.7.0.0@sha256:2c44a62375f7712f9381f84b1d30cee2f94384f1c98801db2f4450359a8e5036,3036
 - completed:
-    size: 91728
-    url: https://github.com/coingaming/proto3-suite/archive/19d83b67f90a7be67bc1d062828d84ae68f3efe0.tar.gz
-    name: proto3-suite
-    version: 0.4.2.0
-    sha256: d763f2f9eef1778806a96e1760826a594698cdfdc812fd96d981c4ac59373cb9
+    hackage: proto-lens-protoc-0.7.0.0@sha256:04e57ec59ce21dc781b9debe063f03d85a7ec2ad1ee5c2deb1c30282119e9119,2304
     pantry-tree:
-      size: 7180
-      sha256: d36fc7ed3ee8e42e85d0c0ee643e8f9e95eeff911b691e56de75f206c7802181
+      size: 1219
+      sha256: 990ccd28c9fda706123c50032d83adbf1ba3bdc914f206d8587ddb6d49d4686e
   original:
-    url: https://github.com/coingaming/proto3-suite/archive/19d83b67f90a7be67bc1d062828d84ae68f3efe0.tar.gz
+    hackage: proto-lens-protoc-0.7.0.0
 - completed:
-    size: 47562
-    url: https://github.com/coingaming/proto3-wire/archive/3672ded8b16baa9a9fdf4e4fa5109e2a6cf8a809.tar.gz
-    name: proto3-wire
-    version: 1.2.0
-    sha256: 2853a4221e3b8c2835857c3e6ce5263e5e08a2647ade6d415621bf5b9d83b887
+    hackage: proto-lens-runtime-0.7.0.0@sha256:d6cfab159a63f5c42a1a507638c674a714dfa5f69a06f559e8da840eaafde3ab,3115
     pantry-tree:
-      size: 1811
-      sha256: c8a3e11f57e013f488a2f4495adb40eea1abb06cbb8af8dcc69b2a9715916919
+      size: 168
+      sha256: 25214e3dfa3d36b453da5be39f392699ac78ada5ded8a1384668e3e3cd9234e4
   original:
-    url: https://github.com/coingaming/proto3-wire/archive/3672ded8b16baa9a9fdf4e4fa5109e2a6cf8a809.tar.gz
+    hackage: proto-lens-runtime-0.7.0.0
+- completed:
+    hackage: proto-lens-setup-0.4.0.4@sha256:c44d1b6d68a8faf1d2f9c7ca492ce3c9c2ee66d255452c683f762f10c9ebe430,3185
+    pantry-tree:
+      size: 235
+      sha256: 3e7d12c20ebfa4d261254278331d2a708e49278f763183da2f680a4b668e881f
+  original:
+    hackage: proto-lens-setup-0.4.0.4
+- completed:
+    hackage: proto-lens-arbitrary-0.1.2.9@sha256:460627c82fa9df22884af158cc25f45b994f1c4c068a84f10c80225726dafffe,1273
+    pantry-tree:
+      size: 289
+      sha256: 671ae926b84350a7ac5e840c98ee23d056b076cec08517902e499b063c17204e
+  original:
+    hackage: proto-lens-arbitrary-0.1.2.9
+- completed:
+    hackage: http2-client-0.10.0.0@sha256:85b8771e9e8d4fd0b4327373ebb4a7bc7f9a293e5d7a7dc581ca4153a841da67,2604
+    pantry-tree:
+      size: 853
+      sha256: 4731a8ea6bc88cd762a99370f71c4754bcb57806844ee57a45d59e114ab1b5cb
+  original:
+    hackage: http2-client-0.10.0.0@sha256:85b8771e9e8d4fd0b4327373ebb4a7bc7f9a293e5d7a7dc581ca4153a841da67,2604
+- completed:
+    hackage: http2-client-grpc-0.8.0.0@sha256:5bea1edf5fa3572155f55c5b38cfab7063cbde613702898986c26d70bc9f3f9e,1861
+    pantry-tree:
+      size: 454
+      sha256: 234f9a5e2c117c615b63b657af6b331df0533e173d09f0c91b279ac90c54d4de
+  original:
+    hackage: http2-client-grpc-0.8.0.0@sha256:5bea1edf5fa3572155f55c5b38cfab7063cbde613702898986c26d70bc9f3f9e,1861
+- completed:
+    hackage: http2-grpc-types-0.5.0.0@sha256:4d34edc06a48496130f19245817a7cd7ea15c78ac8815570c3795ffc4503cf27,1445
+    pantry-tree:
+      size: 405
+      sha256: 3a1a94b87acd230b2f750f0077dc47177f37e46a2984b5764390207a83c4d5e4
+  original:
+    hackage: http2-grpc-types-0.5.0.0@sha256:4d34edc06a48496130f19245817a7cd7ea15c78ac8815570c3795ffc4503cf27,1445
+- completed:
+    hackage: http2-grpc-proto-lens-0.1.0.0@sha256:7745c53a22a59c5a9456eef11160365ab8d80a306b785881ce26141fe6c9f2fc,1479
+    pantry-tree:
+      size: 339
+      sha256: bdfb2a3c69b78ecad47c1e13fdcc6ca2e3bd47a5c9e7a7413ae41f004c3efc72
+  original:
+    hackage: http2-grpc-proto-lens-0.1.0.0@sha256:7745c53a22a59c5a9456eef11160365ab8d80a306b785881ce26141fe6c9f2fc,1479
 snapshots:
 - completed:
     size: 524996

@@ -19,7 +19,7 @@ import LndClient.Data.LndEnv
 import LndClient.Import
 import LndClient.LndTest
 import qualified Network.Bitcoin as BTC (Client)
-import Network.GRPC.HighLevel.Generated
+import Network.GRPC.Client.Helpers (GrpcClientConfig (..))
 
 data Env
   = Env
@@ -40,9 +40,9 @@ proxyOwner = Proxy
 newBobEnv :: LndEnv -> LndEnv
 newBobEnv x =
   x
-    { envLndGrpcConfig =
-        (envLndGrpcConfig x)
-          { clientServerPort = 11009
+    { envLndConfig =
+        (envLndConfig x)
+          { _grpcClientConfigPort = 11009
           },
       envLndCipherSeedMnemonic =
         Just $

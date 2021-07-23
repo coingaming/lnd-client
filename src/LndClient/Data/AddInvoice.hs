@@ -1,11 +1,15 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module LndClient.Data.AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
 where
 
+import Data.ProtoLens.Message
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data AddInvoiceRequest
   = AddInvoiceRequest
@@ -23,7 +27,7 @@ data AddInvoiceResponse
       }
   deriving (Eq, Show)
 
-instance ToGrpc AddInvoiceRequest GRPC.Invoice where
+instance ToGrpc AddInvoiceRequest LnGRPC.Invoice where
   toGrpc x =
     msg
       <$> toGrpc (memo x)
@@ -31,15 +35,14 @@ instance ToGrpc AddInvoiceRequest GRPC.Invoice where
       <*> toGrpc (expiry x)
     where
       msg gMemo gValue gExp =
-        def
-          { GRPC.invoiceMemo = gMemo,
-            GRPC.invoiceValueMsat = gValue,
-            GRPC.invoiceExpiry = gExp
-          }
+        defMessage
+          & LnGRPC.memo .~ gMemo
+          & LnGRPC.valueMsat .~ gValue
+          & LnGRPC.expiry .~ gExp
 
-instance FromGrpc AddInvoiceResponse GRPC.AddInvoiceResponse where
+instance FromGrpc AddInvoiceResponse LnGRPC.AddInvoiceResponse where
   fromGrpc x =
     AddInvoiceResponse
-      <$> fromGrpc (GRPC.addInvoiceResponseRHash x)
-      <*> fromGrpc (GRPC.addInvoiceResponsePaymentRequest x)
-      <*> fromGrpc (GRPC.addInvoiceResponseAddIndex x)
+      <$> fromGrpc (x ^. LnGRPC.rHash)
+      <*> fromGrpc (x ^. LnGRPC.paymentRequest)
+      <*> fromGrpc (x ^. LnGRPC.addIndex)

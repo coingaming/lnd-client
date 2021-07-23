@@ -35,15 +35,16 @@ import Crypto.Random (getRandomBytes)
 import Data.Aeson (FromJSON (..))
 import Data.ByteString.Base16 as B16 (decode, encode)
 import Data.ByteString.Char8 as C8
-import Data.Text.Lazy as TL
-import Data.Vector (fromList)
-import qualified InvoiceGrpc as GRPC
+import Data.ProtoLens.Message
 import LndClient.Class
 import LndClient.Data.Kind
 import LndClient.Data.Type
 import LndClient.Import.External
 import LndClient.Util
-import qualified LndGrpc as GRPC
+import qualified Proto.InvoiceGrpc as IGrpc
+import qualified Proto.InvoiceGrpc_Fields as IGrpc
+import qualified Proto.LndGrpc as LnGrpc
+import qualified Proto.LndGrpc_Fields as LnGrpc
 import Prelude (Show)
 
 newtype Vout (a :: TxKind) = Vout Word32
@@ -105,7 +106,7 @@ instance ToGrpc NodePubKey ByteString where
 
 instance ToGrpc NodePubKey Text where
   toGrpc =
-    bimap (const $ ToGrpcError "UTF8_DECODE_ERROR") TL.fromStrict
+    first (const $ ToGrpcError "UTF8_DECODE_ERROR")
       . decodeUtf8'
       . B16.encode
       . coerce
@@ -126,21 +127,12 @@ instance FromGrpc (TxId a) Text where
 instance FromGrpc (Vout a) Word32 where
   fromGrpc = Right . Vout
 
-instance FromGrpc (TxId a) GRPC.ChannelPointFundingTxid where
-  fromGrpc = \case
-    GRPC.ChannelPointFundingTxidFundingTxidBytes x ->
-      fromGrpc x
-    GRPC.ChannelPointFundingTxidFundingTxidStr _ ->
-      Left $ FromGrpcError "UNSUPPORTED_TXID_STR"
-
 instance FromGrpc NodePubKey ByteString where
   fromGrpc = Right . NodePubKey
 
 instance FromGrpc NodePubKey Text where
-  fromGrpc x =
-    case B16.decode $ encodeUtf8 x of
-      Right y -> Right $ NodePubKey y
-      Left {} -> Left $ ToGrpcError "NodePubKey hex decoding error"
+  fromGrpc =
+    bimap (const $ FromGrpcError "NodePubKey hex decoding error") NodePubKey . B16.decode . encodeUtf8
 
 instance FromGrpc NodeLocation Text where
   fromGrpc = Right . NodeLocation
@@ -164,6 +156,12 @@ instance ToGrpc MSat Int64 where
       $ safeFromIntegral (coerce x :: Word64)
 
 instance FromGrpc MSat Int64 where
+  fromGrpc x =
+    maybeToRight
+      (ToGrpcError "MSat overflow")
+      $ MSat <$> safeFromIntegral x
+
+instance FromGrpc MSat Word64 where
   fromGrpc x =
     maybeToRight
       (ToGrpcError "MSat overflow")
@@ -196,8 +194,8 @@ instance FromGrpc SettleIndex Word64 where
 instance FromGrpc PaymentRequest Text where
   fromGrpc = Right . PaymentRequest
 
-instance FromGrpc PaymentRequest GRPC.AddHoldInvoiceResp where
-  fromGrpc = fromGrpc . GRPC.addHoldInvoiceRespPaymentRequest
+instance FromGrpc PaymentRequest IGrpc.AddHoldInvoiceResp where
+  fromGrpc x = fromGrpc (x ^. IGrpc.paymentRequest)
 
 instance FromGrpc Seconds Int64 where
   fromGrpc =
@@ -226,8 +224,8 @@ instance ToGrpc Seconds Int64 where
       (ToGrpcError "Seconds overflow")
       $ safeFromIntegral (coerce x :: Word64)
 
-instance ToGrpc CipherSeedMnemonic (Vector Text) where
-  toGrpc = Right . fromList . coerce
+instance ToGrpc CipherSeedMnemonic [Text] where
+  toGrpc = Right . coerce
 
 instance ToGrpc AezeedPassphrase ByteString where
   toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
@@ -235,23 +233,29 @@ instance ToGrpc AezeedPassphrase ByteString where
 instance ToGrpc RHash ByteString where
   toGrpc = Right . coerce
 
-instance ToGrpc RHash GRPC.CancelInvoiceMsg where
-  toGrpc x = GRPC.CancelInvoiceMsg <$> toGrpc x
-
-instance ToGrpc RPreimage GRPC.SettleInvoiceMsg where
-  toGrpc x = GRPC.SettleInvoiceMsg <$> toGrpc x
+instance ToGrpc RHash IGrpc.CancelInvoiceMsg where
+  toGrpc x = do
+    ph <- toGrpc x
+    Right $ defMessage & IGrpc.paymentHash .~ ph
 
 instance ToGrpc RPreimage ByteString where
   toGrpc = Right . coerce
 
-instance ToGrpc PaymentRequest GRPC.PayReqString where
-  toGrpc = Right . GRPC.PayReqString . coerce
+instance ToGrpc RPreimage IGrpc.SettleInvoiceMsg where
+  toGrpc x = do
+    p <- toGrpc x
+    Right $ defMessage & IGrpc.preimage .~ p
 
-instance ToGrpc RHash GRPC.PaymentHash where
-  toGrpc = Right . GRPC.PaymentHash mempty . coerce
+instance ToGrpc PaymentRequest LnGrpc.PayReqString where
+  toGrpc x = Right $ defMessage & LnGrpc.payReq .~ coerce x
 
-instance ToGrpc RHash GRPC.SubscribeSingleInvoiceRequest where
-  toGrpc = Right . GRPC.SubscribeSingleInvoiceRequest . coerce
+instance ToGrpc RHash LnGrpc.PaymentHash where
+  toGrpc x = Right $ defMessage & LnGrpc.rHash .~ coerce x
+
+instance ToGrpc RHash IGrpc.SubscribeSingleInvoiceRequest where
+  toGrpc x = do
+    rh <- toGrpc x
+    Right $ defMessage & IGrpc.rHash .~ rh
 
 newRHash :: RPreimage -> RHash
 newRHash = RHash . SHA256.hash . coerce

@@ -1,10 +1,14 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module LndClient.Data.TrackPayment
   ( TrackPaymentRequest (..),
   )
 where
 
+import Data.ProtoLens.Message
 import LndClient.Import
-import qualified RouterGrpc as GRPC
+import qualified Proto.RouterGrpc as LnGRPC
+import qualified Proto.RouterGrpc_Fields as LnGRPC
 
 data TrackPaymentRequest
   = TrackPaymentRequest
@@ -13,14 +17,13 @@ data TrackPaymentRequest
       }
   deriving (Eq, Ord, Show)
 
-instance ToGrpc TrackPaymentRequest GRPC.TrackPaymentRequest where
+instance ToGrpc TrackPaymentRequest LnGRPC.TrackPaymentRequest where
   toGrpc x =
     msg
       <$> toGrpc (paymentHash x)
       <*> toGrpc (noInflightUpdates x)
     where
       msg x0 x1 =
-        def
-          { GRPC.trackPaymentRequestPaymentHash = x0,
-            GRPC.trackPaymentRequestNoInflightUpdates = x1
-          }
+        defMessage
+          & LnGRPC.paymentHash .~ x0
+          & LnGRPC.noInflightUpdates .~ x1

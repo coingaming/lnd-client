@@ -5,7 +5,8 @@ where
 
 import LndClient.Data.PendingChannel
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data WaitingCloseChannel
   = WaitingCloseChannel
@@ -17,7 +18,7 @@ data WaitingCloseChannel
 instance
   FromGrpc
     WaitingCloseChannel
-    GRPC.PendingChannelsResponse_WaitingCloseChannel
+    LnGRPC.PendingChannelsResponse'WaitingCloseChannel
   where
   fromGrpc x =
     WaitingCloseChannel
@@ -29,8 +30,8 @@ instance
           )
       <*> ( toMSat
               <$> fromGrpc
-                (GRPC.pendingChannelsResponse_WaitingCloseChannelLimboBalance x)
+                (x ^. LnGRPC.limboBalance)
           )
     where
       pendingChannel =
-        GRPC.pendingChannelsResponse_WaitingCloseChannelChannel x
+        x ^. LnGRPC.maybe'channel

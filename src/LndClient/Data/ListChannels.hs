@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 module LndClient.Data.ListChannels
@@ -6,8 +7,10 @@ module LndClient.Data.ListChannels
   )
 where
 
+import Data.ProtoLens.Message
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data ListChannelsRequest
   = ListChannelsRequest
@@ -19,7 +22,7 @@ data ListChannelsRequest
       }
   deriving (Generic, Show)
 
-instance ToGrpc ListChannelsRequest GRPC.ListChannelsRequest where
+instance ToGrpc ListChannelsRequest LnGRPC.ListChannelsRequest where
   toGrpc x =
     msg
       <$> toGrpc (activeOnly x)
@@ -29,10 +32,9 @@ instance ToGrpc ListChannelsRequest GRPC.ListChannelsRequest where
       <*> toGrpc (peer x)
     where
       msg gActiveOnly gInactiveOnly gPrivateOnly gPublicOnly gPeer =
-        def
-          { GRPC.listChannelsRequestActiveOnly = gActiveOnly,
-            GRPC.listChannelsRequestInactiveOnly = gInactiveOnly,
-            GRPC.listChannelsRequestPrivateOnly = gPrivateOnly,
-            GRPC.listChannelsRequestPublicOnly = gPublicOnly,
-            GRPC.listChannelsRequestPeer = gPeer
-          }
+        defMessage
+          & LnGRPC.activeOnly .~ gActiveOnly
+          & LnGRPC.inactiveOnly .~ gInactiveOnly
+          & LnGRPC.privateOnly .~ gPrivateOnly
+          & LnGRPC.publicOnly .~ gPublicOnly
+          & LnGRPC.peer .~ gPeer

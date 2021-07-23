@@ -1,10 +1,14 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
 where
 
+import Data.ProtoLens.Message
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data SubscribeInvoicesRequest
   = SubscribeInvoicesRequest
@@ -13,14 +17,13 @@ data SubscribeInvoicesRequest
       }
   deriving (Eq, Ord, Show)
 
-instance ToGrpc SubscribeInvoicesRequest GRPC.InvoiceSubscription where
+instance ToGrpc SubscribeInvoicesRequest LnGRPC.InvoiceSubscription where
   toGrpc x =
     msg
       <$> toGrpc (addIndex x)
       <*> toGrpc (settleIndex x)
     where
       msg gAddIndex gSettleIndex =
-        def
-          { GRPC.invoiceSubscriptionAddIndex = gAddIndex,
-            GRPC.invoiceSubscriptionSettleIndex = gSettleIndex
-          }
+        defMessage
+          & LnGRPC.addIndex .~ gAddIndex
+          & LnGRPC.settleIndex .~ gSettleIndex

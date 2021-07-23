@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module LndClient.Data.ChannelPoint
   ( ChannelPoint (..),
     channelPointParser,
@@ -7,9 +9,11 @@ where
 import qualified Data.ByteString as BS (reverse)
 import qualified Data.ByteString.Base16 as B16 (decode)
 import qualified Data.ByteString.Char8 as C8 (split)
+import Data.ProtoLens.Message
 import qualified Data.Text as TS (unpack)
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data ChannelPoint
   = ChannelPoint
@@ -18,26 +22,22 @@ data ChannelPoint
       }
   deriving (Eq, Ord, Show)
 
-instance FromGrpc ChannelPoint GRPC.ChannelPoint where
+instance FromGrpc ChannelPoint LnGRPC.ChannelPoint where
   fromGrpc x =
     ChannelPoint
-      <$> fromGrpc (GRPC.channelPointFundingTxid x)
-      <*> fromGrpc (GRPC.channelPointOutputIndex x)
+      <$> fromGrpc (x ^. LnGRPC.fundingTxidBytes)
+      <*> fromGrpc (x ^. LnGRPC.outputIndex)
 
-instance ToGrpc ChannelPoint GRPC.ChannelPoint where
+instance ToGrpc ChannelPoint LnGRPC.ChannelPoint where
   toGrpc x =
     msg
       <$> toGrpc (fundingTxId x)
       <*> toGrpc (outputIndex x)
     where
-      msg gFundingTxidBytes gOutputIndex =
-        def
-          { GRPC.channelPointFundingTxid =
-              GRPC.ChannelPointFundingTxidFundingTxidBytes
-                <$> gFundingTxidBytes,
-            GRPC.channelPointOutputIndex =
-              gOutputIndex
-          }
+      msg gFundingTxIdBytes gOutputIndex =
+        defMessage
+          & LnGRPC.fundingTxidBytes .~ gFundingTxIdBytes
+          & LnGRPC.outputIndex .~ gOutputIndex
 
 channelPointParser :: Text -> Either LndError ChannelPoint
 channelPointParser x =

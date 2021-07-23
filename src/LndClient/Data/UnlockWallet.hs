@@ -3,8 +3,10 @@ module LndClient.Data.UnlockWallet
   )
 where
 
+import Data.ProtoLens.Message
 import LndClient.Import
-import qualified WalletUnlockerGrpc as GRPC
+import qualified Proto.WalletUnlockerGrpc as LnGRPC
+import qualified Proto.WalletUnlockerGrpc_Fields as LnGRPC
 import Prelude (Show (..))
 
 data UnlockWalletRequest
@@ -20,14 +22,14 @@ data UnlockWalletRequest
 instance Show UnlockWalletRequest where
   show = const "SECRET"
 
-instance ToGrpc UnlockWalletRequest GRPC.UnlockWalletRequest where
+instance ToGrpc UnlockWalletRequest LnGRPC.UnlockWalletRequest where
   toGrpc x =
     msg
       <$> toGrpc (walletPassword x)
       <*> toGrpc (recoveryWindow x)
     where
+      msg :: ByteString -> Int32 -> LnGRPC.UnlockWalletRequest
       msg gWalletPassword gRecoveryWindow =
-        def
-          { GRPC.unlockWalletRequestWalletPassword = gWalletPassword,
-            GRPC.unlockWalletRequestRecoveryWindow = gRecoveryWindow
-          }
+        defMessage
+          & LnGRPC.walletPassword .~ gWalletPassword
+          & LnGRPC.recoveryWindow .~ gRecoveryWindow

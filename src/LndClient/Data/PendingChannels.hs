@@ -10,7 +10,8 @@ import LndClient.Data.ForceClosedChannel
 import LndClient.Data.PendingOpenChannel
 import LndClient.Data.WaitingCloseChannel
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data PendingChannelsResponse
   = PendingChannelsResponse
@@ -22,22 +23,18 @@ data PendingChannelsResponse
       }
   deriving (Eq, Show)
 
-instance
-  FromGrpc
-    PendingChannelsResponse
-    GRPC.PendingChannelsResponse
-  where
+instance FromGrpc PendingChannelsResponse LnGRPC.PendingChannelsResponse where
   fromGrpc x =
     PendingChannelsResponse
       <$> ( toMSat
               <$> fromGrpc
-                (GRPC.pendingChannelsResponseTotalLimboBalance x)
+                (x ^. LnGRPC.totalLimboBalance)
           )
       <*> fromGrpc
-        (GRPC.pendingChannelsResponsePendingOpenChannels x)
+        (x ^. LnGRPC.pendingOpenChannels)
       <*> fromGrpc
-        (GRPC.pendingChannelsResponsePendingClosingChannels x)
+        (x ^. LnGRPC.pendingClosingChannels)
       <*> fromGrpc
-        (GRPC.pendingChannelsResponsePendingForceClosingChannels x)
+        (x ^. LnGRPC.pendingForceClosingChannels)
       <*> fromGrpc
-        (GRPC.pendingChannelsResponseWaitingCloseChannels x)
+        (x ^. LnGRPC.waitingCloseChannels)

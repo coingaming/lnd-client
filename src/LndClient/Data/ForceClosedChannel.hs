@@ -5,7 +5,8 @@ where
 
 import LndClient.Data.PendingChannel
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data ForceClosedChannel
   = ForceClosedChannel
@@ -21,7 +22,7 @@ data ForceClosedChannel
 instance
   FromGrpc
     ForceClosedChannel
-    GRPC.PendingChannelsResponse_ForceClosedChannel
+    LnGRPC.PendingChannelsResponse'ForceClosedChannel
   where
   fromGrpc x =
     ForceClosedChannel
@@ -31,20 +32,19 @@ instance
               Just this ->
                 fromGrpc this
           )
-      <*> fromGrpc
-        (GRPC.pendingChannelsResponse_ForceClosedChannelClosingTxid x)
+      <*> fromGrpc (x ^. LnGRPC.closingTxid)
       <*> ( toMSat
               <$> fromGrpc
-                (GRPC.pendingChannelsResponse_ForceClosedChannelLimboBalance x)
+                (x ^. LnGRPC.limboBalance)
           )
       <*> fromGrpc
-        (GRPC.pendingChannelsResponse_ForceClosedChannelMaturityHeight x)
+        (x ^. LnGRPC.maturityHeight)
       <*> fromGrpc
-        (GRPC.pendingChannelsResponse_ForceClosedChannelBlocksTilMaturity x)
+        (x ^. LnGRPC.blocksTilMaturity)
       <*> ( toMSat
               <$> fromGrpc
-                (GRPC.pendingChannelsResponse_ForceClosedChannelRecoveredBalance x)
+                (x ^. LnGRPC.recoveredBalance)
           )
     where
       pendingChannel =
-        GRPC.pendingChannelsResponse_ForceClosedChannelChannel x
+        x ^. LnGRPC.maybe'channel

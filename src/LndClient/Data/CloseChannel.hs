@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 module LndClient.Data.CloseChannel
@@ -8,10 +9,12 @@ module LndClient.Data.CloseChannel
   )
 where
 
+import Data.ProtoLens.Message
 import LndClient.Data.Channel (PendingUpdate)
 import LndClient.Data.ChannelPoint
 import LndClient.Import
-import qualified LndGrpc as GRPC
+import qualified Proto.LndGrpc as LnGRPC
+import qualified Proto.LndGrpc_Fields as LnGRPC
 
 data CloseChannelRequest
   = CloseChannelRequest
@@ -45,18 +48,10 @@ data ChannelCloseSummary
       }
   deriving (Eq, Ord, Show)
 
-instance FromGrpc ChannelCloseSummary GRPC.ChannelCloseSummary where
-  fromGrpc x =
-    ChannelCloseSummary
-      <$> fromGrpc (GRPC.channelCloseSummaryRemotePubkey x)
-      <*> channelPointParser (GRPC.channelCloseSummaryChannelPoint x)
-      <*> (toMSat <$> fromGrpc (GRPC.channelCloseSummarySettledBalance x))
-      <*> fromGrpc (GRPC.channelCloseSummaryClosingTxHash x)
+instance FromGrpc [ChannelCloseSummary] LnGRPC.ClosedChannelsResponse where
+  fromGrpc x = sequence $ fromGrpc <$> (x ^. LnGRPC.channels)
 
-instance FromGrpc [ChannelCloseSummary] GRPC.ClosedChannelsResponse where
-  fromGrpc = fromGrpc . GRPC.closedChannelsResponseChannels
-
-instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
+instance ToGrpc CloseChannelRequest LnGRPC.CloseChannelRequest where
   toGrpc x =
     msg
       <$> toGrpc (channelPoint x)
@@ -66,28 +61,30 @@ instance ToGrpc CloseChannelRequest GRPC.CloseChannelRequest where
       <*> toGrpc (deliveryAddress x)
     where
       msg gChannelPoint gForce gTargetConf gSatPerByte gDeliveryAddress =
-        def
-          { GRPC.closeChannelRequestChannelPoint = Just gChannelPoint,
-            GRPC.closeChannelRequestForce = gForce,
-            GRPC.closeChannelRequestTargetConf = gTargetConf,
-            GRPC.closeChannelRequestSatPerByte = gSatPerByte,
-            GRPC.closeChannelRequestDeliveryAddress = gDeliveryAddress
-          }
+        defMessage
+          & LnGRPC.channelPoint .~ gChannelPoint
+          & LnGRPC.force .~ gForce
+          & LnGRPC.targetConf .~ gTargetConf
+          & LnGRPC.satPerByte .~ gSatPerByte
+          & LnGRPC.deliveryAddress .~ gDeliveryAddress
 
-instance FromGrpc CloseStatusUpdate GRPC.CloseStatusUpdate where
+instance FromGrpc CloseStatusUpdate LnGRPC.CloseStatusUpdate where
   fromGrpc x =
-    case x of
-      GRPC.CloseStatusUpdate
-        (Just (GRPC.CloseStatusUpdateUpdateChanClose a)) ->
-          Close <$> fromGrpc a
-      GRPC.CloseStatusUpdate
-        (Just (GRPC.CloseStatusUpdateUpdateClosePending a)) ->
-          Pending <$> fromGrpc a
-      GRPC.CloseStatusUpdate Nothing ->
-        Right NothingUpdate
+    case x ^. LnGRPC.maybe'update of
+      Just (LnGRPC.CloseStatusUpdate'ClosePending a) -> Pending <$> fromGrpc a
+      Just (LnGRPC.CloseStatusUpdate'ChanClose a) -> Close <$> fromGrpc a
+      Nothing -> Right NothingUpdate
 
-instance FromGrpc ChannelCloseUpdate GRPC.ChannelCloseUpdate where
+instance FromGrpc ChannelCloseUpdate LnGRPC.ChannelCloseUpdate where
   fromGrpc x =
     ChannelCloseUpdate
-      <$> fromGrpc (GRPC.channelCloseUpdateClosingTxid x)
-      <*> fromGrpc (GRPC.channelCloseUpdateSuccess x)
+      <$> fromGrpc (x ^. LnGRPC.closingTxid)
+      <*> fromGrpc (x ^. LnGRPC.success)
+
+instance FromGrpc ChannelCloseSummary LnGRPC.ChannelCloseSummary where
+  fromGrpc x =
+    ChannelCloseSummary
+      <$> fromGrpc (x ^. LnGRPC.remotePubkey)
+      <*> channelPointParser (x ^. LnGRPC.channelPoint)
+      <*> fromGrpc (x ^. LnGRPC.settledBalance)
+      <*> fromGrpc (x ^. LnGRPC.closingTxHash)
