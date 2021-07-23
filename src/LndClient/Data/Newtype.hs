@@ -106,7 +106,7 @@ instance ToGrpc NodePubKey ByteString where
 
 instance ToGrpc NodePubKey Text where
   toGrpc =
-    bimap (const $ ToGrpcError "UTF8_DECODE_ERROR") id
+    first (const $ ToGrpcError "UTF8_DECODE_ERROR")
       . decodeUtf8'
       . B16.encode
       . coerce

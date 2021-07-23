@@ -44,7 +44,7 @@ instance FromGrpc UpdateType LnGRPC.ChannelEventUpdate'UpdateType where
     LnGRPC.ChannelEventUpdate'INACTIVE_CHANNEL -> Right INACTIVE_CHANNEL
     LnGRPC.ChannelEventUpdate'PENDING_OPEN_CHANNEL -> Right PENDING_OPEN_CHANNEL
     LnGRPC.ChannelEventUpdate'CLOSED_CHANNEL -> Right CLOSED_CHANNEL
-    _ -> Left $ FromGrpcError "Wrong ChannelUpdateType"
+    LnGRPC.ChannelEventUpdate'UpdateType'Unrecognized v -> Left $ FromGrpcError ("Cannot parse ChannelUpdateType, value:" <> show v)
 
 instance FromGrpc UpdateChannel LnGRPC.ChannelEventUpdate'Channel where
   fromGrpc x = case x of

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 18d2d76eb8bf8a58659e176bd90791a67363fcfca988884053041d96dabf3476
+-- hash: 7fe0cc65637e4ac255285de3a0602fe1c58cabbc5f8de096506ae8e10c41e7f2
 
 name:           lnd-client
 version:        0.1.0.0
@@ -111,7 +111,7 @@ library
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
     , hspec ==2.7.1.*
-    , http2 >=2.0.3 && <2.0.7
+    , http2 >=2.0.3 && <3.0.3
     , http2-client >=0.10.0.0 && <0.10.1
     , http2-client-grpc >=0.8.0.0 && <0.8.1
     , http2-grpc-proto-lens >=0.1.0.0 && <0.1.1
@@ -171,7 +171,7 @@ test-suite lnd-client-test
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
     , hspec ==2.7.1.*
-    , http2 >=2.0.3 && <2.0.7
+    , http2 >=2.0.3 && <3.0.3
     , http2-client >=0.10.0.0 && <0.10.1
     , http2-client-grpc >=0.8.0.0 && <0.8.1
     , http2-grpc-proto-lens >=0.1.0.0 && <0.1.1

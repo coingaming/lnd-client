@@ -42,4 +42,4 @@ instance FromGrpc EventType LnGRPC.HtlcEvent'EventType where
       LnGRPC.HtlcEvent'SEND -> Right SEND
       LnGRPC.HtlcEvent'RECEIVE -> Right RECEIVE
       LnGRPC.HtlcEvent'FORWARD -> Right FORWARD
-      _ -> Left $ FromGrpcError "Can't parse EventType"
+      LnGRPC.HtlcEvent'EventType'Unrecognized v -> Left $ FromGrpcError ("Cannot parse EventType, value:" <> show v)

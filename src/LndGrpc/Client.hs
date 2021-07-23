@@ -35,9 +35,10 @@ runUnary rpc env req = do
     rawUnary rpc grpc req
   return $ case res of
     Right (Right (Right (_, _, (Right x)))) -> Right x
-    Left e -> Left $ LndGrpcError e
     Right (Right (Right (_, _, (Left e)))) -> Left $ LndError $ pack e
-    _ -> Left $ LndError "LndGrpc request error"
+    Right (Right (Left e)) -> Left $ LndError ("LndGrpc response error, code: " <> show e)
+    Right (Left e) -> Left $ LndError ("LndGrpc, TooMuchConcurrency error: " <> show e)
+    Left e -> Left $ LndGrpcError e
 
 runStreamServer ::
   ( MonadIO p,
@@ -56,8 +57,8 @@ runStreamServer rpc env req handler = do
     rawStreamServer rpc grpc () req $ const handler
   return $ case r of
     Right (Right ((), _, _)) -> Right defMessage
+    Right (Left e) -> Left $ LndError ("LndGrpc response error: " <> show e)
     Left e -> Left $ LndGrpcError e
-    _ -> Left $ LndError "LndGrpc request error"
 
 makeClient ::
   LndEnv ->

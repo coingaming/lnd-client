@@ -65,7 +65,7 @@ self: super:
           };
           ghc-source-gen = callPackage ./overlay/ghc-source-gen.nix {
             stdenv = self.stdenv;
-            fetchgit = self.fetchgit;
+#            fetchgit = self.fetchgit;
           };
           proto-lens-protoc = callPackage ./overlay/proto-lens-protoc.nix {
             stdenv = self.stdenv;

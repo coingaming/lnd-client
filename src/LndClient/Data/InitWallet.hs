@@ -33,5 +33,5 @@ instance ToGrpc InitWalletRequest LnGRPC.InitWalletRequest where
       msg gWalletPassword gCipherSeedMnemonic gAezeedPassphrase =
         defMessage
           & LnGRPC.walletPassword .~ gWalletPassword
-          & LnGRPC.cipherSeedMnemonic .~ toList gCipherSeedMnemonic
+          & LnGRPC.cipherSeedMnemonic .~ gCipherSeedMnemonic
           & LnGRPC.aezeedPassphrase .~ gAezeedPassphrase

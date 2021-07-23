@@ -51,4 +51,4 @@ instance FromGrpc InvoiceState LnGRPC.Invoice'InvoiceState where
       LnGRPC.Invoice'SETTLED -> Right SETTLED
       LnGRPC.Invoice'CANCELED -> Right CANCELED
       LnGRPC.Invoice'ACCEPTED -> Right ACCEPTED
-      _ -> Left $ FromGrpcError "InvoiceState value cannot be recognized"
+      LnGRPC.Invoice'InvoiceState'Unrecognized v -> Left $ FromGrpcError ("Cannot parse InvoiceState, value:" <> show v)
