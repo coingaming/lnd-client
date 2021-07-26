@@ -39,9 +39,6 @@ self: super:
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
           };
-          x509 = callPackage ./overlay/x509.nix {
-            stdenv = self.stdenv;
-          };
           http2-grpc-proto-lens = doJailbreak (
             callPackage ./overlay/http2-grpc-proto-lens.nix {
               stdenv = self.stdenv;
