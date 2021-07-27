@@ -219,7 +219,7 @@ applyTask ::
   m ()
 applyTask w0 (x, res) = do
   $(logTM) (newSev w0 InfoS) "Watcher - applying Task"
-  case Map.lookup x ts of
+  case Map.lookup x $ ts of
     Nothing -> loop w0
     Just t -> do
       case res of

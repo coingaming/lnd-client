@@ -153,6 +153,7 @@ test-suite lnd-client-test
       DataKinds
       KindSignatures
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N -O0
+  build-tool-depends:  hspec-discover:hspec-discover == 2.5.1
   build-depends:
       JuicyPixels >=3.3.3 && <3.4
     , aeson >=1.4.4.0 && <1.4.8
