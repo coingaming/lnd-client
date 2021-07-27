@@ -59,6 +59,12 @@ self: super:
           http2 = callPackage ./overlay/http2.nix {
             stdenv = self.stdenv;
           };
+          connection = callPackage ./overlay/connection.nix {
+            stdenv = self.stdenv;
+          };
+          tls = callPackage ./overlay/tls.nix {
+            stdenv = self.stdenv;
+          };
           proto-lens = callPackage ./overlay/proto-lens.nix {
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
