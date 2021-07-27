@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7fe0cc65637e4ac255285de3a0602fe1c58cabbc5f8de096506ae8e10c41e7f2
+-- hash: 8d295b4d86987bb11dd5ab34304501343ceb5278dd76ae87430eb8d8ef066333
 
 name:           lnd-client
 version:        0.1.0.0
@@ -106,7 +106,7 @@ library
     , chronos >=1.0.7 && <1.0.10
     , containers >=0.6.0.1 && <0.6.1
     , cryptohash-sha256 >=0.11.101.0 && <0.11.102
-    , cryptonite >=0.25 && <0.27
+    , cryptonite >=0.25 && <0.29
     , deepseq >=1.4.4.0 && <1.4.5
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
@@ -166,7 +166,7 @@ test-suite lnd-client-test
     , chronos >=1.0.7 && <1.0.10
     , containers >=0.6.0.1 && <0.6.1
     , cryptohash-sha256 >=0.11.101.0 && <0.11.102
-    , cryptonite >=0.25 && <0.27
+    , cryptonite >=0.25 && <0.29
     , deepseq >=1.4.4.0 && <1.4.5
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
