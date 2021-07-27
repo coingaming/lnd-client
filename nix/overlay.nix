@@ -31,6 +31,9 @@ self: super:
           cryptohash-sha1 = dontCheck (callPackage ./overlay/cryptohash-sha1.nix {
             stdenv = self.stdenv;
           });
+          cryptonite = callPackage ./overlay/cryptonite.nix {
+            stdenv = self.stdenv;
+          };
           secp256k1-haskell = dontCheck (callPackage ./overlay/secp256k1-haskell.nix {
             stdenv = self.stdenv;
             libsecp256k1 = self.secp256k1;
@@ -38,9 +41,6 @@ self: super:
           asn1-encoding = callPackage ./overlay/asn1-encoding.nix {
             stdenv = self.stdenv;
             fetchgit = self.fetchgit;
-          };
-          x509 = callPackage ./overlay/x509.nix {
-            stdenv = self.stdenv;
           };
           http2-grpc-proto-lens = doJailbreak (
             callPackage ./overlay/http2-grpc-proto-lens.nix {
@@ -57,6 +57,12 @@ self: super:
             stdenv = self.stdenv;
           };
           http2 = callPackage ./overlay/http2.nix {
+            stdenv = self.stdenv;
+          };
+          connection = callPackage ./overlay/connection.nix {
+            stdenv = self.stdenv;
+          };
+          tls = callPackage ./overlay/tls.nix {
             stdenv = self.stdenv;
           };
           proto-lens = callPackage ./overlay/proto-lens.nix {
