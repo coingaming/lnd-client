@@ -51,7 +51,7 @@ dependencies:
 - async                 >= 2.2.2 && < 2.2.3
 - stm                   >= 2.5.0.0 && < 2.5.1
 # crypto
-- cryptonite            >= 0.25 && < 0.27
+- cryptonite            >= 0.25 && < 0.29
 - cryptohash-sha256     >= 0.11.101.0 && < 0.11.102
 - x509                  >= 1.7.5 && < 1.7.6
 - asn1-encoding         >= 0.9.6 && < 0.10
