@@ -6,8 +6,8 @@ author:              "Mikhail Prushinskiy <mprushinsky@gmail.com>"
 maintainer:          "Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>"
 copyright:           "2020 Coingaming <hello@coingaming.io>"
 synopsis:            Lightning Network Daemon (LND) client library for Haskell
-category:            Lightning, Bitcoin, Finance, Network
-description:         You can find documentation at <https://hackage.haskell.org/package/signable/docs/Data-Signable.html hackage>
+category:            Lightning, Bitcoin, Finance, Network, Payments
+description:         You can find documentation at <https://hackage.haskell.org/package/lnd-client>
 
 extra-source-files:
 - README.md

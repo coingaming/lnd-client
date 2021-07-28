@@ -4,13 +4,13 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5d93fb3a60a20c8e1e074c19366eb59eec7a0663ff85b76260589ccd32550adc
+-- hash: 1e83ba24c42e1f12c4413ed350a607454093e5229010c7ad0d28149797909c4e
 
 name:           lnd-client
 version:        0.1.0.0
 synopsis:       Lightning Network Daemon (LND) client library for Haskell
-description:    You can find documentation at <https://hackage.haskell.org/package/signable/docs/Data-Signable.html hackage>
-category:       Lightning, Bitcoin, Finance, Network
+description:    You can find documentation at <https://hackage.haskell.org/package/lnd-client>
+category:       Lightning, Bitcoin, Finance, Network, Payments
 homepage:       https://github.com/coingaming/lnd-client#readme
 bug-reports:    https://github.com/coingaming/lnd-client/issues
 author:         Mikhail Prushinskiy <mprushinsky@gmail.com>

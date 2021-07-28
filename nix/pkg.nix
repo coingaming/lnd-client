@@ -34,6 +34,7 @@ mkDerivation {
     unliftio x509
   ];
   prePatch = "hpack";
-  homepage = "https://github.com/githubuser/lnd-client#readme";
+  homepage = "https://github.com/coingaming/lnd-client#readme";
+  description = "Lightning Network Daemon (LND) client library for Haskell";
   license = stdenv.lib.licenses.bsd3;
 }
