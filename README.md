@@ -23,7 +23,6 @@ export VIM_COLOR_SCHEME="PaperColor" # or "jellybeans"
 ```
 
 # gRPC schema upgrade
-
-- we are using this lnd version https://github.com/coingaming/lnd/
-- download fresh grpc files to proto directory, example https://github.com/coingaming/lnd/blob/master/lnrpc/rpc.proto
+- we are using lnd version 0.13.1-beta.rc2
+- download fresh grpc files to proto directory
 - run `./script/generate-protoc.sh`
