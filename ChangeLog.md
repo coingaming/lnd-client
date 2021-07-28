@@ -1,3 +1,3 @@
-# Changelog for lnd-client
+# Version 0.1
 
-## Unreleased changes
+- Initial version.
