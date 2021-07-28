@@ -17,7 +17,8 @@ dev_watcher() {
 
 run_tests() {
     ./script/prepare-test-env.sh
-    cabal test
+    source ./script/export-test-envs.sh
+    cabal test --disable-optimization
     ./script/cleanup-test-env.sh
 }
 
