@@ -1,6 +1,7 @@
 let
   project = import ./default.nix;
   haskellPackages = (import ./header.nix).haskellPackages;
+  pkgs = (import ./header.nix).pkgs;
 in
 project.shellFor {
   withHoogle = true;
