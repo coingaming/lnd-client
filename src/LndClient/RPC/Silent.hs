@@ -1,5 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
+-- | List of functions, used to communicate with LND via gRPC.
+-- Method names are corresponding to gRPC method names, see LND gRPC api docs <https://api.lightning.community>.
 module LndClient.RPC.Silent
   ( waitForGrpc,
     unlockWallet,

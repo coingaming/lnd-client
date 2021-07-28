@@ -1,5 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
+-- | List of functions, used to communicate with LND via gRPC.
+-- Method names are corresponding to gRPC method names, see LND gRPC api docs <https://api.lightning.community>.
+-- Katip is used for function calls logging.
 module LndClient.RPC.Katip
   ( waitForGrpc,
     unlockWallet,
