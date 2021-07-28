@@ -4,16 +4,18 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8d295b4d86987bb11dd5ab34304501343ceb5278dd76ae87430eb8d8ef066333
+-- hash: 5d93fb3a60a20c8e1e074c19366eb59eec7a0663ff85b76260589ccd32550adc
 
 name:           lnd-client
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/lnd-client#readme>
-homepage:       https://github.com/githubuser/lnd-client#readme
-bug-reports:    https://github.com/githubuser/lnd-client/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2020 Author name here
+synopsis:       Lightning Network Daemon (LND) client library for Haskell
+description:    You can find documentation at <https://hackage.haskell.org/package/signable/docs/Data-Signable.html hackage>
+category:       Lightning, Bitcoin, Finance, Network
+homepage:       https://github.com/coingaming/lnd-client#readme
+bug-reports:    https://github.com/coingaming/lnd-client/issues
+author:         Mikhail Prushinskiy <mprushinsky@gmail.com>
+maintainer:     Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>
+copyright:      2020 Coingaming <hello@coingaming.io>
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -23,7 +25,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/lnd-client
+  location: https://github.com/coingaming/lnd-client
 
 library
   exposed-modules:
