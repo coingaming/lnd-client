@@ -1,27 +1,18 @@
 name:                lnd-client
 version:             0.1.0.0
-github:              "githubuser/lnd-client"
+github:              "coingaming/lnd-client"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2020 Author name here"
+author:              "Mikhail Prushinskiy <mprushinsky@gmail.com>"
+maintainer:          "Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>"
+copyright:           "2020 Coingaming <hello@coingaming.io>"
+synopsis:            Lightning Network Daemon (LND) client library for Haskell
+category:            Lightning, Bitcoin, Finance, Network
+description:         You can find documentation at <https://hackage.haskell.org/package/signable/docs/Data-Signable.html hackage>
 
 extra-source-files:
 - README.md
 - ChangeLog.md
 
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
-
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/lnd-client#readme>
-
-#
-# TODO : rm unused dependencies!!!
-#
 dependencies:
 # foundation
 - base                  >= 4.7 && < 5
