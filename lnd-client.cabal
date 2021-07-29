@@ -1,10 +1,8 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 1e83ba24c42e1f12c4413ed350a607454093e5229010c7ad0d28149797909c4e
 
 name:           lnd-client
 version:        0.1.0.0
@@ -13,9 +11,9 @@ description:    You can find documentation at <https://hackage.haskell.org/packa
 category:       Lightning, Bitcoin, Finance, Network, Payments
 homepage:       https://github.com/coingaming/lnd-client#readme
 bug-reports:    https://github.com/coingaming/lnd-client/issues
-author:         Mikhail Prushinskiy <mprushinsky@gmail.com>
+author:         Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>
 maintainer:     Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>
-copyright:      2020 Coingaming <hello@coingaming.io>
+copyright:      2021 Coingaming <hello@coingaming.io>
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -86,21 +84,14 @@ library
       Paths_lnd_client
   hs-source-dirs:
       src
-  default-extensions:
-      NoImplicitPrelude
-      MultiParamTypeClasses
-      LambdaCase
-      OverloadedStrings
-      ScopedTypeVariables
-      DataKinds
-      KindSignatures
+  default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables DataKinds KindSignatures
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
   build-depends:
       JuicyPixels >=3.3.3 && <3.4
     , aeson >=1.4.4.0 && <1.4.8
     , asn1-encoding >=0.9.6 && <0.10
-    , asn1-types ==0.3.*
-    , async ==2.2.2.*
+    , asn1-types >=0.3 && <0.4
+    , async >=2.2.2 && <2.2.3
     , base >=4.7 && <5
     , base16-bytestring >=1.0.1.0 && <1.0.2
     , base64-bytestring >=1.0.0.2 && <1.0.1
@@ -110,9 +101,9 @@ library
     , cryptohash-sha256 >=0.11.101.0 && <0.11.102
     , cryptonite >=0.25 && <0.29
     , deepseq >=1.4.4.0 && <1.4.5
-    , envparse ==0.4.1.*
+    , envparse >=0.4.1 && <0.4.2
     , extra >=1.6.18 && <1.6.20
-    , hspec ==2.7.1.*
+    , hspec >=2.7.1 && <2.7.2
     , http2 >=2.0.3 && <3.0.3
     , http2-client >=0.10.0.0 && <0.10.1
     , http2-client-grpc >=0.8.0.0 && <0.8.1
@@ -126,15 +117,15 @@ library
     , proto-lens >=0.7.0 && <0.8
     , proto-lens-runtime >=0.7.0 && <0.8
     , qrcode-core >=0.9 && <0.9.3
-    , qrcode-juicypixels ==0.8.0.*
+    , qrcode-juicypixels >=0.8.0 && <0.8.1
     , scientific >=0.3.6.2 && <0.3.7
     , stm >=2.5.0.0 && <2.5.1
     , template-haskell >=2.14.0.0 && <2.14.1
     , text >=1.2.3.1 && <1.2.4
     , unbounded-delays >=0.1.1.0 && <0.1.2
-    , universum ==1.5.0.*
-    , unliftio ==0.2.12.*
-    , x509 ==1.7.5.*
+    , universum >=1.5.0 && <1.5.1
+    , unliftio >=0.2.12 && <0.2.13
+    , x509 >=1.7.5 && <1.7.6
   default-language: Haskell2010
 
 test-suite lnd-client-test
@@ -146,21 +137,14 @@ test-suite lnd-client-test
       Paths_lnd_client
   hs-source-dirs:
       test
-  default-extensions:
-      NoImplicitPrelude
-      MultiParamTypeClasses
-      LambdaCase
-      OverloadedStrings
-      ScopedTypeVariables
-      DataKinds
-      KindSignatures
-  ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N -O0
+  default-extensions: NoImplicitPrelude MultiParamTypeClasses LambdaCase OverloadedStrings ScopedTypeVariables DataKinds KindSignatures
+  ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       JuicyPixels >=3.3.3 && <3.4
     , aeson >=1.4.4.0 && <1.4.8
     , asn1-encoding >=0.9.6 && <0.10
-    , asn1-types ==0.3.*
-    , async ==2.2.2.*
+    , asn1-types >=0.3 && <0.4
+    , async >=2.2.2 && <2.2.3
     , base >=4.7 && <5
     , base16-bytestring >=1.0.1.0 && <1.0.2
     , base64-bytestring >=1.0.0.2 && <1.0.1
@@ -170,9 +154,9 @@ test-suite lnd-client-test
     , cryptohash-sha256 >=0.11.101.0 && <0.11.102
     , cryptonite >=0.25 && <0.29
     , deepseq >=1.4.4.0 && <1.4.5
-    , envparse ==0.4.1.*
+    , envparse >=0.4.1 && <0.4.2
     , extra >=1.6.18 && <1.6.20
-    , hspec ==2.7.1.*
+    , hspec >=2.7.1 && <2.7.2
     , http2 >=2.0.3 && <3.0.3
     , http2-client >=0.10.0.0 && <0.10.1
     , http2-client-grpc >=0.8.0.0 && <0.8.1
@@ -187,13 +171,13 @@ test-suite lnd-client-test
     , proto-lens >=0.7.0 && <0.8
     , proto-lens-runtime >=0.7.0 && <0.8
     , qrcode-core >=0.9 && <0.9.3
-    , qrcode-juicypixels ==0.8.0.*
+    , qrcode-juicypixels >=0.8.0 && <0.8.1
     , scientific >=0.3.6.2 && <0.3.7
     , stm >=2.5.0.0 && <2.5.1
     , template-haskell >=2.14.0.0 && <2.14.1
     , text >=1.2.3.1 && <1.2.4
     , unbounded-delays >=0.1.1.0 && <0.1.2
-    , universum ==1.5.0.*
-    , unliftio ==0.2.12.*
-    , x509 ==1.7.5.*
+    , universum >=1.5.0 && <1.5.1
+    , unliftio >=0.2.12 && <0.2.13
+    , x509 >=1.7.5 && <1.7.6
   default-language: Haskell2010

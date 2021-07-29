@@ -1,5 +1,5 @@
 -- | Lightning Network Daemon (LND) client library for Haskell.
--- Please use LndClient.RPC.Silent or LndClient.RPC.Katip to send/receive/subscribe to LND.
+-- Please use 'LndClient.RPC.Silent' or 'LndClient.RPC.Katip' to communicate with LND.
 module LndClient
   ( module Import,
   )

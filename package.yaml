@@ -2,9 +2,9 @@ name:                lnd-client
 version:             0.1.0.0
 github:              "coingaming/lnd-client"
 license:             BSD3
-author:              "Mikhail Prushinskiy <mprushinsky@gmail.com>"
+author:              "Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>"
 maintainer:          "Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>"
-copyright:           "2020 Coingaming <hello@coingaming.io>"
+copyright:           "2021 Coingaming <hello@coingaming.io>"
 synopsis:            Lightning Network Daemon (LND) client library for Haskell
 category:            Lightning, Bitcoin, Finance, Network, Payments
 description:         You can find documentation at <https://hackage.haskell.org/package/lnd-client>
@@ -124,7 +124,7 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -O0
+    #- -O0
     #- -optl-fuse-ld=gold
     #ld-options:
     #- -fuse-ld=gold
