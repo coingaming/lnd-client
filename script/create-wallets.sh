@@ -4,20 +4,9 @@ source ./script/export-test-envs.sh
 
 LND_WALLET_PASSWORD="developer"
 
-mlcli() {
-  ./script/lncli-merchant.sh "$@"
-}
-
-clcli() {
-  ./script/lncli-customer.sh "$@"
-}
-
-export -f mlcli
-export -f clcli
-
 create_wallet() {
 expect <<- EOF
-  spawn bash -c "$1 create";
+  spawn $1 create;
   expect "Input wallet password: ";
   send "$LND_WALLET_PASSWORD\r";
   expect "Confirm password: ";
@@ -33,5 +22,5 @@ EOF
 }
 
 
-create_wallet mlcli
-create_wallet clcli
+create_wallet "./script/lncli-merchant.sh"
+create_wallet "./script/lncli-customer.sh"

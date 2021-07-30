@@ -10,9 +10,8 @@ in pkgs.haskell-nix.project {
   compiler-nix-name = "ghc865";
   modules = [{
     packages.lnd-client.components.tests.lnd-client-test.preCheck = ''
-      env
-      ls -la
       ./script/unstack.sh prepare
+      source ./script/export-test-envs.sh
     '';
     packages.lnd-client.components.tests.lnd-client-test.build-tools = [
       pkgs.haskellPackages.hspec-discover
