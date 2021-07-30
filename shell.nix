@@ -10,9 +10,12 @@ project.shellFor {
   buildInputs = [
     haskellPackages.hspec-discover
     haskellPackages.fswatcher
+    haskellPackages.hpack
+    haskellPackages.stack
     pkgs.bitcoin
     pkgs.openssl
     pkgs.expect
+    pkgs.ps
     lnd
   ];
   tools = {

@@ -3,8 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 8d295b4d86987bb11dd5ab34304501343ceb5278dd76ae87430eb8d8ef066333
 
 name:           lnd-client
 version:        0.1.0.0
@@ -153,7 +151,6 @@ test-suite lnd-client-test
       DataKinds
       KindSignatures
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N -O0
-  build-tool-depends:  hspec-discover:hspec-discover == 2.5.1
   build-depends:
       JuicyPixels >=3.3.3 && <3.4
     , aeson >=1.4.4.0 && <1.4.8

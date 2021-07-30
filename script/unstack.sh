@@ -30,6 +30,10 @@ prepare() {
     ./script/prepare-test-env.sh
 }
 
+nodes_status() {
+    ./script/status.sh
+}
+
 case "$1" in
     test)
         run_tests
@@ -45,6 +49,9 @@ case "$1" in
     ;;
     clean)
         clean
+    ;;
+    status)
+       nodes_status
     ;;
     *)
         help_msg
