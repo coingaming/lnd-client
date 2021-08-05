@@ -14,6 +14,7 @@ self: super:
         fetchFromGitHub = pkgs20.fetchFromGitHub;
         lib = pkgs20.lib;
       });
+      bitcoin = nixpkgs21.bitcoin;
       stack2cabal = doJailbreak nixpkgs21.haskellPackages.stack2cabal;
       haskellPackages = super.haskell.packages.ghc865.extend(
         self': super': {
