@@ -12,6 +12,7 @@ module LndClient.RPCSpec
   )
 where
 
+import Control.Concurrent.Async
 import LndClient.Data.AddHodlInvoice as HodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
@@ -305,6 +306,26 @@ spec = do
                             Left {} -> False
                             Right xs -> any ((cp ==) . CloseChannel.chPoint) xs
                         )
+  it "subscriptionCanBeCancelled" $ withEnv $ do
+    bob <- getLndEnv Bob
+    alice <- getLndEnv Alice
+    GetInfoResponse bobPubKey _ _ <- liftLndResult =<< getInfo bob
+    let openChannelRequest =
+          OpenChannelRequest
+            { nodePubkey = bobPubKey,
+              localFundingAmount = MSat 20000000,
+              pushSat = Just $ MSat 1000000,
+              targetConf = Nothing,
+              satPerByte = Nothing,
+              private = Nothing,
+              minHtlcMsat = Nothing,
+              remoteCsvDelay = Nothing,
+              minConfs = Nothing,
+              spendUnconfirmed = Nothing,
+              closeAddress = Nothing
+            }
+    a <- spawnLink $ liftLndResult =<< openChannel (const $ return ()) alice openChannelRequest
+    liftIO $ cancel a
   where
     --
     -- TODO : fix this, it's not really working for some reason
