@@ -12,7 +12,6 @@ module LndClient.RPCSpec
   )
 where
 
-import Control.Concurrent.Async
 import LndClient.Data.AddHodlInvoice as HodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
