@@ -41,6 +41,7 @@ module LndClient.RPC.Silent
   )
 where
 
+import Control.Concurrent.Async
 import Data.ProtoLens.Message
 import LndClient.Data.AddHodlInvoice as AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice (AddInvoiceResponse (..))
@@ -124,20 +125,18 @@ closeChannelSync env conn req = do
     Right x ->
       case filter (\ch -> channelPoint req == Channel.channelPoint ch) x of
         [] -> return $ Right ()
-        _ -> do
-          mVar <- newEmptyMVar
-          closeChannelRecursive mVar 10
+        _ -> closeChannelRecursive 10
   where
-    closeChannelRecursive _ (0 :: Int) = return $ Left $ LndError "Cannot close channel"
-    closeChannelRecursive mVar0 n = do
+    closeChannelRecursive (0 :: Int) = return $ Left $ LndError "Cannot close channel"
+    closeChannelRecursive n = do
       void $ lazyConnectPeer env conn
-      void $ Util.spawnLink $
-        closeChannel
-          (void . tryPutMVar mVar0)
-          env
-          req
-      liftIO $ delay 1000000
-      upd <- tryTakeMVar mVar0
+      let closeAsync =
+            Util.spawnLink $
+              closeChannel
+                (const $ return ())
+                env
+                req
+      upd <- liftIO $ race (delay 1000000) closeAsync
       case upd of
-        Just _ -> return $ Right ()
-        Nothing -> closeChannelRecursive mVar0 (n -1)
+        Right _ -> return $ Right ()
+        Left _ -> closeChannelRecursive (n -1)

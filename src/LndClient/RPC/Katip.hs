@@ -53,7 +53,7 @@ import LndClient.Data.Peer (ConnectPeerRequest (..))
 import LndClient.Import
 import LndClient.RPC.Generic
 import LndClient.RPC.TH
-import LndClient.Util as Util
+import UnliftIO.Async (race)
 
 $(mkRpc RpcKatip)
 
@@ -144,21 +144,20 @@ closeChannelSync env conn req = do
           $(logTM) (newSev env WarningS) "Cannot close channel that is not active"
           return $ Right ()
         _ -> do
-          mVar <- newEmptyMVar
-          closeChannelRecursive mVar 10
+          closeChannelRecursive 10
   where
-    closeChannelRecursive _ (0 :: Int) = do
+    closeChannelRecursive :: (KatipContext m, MonadUnliftIO m) => Int -> m (Either LndError ())
+    closeChannelRecursive (0 :: Int) = do
       $(logTM) (newSev env ErrorS) "Channel couldn't be closed."
       return $ Left $ LndError "Cannot close channel"
-    closeChannelRecursive mVar0 n = do
+    closeChannelRecursive n = do
       void $ lazyConnectPeer env conn
-      void $ Util.spawnLink $
-        closeChannel
-          (void . tryPutMVar mVar0)
-          env
-          req
-      liftIO $ delay 1000000
-      upd <- tryTakeMVar mVar0
+      let closeAsync =
+            closeChannel
+              (const $ return ())
+              env
+              req
+      upd <- race (liftIO $ delay 1000000) closeAsync
       case upd of
-        Just _ -> return $ Right ()
-        Nothing -> closeChannelRecursive mVar0 (n -1)
+        Right _ -> return $ Right ()
+        Left _ -> closeChannelRecursive (n -1)
