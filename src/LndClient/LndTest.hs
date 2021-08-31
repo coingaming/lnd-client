@@ -137,7 +137,7 @@ newTestEnv ::
 newTestEnv lnd loc = do
   cw <- spawnLinkChannelWatcher lnd
   iw <- spawnLinkInvoiceWatcher lnd
-  siw <- spawnLinkSingleInvoiceWatcher lnd
+  siw <- spawnLinkSingleInvoiceWatcher lnd id
   pure $
     TestEnv
       { testLndEnv = lnd,
@@ -593,11 +593,12 @@ spawnLinkInvoiceWatcher lnd =
     ignore3
 
 spawnLinkSingleInvoiceWatcher ::
-  (KatipContext m, MonadUnliftIO m) =>
+  (Ord req, KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
-  m (Watcher RHash Invoice)
-spawnLinkSingleInvoiceWatcher lnd =
+  (req -> RHash) ->
+  m (Watcher req Invoice)
+spawnLinkSingleInvoiceWatcher lnd accessor =
   Watcher.spawnLink
     lnd
-    Lnd.subscribeSingleInvoiceChan
+    (Lnd.subscribeSingleInvoiceChan accessor)
     ignore3

@@ -26,10 +26,10 @@ import LndClient.Import hiding (newSev, spawnLink)
 -- TODO : maybe pass OnSub | OnExit callbacks?
 --
 
-data Watcher a b
+data Watcher req res
   = Watcher
-      { watcherCmdChan :: TChan (Cmd a),
-        watcherLndChan :: TChan (a, b),
+      { watcherCmdChan :: TChan (Cmd req),
+        watcherLndChan :: TChan (req, res),
         watcherProc :: Async ()
       }
 
@@ -37,36 +37,36 @@ data Watcher a b
 -- TODO : introduce UnWatchAll
 -- and use it in withEnv etc
 --
-data Cmd a
-  = Watch a
-  | UnWatch a
+data Cmd req
+  = Watch req
+  | UnWatch req
 
-data Event a b
-  = EventCmd (Cmd a)
-  | EventLnd b
-  | EventTask (a, Either LndError ())
+data Event req res
+  = EventCmd (Cmd req)
+  | EventLnd res
+  | EventTask (req, Either LndError ())
 
-data WatcherState a b m
+data WatcherState req res m
   = WatcherState
-      { watcherStateCmdChan :: TChan (Cmd a),
-        watcherStateLndChan :: TChan (a, b),
-        watcherStateSub :: a -> m (Either LndError ()),
-        watcherStateHandler :: a -> Either LndError b -> m (),
-        watcherStateTasks :: Map a (Async (a, Either LndError ())),
+      { watcherStateCmdChan :: TChan (Cmd req),
+        watcherStateLndChan :: TChan (req, res),
+        watcherStateSub :: req -> m (Either LndError ()),
+        watcherStateHandler :: req -> Either LndError res -> m (),
+        watcherStateTasks :: Map req (Async (req, Either LndError ())),
         watcherStateLndEnv :: LndEnv
       }
 
-newSev :: WatcherState a b m -> Severity -> Severity
+newSev :: WatcherState req res m -> Severity -> Severity
 newSev w s = newSeverity (watcherStateLndEnv w) s Nothing Nothing
 
 -- Spawn watcher where subscription accepts argument
 -- for example `subscribeInvoicesChan`
 spawnLink ::
-  (Ord a, MonadUnliftIO m, KatipContext m) =>
+  (Ord req, MonadUnliftIO m, KatipContext m) =>
   LndEnv ->
-  (Maybe (TChan (a, b)) -> LndEnv -> a -> m (Either LndError ())) ->
-  (Watcher a b -> a -> Either LndError b -> m ()) ->
-  m (Watcher a b)
+  (Maybe (TChan (req, res)) -> LndEnv -> req -> m (Either LndError ())) ->
+  (Watcher req res -> req -> Either LndError res -> m ()) ->
+  m (Watcher req res)
 spawnLink env sub handler = do
   w <- withRunInIO $ \run -> do
     ( writeCmdChan,
@@ -113,39 +113,39 @@ spawnLink env sub handler = do
 spawnLinkUnit ::
   (MonadUnliftIO m, KatipContext m) =>
   LndEnv ->
-  (Maybe (TChan ((), b)) -> LndEnv -> m (Either LndError ())) ->
-  (Watcher () b -> Either LndError b -> m ()) ->
-  m (Watcher () b)
+  (Maybe (TChan ((), res)) -> LndEnv -> m (Either LndError ())) ->
+  (Watcher () res -> Either LndError res -> m ()) ->
+  m (Watcher () res)
 spawnLinkUnit env0 sub handler =
   spawnLink
     env0
     (\mChan env1 _ -> sub mChan env1)
     (\chan _ x -> handler chan x)
 
-watch :: (MonadUnliftIO m) => Watcher a b -> a -> m ()
+watch :: (MonadUnliftIO m) => Watcher req res -> req -> m ()
 watch w = atomically . writeTChan (watcherCmdChan w) . Watch
 
-watchUnit :: (MonadUnliftIO m) => Watcher () b -> m ()
+watchUnit :: (MonadUnliftIO m) => Watcher () res -> m ()
 watchUnit w = watch w ()
 
-unWatch :: (MonadUnliftIO m) => Watcher a b -> a -> m ()
+unWatch :: (MonadUnliftIO m) => Watcher req res -> req -> m ()
 unWatch w = atomically . writeTChan (watcherCmdChan w) . UnWatch
 
-unWatchUnit :: (MonadUnliftIO m) => Watcher () b -> m ()
+unWatchUnit :: (MonadUnliftIO m) => Watcher () res -> m ()
 unWatchUnit w = unWatch w ()
 
-dupLndTChan :: (MonadIO m) => Watcher a b -> m (TChan (a, b))
+dupLndTChan :: (MonadIO m) => Watcher req res -> m (TChan (req, res))
 dupLndTChan = atomically . dupTChan . watcherLndChan
 
 --
 -- TODO : atomically cancel all linked processes
 --
-delete :: (MonadUnliftIO m) => Watcher a b -> m ()
+delete :: (MonadUnliftIO m) => Watcher req res -> m ()
 delete (Watcher _ _ proc) = liftIO $ cancel proc
 
 loop ::
-  (Ord a, MonadUnliftIO m, KatipContext m) =>
-  WatcherState a b m ->
+  (Ord req, MonadUnliftIO m, KatipContext m) =>
+  WatcherState req res m ->
   m ()
 loop w = do
   -- Here is the trick. Async watcher task can be already
@@ -176,9 +176,9 @@ loop w = do
         <$> waitAnySTM (Map.elems $ watcherStateTasks w)
 
 applyCmd ::
-  (Ord a, MonadUnliftIO m, KatipContext m) =>
-  WatcherState a b m ->
-  Cmd a ->
+  (Ord req, MonadUnliftIO m, KatipContext m) =>
+  WatcherState req res m ->
+  Cmd req ->
   m ()
 applyCmd w = \case
   Watch x -> do
@@ -203,9 +203,9 @@ applyCmd w = \case
     ts = watcherStateTasks w
 
 applyLnd ::
-  (Ord a, MonadUnliftIO m, KatipContext m) =>
-  WatcherState a b m ->
-  (a, Either LndError b) ->
+  (Ord req, MonadUnliftIO m, KatipContext m) =>
+  WatcherState req res m ->
+  (req, Either LndError res) ->
   m ()
 applyLnd w (x0, x1) = do
   $(logTM) (newSev w InfoS) "Watcher - applying Lnd"
@@ -213,9 +213,9 @@ applyLnd w (x0, x1) = do
   loop w
 
 applyTask ::
-  (Ord a, MonadUnliftIO m, KatipContext m) =>
-  WatcherState a b m ->
-  (a, Either LndError ()) ->
+  (Ord req, MonadUnliftIO m, KatipContext m) =>
+  WatcherState req res m ->
+  (req, Either LndError ()) ->
   m ()
 applyTask w0 (x, res) = do
   $(logTM) (newSev w0 InfoS) "Watcher - applying Task"

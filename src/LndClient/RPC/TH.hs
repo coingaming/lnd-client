@@ -176,16 +176,17 @@ mkRpc k = do
 
     subscribeSingleInvoiceChan ::
       ($(tcc) m) =>
-      Maybe (TChan (RHash, Invoice)) ->
+      (req -> RHash) ->
+      Maybe (TChan (req, Invoice)) ->
       LndEnv ->
-      RHash ->
+      req ->
       m (Either LndError ())
-    subscribeSingleInvoiceChan mq env req = do
+    subscribeSingleInvoiceChan accessor mq env req = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
       subscribeSingleInvoice
         (\x -> atomically $ writeTChan q (req, x))
         env
-        req
+        $ accessor req
 
     subscribeInvoices ::
       ($(tcc) m) =>
