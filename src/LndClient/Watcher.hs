@@ -79,11 +79,11 @@ spawnLink env sub handler = do
       readCmdChan <- dupTChan writeCmdChan
       readLndChan <- dupTChan writeLndChan
       pure (writeCmdChan, writeLndChan, readCmdChan, readLndChan)
-    let w =
+    let newWatcher proc =
           Watcher
             { watcherCmdChan = writeCmdChan,
               watcherLndChan = writeLndChan,
-              watcherProc = error "PARTIAL_WATCHER"
+              watcherProc = proc
             }
     varProc <- newEmptyMVar
     proc <-
@@ -94,12 +94,12 @@ spawnLink env sub handler = do
             { watcherStateCmdChan = readCmdChan,
               watcherStateLndChan = readLndChan,
               watcherStateSub = sub (Just writeLndChan) env,
-              watcherStateHandler = handler $ w {watcherProc = proc},
+              watcherStateHandler = handler $ newWatcher proc,
               watcherStateTasks = mempty,
               watcherStateLndEnv = env
             }
     liftIO $ putMVar varProc proc
-    pure $ w {watcherProc = proc}
+    pure $ newWatcher proc
   let proc = watcherProc w
   liftIO $ link proc
   $(logTM) (newSeverity env InfoS Nothing Nothing)
@@ -156,12 +156,9 @@ loop w = do
   -- evaluated independently. In this case we need to retry
   -- alternative computation but without reading from
   -- watcherStateLndChan.
-  $(logTM) (newSev w InfoS) "Watcher - cmd <|> lnd <|> task"
   me <- maybeDeadlock . atomically $ cmd <|> lnd <|> task
   event <- case me of
-    Nothing -> do
-      $(logTM) (newSev w InfoS) "Watcher - cmd <|> task"
-      atomically $ cmd <|> task
+    Nothing -> atomically $ cmd <|> task
     Just x -> return x
   $(logTM) (newSev w InfoS) "Watcher - applying event"
   case event of
