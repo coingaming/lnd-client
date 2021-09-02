@@ -111,7 +111,11 @@ readEnv = do
 withEnv :: AppM IO () -> IO ()
 withEnv this = do
   env <- readEnv
-  runApp env $ setupZeroChannels proxyOwner >> this
+  runApp env $ do
+    setupZeroChannels proxyOwner
+    this
+    deleteTestEnv $ envBob env
+    deleteTestEnv $ envAlice env
   void . closeScribes $ envKatipLE env
 
 btcEnv :: BtcEnv

@@ -13,6 +13,8 @@ module LndClient.LndTest
     -- * TestEnv
     TestEnv,
     newTestEnv,
+    deleteTestEnv,
+    withTestEnv,
     spawnLinkChannelWatcher,
     spawnLinkInvoiceWatcher,
     spawnLinkSingleInvoiceWatcher,
@@ -146,6 +148,30 @@ newTestEnv lnd loc = do
         testInvoiceWatcher = iw,
         testSingleInvoiceWatcher = siw
       }
+
+deleteTestEnv ::
+  ( KatipContext m,
+    MonadUnliftIO m
+  ) =>
+  TestEnv ->
+  m ()
+deleteTestEnv env = do
+  Watcher.terminate $ testChannelWatcher env
+  Watcher.terminate $ testInvoiceWatcher env
+  Watcher.terminate $ testSingleInvoiceWatcher env
+
+withTestEnv ::
+  ( KatipContext m,
+    MonadUnliftIO m
+  ) =>
+  LndEnv ->
+  NodeLocation ->
+  (TestEnv -> m ()) ->
+  m ()
+withTestEnv lnd loc this = do
+  env <- newTestEnv lnd loc
+  this env
+  deleteTestEnv env
 
 class
   ( KatipContext m,
