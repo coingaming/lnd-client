@@ -156,21 +156,30 @@ loop w = do
   -- evaluated independently. In this case we need to retry
   -- alternative computation but without reading from
   -- watcherStateLndChan.
-  me <- maybeDeadlock . atomically $ cmd <|> lnd <|> task
+  me <-
+    maybeDeadlock . atomically $
+      if tasksEmpty
+        then cmd <|> lnd
+        else cmd <|> lnd <|> task
   event <- case me of
-    Nothing -> atomically $ cmd <|> task
-    Just x -> return x
+    Nothing ->
+      atomically $
+        if tasksEmpty
+          then cmd
+          else cmd <|> task
+    Just x ->
+      return x
   $(logTM) (newSev w InfoS) "Watcher - applying event"
   case event of
     EventCmd x -> applyCmd w x
     EventLnd x -> applyLnd w (second Right x)
     EventTask x -> applyTask w x
   where
+    ts = Map.elems $ watcherStateTasks w
+    tasksEmpty = null ts
     cmd = EventCmd <$> readTChan (watcherStateCmdChan w)
     lnd = EventLnd <$> readTChan (watcherStateLndChan w)
-    task =
-      EventTask . snd
-        <$> waitAnySTM (Map.elems $ watcherStateTasks w)
+    task = EventTask . snd <$> waitAnySTM ts
 
 applyCmd ::
   (Ord req, MonadUnliftIO m, KatipContext m) =>
