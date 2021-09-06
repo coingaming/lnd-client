@@ -16,10 +16,10 @@ filters: &filters
     branches: {}
 
 jobs:
-  environment:
-    NIX_SSHOPTS: 'source /etc/profile.d/nix.sh;'
   release:
     <<: *configure
+    environment:
+      NIX_SSHOPTS: 'source /etc/profile.d/nix.sh;'
     steps:
     - checkout
     - setup_remote_docker
