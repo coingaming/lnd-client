@@ -2,7 +2,7 @@ let
   pkgs = (import ./nix/header.nix).pkgs;
   lnd = import ./nix/lnd.nix { inherit pkgs; };
 in pkgs.haskell-nix.project {
-  projectFileName = "stack.yaml";
+  projectFileName = "cabal.project";
   src = pkgs.haskell-nix.haskellLib.cleanGit {
     name = "lnd-client";
     src = ./.;

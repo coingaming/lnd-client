@@ -126,16 +126,7 @@ newtype AppM m a
   = AppM
       { unAppM :: ReaderT Env m a
       }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadReader Env)
-
-instance (MonadUnliftIO m) => MonadUnliftIO (AppM m) where
-  withRunInIO run = AppM (withRunInIO (\k -> run (k . unAppM)))
-  askUnliftIO =
-    AppM
-      ( fmap
-          (\(UnliftIO run) -> UnliftIO (run . unAppM))
-          askUnliftIO
-      )
+  deriving (Functor, Applicative, Monad, MonadIO, MonadReader Env, MonadUnliftIO)
 
 instance (MonadIO m) => Katip (AppM m) where
   getLogEnv = asks envKatipLE

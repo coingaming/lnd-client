@@ -2,7 +2,7 @@
 
 THIS_DIR="$(pwd)"
 
-export GODEBUG=x509ignoreCN=0
+#export GODEBUG=x509ignoreCN=0
 
 #
 # bitcoind
@@ -17,7 +17,7 @@ alias bitcoin-cli="bitcoin-cli -datadir=$BTCD_DIR"
 #
 
 export LND_MERCHANT_DIR="$THIS_DIR/.lnd-merchant"
-alias lncli-merchant="lncli -n regtest --lnddir=$LND_MERCHANT_DIR"
+alias lncli-merchant="lncli -n regtest --lnddir=$LND_MERCHANT_DIR --rpcserver=localhost:10009"
 export LND_CUSTOMER_DIR="$THIS_DIR/.lnd-customer"
 alias lncli-customer="lncli -n regtest --lnddir=$LND_CUSTOMER_DIR --rpcserver=localhost:11009"
 
@@ -65,3 +65,4 @@ export LND_CLIENT_ENV_DATA="
     \"lnd_sync_grpc_timeout_seconds\":59
 }
 "
+export GODEBUG=x509ignoreCN=0
