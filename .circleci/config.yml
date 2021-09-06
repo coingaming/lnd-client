@@ -8,31 +8,12 @@ configure: &configure
 release: &release
   run:
     name: Create release
-    command: ./nix/release.sh
+    command: ./nix/bootstrap.sh && nix-build -v --show-trace
     no_output_timeout: 60m
 
 filters: &filters
   filters:
     branches: {}
-
-commands:
-  restore_nix_cache:
-    steps:
-      - restore_cache:
-          keys:
-            - v0-nix-<< pipeline.git.revision >>
-            - v0-nix-<< pipeline.git.base_revision >>
-            - v0-nix-
-  save_nix_cache:
-    steps:
-      - save_cache:
-          key: v0-nix-<< pipeline.git.revision >>
-          paths:
-            - /nix
-      - save_cache:
-          key: v0-nix-
-          paths:
-            - /nix
 
 jobs:
   release:
@@ -40,9 +21,7 @@ jobs:
     steps:
     - checkout
     - setup_remote_docker
-    - restore_nix_cache
     - *release
-    - save_nix_cache
 
 workflows:
   version: 2
