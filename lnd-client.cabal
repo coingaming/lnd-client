@@ -6,12 +6,14 @@ cabal-version: 1.12
 
 name:           lnd-client
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/lnd-client#readme>
-homepage:       https://github.com/githubuser/lnd-client#readme
-bug-reports:    https://github.com/githubuser/lnd-client/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2020 Author name here
+synopsis:       Lightning Network Daemon (LND) client library for Haskell
+description:    You can find documentation at <https://hackage.haskell.org/package/lnd-client>
+category:       Lightning, Bitcoin, Finance, Network, Payments
+homepage:       https://github.com/coingaming/lnd-client#readme
+bug-reports:    https://github.com/coingaming/lnd-client/issues
+author:         Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>
+maintainer:     Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>
+copyright:      2021 Coingaming <hello@coingaming.io>
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -21,7 +23,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/lnd-client
+  location: https://github.com/coingaming/lnd-client
 
 library
   exposed-modules:
@@ -90,6 +92,7 @@ library
       ScopedTypeVariables
       DataKinds
       KindSignatures
+      StrictData
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
   build-depends:
       JuicyPixels >=3.3.3 && <3.4
@@ -150,7 +153,8 @@ test-suite lnd-client-test
       ScopedTypeVariables
       DataKinds
       KindSignatures
-  ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N -O0
+      StrictData
+  ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       JuicyPixels >=3.3.3 && <3.4
     , aeson >=1.4.4.0
