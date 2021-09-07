@@ -77,8 +77,7 @@ grpcSyncSilent rpc env req =
     Left err -> return $ Left err
 
 grpcSyncKatip ::
-  ( MonadUnliftIO m,
-    KatipContext m,
+  ( KatipContext m,
     ToGrpc a gA,
     FromGrpc b gB,
     HasMethod s rm,
@@ -134,8 +133,7 @@ grpcSubscribeSilent rpc handler env req =
         Left _ -> return ()
 
 grpcSubscribeKatip ::
-  ( MonadUnliftIO m,
-    KatipContext m,
+  ( KatipContext m,
     ToGrpc a gA,
     FromGrpc b gB,
     HasMethod s rm,

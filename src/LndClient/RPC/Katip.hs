@@ -78,7 +78,7 @@ waitForGrpc env =
           return . Left $ LndError msg
 
 lazyUnlockWallet ::
-  (KatipContext m) =>
+  KatipContext m =>
   LndEnv ->
   m (Either LndError ())
 lazyUnlockWallet env =
@@ -92,7 +92,7 @@ lazyUnlockWallet env =
       else unlockWallet env
 
 lazyInitWallet ::
-  (KatipContext m) =>
+  KatipContext m =>
   LndEnv ->
   m (Either LndError ())
 lazyInitWallet env =
@@ -108,7 +108,7 @@ lazyInitWallet env =
       else initWallet env
 
 ensureHodlInvoice ::
-  (KatipContext m) =>
+  KatipContext m =>
   LndEnv ->
   AddHodlInvoiceRequest ->
   m (Either LndError AddInvoiceResponse)
