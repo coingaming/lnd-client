@@ -118,7 +118,7 @@ library
     , microlens >=0.4.10
     , network-bitcoin ==1.8.3
     , pem >=0.2.4 && <0.3
-    , persistent >=2.11.0.2 && <2.11.1
+    , persistent >=2.11.0.2
     , proto-lens >=0.7.0
     , proto-lens-runtime >=0.7.0
     , qrcode-core >=0.9 && <0.9.3
@@ -179,7 +179,7 @@ test-suite lnd-client-test
     , microlens >=0.4.10
     , network-bitcoin ==1.8.3
     , pem >=0.2.4 && <0.3
-    , persistent >=2.11.0.2 && <2.11.1
+    , persistent >=2.11.0.2
     , proto-lens >=0.7.0
     , proto-lens-runtime >=0.7.0
     , qrcode-core >=0.9 && <0.9.3
