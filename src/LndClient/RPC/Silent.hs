@@ -56,7 +56,7 @@ import LndClient.Util as Util
 $(mkRpc RpcSilent)
 
 waitForGrpc ::
-  (MonadIO m) =>
+  (MonadUnliftIO m) =>
   LndEnv ->
   m (Either LndError ())
 waitForGrpc env = this 30
@@ -73,7 +73,7 @@ waitForGrpc env = this 30
           return . Left $ LndError msg
 
 lazyUnlockWallet ::
-  (MonadIO m) =>
+  (MonadUnliftIO m) =>
   LndEnv ->
   m (Either LndError ())
 lazyUnlockWallet env = do
@@ -83,7 +83,7 @@ lazyUnlockWallet env = do
     else unlockWallet env
 
 lazyInitWallet ::
-  (MonadIO m) =>
+  (MonadUnliftIO m) =>
   LndEnv ->
   m (Either LndError ())
 lazyInitWallet env = do
@@ -93,7 +93,7 @@ lazyInitWallet env = do
     else initWallet env
 
 ensureHodlInvoice ::
-  (MonadIO m) =>
+  (MonadUnliftIO m) =>
   LndEnv ->
   AddHodlInvoiceRequest ->
   m (Either LndError AddInvoiceResponse)

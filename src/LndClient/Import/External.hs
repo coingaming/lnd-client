@@ -61,5 +61,5 @@ import Katip as Import
     runKatipContextT,
     sl,
   )
-import Universum as Import hiding (Text)
-import UnliftIO as Import (MonadUnliftIO (..), UnliftIO (..))
+import Universum as Import hiding (Text, catch)
+import UnliftIO as Import (MonadUnliftIO (..), UnliftIO (..), catch)

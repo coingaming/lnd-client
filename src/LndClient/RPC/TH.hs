@@ -417,7 +417,7 @@ mkRpc k = do
     |]
   where
     tcc = case k of
-      RpcSilent -> [t|MonadIO|]
+      RpcSilent -> [t|MonadUnliftIO|]
       RpcKatip -> [t|KatipContext|]
     grpcRetry = case k of
       RpcSilent -> [e|retrySilent|]
