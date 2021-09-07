@@ -40,7 +40,7 @@ runUnary rpc env req = do
     Right (Right (Right (Left e))) -> Left $ LndError ("LndGrpc response error, code: " <> show e)
     Right (Right (Left e)) -> Left $ LndError ("LndGrpc, TooMuchConcurrency error: " <> show e)
     Right (Left e) -> Left $ LndGrpcError e
-    Left BlockedIndefinitelyOnMVar -> Left $ LndGrpcClientError "BlockedIndefinitelyOnMVar"
+    Left BlockedIndefinitelyOnMVar -> Left $ LndGrpcException "BlockedIndefinitelyOnMVar"
 
 runStreamServer ::
   ( MonadUnliftIO p,
@@ -62,4 +62,4 @@ runStreamServer rpc env req handler = do
     Right (Right (Right ((), _, _))) -> Right defMessage
     Right (Right (Left e)) -> Left $ LndError ("LndGrpc response error: " <> show e)
     Right (Left e) -> Left $ LndGrpcError e
-    Left BlockedIndefinitelyOnMVar -> Left $ LndGrpcClientError "BlockedIndefinitelyOnMVar"
+    Left BlockedIndefinitelyOnMVar -> Left $ LndGrpcException "BlockedIndefinitelyOnMVar"
