@@ -18,6 +18,7 @@ data LndError
   = ToGrpcError Text
   | FromGrpcError Text
   | LndGrpcError E.ClientError
+  | LndGrpcException Text
   | GrpcUnexpectedResult Text
   | GrpcEmptyResult
   | LndError Text

@@ -60,7 +60,7 @@ showElapsedSeconds :: Timespan -> Text
 showElapsedSeconds = encodeTimespan SubsecondPrecisionAuto
 
 grpcSyncSilent ::
-  ( MonadIO m,
+  ( MonadUnliftIO m,
     ToGrpc a gA,
     FromGrpc b gB,
     HasMethod s rm,
@@ -77,8 +77,7 @@ grpcSyncSilent rpc env req =
     Left err -> return $ Left err
 
 grpcSyncKatip ::
-  ( MonadIO m,
-    KatipContext m,
+  ( KatipContext m,
     ToGrpc a gA,
     FromGrpc b gB,
     HasMethod s rm,
@@ -111,7 +110,7 @@ grpcSyncKatip rpc env req =
       pure res
 
 grpcSubscribeSilent ::
-  ( MonadIO m,
+  ( MonadUnliftIO m,
     ToGrpc a gA,
     FromGrpc b gB,
     HasMethod s rm,
@@ -134,8 +133,7 @@ grpcSubscribeSilent rpc handler env req =
         Left _ -> return ()
 
 grpcSubscribeKatip ::
-  ( MonadIO m,
-    KatipContext m,
+  ( KatipContext m,
     ToGrpc a gA,
     FromGrpc b gB,
     HasMethod s rm,
