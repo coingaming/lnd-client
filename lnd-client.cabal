@@ -93,7 +93,7 @@ library
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction
   build-depends:
       JuicyPixels >=3.3.3 && <3.4
-    , aeson >=1.4.4.0 && <1.4.8
+    , aeson >=1.4.4.0
     , asn1-encoding >=0.9.6 && <0.10
     , asn1-types ==0.3.*
     , async ==2.2.2.*
@@ -101,7 +101,7 @@ library
     , base16-bytestring >=1.0.1.0 && <1.0.2
     , base64-bytestring >=1.0.0.2 && <1.0.1
     , bytestring >=0.10.8.2 && <0.10.9
-    , chronos >=1.0.7 && <1.0.10
+    , chronos >=1.0.7
     , containers >=0.6.0.1 && <0.6.1
     , cryptohash-sha256 >=0.11.101.0 && <0.11.102
     , cryptonite >=0.25 && <0.29
@@ -112,11 +112,11 @@ library
     , http2 >=2.0.3
     , http2-client
     , http2-client-grpc >=0.8.0.0
-    , http2-grpc-proto-lens
+    , http2-grpc-proto-lens >=0.1.0.0
     , http2-grpc-types >=0.5.0.0
-    , katip >=0.8.5.0
-    , microlens >=0.4.10 && <0.5
-    , network-bitcoin >=1.8.3 && <1.9.2
+    , katip >=0.8.3.0
+    , microlens >=0.4.10
+    , network-bitcoin ==1.8.3
     , pem >=0.2.4 && <0.3
     , persistent >=2.11.0.2 && <2.11.1
     , proto-lens >=0.7.0
@@ -129,7 +129,7 @@ library
     , text >=1.2.3.1 && <1.2.4
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum ==1.5.0.*
-    , unliftio ==0.2.12.*
+    , unliftio >=0.2.12
     , x509 ==1.7.5.*
   default-language: Haskell2010
 
@@ -153,7 +153,7 @@ test-suite lnd-client-test
   ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N -O0
   build-depends:
       JuicyPixels >=3.3.3 && <3.4
-    , aeson >=1.4.4.0 && <1.4.8
+    , aeson >=1.4.4.0
     , asn1-encoding >=0.9.6 && <0.10
     , asn1-types ==0.3.*
     , async ==2.2.2.*
@@ -161,7 +161,7 @@ test-suite lnd-client-test
     , base16-bytestring >=1.0.1.0 && <1.0.2
     , base64-bytestring >=1.0.0.2 && <1.0.1
     , bytestring >=0.10.8.2 && <0.10.9
-    , chronos >=1.0.7 && <1.0.10
+    , chronos >=1.0.7
     , containers >=0.6.0.1 && <0.6.1
     , cryptohash-sha256 >=0.11.101.0 && <0.11.102
     , cryptonite >=0.25 && <0.29
@@ -169,15 +169,15 @@ test-suite lnd-client-test
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
     , hspec ==2.7.1.*
-    , http2 >=2.0.3 && <3.0.3
+    , http2 >=2.0.3
     , http2-client
     , http2-client-grpc >=0.8.0.0
-    , http2-grpc-proto-lens
+    , http2-grpc-proto-lens >=0.1.0.0
     , http2-grpc-types >=0.5.0.0
-    , katip >= 0.8.3.0
+    , katip >=0.8.3.0
     , lnd-client
-    , microlens >=0.4.10 && <0.5
-    , network-bitcoin == 1.8.3
+    , microlens >=0.4.10
+    , network-bitcoin ==1.8.3
     , pem >=0.2.4 && <0.3
     , persistent >=2.11.0.2 && <2.11.1
     , proto-lens >=0.7.0
@@ -190,6 +190,6 @@ test-suite lnd-client-test
     , text >=1.2.3.1 && <1.2.4
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum ==1.5.0.*
-    , unliftio ==0.2.12.*
+    , unliftio >=0.2.12
     , x509 ==1.7.5.*
   default-language: Haskell2010

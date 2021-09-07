@@ -27,7 +27,7 @@ dependencies:
 - base                  >= 4.7 && < 5
 - universum             >= 1.5.0 && < 1.5.1
 # time
-- chronos               >= 1.0.7 && < 1.0.10
+- chronos               >= 1.0.7
 - unbounded-delays      >= 0.1.1.0 && < 0.1.2
 # storage
 - persistent            >= 2.11.0.2 && < 2.11.1
@@ -38,7 +38,7 @@ dependencies:
 - base16-bytestring     >= 1.0.1.0 && < 1.0.2
 - base64-bytestring     >= 1.0.0.2 && <  1.0.1
 - text                  >= 1.2.3.1 && < 1.2.4
-- aeson                 >= 1.4.4.0 && < 1.4.8
+- aeson                 >= 1.4.4.0
 # protobuf and gRPC
 - containers            >= 0.6.0.1 && < 0.6.1
 - deepseq               >= 1.4.4.0 && < 1.4.5
@@ -58,19 +58,19 @@ dependencies:
 - asn1-types            >= 0.3 && < 0.4
 - pem                   >= 0.2.4 && < 0.3
 # bitcoin
-- network-bitcoin       >= 1.8.3
+- network-bitcoin       == 1.8.3
 # general
-- unliftio              >= 0.2.12 && < 0.2.13
+- unliftio              >= 0.2.12
 - extra                 >= 1.6.18 && < 1.6.20
 - scientific            >= 0.3.6.2 && < 0.3.7
 - template-haskell      >= 2.14.0.0 && < 2.14.1
 # protobuf
-- microlens             >= 0.4.10 && < 0.5
+- microlens             >= 0.4.10
 - proto-lens            >= 0.7.0
 - proto-lens-runtime    >= 0.7.0
 # proto-lens-grpc
 - http2-grpc-proto-lens >= 0.1.0.0
-- http2-client          >= 0.10.0.0
+- http2-client
 - http2-client-grpc     >= 0.8.0.0
 - http2-grpc-types      >= 0.5.0.0
 - http2                 >= 2.0.3
