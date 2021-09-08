@@ -46,3 +46,8 @@ instance (FieldDefault b, FromGrpc a b) => FromGrpc (Maybe a) b where
 
 instance FromGrpc a b => FromGrpc [a] [b] where
   fromGrpc x = sequence $ fromGrpc <$> x
+
+instance FromGrpc LnInitiator Bool where
+  fromGrpc = pure . \case
+    True -> LnInitiatorLocal
+    False -> LnInitiatorRemote

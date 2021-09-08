@@ -1,9 +1,9 @@
-{-# LANGUAGE DeriveLift #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module LndClient.Data.Type
   ( LndError (..),
     LoggingStrategy (..),
+    LnInitiator (..),
     logDefault,
     logDebug,
   )
@@ -29,6 +29,15 @@ data LndError
 newtype LoggingStrategy
   = LoggingStrategy
       (Severity -> Maybe Timespan -> Maybe LndError -> Severity)
+
+data LnInitiator
+  = LnInitiatorUnknown
+  | LnInitiatorLocal
+  | LnInitiatorRemote
+  | LnInitiatorBoth
+  deriving (Eq, Ord, Show, Read)
+
+derivePersistField "LnInitiator"
 
 logDefault :: LoggingStrategy
 logDefault =
