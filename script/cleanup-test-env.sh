@@ -8,3 +8,7 @@ customer_lnd_pid=`cat $LND_CUSTOMER_DIR/lnd.pid`
 lncli-merchant stop
 lncli-customer stop
 bitcoin-cli stop
+
+kill -9 "$merchant_lnd_pid"
+kill -9 "$customer_lnd_pid"
+kill -9 "$bitcoin_pid"
