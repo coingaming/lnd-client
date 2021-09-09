@@ -9,6 +9,7 @@ where
 import Data.ProtoLens.Message
 import LndClient.Data.Type
 import LndClient.Import.External
+import qualified Proto.LndGrpc as LnGrpc
 
 class ToGrpc a b where
   toGrpc :: a -> Either LndError b
@@ -51,3 +52,11 @@ instance FromGrpc LnInitiator Bool where
   fromGrpc = pure . \case
     True -> LnInitiatorLocal
     False -> LnInitiatorRemote
+
+instance FromGrpc LnInitiator LnGrpc.Initiator where
+  fromGrpc = pure . \case
+    LnGrpc.INITIATOR_UNKNOWN -> LnInitiatorUnknown
+    LnGrpc.INITIATOR_LOCAL -> LnInitiatorLocal
+    LnGrpc.INITIATOR_REMOTE -> LnInitiatorRemote
+    LnGrpc.INITIATOR_BOTH -> LnInitiatorBoth
+    LnGrpc.Initiator'Unrecognized {} -> LnInitiatorUnknown

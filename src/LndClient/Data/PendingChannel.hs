@@ -16,7 +16,8 @@ data PendingChannel
         localBalance :: MSat,
         remoteBalance :: MSat,
         localChanReserveSat :: MSat,
-        remoteChanReserveSat :: MSat
+        remoteChanReserveSat :: MSat,
+        initiator :: LnInitiator
       }
   deriving (Eq, Show)
 
@@ -48,3 +49,5 @@ instance
               <$> fromGrpc
                 (x ^. LnGRPC.remoteChanReserveSat)
           )
+      <*> fromGrpc
+        (x ^. LnGRPC.initiator)
