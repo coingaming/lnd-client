@@ -122,6 +122,7 @@ library
     , network-bitcoin >=1.8.3 && <1.9.2
     , pem >=0.2.4 && <0.3
     , persistent >=2.11.0.2 && <2.11.1
+    , persistent-template >=2.9 && <2.13
     , proto-lens >=0.7.0 && <0.8
     , proto-lens-runtime >=0.7.0 && <0.8
     , qrcode-core >=0.9 && <0.9.3
@@ -184,6 +185,7 @@ test-suite lnd-client-test
     , network-bitcoin >=1.8.3 && <1.9.2
     , pem >=0.2.4 && <0.3
     , persistent >=2.11.0.2 && <2.11.1
+    , persistent-template >=2.9 && <2.13
     , proto-lens >=0.7.0 && <0.8
     , proto-lens-runtime >=0.7.0 && <0.8
     , qrcode-core >=0.9 && <0.9.3
