@@ -136,7 +136,7 @@ spec = do
         (AddInvoice.rHash inv)
         Invoice.OPEN
         chan
-    Watcher.delete w
+    Watcher.terminate w
     liftIO $ res `shouldSatisfy` isRight
   it "watchUnit" $ withEnv $ do
     bob <- getLndEnv Bob
@@ -161,7 +161,7 @@ spec = do
             }
     cp <- liftLndResult =<< openChannelSync alice openChannelRequest
     res <- receiveActiveChannel proxyOwner cp chan
-    Watcher.delete w
+    Watcher.terminate w
     liftIO $ res `shouldSatisfy` isRight
   it "unWatch" $ withEnv $ do
     lnd <- getLndEnv Bob
@@ -179,7 +179,7 @@ spec = do
     purgeChan chan
     void . liftLndResult =<< addInvoice lnd addInvoiceRequest
     res <- readTChanTimeout (MicroSecondsDelay 500000) chan
-    Watcher.delete w
+    Watcher.terminate w
     liftIO $ res `shouldBe` Nothing
   it "ensureHodlInvoice" $ withEnv $ do
     r <- newRPreimage
@@ -352,7 +352,7 @@ spec = do
     --  alice <- getLndEnv Alice
     --  void $ liftLndResult =<< sendPayment alice spr
     --  res <- readTChanTimeout (MicroSecondsDelay 500000) chan
-    --  Watcher.delete w
+    --  Watcher.terminate w
     --  liftIO $ res `shouldSatisfy` isJust
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing

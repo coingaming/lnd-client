@@ -15,7 +15,7 @@ module LndClient.Watcher
     unWatch,
     unWatchUnit,
     dupLndTChan,
-    delete,
+    terminate,
   )
 where
 
@@ -40,6 +40,7 @@ data Watcher req res
 data Cmd req
   = Watch req
   | UnWatch req
+  | Terminate (Async ())
 
 data Event req res
   = EventCmd (Cmd req)
@@ -139,9 +140,10 @@ dupLndTChan = atomically . dupTChan . watcherLndChan
 
 --
 -- TODO : atomically cancel all linked processes
+-- in case of root process crash/cancel (graceful cleanup)
 --
-delete :: (MonadUnliftIO m) => Watcher req res -> m ()
-delete (Watcher _ _ proc) = liftIO $ cancel proc
+terminate :: (MonadUnliftIO m) => Watcher req res -> m ()
+terminate (Watcher _ _ proc) = liftIO $ cancel proc
 
 loop ::
   (Ord req, MonadUnliftIO m, KatipContext m) =>
@@ -205,6 +207,17 @@ applyCmd w = \case
       Just t -> do
         liftIO $ cancel t
         loop w {watcherStateTasks = Map.delete x ts}
+  Terminate x -> do
+    $(logTM) (newSev w InfoS) $
+      logStr
+        ( "Watcher - applying Cmd Terminate "
+            <> show (asyncThreadId x) ::
+            Text
+        )
+    liftIO $ do
+      mapM_ cancel $ Map.elems ts
+      cancel x
+    loop w {watcherStateTasks = mempty}
   where
     ts = watcherStateTasks w
 
