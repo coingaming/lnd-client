@@ -2,43 +2,65 @@
 
 set -e
 
-export PATH=/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/bin:/sbin:/usr/bin:/usr/sbin:$PATH
+export NIX_SSHOPTS='source /etc/profile.d/nix.sh;'
 
-# Disable HTTP2 (related to https://github.com/NixOS/nix/issues/2733)
-echo 'http2 = false' >> /etc/nix/nix.conf
+echo "
+substituters = https://cache.nixos.org file:///tmp/nix_ci_cache
+trusted-substituters = file:///tmp/nix_ci_cache
+system-features = kvm
+http2 = false
+require-sigs = false
+sandbox = false
+cores = 2
+max-jobs = 4
+" >> /etc/nix/nix.conf
 
-NIX_CHANNELS="$(nix-channel --list)"
-EXPECTED_NIX_CHANNELS="nixpkgs https://nixos.org/channels/nixos-19.09"
+mkdir -p /tmp/nix_ci_cache
+mkdir -p /tmp/.ssh/
+mkdir -p $HOME/.ssh/
 
-if [ "$NIX_CHANNELS" != "$EXPECTED_NIX_CHANNELS" ]; then
-  echo "got '$NIX_CHANNELS' but expected '$EXPECTED_NIX_CHANNELS'"
-  nix-channel --add https://nixos.org/channels/nixos-19.09 nixpkgs
-  nix-channel --update
-else
-  echo "already updated ==> nix channels"
-fi
+echo '-----BEGIN OPENSSH PRIVATE KEY-----' >> /tmp/.ssh/id_ed25519
+echo $BINARY_CACHE_KEY | sed -e 's/\s\+/\n/g' >> /tmp/.ssh/id_ed25519
+echo '-----END OPENSSH PRIVATE KEY-----' >> /tmp/.ssh/id_ed25519
+echo "$ROBOT_SSH_KEY" | base64 -d > /tmp/.ssh/id_rsa.robot
 
-strict_install () {
-  if [ -z "$2" ]; then
-    nix-env -iAP "nixpkgs.$1"
-  else
-    eval "$2"
-  fi
-}
 
-lazy_install () {
-  local PKG="$([ -z "$2" ] && echo "$1" || echo "$2")"
-  command -v "$1" > /dev/null && \
-    echo "already installed ==> $PKG" || \
-    strict_install "$PKG" "$3"
-}
+nix-channel --add https://nixos.org/channels/nixos-21.05 nixpkgs
+nix-channel --update
+nix-env -iAP \
+  nixpkgs.gitMinimal \
+  nixpkgs.docker \
+  nixpkgs.openssh
 
-for X in "git" "cabal2nix" "docker" "coreutils"; do
-  lazy_install $X
-done
-lazy_install ssh-keyscan openssh
-lazy_install cachix cachix "nix-env -iAP cachix -f https://cachix.org/api/v1/install"
-cachix use all-hies
+echo "
+substituters = file:///tmp/nix_ci_cache https://cache.nixos.org ssh://ubuntu@q-ci-cache.q.testenv.io
+trusted-substituters = ssh://ubuntu@q-ci-cache.q.testenv.io file:///tmp/nix_ci_cache
+trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+system-features = kvm
+http2 = false
+require-sigs = false
+sandbox = false
+cores = 2
+max-jobs = 4
+" > /etc/nix/nix.conf
 
-git submodule update --init --recursive --depth 1
-./nix/upgrade-pkg.sh
+echo "
+WantMassQuery: 1
+Priority: 10
+" >> /tmp/nix_ci_cache/nix-cache-info
+
+chmod 600 /tmp/.ssh/id_rsa.robot
+chmod 600 /tmp/.ssh/id_ed25519
+eval `ssh-agent -s`
+ssh-add /tmp/.ssh/id_ed25519
+ssh-add /tmp/.ssh/id_rsa.robot
+echo -e "Host *\n IdentityFile /tmp/.ssh/id_ed25519\n IdentitiesOnly yes\n UserKnownHostsFile /tmp/.ssh/known_hosts\n StrictHostKeyChecking no" >> /tmp/.ssh/config
+echo -e "Host *\n IdentityFile /tmp/.ssh/id_rsa.robot\n IdentitiesOnly yes\n UserKnownHostsFile /tmp/.ssh/known_hosts\n StrictHostKeyChecking no" >> /tmp/.ssh/config
+ssh-keyscan github.com >> /tmp/.ssh/known_hosts
+ssh-keyscan q-ci-cache.q.testenv.io >> /tmp/.ssh/known_hosts
+cp /tmp/.ssh/* $HOME/.ssh/
+echo -e "Host *\n IdentityFile $HOME/.ssh/id_rsa.robot\n IdentitiesOnly yes\n UserKnownHostsFile $HOME/.ssh/known_hosts\n StrictHostKeyChecking no" >> $HOME/.ssh/config
+echo -e "Host *\n IdentityFile $HOME/.ssh/id_ed25519\n IdentitiesOnly yes\n UserKnownHostsFile $HOME/.ssh/known_hosts\n StrictHostKeyChecking no" >> $HOME/.ssh/config
+chown -R nixbld1 /tmp/.ssh/
+echo "Check ssh connection to cache..."
+ssh -oStrictHostKeyChecking=no ubuntu@q-ci-cache.q.testenv.io ls -la

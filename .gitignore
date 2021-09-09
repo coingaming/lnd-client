@@ -9,6 +9,7 @@ postgres_data/
 dist*
 postgres.log
 result
+result-*
 nohup.out
 .DS_Store
 .lnd/tls*
