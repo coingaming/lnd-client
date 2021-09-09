@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 source ./script/export-test-envs.sh
 
