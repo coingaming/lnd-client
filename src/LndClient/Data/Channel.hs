@@ -23,7 +23,8 @@ data Channel
         localBalance :: MSat,
         remoteBalance :: MSat,
         commitFee :: MSat,
-        active :: Bool
+        active :: Bool,
+        initiator :: LnInitiator
       }
   deriving (Eq, Ord, Show)
 
@@ -44,6 +45,7 @@ instance FromGrpc Channel LnGRPC.Channel where
       <*> fromGrpc (x ^. LnGRPC.remoteBalance)
       <*> fromGrpc (x ^. LnGRPC.commitFee)
       <*> fromGrpc (x ^. LnGRPC.active)
+      <*> fromGrpc (x ^. LnGRPC.initiator)
 
 instance FromGrpc [Channel] LnGRPC.ListChannelsResponse where
   fromGrpc x = fromGrpc (x ^. LnGRPC.channels)

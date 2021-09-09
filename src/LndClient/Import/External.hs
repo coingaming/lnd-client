@@ -36,6 +36,7 @@ import Data.Text.Lazy as Import (fromStrict, toStrict)
 import Data.Word as Import (Word64)
 import Database.Persist.Class as Import (PersistField)
 import Database.Persist.Sql as Import (PersistFieldSql)
+import Database.Persist.TH as Import (derivePersistField)
 import GHC.Generics as Import (Generic, Rep (..))
 import Katip as Import
   ( ColorStrategy (..),
@@ -61,5 +62,5 @@ import Katip as Import
     runKatipContextT,
     sl,
   )
-import Universum as Import hiding (Text)
-import UnliftIO as Import (MonadUnliftIO (..), UnliftIO (..))
+import Universum as Import hiding (Text, catch)
+import UnliftIO as Import (MonadUnliftIO (..), UnliftIO (..), catch)
