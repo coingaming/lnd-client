@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-source ./script/export-test-envs.sh
+. ./script/export-test-envs.sh
 
 LND_WALLET_PASSWORD="developer"
 

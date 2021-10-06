@@ -4,7 +4,7 @@
 #
 set -e
 
-source ./script/export-test-envs.sh
+. ./script/export-test-envs.sh
 
 echo "starting bitcoind..."
 bitcoind -datadir=$BTCD_DIR > "$BTCD_DIR/stdout.log" 2>&1 &
@@ -16,6 +16,33 @@ echo "bitcoind has been started!"
 #
 # LND
 #
+
+#
+# TODO : fix it (need rpcwait or something)
+#
+# bitcoind has been started!
+# starting lnd-merchant...
+# lnd-merchant has been started!
+# starting lnd-customer...
+# lnd-customer has been started!
+# spawn-test-deps executed
+# Exit hook canceling stuff
+# spawn ./script/lncli-merchant.sh create
+# Input wallet password:
+# Confirm password:
+#
+# Do you have an existing cipher seed mnemonic you want to use? (Enter y/n): n
+#
+# Your cipher seed can optionally be encrypted.
+# Input your passphrase if you wish to encrypt it (or press enter to proceed without a cipher seed passphrase):
+#
+# Generating fresh cipher seed...
+#
+# [lncli] unable to generate seed: rpc error: code = Unknown desc = waiting to start, RPC services not available
+# spawn_id: spawn id exp4 not open
+#     while executing
+# "interact"
+
 
 THIS_DIR="$(pwd)"
 
