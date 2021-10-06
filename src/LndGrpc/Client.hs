@@ -8,7 +8,6 @@ module LndGrpc.Client
   )
 where
 
-import Control.Exception (BlockedIndefinitelyOnMVar (..))
 import Data.ProtoLens.Message
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
 import GHC.TypeLits (Symbol)
@@ -30,17 +29,14 @@ runUnary ::
   req ->
   p (Either LndError res)
 runUnary rpc env req = do
-  let resIO = runClientIO $ do
-        grpc <- setupGrpcClient $ envLndConfig env
-        rawUnary rpc grpc req
-  res <- liftIO (Right <$> resIO) `catch` (\(x :: BlockedIndefinitelyOnMVar) -> pure $ Left x)
-  return $ case res of
-    Right (Right (Right (Right (_, _, (Right x))))) -> Right x
-    Right (Right (Right (Right (_, _, (Left e))))) -> Left $ LndError $ pack e
-    Right (Right (Right (Left e))) -> Left $ LndError ("LndGrpc response error, code: " <> show e)
-    Right (Right (Left e)) -> Left $ LndError ("LndGrpc, TooMuchConcurrency error: " <> show e)
-    Right (Left e) -> Left $ LndGrpcError e
-    Left BlockedIndefinitelyOnMVar -> Left $ LndGrpcException "BlockedIndefinitelyOnMVar"
+  res <- liftIO $ runClientIO $
+    bracket (setupGrpcClient $ envLndConfig env) close (\grpc -> rawUnary rpc grpc req)
+  pure $ case res of
+    (Right (Right (Right (_, _, Right x)))) -> Right x
+    (Right (Right (Right (_, _, Left e)))) -> Left $ LndError $ pack e
+    (Right (Right (Left e))) -> Left $ LndError ("LndGrpc response error, code: " <> show e)
+    (Right (Left e)) -> Left $ LndError ("LndGrpc, TooMuchConcurrency error: " <> show e)
+    (Left e) -> Left $ LndGrpcError e
 
 runStreamServer ::
   ( MonadUnliftIO p,
@@ -54,12 +50,9 @@ runStreamServer ::
   (HeaderList -> res -> ClientIO ()) ->
   p (Either LndError res)
 runStreamServer rpc env req handler = do
-  let resIO = runClientIO $ do
-        grpc <- setupGrpcClient $ envLndConfig env
-        rawStreamServer rpc grpc () req $ const handler
-  res <- liftIO (Right <$> resIO) `catch` (\(x :: BlockedIndefinitelyOnMVar) -> pure $ Left x)
-  return $ case res of
-    Right (Right (Right ((), _, _))) -> Right defMessage
-    Right (Right (Left e)) -> Left $ LndError ("LndGrpc response error: " <> show e)
-    Right (Left e) -> Left $ LndGrpcError e
-    Left BlockedIndefinitelyOnMVar -> Left $ LndGrpcException "BlockedIndefinitelyOnMVar"
+  res <- liftIO $ runClientIO $ do
+    bracket (setupGrpcClient $ envLndConfig env) close (\grpc -> rawStreamServer rpc grpc () req $ const handler)
+  pure $ case res of
+    (Right (Right ((), _, _))) -> Right defMessage
+    (Right (Left e)) -> Left $ LndError ("LndGrpc response error: " <> show e)
+    (Left e) -> Left $ LndGrpcError e
