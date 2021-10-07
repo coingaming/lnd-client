@@ -131,10 +131,10 @@ ensureHodlInvoice env req =
 closeChannelSync ::
   (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
-  ConnectPeerRequest ->
+  Maybe ConnectPeerRequest ->
   CloseChannelRequest ->
   m (Either LndError ())
-closeChannelSync env conn req = do
+closeChannelSync env mConn req = do
   cs0 <- listChannels env (ListChannels.ListChannelsRequest False False False False Nothing)
   case cs0 of
     Left err -> pure $ Left err
@@ -151,7 +151,7 @@ closeChannelSync env conn req = do
       $(logTM) (newSev env ErrorS) "Channel couldn't be closed."
       return $ Left $ LndError "Cannot close channel"
     closeChannelRecursive mVar0 n = do
-      void $ lazyConnectPeer env conn
+      whenJust mConn $ void . lazyConnectPeer env
       void $ Util.spawnLink $
         closeChannel
           (void . tryPutMVar mVar0)

@@ -18,7 +18,7 @@ dev_watcher() {
 run_tests() {
     export GODEBUG=x509ignoreCN=0
     ./script/prepare-test-env.sh
-    source ./script/export-test-envs.sh
+    . ./script/export-test-envs.sh
     cabal test --disable-optimization
     ./script/cleanup-test-env.sh
 }

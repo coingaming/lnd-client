@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-source ./script/export-test-envs.sh
+. ./script/export-test-envs.sh
 
 echo "resetting dev data..."
 rm -rf $LND_CUSTOMER_DIR/data

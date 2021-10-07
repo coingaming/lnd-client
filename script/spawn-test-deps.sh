@@ -2,14 +2,14 @@
 #
 # Bitcoind
 #
+
 set -e
 
-source ./script/export-test-envs.sh
+. ./script/export-test-envs.sh
 
 echo "starting bitcoind..."
 bitcoind -datadir=$BTCD_DIR > "$BTCD_DIR/stdout.log" 2>&1 &
 alias bitcoin-cli="bitcoin-cli -rpcwait -datadir=$BTCD_DIR -rpcport=18443"
-bitcoin-cli generatetoaddress 1 "$(bitcoin-cli getnewaddress)" && true
 bitcoin-cli getblockchaininfo && true
 echo "bitcoind has been started!"
 

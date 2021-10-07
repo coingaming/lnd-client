@@ -455,7 +455,9 @@ closeAllChannels po = do
           ( \cp ->
               Lnd.closeChannelSync
                 lnd0
-                (ConnectPeerRequest (LightningAddress peerPubKey peerLocation) False)
+                ( Just $
+                    ConnectPeerRequest (LightningAddress peerPubKey peerLocation) False
+                )
                 (CloseChannelRequest cp False Nothing Nothing Nothing)
           )
           cps
