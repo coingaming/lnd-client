@@ -159,17 +159,17 @@ loop w = do
   -- alternative computation but without reading from
   -- watcherStateLndChan.
   me <-
-    maybeDeadlock . atomically $
+    catchAsync  . atomically $
       if tasksEmpty
         then cmd <|> lnd
         else cmd <|> lnd <|> task
   event <- case me of
-    Nothing ->
+    Left _ ->
       atomically $
         if tasksEmpty
           then cmd
           else cmd <|> task
-    Just x ->
+    Right x ->
       return x
   $(logTM) (newSev w InfoS) "Watcher - applying event"
   case event of

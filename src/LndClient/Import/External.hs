@@ -63,4 +63,4 @@ import Katip as Import
     sl,
   )
 import Universum as Import hiding (Text, catch)
-import UnliftIO as Import (MonadUnliftIO (..), UnliftIO (..), catch)
+import UnliftIO as Import (Handler (..), MonadUnliftIO (..), UnliftIO (..), catch, catches)

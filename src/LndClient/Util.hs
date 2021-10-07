@@ -7,13 +7,13 @@ module LndClient.Util
     spawnLink,
     withSpawnLink,
     readTChanTimeout,
-    maybeDeadlock,
+    catchAsync,
     txIdParser,
     MicroSecondsDelay (..),
   )
 where
 
-import Control.Exception
+import Control.Exception hiding (Handler, catches)
 import qualified Data.ByteString as BS (reverse)
 import qualified Data.ByteString.Base16 as B16 (decode)
 import LndClient.Data.Type
@@ -93,17 +93,16 @@ readTChanTimeout ::
   MonadUnliftIO m => MicroSecondsDelay -> TChan a -> m (Maybe a)
 readTChanTimeout t x = do
   t0 <- liftIO . registerDelay $ coerce t
-  (join <$>) . maybeDeadlock . atomically $
+  (join <$>) . (rightToMaybe <$>) . catchAsync . atomically $
     Just <$> readTChan x
       <|> Nothing <$ fini t0
 
-maybeDeadlock :: MonadUnliftIO m => m a -> m (Maybe a)
-maybeDeadlock x =
-  withRunInIO $ \run ->
-    (Just <$> run x)
-      `catches` [ Handler $
-                    \BlockedIndefinitelyOnSTM -> pure Nothing
-                ]
-
 fini :: TVar Bool -> STM ()
 fini = check <=< readTVar
+
+catchAsync :: (MonadUnliftIO m) => m a -> m (Either Text a)
+catchAsync x =
+  (Right <$> x)
+    `catches` [ Handler (\(_ :: BlockedIndefinitelyOnMVar) -> pure $ Left "BlockedIndefinitelyOnMVar"),
+                Handler (\(_ :: BlockedIndefinitelyOnSTM) -> pure $ Left "BlockedIndefinitelyOnSTM")
+              ]
