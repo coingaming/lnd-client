@@ -204,7 +204,11 @@ newLndEnv pwd _cert mac host port seed aezeed =
       envLndSyncGrpcTimeout = Nothing,
       envLndAsyncGrpcTimeout = Nothing,
       envLndConfig =
-        (grpcClientConfigSimple (unpack $ coerce host) (fromInteger (toInteger (coerce port :: Int))) True)
+        ( grpcClientConfigSimple
+            (unpack $ coerce host)
+            (fromInteger (toInteger (coerce port :: Int)))
+            True
+        )
           { _grpcClientConfigCompression = uncompressed,
             _grpcClientConfigHeaders = [("macaroon", encodeUtf8 (coerce mac :: Text))]
           }

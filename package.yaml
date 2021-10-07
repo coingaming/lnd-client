@@ -92,16 +92,13 @@ library:
   - -Wno-safe # Don’t use Safe Haskell warnings
   - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
   - -Wno-monomorphism-restriction # Don’t warn if the monomorphism restriction is used
-  #- -optl-fuse-ld=gold
-  #ld-options:
-  #- -fuse-ld=gold
-  dependencies:
-  - hspec >= 2.7.1 && < 2.7.2
 
 tests:
   lnd-client-test:
     main:                Spec.hs
-    source-dirs:         test
+    source-dirs:
+    - src
+    - test
     default-extensions:
     - NoImplicitPrelude
     - MultiParamTypeClasses
@@ -116,6 +113,7 @@ tests:
     # Enable all warnings with -Weverything, then disable the ones we don’t care about
     - -Weverything
     - -Werror
+    - -Wno-missing-export-lists
     - -Wno-missing-exported-signatures # missing-exported-signatures turns off the more strict -Wmissing-signatures. See https://ghc.haskell.org/trac/ghc/ticket/14794#ticket
     - -Wno-missing-import-lists # Requires explicit imports of _every_ function (e.g. ‘$’); too strict
     - -Wno-missed-specialisations # When GHC can’t specialize a polymorphic function. No big deal and requires fixing underlying libraries to solve.
@@ -127,10 +125,6 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    #- -O0
-    #- -optl-fuse-ld=gold
-    #ld-options:
-    #- -fuse-ld=gold
     dependencies:
     - lnd-client
     - hspec >= 2.7.1 && < 2.7.2

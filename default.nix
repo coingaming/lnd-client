@@ -11,13 +11,14 @@ in pkgs.haskell-nix.project {
   modules = [{
     packages.lnd-client.components.tests.lnd-client-test.preCheck = ''
       ./script/unstack.sh prepare
-      source ./script/export-test-envs.sh
+      . ./script/export-test-envs.sh
     '';
     packages.lnd-client.components.tests.lnd-client-test.build-tools = [
       pkgs.haskellPackages.hspec-discover
       pkgs.bitcoin
       pkgs.openssl
       pkgs.expect
+      pkgs.jq
       lnd
     ];
     packages.lnd-client.components.tests.lnd-client-test.postCheck = ''

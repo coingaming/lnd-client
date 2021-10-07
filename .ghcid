@@ -1,0 +1,4 @@
+--test="main"
+--restart=package.yaml
+--restart=script/export-test-envs.sh
+--command="(./script/cleanup-test-env.sh || true) && (setsid ./script/prepare-test-env.sh & wait) && . ./script/export-test-envs.sh && hpack && cabal new-repl test:lnd-client-test --repl-options=-fobject-code --repl-options=-fno-break-on-exception --repl-options=-fno-break-on-error --repl-options=-v1 --repl-options=-ferror-spans --repl-options=-j"

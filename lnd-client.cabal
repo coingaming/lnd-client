@@ -111,7 +111,6 @@ library
     , deepseq >=1.4.4.0 && <1.4.5
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
-    , hspec ==2.7.1.*
     , http2 >=2.0.3
     , http2-client
     , http2-client-grpc >=0.8.0.0
@@ -141,10 +140,64 @@ test-suite lnd-client-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      LndClient
+      LndClient.Class
+      LndClient.Data.AddHodlInvoice
+      LndClient.Data.AddInvoice
+      LndClient.Data.Channel
+      LndClient.Data.ChannelPoint
+      LndClient.Data.CloseChannel
+      LndClient.Data.ClosedChannel
+      LndClient.Data.ClosedChannels
+      LndClient.Data.ForceClosedChannel
+      LndClient.Data.GetInfo
+      LndClient.Data.HtlcEvent
+      LndClient.Data.InitWallet
+      LndClient.Data.Invoice
+      LndClient.Data.Kind
+      LndClient.Data.ListChannels
+      LndClient.Data.ListInvoices
+      LndClient.Data.LndEnv
+      LndClient.Data.NewAddress
+      LndClient.Data.Newtype
+      LndClient.Data.OpenChannel
+      LndClient.Data.Payment
+      LndClient.Data.PayReq
+      LndClient.Data.Peer
+      LndClient.Data.PendingChannel
+      LndClient.Data.PendingChannels
+      LndClient.Data.PendingOpenChannel
+      LndClient.Data.SendPayment
+      LndClient.Data.SubscribeChannelEvents
+      LndClient.Data.SubscribeInvoices
+      LndClient.Data.TrackPayment
+      LndClient.Data.Type
+      LndClient.Data.UnlockWallet
+      LndClient.Data.WaitingCloseChannel
+      LndClient.Import
+      LndClient.Import.External
+      LndClient.LndTest
+      LndClient.QRCode
+      LndClient.RPC.Generic
+      LndClient.RPC.Katip
+      LndClient.RPC.Silent
+      LndClient.RPC.TH
+      LndClient.Util
+      LndClient.Watcher
+      LndGrpc.Client
+      Proto.InvoiceGrpc
+      Proto.InvoiceGrpc_Fields
+      Proto.LndGrpc
+      Proto.LndGrpc_Fields
+      Proto.RouterGrpc
+      Proto.RouterGrpc_Fields
+      Proto.WalletUnlockerGrpc
+      Proto.WalletUnlockerGrpc_Fields
       LndClient.RPCSpec
       LndClient.TestApp
       Paths_lnd_client
   hs-source-dirs:
+      src
       test
   default-extensions:
       NoImplicitPrelude
@@ -155,7 +208,7 @@ test-suite lnd-client-test
       DataKinds
       KindSignatures
       StrictData
-  ghc-options: -Weverything -Werror -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -Wno-monomorphism-restriction -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       JuicyPixels >=3.3.3 && <3.4
     , aeson >=1.4.4.0

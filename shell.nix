@@ -1,3 +1,7 @@
+{
+  extraBuildInputs ? [],
+  withShellHook ? false
+}:
 let
   project = import ./default.nix;
   header = import ./nix/header.nix;
@@ -7,7 +11,7 @@ let
 in
 project.shellFor {
   withHoogle = true;
-  buildInputs = [
+  buildInputs = extraBuildInputs ++ [
     haskellPackages.hspec-discover
     haskellPackages.fswatcher
     haskellPackages.hpack
@@ -16,6 +20,7 @@ project.shellFor {
     pkgs.openssl
     pkgs.expect
     pkgs.ps
+    pkgs.jq
     lnd
   ];
   tools = {
@@ -24,4 +29,14 @@ project.shellFor {
     hlint = "3.2.7";
     haskell-language-server = "latest";
   };
+  shellHook =
+    if withShellHook
+    then ''
+      echo "Spawning nix-shell with shellHook"
+      . ./script/export-test-envs.sh
+      trap "./script/cleanup-test-env.sh 2> /dev/null" EXIT
+    ''
+    else ''
+      echo "Spawning nix-shell without shellHook"
+    '';
 }

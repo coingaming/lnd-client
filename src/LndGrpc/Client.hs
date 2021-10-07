@@ -35,8 +35,8 @@ runUnary rpc env req = do
         rawUnary rpc grpc req
   res <- liftIO (Right <$> resIO) `catch` (\(x :: BlockedIndefinitelyOnMVar) -> pure $ Left x)
   return $ case res of
-    Right (Right (Right (Right (_, _, (Right x))))) -> Right x
-    Right (Right (Right (Right (_, _, (Left e))))) -> Left $ LndError $ pack e
+    Right (Right (Right (Right (_, _, Right x)))) -> Right x
+    Right (Right (Right (Right (_, _, Left e)))) -> Left $ LndError $ pack e
     Right (Right (Right (Left e))) -> Left $ LndError ("LndGrpc response error, code: " <> show e)
     Right (Right (Left e)) -> Left $ LndError ("LndGrpc, TooMuchConcurrency error: " <> show e)
     Right (Left e) -> Left $ LndGrpcError e
