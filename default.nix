@@ -18,6 +18,7 @@ in pkgs.haskell-nix.project {
       pkgs.bitcoin
       pkgs.openssl
       pkgs.expect
+      pkgs.jq
       lnd
     ];
     packages.lnd-client.components.tests.lnd-client-test.postCheck = ''

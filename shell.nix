@@ -20,6 +20,7 @@ project.shellFor {
     pkgs.openssl
     pkgs.expect
     pkgs.ps
+    pkgs.jq
     lnd
   ];
   tools = {
