@@ -1,5 +1,6 @@
 {
   extraBuildInputs ? [],
+  withShellHook ? false
 }:
 let
   project = import ./default.nix;
@@ -27,8 +28,14 @@ project.shellFor {
     hlint = "3.2.7";
     haskell-language-server = "latest";
   };
-  shellHook = ''
-    . ./script/export-test-envs.sh
-    trap "./script/cleanup-test-env.sh 2> /dev/null" EXIT
-  '';
+  shellHook =
+    if withShellHook
+    then ''
+      echo "Spawning nix-shell with shellHook"
+      . ./script/export-test-envs.sh
+      trap "./script/cleanup-test-env.sh 2> /dev/null" EXIT
+    ''
+    else ''
+      echo "Spawning nix-shell without shellHook"
+    '';
 }

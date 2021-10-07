@@ -36,6 +36,7 @@ vi ~/.profile
 export VIM_BACKGROUND="light" # or "dark"
 export VIM_COLOR_SCHEME="PaperColor" # or "jellybeans"
 export NIX_EXTRA_BUILD_INPUTS='[(import (fetchTarball "https://github.com/21it/ultimate-haskell-ide/tarball/ebfcd25eeac74ba813efa0b5929174cd59c4f4d2") {bundle = "haskell"; withGit = false;})]'
+export NIX_WITH_SHELL_HOOK="true"
 ```
 
 ## gRPC schema upgrade
