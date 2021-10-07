@@ -28,10 +28,6 @@ project.shellFor {
     haskell-language-server = "latest";
   };
   shellHook = ''
-    ./script/prepare-test-env.sh
-    . ./script/export-test-envs.sh
     trap "./script/cleanup-test-env.sh 2> /dev/null" EXIT
   '';
-  GIT_SSL_CAINFO="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
-  NIX_SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
 }

@@ -22,6 +22,8 @@ expect <<- EOF
 EOF
 }
 
+echo "ZZZZ"
+sleep 10
 
 create_wallet "./script/lncli-merchant.sh"
 create_wallet "./script/lncli-customer.sh"
