@@ -28,6 +28,7 @@ project.shellFor {
     haskell-language-server = "latest";
   };
   shellHook = ''
+    . ./script/export-test-envs.sh
     trap "./script/cleanup-test-env.sh 2> /dev/null" EXIT
   '';
 }
