@@ -11,7 +11,7 @@ module LndClient.LndTest
     newBtcClient,
 
     -- * TestEnv
-    TestEnv,
+    TestEnv (..),
     newTestEnv,
     deleteTestEnv,
     withTestEnv,
