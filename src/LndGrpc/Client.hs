@@ -8,6 +8,7 @@ module LndGrpc.Client
   )
 where
 
+import Control.Exception (BlockedIndefinitelyOnMVar (..))
 import Data.ProtoLens.Message
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
 import GHC.TypeLits (Symbol)
@@ -29,14 +30,29 @@ runUnary ::
   req ->
   p (Either LndError res)
 runUnary rpc env req = do
-  res <- liftIO $ runClientIO $
-    bracket (setupGrpcClient $ envLndConfig env) close (\grpc -> rawUnary rpc grpc req)
+  res <-
+    liftIO (Right <$> this)
+      `catch` (\(e :: BlockedIndefinitelyOnMVar) -> pure $ Left e)
   pure $ case res of
-    (Right (Right (Right (_, _, Right x)))) -> Right x
-    (Right (Right (Right (_, _, Left e)))) -> Left $ LndError $ pack e
-    (Right (Right (Left e))) -> Left $ LndError ("LndGrpc response error, code: " <> show e)
-    (Right (Left e)) -> Left $ LndError ("LndGrpc, TooMuchConcurrency error: " <> show e)
-    (Left e) -> Left $ LndGrpcError e
+    Right (Right (Right (Right (_, _, Right x)))) ->
+      Right x
+    Right (Right (Right (Right (_, _, Left e)))) ->
+      Left $ LndError $ pack e
+    Right (Right (Right (Left e))) ->
+      Left $ LndError ("LndGrpc response error, code: " <> show e)
+    Right (Right (Left e)) ->
+      Left $ LndError ("LndGrpc, TooMuchConcurrency error: " <> show e)
+    Right (Left e) ->
+      Left $ LndGrpcError e
+    Left e ->
+      Left . LndGrpcException $ show e
+  where
+    this =
+      runClientIO $
+        bracket
+          (setupGrpcClient $ envLndConfig env)
+          close
+          (\grpc -> rawUnary rpc grpc req)
 
 runStreamServer ::
   ( MonadUnliftIO p,
@@ -50,9 +66,22 @@ runStreamServer ::
   (HeaderList -> res -> ClientIO ()) ->
   p (Either LndError res)
 runStreamServer rpc env req handler = do
-  res <- liftIO $ runClientIO $ do
-    bracket (setupGrpcClient $ envLndConfig env) close (\grpc -> rawStreamServer rpc grpc () req $ const handler)
+  res <-
+    liftIO (Right <$> this)
+      `catch` (\(e :: BlockedIndefinitelyOnMVar) -> pure $ Left e)
   pure $ case res of
-    (Right (Right ((), _, _))) -> Right defMessage
-    (Right (Left e)) -> Left $ LndError ("LndGrpc response error: " <> show e)
-    (Left e) -> Left $ LndGrpcError e
+    Right (Right (Right ((), _, _))) ->
+      Right defMessage
+    Right (Right (Left e)) ->
+      Left $ LndError ("LndGrpc response error: " <> show e)
+    Right (Left e) ->
+      Left $ LndGrpcError e
+    Left e ->
+      Left . LndGrpcException $ show e
+  where
+    this =
+      runClientIO $
+        bracket
+          (setupGrpcClient $ envLndConfig env)
+          close
+          (\grpc -> rawStreamServer rpc grpc () req $ const handler)
