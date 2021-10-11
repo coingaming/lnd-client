@@ -192,8 +192,8 @@ readLndEnv =
       first UnreadError $ eitherDecodeStrict $ C8.pack x
 
 
-unsafeCertificateValidation :: [SignedCertificate] -> TLS.ClientParams -> TLS.ClientParams
-unsafeCertificateValidation extraCerts cp = cp {
+selfSignedCertificateValidation :: [SignedCertificate] -> TLS.ClientParams -> TLS.ClientParams
+selfSignedCertificateValidation extraCerts cp = cp {
   TLS.clientShared =
     (TLS.clientShared cp) { TLS.sharedCAStore = makeCertificateStore extraCerts },
   TLS.clientSupported =
@@ -224,7 +224,7 @@ newLndEnv pwd (LndTlsCert _ cert) mac (LndHost host) (LndPort port) seed aezeed 
         ( grpcClientConfigSimple host_ port_ True)
           { _grpcClientConfigCompression = uncompressed,
             _grpcClientConfigHeaders = [("macaroon", encodeUtf8 (coerce mac :: Text))],
-            _grpcClientConfigTLS = Just $ unsafeCertificateValidation [cert] $ TLS.defaultParamsClient host_ (show port_)
+            _grpcClientConfigTLS = Just $ selfSignedCertificateValidation [cert] $ TLS.defaultParamsClient host_ (show port_)
           }
     }
   where host_ = unpack host
