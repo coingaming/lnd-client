@@ -46,6 +46,7 @@ dependencies:
 - cryptonite            >= 0.25 && < 0.29
 - cryptohash-sha256     >= 0.11.101.0 && < 0.11.102
 - x509                  >= 1.7.5 && < 1.7.6
+- x509-store
 - asn1-encoding         >= 0.9.6 && < 0.10
 - asn1-types            >= 0.3 && < 0.4
 - pem                   >= 0.2.4 && < 0.3
@@ -66,6 +67,7 @@ dependencies:
 - http2-client-grpc     >= 0.8.0.0
 - http2-grpc-types      >= 0.5.0.0
 - http2                 >= 2.0.3
+- tls
 
 library:
   source-dirs: src
