@@ -130,10 +130,12 @@ library
     , stm >=2.5.0.0 && <2.5.1
     , template-haskell >=2.14.0.0 && <2.14.1
     , text >=1.2.3.1 && <1.2.4
+    , tls
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum ==1.5.0.*
     , unliftio >=0.2.12
     , x509 ==1.7.5.*
+    , x509-store
   default-language: Haskell2010
 
 test-suite lnd-client-test
@@ -247,8 +249,10 @@ test-suite lnd-client-test
     , stm >=2.5.0.0 && <2.5.1
     , template-haskell >=2.14.0.0 && <2.14.1
     , text >=1.2.3.1 && <1.2.4
+    , tls
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum ==1.5.0.*
     , unliftio >=0.2.12
     , x509 ==1.7.5.*
+    , x509-store
   default-language: Haskell2010

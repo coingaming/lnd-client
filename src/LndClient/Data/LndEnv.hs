@@ -37,21 +37,27 @@ import qualified Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
 import Data.Scientific
 import Data.X509
+import Data.X509.CertificateStore
 import Env
 import LndClient.Class
 import LndClient.Data.Newtype
 import LndClient.Data.Type
 import LndClient.Import.External as Ex
 import LndClient.Util as U
-import Network.GRPC.Client.Helpers (GrpcClientConfig (..), grpcClientConfigSimple)
+import Network.GRPC.Client.Helpers (
+  GrpcClientConfig (..),
+  grpcClientConfigSimple
+  )
 import Network.GRPC.HTTP2.Encoding (uncompressed)
 import Network.HTTP2.Client
+import qualified Network.TLS as TLS
+import qualified Network.TLS.Extra.Cipher as TLS
 
 newtype LndWalletPassword = LndWalletPassword Text
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
-newtype LndTlsCert = LndTlsCert ByteString
-  deriving (PersistField, PersistFieldSql, Eq)
+data LndTlsCert = LndTlsCert ByteString SignedCertificate
+  deriving (Eq, Show)
 
 newtype LndHexMacaroon = LndHexMacaroon Text
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
@@ -161,11 +167,11 @@ createLndTlsCert bs = do
     note (LndEnvError $ pack "No pem found") $ safeHead pemsM
   bimap
     (LndEnvError . pack . ("Certificate is not valid: " <>))
-    (const $ LndTlsCert bs)
+    (LndTlsCert bs)
     (decodeSignedCertificate $ Pem.pemContent pem)
 
 unLndTlsCert :: LndTlsCert -> ByteString
-unLndTlsCert = coerce
+unLndTlsCert (LndTlsCert bs _) = coerce bs
 
 createLndPort :: Word32 -> Either LndError LndPort
 createLndPort p = do
@@ -185,6 +191,17 @@ readLndEnv =
     parser x =
       first UnreadError $ eitherDecodeStrict $ C8.pack x
 
+
+unsafeCertificateValidation :: [SignedCertificate] -> TLS.ClientParams -> TLS.ClientParams
+unsafeCertificateValidation extraCerts cp = cp {
+  TLS.clientShared =
+    (TLS.clientShared cp) { TLS.sharedCAStore = makeCertificateStore extraCerts },
+  TLS.clientSupported =
+    (TLS.clientSupported cp) { TLS.supportedCiphers = TLS.ciphersuite_default }
+}
+
+
+
 newLndEnv ::
   LndWalletPassword ->
   LndTlsCert ->
@@ -194,7 +211,7 @@ newLndEnv ::
   Maybe CipherSeedMnemonic ->
   Maybe AezeedPassphrase ->
   LndEnv
-newLndEnv pwd _cert mac host port seed aezeed =
+newLndEnv pwd (LndTlsCert _ cert) mac (LndHost host) (LndPort port) seed aezeed =
   LndEnv
     { envLndWalletPassword = pwd,
       envLndHexMacaroon = mac,
@@ -204,15 +221,14 @@ newLndEnv pwd _cert mac host port seed aezeed =
       envLndSyncGrpcTimeout = Nothing,
       envLndAsyncGrpcTimeout = Nothing,
       envLndConfig =
-        ( grpcClientConfigSimple
-            (unpack $ coerce host)
-            (fromInteger (toInteger (coerce port :: Int)))
-            True
-        )
+        ( grpcClientConfigSimple host_ port_ True)
           { _grpcClientConfigCompression = uncompressed,
-            _grpcClientConfigHeaders = [("macaroon", encodeUtf8 (coerce mac :: Text))]
+            _grpcClientConfigHeaders = [("macaroon", encodeUtf8 (coerce mac :: Text))],
+            _grpcClientConfigTLS = Just $ unsafeCertificateValidation [cert] $ TLS.defaultParamsClient host_ (show port_)
           }
     }
+  where host_ = unpack host
+        port_ = fromInteger (toInteger port)
 
 katipAddLndContext :: (KatipContext m) => LndEnv -> m a -> m a
 katipAddLndContext env =
