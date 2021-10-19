@@ -16,6 +16,8 @@ module LndClient.Watcher
     unWatchUnit,
     dupLndTChan,
     terminate,
+    withWatcher,
+    withWatcherUnit,
   )
 where
 
@@ -59,6 +61,70 @@ data WatcherState req res m
 
 newSev :: WatcherState req res m -> Severity -> Severity
 newSev w s = newSeverity (watcherStateLndEnv w) s Nothing Nothing
+
+-- | Compute an action with given subscription watcher
+-- with given arguments.
+withWatcher ::
+  (Ord req, MonadUnliftIO m, KatipContext m) =>
+  LndEnv ->
+  (Maybe (TChan (req, res)) -> LndEnv -> req -> m (Either LndError ())) ->
+  (Watcher req res -> req -> Either LndError res -> m ()) ->
+  (Watcher req res -> m actionRes) ->
+  m actionRes
+withWatcher env sub handler action =
+  withRunInIO $ \run -> do
+    ( writeCmdChan,
+      writeLndChan,
+      readCmdChan,
+      readLndChan
+      ) <- atomically $ do
+      writeCmdChan <- newBroadcastTChan
+      writeLndChan <- newBroadcastTChan
+      readCmdChan <- dupTChan writeCmdChan
+      readLndChan <- dupTChan writeLndChan
+      pure (writeCmdChan, writeLndChan, readCmdChan, readLndChan)
+    let newWatcher proc =
+          Watcher
+            { watcherCmdChan = writeCmdChan,
+              watcherLndChan = writeLndChan,
+              watcherProc = proc
+            }
+    varPid <- newEmptyMVar
+    withAsync
+      ( do
+          --
+          -- TODO : proper bi-directional link
+          --
+          pid <- takeMVar varPid
+          run . loop $
+            WatcherState
+              { watcherStateCmdChan = readCmdChan,
+                watcherStateLndChan = readLndChan,
+                watcherStateSub = sub (Just writeLndChan) env,
+                watcherStateHandler = handler $ newWatcher pid,
+                watcherStateTasks = mempty,
+                watcherStateLndEnv = env
+              }
+      )
+      ( \pid -> do
+          putMVar varPid pid
+          run . action $ newWatcher pid
+      )
+
+-- | Compute an action with given subscription watcher
+-- without arguments, for example `subscribeChannelEventsChan`.
+withWatcherUnit ::
+  (MonadUnliftIO m, KatipContext m) =>
+  LndEnv ->
+  (Maybe (TChan ((), res)) -> LndEnv -> m (Either LndError ())) ->
+  (Watcher () res -> Either LndError res -> m ()) ->
+  (Watcher () res -> m actionRes) ->
+  m actionRes
+withWatcherUnit env0 sub handler =
+  withWatcher
+    env0
+    (\mChan env1 _ -> sub mChan env1)
+    (\chan _ x -> handler chan x)
 
 -- Spawn watcher where subscription accepts argument
 -- for example `subscribeInvoicesChan`
@@ -159,7 +225,7 @@ loop w = do
   -- alternative computation but without reading from
   -- watcherStateLndChan.
   me <-
-    catchAsync  . atomically $
+    catchAsync . atomically $
       if tasksEmpty
         then cmd <|> lnd
         else cmd <|> lnd <|> task

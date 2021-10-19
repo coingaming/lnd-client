@@ -12,6 +12,7 @@ import Control.Concurrent.Async as Import
     asyncThreadId,
     cancel,
     link,
+    linkOnly,
     wait,
     waitAnySTM,
     withAsync,
