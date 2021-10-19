@@ -42,7 +42,7 @@ newBobEnv x =
   x
     { envLndConfig =
         (envLndConfig x)
-          { _grpcClientConfigPort = 11009
+          { _grpcClientConfigPort = 11109
           },
       envLndCipherSeedMnemonic =
         Just $
@@ -93,11 +93,11 @@ readEnv = do
     alice <-
       newTestEnv
         aliceLndEnv
-        $ NodeLocation "localhost:9735"
+        $ NodeLocation "localhost:9775"
     bob <-
       newTestEnv
         (newBobEnv aliceLndEnv)
-        $ NodeLocation "localhost:9734"
+        $ NodeLocation "localhost:9774"
     pure
       Env
         { envAlice = alice,
