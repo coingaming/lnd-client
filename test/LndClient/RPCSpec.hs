@@ -1,10 +1,8 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GeneralisedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module LndClient.RPCSpec
@@ -127,60 +125,57 @@ spec = do
       x0 `shouldBe` AddInvoice.paymentRequest <$> x1
   it "watchNormal" $ withEnv $ do
     bob <- getLndEnv Bob
-    w <- Watcher.spawnLink bob subscribeInvoicesChan ignore3
-    chan <- Watcher.dupLndTChan w
-    Watcher.watch w subscribeInvoicesRequest
-    inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
-    res <-
-      receiveInvoice
-        (AddInvoice.rHash inv)
-        Invoice.OPEN
-        chan
-    Watcher.terminate w
-    liftIO $ res `shouldSatisfy` isRight
+    Watcher.withWatcher bob subscribeInvoicesChan ignore3 $ \w -> do
+      chan <- Watcher.dupLndTChan w
+      Watcher.watch w subscribeInvoicesRequest
+      inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
+      res <-
+        receiveInvoice
+          (AddInvoice.rHash inv)
+          Invoice.OPEN
+          chan
+      liftIO $ res `shouldSatisfy` isRight
   it "watchUnit" $ withEnv $ do
     bob <- getLndEnv Bob
     alice <- getLndEnv Alice
-    w <- Watcher.spawnLinkUnit bob subscribeChannelEventsChan ignore2
-    chan <- Watcher.dupLndTChan w
-    Watcher.watchUnit w
-    GetInfoResponse bobPubKey _ _ <- liftLndResult =<< getInfo bob
-    let openChannelRequest =
-          OpenChannelRequest
-            { nodePubkey = bobPubKey,
-              localFundingAmount = MSat 20000000,
-              pushSat = Just $ MSat 1000000,
-              targetConf = Nothing,
-              satPerByte = Nothing,
-              private = Nothing,
-              minHtlcMsat = Nothing,
-              remoteCsvDelay = Nothing,
-              minConfs = Nothing,
-              spendUnconfirmed = Nothing,
-              closeAddress = Nothing
-            }
-    cp <- liftLndResult =<< openChannelSync alice openChannelRequest
-    res <- receiveActiveChannel proxyOwner cp chan
-    Watcher.terminate w
-    liftIO $ res `shouldSatisfy` isRight
+    Watcher.withWatcherUnit bob subscribeChannelEventsChan ignore2 $ \w -> do
+      chan <- Watcher.dupLndTChan w
+      Watcher.watchUnit w
+      GetInfoResponse bobPubKey _ _ <- liftLndResult =<< getInfo bob
+      let openChannelRequest =
+            OpenChannelRequest
+              { nodePubkey = bobPubKey,
+                localFundingAmount = MSat 20000000,
+                pushSat = Just $ MSat 1000000,
+                targetConf = Nothing,
+                satPerByte = Nothing,
+                private = Nothing,
+                minHtlcMsat = Nothing,
+                remoteCsvDelay = Nothing,
+                minConfs = Nothing,
+                spendUnconfirmed = Nothing,
+                closeAddress = Nothing
+              }
+      cp <- liftLndResult =<< openChannelSync alice openChannelRequest
+      res <- receiveActiveChannel proxyOwner cp chan
+      liftIO $ res `shouldSatisfy` isRight
   it "unWatch" $ withEnv $ do
     lnd <- getLndEnv Bob
-    w <-
-      Watcher.spawnLink
-        lnd
-        subscribeInvoicesChan
-        -- can unWatch from the callback
-        $ \w k _ -> Watcher.unWatch w k
-    chan <- Watcher.dupLndTChan w
-    Watcher.watch w subscribeInvoicesRequest
-    void . liftLndResult =<< addInvoice lnd addInvoiceRequest
-    -- can unWatch from the outside as well
-    Watcher.unWatch w subscribeInvoicesRequest
-    purgeChan chan
-    void . liftLndResult =<< addInvoice lnd addInvoiceRequest
-    res <- readTChanTimeout (MicroSecondsDelay 500000) chan
-    Watcher.terminate w
-    liftIO $ res `shouldBe` Nothing
+    Watcher.withWatcher
+      lnd
+      subscribeInvoicesChan
+      -- can unWatch from the callback
+      (\w k _ -> Watcher.unWatch w k)
+      $ \w -> do
+        chan <- Watcher.dupLndTChan w
+        Watcher.watch w subscribeInvoicesRequest
+        void . liftLndResult =<< addInvoice lnd addInvoiceRequest
+        -- can unWatch from the outside as well
+        Watcher.unWatch w subscribeInvoicesRequest
+        purgeChan chan
+        void . liftLndResult =<< addInvoice lnd addInvoiceRequest
+        res <- readTChanTimeout (MicroSecondsDelay 500000) chan
+        liftIO $ res `shouldBe` Nothing
   it "ensureHodlInvoice" $ withEnv $ do
     r <- newRPreimage
     let req =

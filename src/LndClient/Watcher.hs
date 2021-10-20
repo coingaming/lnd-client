@@ -8,14 +8,11 @@
 -- `unWatchUnit` function.
 module LndClient.Watcher
   ( Watcher,
-    spawnLink,
-    spawnLinkUnit,
     watch,
     watchUnit,
     unWatch,
     unWatchUnit,
     dupLndTChan,
-    terminate,
     withWatcher,
     withWatcherUnit,
   )
@@ -95,6 +92,9 @@ withWatcher env sub handler action =
           --
           -- TODO : proper bi-directional link
           --
+          -- TODO : atomically cancel all linked processes
+          -- in case of root process crash/cancel (graceful cleanup)
+          --
           pid <- takeMVar varPid
           run . loop $
             WatcherState
@@ -126,69 +126,6 @@ withWatcherUnit env0 sub handler =
     (\mChan env1 _ -> sub mChan env1)
     (\chan _ x -> handler chan x)
 
--- Spawn watcher where subscription accepts argument
--- for example `subscribeInvoicesChan`
-spawnLink ::
-  (Ord req, MonadUnliftIO m, KatipContext m) =>
-  LndEnv ->
-  (Maybe (TChan (req, res)) -> LndEnv -> req -> m (Either LndError ())) ->
-  (Watcher req res -> req -> Either LndError res -> m ()) ->
-  m (Watcher req res)
-spawnLink env sub handler = do
-  w <- withRunInIO $ \run -> do
-    ( writeCmdChan,
-      writeLndChan,
-      readCmdChan,
-      readLndChan
-      ) <- atomically $ do
-      writeCmdChan <- newBroadcastTChan
-      writeLndChan <- newBroadcastTChan
-      readCmdChan <- dupTChan writeCmdChan
-      readLndChan <- dupTChan writeLndChan
-      pure (writeCmdChan, writeLndChan, readCmdChan, readLndChan)
-    let newWatcher proc =
-          Watcher
-            { watcherCmdChan = writeCmdChan,
-              watcherLndChan = writeLndChan,
-              watcherProc = proc
-            }
-    varProc <- newEmptyMVar
-    proc <-
-      async . run $ do
-        proc <- takeMVar varProc
-        loop $
-          WatcherState
-            { watcherStateCmdChan = readCmdChan,
-              watcherStateLndChan = readLndChan,
-              watcherStateSub = sub (Just writeLndChan) env,
-              watcherStateHandler = handler $ newWatcher proc,
-              watcherStateTasks = mempty,
-              watcherStateLndEnv = env
-            }
-    liftIO $ putMVar varProc proc
-    pure $ newWatcher proc
-  let proc = watcherProc w
-  liftIO $ link proc
-  $(logTM) (newSeverity env InfoS Nothing Nothing)
-    $ logStr
-    $ ("Watcher spawned as " :: Text)
-      <> show (asyncThreadId proc)
-  pure w
-
--- Spawn watcher where subscription don't accept argument
--- for example `subscribeChannelEventsChan`
-spawnLinkUnit ::
-  (MonadUnliftIO m, KatipContext m) =>
-  LndEnv ->
-  (Maybe (TChan ((), res)) -> LndEnv -> m (Either LndError ())) ->
-  (Watcher () res -> Either LndError res -> m ()) ->
-  m (Watcher () res)
-spawnLinkUnit env0 sub handler =
-  spawnLink
-    env0
-    (\mChan env1 _ -> sub mChan env1)
-    (\chan _ x -> handler chan x)
-
 watch :: (MonadUnliftIO m) => Watcher req res -> req -> m ()
 watch w = atomically . writeTChan (watcherCmdChan w) . Watch
 
@@ -203,13 +140,6 @@ unWatchUnit w = unWatch w ()
 
 dupLndTChan :: (MonadIO m) => Watcher req res -> m (TChan (req, res))
 dupLndTChan = atomically . dupTChan . watcherLndChan
-
---
--- TODO : atomically cancel all linked processes
--- in case of root process crash/cancel (graceful cleanup)
---
-terminate :: (MonadUnliftIO m) => Watcher req res -> m ()
-terminate (Watcher _ _ proc) = liftIO $ cancel proc
 
 loop ::
   (Ord req, MonadUnliftIO m, KatipContext m) =>
