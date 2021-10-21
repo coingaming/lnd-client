@@ -67,10 +67,12 @@ waitForGrpc env = this 30
           res <- getInfo $ env {envLndLogStrategy = logDebug}
           if isRight res
             then return $ Right ()
-            else liftIO (delay 1000000) >> this (x - 1)
+            else do
+              sleep $ MicroSecondsDelay 1000000
+              this $ x - 1
         else do
-          let msg = "waitForGrpc attempt limit exceeded"
-          return . Left $ LndError msg
+          return . Left $
+            LndError "waitForGrpc attempt limit exceeded"
 
 lazyUnlockWallet ::
   (MonadUnliftIO m) =>
@@ -131,12 +133,13 @@ closeChannelSync env conn req = do
     closeChannelRecursive _ (0 :: Int) = return $ Left $ LndError "Cannot close channel"
     closeChannelRecursive mVar0 n = do
       void $ lazyConnectPeer env conn
-      void $ Util.spawnLink $
-        closeChannel
-          (void . tryPutMVar mVar0)
-          env
-          req
-      liftIO $ delay 1000000
+      void $
+        Util.spawnLink $
+          closeChannel
+            (void . tryPutMVar mVar0)
+            env
+            req
+      sleep $ MicroSecondsDelay 1000000
       upd <- tryTakeMVar mVar0
       case upd of
         Just _ -> return $ Right ()

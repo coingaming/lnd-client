@@ -8,17 +8,17 @@
 -- `unWatchUnit` function.
 module LndClient.Watcher
   ( Watcher,
-    spawnLink,
-    spawnLinkUnit,
     watch,
     watchUnit,
     unWatch,
     unWatchUnit,
     dupLndTChan,
-    terminate,
+    withWatcher,
+    withWatcherUnit,
   )
 where
 
+import qualified Control.Concurrent.Async as Async
 import qualified Data.Map as Map
 import LndClient.Import hiding (newSev, spawnLink)
 
@@ -26,12 +26,11 @@ import LndClient.Import hiding (newSev, spawnLink)
 -- TODO : maybe pass OnSub | OnExit callbacks?
 --
 
-data Watcher req res
-  = Watcher
-      { watcherCmdChan :: TChan (Cmd req),
-        watcherLndChan :: TChan (req, res),
-        watcherProc :: Async ()
-      }
+data Watcher req res = Watcher
+  { watcherCmdChan :: TChan (Cmd req),
+    watcherLndChan :: TChan (req, res),
+    watcherProc :: Async ()
+  }
 
 --
 -- TODO : introduce UnWatchAll
@@ -47,29 +46,29 @@ data Event req res
   | EventLnd res
   | EventTask (req, Either LndError ())
 
-data WatcherState req res m
-  = WatcherState
-      { watcherStateCmdChan :: TChan (Cmd req),
-        watcherStateLndChan :: TChan (req, res),
-        watcherStateSub :: req -> m (Either LndError ()),
-        watcherStateHandler :: req -> Either LndError res -> m (),
-        watcherStateTasks :: Map req (Async (req, Either LndError ())),
-        watcherStateLndEnv :: LndEnv
-      }
+data WatcherState req res m = WatcherState
+  { watcherStateCmdChan :: TChan (Cmd req),
+    watcherStateLndChan :: TChan (req, res),
+    watcherStateSub :: req -> m (Either LndError ()),
+    watcherStateHandler :: req -> Either LndError res -> m (),
+    watcherStateTasks :: Map req (Async (req, Either LndError ())),
+    watcherStateLndEnv :: LndEnv
+  }
 
 newSev :: WatcherState req res m -> Severity -> Severity
 newSev w s = newSeverity (watcherStateLndEnv w) s Nothing Nothing
 
--- Spawn watcher where subscription accepts argument
--- for example `subscribeInvoicesChan`
-spawnLink ::
+-- | Compute an action with given subscription watcher
+-- with given arguments.
+withWatcher ::
   (Ord req, MonadUnliftIO m, KatipContext m) =>
   LndEnv ->
   (Maybe (TChan (req, res)) -> LndEnv -> req -> m (Either LndError ())) ->
   (Watcher req res -> req -> Either LndError res -> m ()) ->
-  m (Watcher req res)
-spawnLink env sub handler = do
-  w <- withRunInIO $ \run -> do
+  (Watcher req res -> m actionRes) ->
+  m actionRes
+withWatcher env sub handler action =
+  withRunInIO $ \run -> do
     ( writeCmdChan,
       writeLndChan,
       readCmdChan,
@@ -86,39 +85,42 @@ spawnLink env sub handler = do
               watcherLndChan = writeLndChan,
               watcherProc = proc
             }
-    varProc <- newEmptyMVar
-    proc <-
-      async . run $ do
-        proc <- takeMVar varProc
-        loop $
-          WatcherState
-            { watcherStateCmdChan = readCmdChan,
-              watcherStateLndChan = readLndChan,
-              watcherStateSub = sub (Just writeLndChan) env,
-              watcherStateHandler = handler $ newWatcher proc,
-              watcherStateTasks = mempty,
-              watcherStateLndEnv = env
-            }
-    liftIO $ putMVar varProc proc
-    pure $ newWatcher proc
-  let proc = watcherProc w
-  liftIO $ link proc
-  $(logTM) (newSeverity env InfoS Nothing Nothing)
-    $ logStr
-    $ ("Watcher spawned as " :: Text)
-      <> show (asyncThreadId proc)
-  pure w
+    varPid <- newEmptyMVar
+    withSpawnLink
+      ( do
+          --
+          -- TODO : proper bi-directional link
+          --
+          -- TODO : atomically cancel all linked processes
+          -- in case of root process crash/cancel (graceful cleanup)
+          --
+          pid <- takeMVar varPid
+          run . loop $
+            WatcherState
+              { watcherStateCmdChan = readCmdChan,
+                watcherStateLndChan = readLndChan,
+                watcherStateSub = sub (Just writeLndChan) env,
+                watcherStateHandler = handler $ newWatcher pid,
+                watcherStateTasks = mempty,
+                watcherStateLndEnv = env
+              }
+      )
+      ( \pid -> do
+          putMVar varPid pid
+          run . action $ newWatcher pid
+      )
 
--- Spawn watcher where subscription don't accept argument
--- for example `subscribeChannelEventsChan`
-spawnLinkUnit ::
+-- | Compute an action with given subscription watcher
+-- without arguments, for example `subscribeChannelEventsChan`.
+withWatcherUnit ::
   (MonadUnliftIO m, KatipContext m) =>
   LndEnv ->
   (Maybe (TChan ((), res)) -> LndEnv -> m (Either LndError ())) ->
   (Watcher () res -> Either LndError res -> m ()) ->
-  m (Watcher () res)
-spawnLinkUnit env0 sub handler =
-  spawnLink
+  (Watcher () res -> m actionRes) ->
+  m actionRes
+withWatcherUnit env0 sub handler =
+  withWatcher
     env0
     (\mChan env1 _ -> sub mChan env1)
     (\chan _ x -> handler chan x)
@@ -138,13 +140,6 @@ unWatchUnit w = unWatch w ()
 dupLndTChan :: (MonadIO m) => Watcher req res -> m (TChan (req, res))
 dupLndTChan = atomically . dupTChan . watcherLndChan
 
---
--- TODO : atomically cancel all linked processes
--- in case of root process crash/cancel (graceful cleanup)
---
-terminate :: (MonadUnliftIO m) => Watcher req res -> m ()
-terminate (Watcher _ _ proc) = liftIO $ cancel proc
-
 loop ::
   (Ord req, MonadUnliftIO m, KatipContext m) =>
   WatcherState req res m ->
@@ -159,7 +154,7 @@ loop w = do
   -- alternative computation but without reading from
   -- watcherStateLndChan.
   me <-
-    catchAsync  . atomically $
+    catchAsync . atomically $
       if tasksEmpty
         then cmd <|> lnd
         else cmd <|> lnd <|> task
@@ -181,7 +176,7 @@ loop w = do
     tasksEmpty = null ts
     cmd = EventCmd <$> readTChan (watcherStateCmdChan w)
     lnd = EventLnd <$> readTChan (watcherStateLndChan w)
-    task = EventTask . snd <$> waitAnySTM ts
+    task = EventTask . snd <$> Async.waitAnySTM ts
 
 applyCmd ::
   (Ord req, MonadUnliftIO m, KatipContext m) =>
@@ -196,8 +191,8 @@ applyCmd w = \case
       else do
         t <-
           withRunInIO $ \run -> do
-            t <- async . run $ (x,) <$> watcherStateSub w x
-            link t
+            t <- Async.async . run $ (x,) <$> watcherStateSub w x
+            Async.link t
             return t
         loop w {watcherStateTasks = Map.insert x t ts}
   UnWatch x -> do
@@ -205,18 +200,18 @@ applyCmd w = \case
     case Map.lookup x ts of
       Nothing -> loop w
       Just t -> do
-        liftIO $ cancel t
+        liftIO $ Async.cancel t
         loop w {watcherStateTasks = Map.delete x ts}
   Terminate x -> do
     $(logTM) (newSev w InfoS) $
       logStr
         ( "Watcher - applying Cmd Terminate "
-            <> show (asyncThreadId x) ::
+            <> show (Async.asyncThreadId x) ::
             Text
         )
     liftIO $ do
-      mapM_ cancel $ Map.elems ts
-      cancel x
+      mapM_ Async.cancel $ Map.elems ts
+      Async.cancel x
     loop w {watcherStateTasks = mempty}
   where
     ts = watcherStateTasks w
@@ -243,7 +238,7 @@ applyTask w0 (x, res) = do
     Just t -> do
       case res of
         Left (e :: LndError) -> watcherStateHandler w0 x $ Left e
-        Right () -> liftIO $ cancel t
+        Right () -> liftIO $ Async.cancel t
       loop w1
   where
     ts = watcherStateTasks w0

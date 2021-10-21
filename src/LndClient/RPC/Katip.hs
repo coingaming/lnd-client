@@ -71,7 +71,9 @@ waitForGrpc env =
           res <- getInfo $ env {envLndLogStrategy = logDebug}
           if isRight res
             then return $ Right ()
-            else liftIO (delay 1000000) >> this (x - 1)
+            else do
+              sleep $ MicroSecondsDelay 1000000
+              this $ x - 1
         else do
           let msg = "waitForGrpc attempt limit exceeded"
           $(logTM) (newSev env ErrorS) $ logStr msg
@@ -152,12 +154,13 @@ closeChannelSync env mConn req = do
       return $ Left $ LndError "Cannot close channel"
     closeChannelRecursive mVar0 n = do
       whenJust mConn $ void . lazyConnectPeer env
-      void $ Util.spawnLink $
-        closeChannel
-          (void . tryPutMVar mVar0)
-          env
-          req
-      liftIO $ delay 1000000
+      void $
+        Util.spawnLink $
+          closeChannel
+            (void . tryPutMVar mVar0)
+            env
+            req
+      sleep $ MicroSecondsDelay 1000000
       upd <- tryTakeMVar mVar0
       case upd of
         Just _ -> return $ Right ()

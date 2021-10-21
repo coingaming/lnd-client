@@ -3,7 +3,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module LndClient.LndTest
-  ( -- * BTC
+  ( -- * Btc
     BtcUrl (..),
     BtcLogin (..),
     BtcPassword (..),
@@ -12,12 +12,10 @@ module LndClient.LndTest
 
     -- * TestEnv
     TestEnv (..),
-    newTestEnv,
-    deleteTestEnv,
     withTestEnv,
-    spawnLinkChannelWatcher,
-    spawnLinkInvoiceWatcher,
-    spawnLinkSingleInvoiceWatcher,
+    withChannelWatcher,
+    withInvoiceWatcher,
+    withSingleInvoiceWatcher,
 
     -- * Class
     LndTest (..),
@@ -92,9 +90,9 @@ import LndClient.Data.SubscribeInvoices
 import LndClient.Import
 import qualified LndClient.RPC.Katip as Lnd
 import LndClient.Watcher as Watcher
-import qualified Network.Bitcoin as BTC (Client, getClient)
-import qualified Network.Bitcoin.BlockChain as BTC (getBlockCount)
-import qualified Network.Bitcoin.Mining as BTC (generateToAddress)
+import qualified Network.Bitcoin as Btc (Client, getClient)
+import qualified Network.Bitcoin.BlockChain as Btc (getBlockCount)
+import qualified Network.Bitcoin.Mining as Btc (generateToAddress)
 
 newtype BtcUrl = BtcUrl String
 
@@ -119,57 +117,33 @@ data TestEnv = TestEnv
 uniquePairs :: (Ord a, Enum a, Bounded a) => [(a, a)]
 uniquePairs = [(x0, x1) | x0 <- enumerate, x1 <- enumerate, x0 < x1]
 
-newBtcClient :: MonadIO m => BtcEnv -> m BTC.Client
+newBtcClient :: MonadIO m => BtcEnv -> m Btc.Client
 newBtcClient x =
   liftIO $
-    BTC.getClient
+    Btc.getClient
       (coerce $ btcUrl x)
       (coerce $ btcLogin x)
       (coerce $ btcPassword x)
 
-newTestEnv ::
-  ( KatipContext m,
-    MonadUnliftIO m
-  ) =>
-  LndEnv ->
-  NodeLocation ->
-  m TestEnv
-newTestEnv lnd loc = do
-  cw <- spawnLinkChannelWatcher lnd
-  iw <- spawnLinkInvoiceWatcher lnd
-  siw <- spawnLinkSingleInvoiceWatcher lnd id
-  pure $
-    TestEnv
-      { testLndEnv = lnd,
-        testNodeLocation = loc,
-        testChannelWatcher = cw,
-        testInvoiceWatcher = iw,
-        testSingleInvoiceWatcher = siw
-      }
-
-deleteTestEnv ::
-  ( KatipContext m,
-    MonadUnliftIO m
-  ) =>
-  TestEnv ->
-  m ()
-deleteTestEnv env = do
-  Watcher.terminate $ testChannelWatcher env
-  Watcher.terminate $ testInvoiceWatcher env
-  Watcher.terminate $ testSingleInvoiceWatcher env
-
 withTestEnv ::
-  ( KatipContext m,
-    MonadUnliftIO m
+  ( MonadUnliftIO m
   ) =>
   LndEnv ->
   NodeLocation ->
-  (TestEnv -> m ()) ->
-  m ()
-withTestEnv lnd loc this = do
-  env <- newTestEnv lnd loc
-  this env
-  deleteTestEnv env
+  (TestEnv -> KatipContextT m ()) ->
+  KatipContextT m ()
+withTestEnv lnd loc action =
+  withChannelWatcher lnd $ \cw ->
+    withInvoiceWatcher lnd $ \iw ->
+      withSingleInvoiceWatcher lnd id $ \siw ->
+        action
+          TestEnv
+            { testLndEnv = lnd,
+              testNodeLocation = loc,
+              testChannelWatcher = cw,
+              testInvoiceWatcher = iw,
+              testSingleInvoiceWatcher = siw
+            }
 
 class
   ( KatipContext m,
@@ -181,7 +155,7 @@ class
   ) =>
   LndTest m owner
   where
-  getBtcClient :: owner -> m BTC.Client
+  getBtcClient :: owner -> m Btc.Client
   getTestEnv :: owner -> m TestEnv
   getLndEnv :: owner -> m LndEnv
   getLndEnv = (testLndEnv <$>) . getTestEnv
@@ -193,19 +167,13 @@ class
   getNodeLocation = (testNodeLocation <$>) . getTestEnv
   getChannelTChan :: owner -> m (TChan ((), ChannelEventUpdate))
   getChannelTChan =
-    (Watcher.dupLndTChan =<<)
-      . (testChannelWatcher <$>)
-      . getTestEnv
+    (Watcher.dupLndTChan . testChannelWatcher) <=< getTestEnv
   getInvoiceTChan :: owner -> m (TChan (SubscribeInvoicesRequest, Invoice))
   getInvoiceTChan =
-    (Watcher.dupLndTChan =<<)
-      . (testInvoiceWatcher <$>)
-      . getTestEnv
+    (Watcher.dupLndTChan . testInvoiceWatcher) <=< getTestEnv
   getSingleInvoiceTChan :: owner -> m (TChan (RHash, Invoice))
   getSingleInvoiceTChan =
-    (Watcher.dupLndTChan =<<)
-      . (testSingleInvoiceWatcher <$>)
-      . getTestEnv
+    (Watcher.dupLndTChan . testSingleInvoiceWatcher) <=< getTestEnv
 
   --
   -- TODO : embed getSingleInvoiceTChan here
@@ -230,7 +198,7 @@ lazyMineInitialCoins :: forall m owner. LndTest m owner => Proxy owner -> m ()
 lazyMineInitialCoins = const $ do
   mapM_ (liftLndResult <=< Lnd.lazyInitWallet <=< getLndEnv) xs
   bc <- getBtcClient someone
-  h <- liftIO $ BTC.getBlockCount bc
+  h <- liftIO $ Btc.getBlockCount bc
   -- reward coins are spendable only after 100 blocks
   when (h < 101 + numOwners) $ do
     mapM_ (mine 1) xs
@@ -287,7 +255,7 @@ mine blocks owner = do
         <> show owner
         <> " wallet"
   void . liftIO $
-    BTC.generateToAddress
+    Btc.generateToAddress
       bc
       blocks
       btcAddr
@@ -321,7 +289,9 @@ syncWallets = const $ this 0
       rs <- mapM (Lnd.getInfo <=< getLndEnv) (enumerate :: [owner])
       if all isInSync rs
         then pure $ Right ()
-        else liftIO (delay 1000000) >> this (attempt + 1)
+        else do
+          sleep $ MicroSecondsDelay 1000000
+          this $ attempt + 1
     isInSync = \case
       Left {} -> False
       Right x -> Lnd.syncedToChain x
@@ -383,7 +353,10 @@ receiveClosedChannels po = this 0
       let filteredCps = filter (checkTwiceCP $ concat xs) cps
       if null filteredCps
         then pure $ Right ()
-        else mine1 po >> liftIO (delay 1000000) >> this (attempt + 1) filteredCps
+        else do
+          mine1 po
+          sleep $ MicroSecondsDelay 1000000
+          this (attempt + 1) filteredCps
     checkTwiceCP :: [ChannelPoint] -> ChannelPoint -> Bool
     checkTwiceCP cps cp = length (filter (cp ==) cps) < 2
     getOwnersCloseCPs :: owner -> m (Either LndError [ChannelPoint])
@@ -420,7 +393,9 @@ cancelAllInvoices =
       is1 <- getInvoices
       if all isRight res && null is1
         then pure ()
-        else liftIO (delay 1000000) >> this (attempt + 1) owner
+        else do
+          sleep $ MicroSecondsDelay 1000000
+          this (attempt + 1) owner
 
 closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
 closeAllChannels po = do
@@ -458,7 +433,9 @@ closeAllChannels po = do
       cs1 <- getChannels
       if all isRight res && null cs1
         then liftLndResult =<< receiveClosedChannels po cps
-        else liftIO (delay 1000000) >> this (attempt + 1) (owner0, owner1)
+        else do
+          sleep $ MicroSecondsDelay 1000000
+          this (attempt + 1) (owner0, owner1)
 
 receiveActiveChannel ::
   LndTest m owner =>
@@ -595,33 +572,36 @@ ignore2 _ _ = pure ()
 ignore3 :: Monad m => a -> b -> c -> m ()
 ignore3 _ _ _ = pure ()
 
-spawnLinkChannelWatcher ::
+withChannelWatcher ::
   (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
-  m (Watcher () ChannelEventUpdate)
-spawnLinkChannelWatcher lnd =
-  Watcher.spawnLinkUnit
+  (Watcher () ChannelEventUpdate -> m a) ->
+  m a
+withChannelWatcher lnd =
+  Watcher.withWatcherUnit
     lnd
     Lnd.subscribeChannelEventsChan
     ignore2
 
-spawnLinkInvoiceWatcher ::
+withInvoiceWatcher ::
   (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
-  m (Watcher SubscribeInvoicesRequest Invoice)
-spawnLinkInvoiceWatcher lnd =
-  Watcher.spawnLink
+  (Watcher SubscribeInvoicesRequest Invoice -> m a) ->
+  m a
+withInvoiceWatcher lnd =
+  Watcher.withWatcher
     lnd
     Lnd.subscribeInvoicesChan
     ignore3
 
-spawnLinkSingleInvoiceWatcher ::
+withSingleInvoiceWatcher ::
   (Ord req, KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
   (req -> RHash) ->
-  m (Watcher req Invoice)
-spawnLinkSingleInvoiceWatcher lnd accessor =
-  Watcher.spawnLink
+  (Watcher req Invoice -> m a) ->
+  m a
+withSingleInvoiceWatcher lnd accessor =
+  Watcher.withWatcher
     lnd
     (Lnd.subscribeSingleInvoiceChan accessor)
     ignore3

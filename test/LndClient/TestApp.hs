@@ -21,15 +21,14 @@ import LndClient.LndTest
 import qualified Network.Bitcoin as BTC (Client)
 import Network.GRPC.Client.Helpers (GrpcClientConfig (..))
 
-data Env
-  = Env
-      { envAlice :: TestEnv,
-        envBob :: TestEnv,
-        envBtc :: BTC.Client,
-        envKatipNS :: Namespace,
-        envKatipCTX :: LogContexts,
-        envKatipLE :: LogEnv
-      }
+data Env = Env
+  { envAlice :: TestEnv,
+    envBob :: TestEnv,
+    envBtc :: BTC.Client,
+    envKatipNS :: Namespace,
+    envKatipCTX :: LogContexts,
+    envKatipLE :: LogEnv
+  }
 
 data Owner = Alice | Bob
   deriving (Eq, Ord, Show, Bounded, Enum)
@@ -75,8 +74,8 @@ newBobEnv x =
       envLndAezeedPassphrase = Nothing
     }
 
-readEnv :: IO Env
-readEnv = do
+withEnv :: AppM IO () -> IO ()
+withEnv action = do
   handleScribe <-
     mkHandleScribeWithFormatter
       bracketFormat
@@ -84,39 +83,31 @@ readEnv = do
       stdout
       (permitItem DebugS)
       V2
-  le <-
-    registerScribe "stdout" handleScribe defaultScribeSettings
-      =<< initLogEnv "LndClient" "test"
+  let newLogEnv =
+        registerScribe "stdout" handleScribe defaultScribeSettings
+          =<< initLogEnv "LndClient" "test"
   bc <- newBtcClient btcEnv
   aliceLndEnv <- liftIO readLndEnv
-  runKatipContextT le (mempty :: LogContexts) mempty $ do
-    alice <-
-      newTestEnv
-        aliceLndEnv
-        $ NodeLocation "localhost:9735"
-    bob <-
-      newTestEnv
-        (newBobEnv aliceLndEnv)
-        $ NodeLocation "localhost:9734"
-    pure
-      Env
-        { envAlice = alice,
-          envBob = bob,
-          envBtc = bc,
-          envKatipLE = le,
-          envKatipCTX = mempty,
-          envKatipNS = mempty
-        }
-
-withEnv :: AppM IO () -> IO ()
-withEnv this = do
-  env <- readEnv
-  runApp env $ do
-    setupZeroChannels proxyOwner
-    this
-    deleteTestEnv $ envBob env
-    deleteTestEnv $ envAlice env
-  void . closeScribes $ envKatipLE env
+  bracket newLogEnv rmLogEnv $ \le ->
+    runKatipContextT le (mempty :: LogContexts) mempty $ do
+      withTestEnv aliceLndEnv (NodeLocation "localhost:9735") $ \alice ->
+        withTestEnv (newBobEnv aliceLndEnv) (NodeLocation "localhost:9734") $ \bob ->
+          liftIO $
+            runApp
+              Env
+                { envAlice = alice,
+                  envBob = bob,
+                  envBtc = bc,
+                  envKatipLE = le,
+                  envKatipCTX = mempty,
+                  envKatipNS = mempty
+                }
+              $ do
+                setupZeroChannels proxyOwner
+                action
+  where
+    rmLogEnv =
+      void . liftIO . closeScribes
 
 btcEnv :: BtcEnv
 btcEnv =
@@ -126,10 +117,9 @@ btcEnv =
       btcPassword = BtcPassword "developer"
     }
 
-newtype AppM m a
-  = AppM
-      { unAppM :: ReaderT Env m a
-      }
+newtype AppM m a = AppM
+  { unAppM :: ReaderT Env m a
+  }
   deriving (Functor, Applicative, Monad, MonadIO, MonadReader Env, MonadUnliftIO)
 
 instance (MonadIO m) => Katip (AppM m) where
