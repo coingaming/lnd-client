@@ -4,14 +4,15 @@
 -- | Generic async worker to automate LND gRPC subscriptions.
 -- It watches any amount of subscriptions of the same type,
 -- and re-subscribes if subscription was not terminated properly.
--- The only way to terminate subscription is to apply `unWatch` or
--- `unWatchUnit` function.
+-- The only way to terminate subscription is to apply `unWatch`,
+-- `unWatchUnit` or `unWatchAll` function.
 module LndClient.Watcher
   ( Watcher,
     watch,
     watchUnit,
     unWatch,
     unWatchUnit,
+    unWatchAll,
     dupLndTChan,
     withWatcher,
     withWatcherUnit,
@@ -22,37 +23,52 @@ import qualified Control.Concurrent.Async as Async
 import qualified Data.Map as Map
 import LndClient.Import hiding (newSev, spawnLink)
 
---
--- TODO : maybe pass OnSub | OnExit callbacks?
---
+newtype WatcherPid = WatcherPid
+  { unWatcherPid :: Async ()
+  }
+
+newtype TaskPid req = TaskPid
+  { unTaskPid ::
+      Async
+        ( Either
+            (KilledTask req)
+            (req, Maybe LndError)
+        )
+  }
 
 data Watcher req res = Watcher
   { watcherCmdChan :: TChan (Cmd req),
     watcherLndChan :: TChan (req, res),
-    watcherProc :: Async ()
+    watcherPid :: WatcherPid
   }
 
---
--- TODO : introduce UnWatchAll
--- and use it in withEnv etc
---
+data KillSignal
+  = KillSignal
+  deriving (Eq, Ord, Show)
+
+newtype KilledTask req = KilledTask
+  { unKilledTask :: req
+  }
+  deriving (Eq, Ord, Show)
+
 data Cmd req
-  = Watch req
+  = Watch WatcherPid req
   | UnWatch req
-  | Terminate (Async ())
+  | UnWatchAll
 
 data Event req res
   = EventCmd (Cmd req)
   | EventLnd res
-  | EventTask (req, Either LndError ())
+  | EventTask (Either (KilledTask req) (req, Maybe LndError))
 
 data WatcherState req res m = WatcherState
   { watcherStateCmdChan :: TChan (Cmd req),
     watcherStateLndChan :: TChan (req, res),
-    watcherStateSub :: req -> m (Either LndError ()),
+    watcherStateSub :: req -> m (Maybe LndError),
     watcherStateHandler :: req -> Either LndError res -> m (),
-    watcherStateTasks :: Map req (Async (req, Either LndError ())),
-    watcherStateLndEnv :: LndEnv
+    watcherStateTasks :: Map req (TaskPid req),
+    watcherStateLndEnv :: LndEnv,
+    watcherStateKillChan :: TChan KillSignal
   }
 
 newSev :: WatcherState req res m -> Severity -> Severity
@@ -69,45 +85,59 @@ withWatcher ::
   m actionRes
 withWatcher env sub handler action =
   withRunInIO $ \run -> do
-    ( writeCmdChan,
+    ( writeKillChan,
+      writeCmdChan,
       writeLndChan,
       readCmdChan,
       readLndChan
       ) <- atomically $ do
+      writeKillChan <- newBroadcastTChan
       writeCmdChan <- newBroadcastTChan
       writeLndChan <- newBroadcastTChan
       readCmdChan <- dupTChan writeCmdChan
       readLndChan <- dupTChan writeLndChan
-      pure (writeCmdChan, writeLndChan, readCmdChan, readLndChan)
+      pure
+        ( writeKillChan,
+          writeCmdChan,
+          writeLndChan,
+          readCmdChan,
+          readLndChan
+        )
     let newWatcher proc =
           Watcher
             { watcherCmdChan = writeCmdChan,
               watcherLndChan = writeLndChan,
-              watcherProc = proc
+              watcherPid = proc
             }
-    varPid <- newEmptyMVar
-    withSpawnLink
-      ( do
-          --
-          -- TODO : proper bi-directional link
-          --
-          -- TODO : atomically cancel all linked processes
-          -- in case of root process crash/cancel (graceful cleanup)
-          --
-          pid <- takeMVar varPid
-          run . loop $
-            WatcherState
-              { watcherStateCmdChan = readCmdChan,
-                watcherStateLndChan = readLndChan,
-                watcherStateSub = sub (Just writeLndChan) env,
-                watcherStateHandler = handler $ newWatcher pid,
-                watcherStateTasks = mempty,
-                watcherStateLndEnv = env
-              }
+    varWatchPid <- newEmptyMVar
+    finally
+      ( withSpawnLink
+          ( do
+              watchPid <- takeMVar varWatchPid
+              run . loop $
+                WatcherState
+                  { watcherStateCmdChan = readCmdChan,
+                    watcherStateLndChan = readLndChan,
+                    watcherStateSub =
+                      eitherM
+                        (pure . Just)
+                        (\() -> pure Nothing)
+                        . sub (Just writeLndChan) env,
+                    watcherStateHandler = handler $ newWatcher watchPid,
+                    watcherStateTasks = mempty,
+                    watcherStateLndEnv = env,
+                    watcherStateKillChan = writeKillChan
+                  }
+          )
+          ( \pid0 -> do
+              let pid1 = WatcherPid pid0
+              putMVar varWatchPid pid1
+              run . action $ newWatcher pid1
+          )
       )
-      ( \pid -> do
-          putMVar varPid pid
-          run . action $ newWatcher pid
+      ( do
+          atomically $ writeTChan writeKillChan KillSignal
+          run . $(logTM) InfoS $ "Watcher terminated"
       )
 
 -- | Compute an action with given subscription watcher
@@ -126,7 +156,10 @@ withWatcherUnit env0 sub handler =
     (\chan _ x -> handler chan x)
 
 watch :: (MonadUnliftIO m) => Watcher req res -> req -> m ()
-watch w = atomically . writeTChan (watcherCmdChan w) . Watch
+watch w =
+  atomically
+    . writeTChan (watcherCmdChan w)
+    . Watch (watcherPid w)
 
 watchUnit :: (MonadUnliftIO m) => Watcher () res -> m ()
 watchUnit w = watch w ()
@@ -136,6 +169,9 @@ unWatch w = atomically . writeTChan (watcherCmdChan w) . UnWatch
 
 unWatchUnit :: (MonadUnliftIO m) => Watcher () res -> m ()
 unWatchUnit w = unWatch w ()
+
+unWatchAll :: (MonadUnliftIO m) => Watcher req res -> m ()
+unWatchAll w = atomically $ writeTChan (watcherCmdChan w) UnWatchAll
 
 dupLndTChan :: (MonadIO m) => Watcher req res -> m (TChan (req, res))
 dupLndTChan = atomically . dupTChan . watcherLndChan
@@ -170,50 +206,61 @@ loop w = do
   case event of
     EventCmd x -> applyCmd w x
     EventLnd x -> applyLnd w (second Right x)
-    EventTask x -> applyTask w x
+    EventTask (Left (KilledTask x)) ->
+      loop $
+        w
+          { watcherStateTasks =
+              Map.delete x $ watcherStateTasks w
+          }
+    EventTask (Right x) -> applyTask w x
   where
-    ts = Map.elems $ watcherStateTasks w
+    ts = unTaskPid <$> Map.elems (watcherStateTasks w)
     tasksEmpty = null ts
     cmd = EventCmd <$> readTChan (watcherStateCmdChan w)
     lnd = EventLnd <$> readTChan (watcherStateLndChan w)
     task = EventTask . snd <$> Async.waitAnySTM ts
 
 applyCmd ::
+  forall req res m.
   (Ord req, MonadUnliftIO m, KatipContext m) =>
   WatcherState req res m ->
   Cmd req ->
   m ()
 applyCmd w = \case
-  Watch x -> do
+  Watch watchPid x -> do
     $(logTM) (newSev w InfoS) "Watcher - applying Cmd Watch"
     if isJust $ Map.lookup x ts
       then loop w
       else do
         t <-
           withRunInIO $ \run -> do
-            t <- Async.async . run $ (x,) <$> watcherStateSub w x
+            readKillChan <- atomically $ dupTChan writeKillChan
+            let rcvKill :: IO (KilledTask req) = do
+                  KillSignal <- atomically $ readTChan readKillChan
+                  pure $ KilledTask x
+            let runExpr =
+                  run $ (x,) <$> watcherStateSub w x
+            t <- Async.async $ do
+              Async.linkOnly (const True) $ unWatcherPid watchPid
+              Async.race rcvKill runExpr
             Async.link t
-            return t
+            pure $ TaskPid t
         loop w {watcherStateTasks = Map.insert x t ts}
   UnWatch x -> do
     $(logTM) (newSev w InfoS) "Watcher - applying Cmd UnWatch"
     case Map.lookup x ts of
       Nothing -> loop w
       Just t -> do
-        liftIO $ Async.cancel t
+        liftIO . Async.cancel $ unTaskPid t
         loop w {watcherStateTasks = Map.delete x ts}
-  Terminate x -> do
-    $(logTM) (newSev w InfoS) $
-      logStr
-        ( "Watcher - applying Cmd Terminate "
-            <> show (Async.asyncThreadId x) ::
-            Text
-        )
+  UnWatchAll -> do
+    $(logTM) (newSev w InfoS) "Watcher - applying Cmd UnWatchAll"
     liftIO $ do
-      mapM_ Async.cancel $ Map.elems ts
-      Async.cancel x
+      atomically $ writeTChan writeKillChan KillSignal
+      mapM_ (Async.cancel . unTaskPid) $ Map.elems ts
     loop w {watcherStateTasks = mempty}
   where
+    writeKillChan = watcherStateKillChan w
     ts = watcherStateTasks w
 
 applyLnd ::
@@ -229,7 +276,7 @@ applyLnd w (x0, x1) = do
 applyTask ::
   (Ord req, MonadUnliftIO m, KatipContext m) =>
   WatcherState req res m ->
-  (req, Either LndError ()) ->
+  (req, Maybe LndError) ->
   m ()
 applyTask w0 (x, res) = do
   $(logTM) (newSev w0 InfoS) "Watcher - applying Task"
@@ -237,8 +284,8 @@ applyTask w0 (x, res) = do
     Nothing -> loop w0
     Just t -> do
       case res of
-        Left (e :: LndError) -> watcherStateHandler w0 x $ Left e
-        Right () -> liftIO $ Async.cancel t
+        Just (e :: LndError) -> watcherStateHandler w0 x $ Left e
+        Nothing -> liftIO . Async.cancel $ unTaskPid t
       loop w1
   where
     ts = watcherStateTasks w0

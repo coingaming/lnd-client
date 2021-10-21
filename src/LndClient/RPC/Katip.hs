@@ -75,7 +75,7 @@ waitForGrpc env =
               sleep $ MicroSecondsDelay 1000000
               this $ x - 1
         else do
-          let msg = "waitForGrpc attempt limit exceeded"
+          let msg :: Text = "waitForGrpc attempt limit exceeded"
           $(logTM) (newSev env ErrorS) $ logStr msg
           return . Left $ LndError msg
 

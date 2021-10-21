@@ -95,7 +95,6 @@ ghc-options:
 - -Wno-unsafe # Don’t use Safe Haskell warnings
 - -Wno-safe # Don’t use Safe Haskell warnings
 - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
-- -Wno-monomorphism-restriction # Don’t warn if the monomorphism restriction is used
 
 library: {}
 

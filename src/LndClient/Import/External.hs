@@ -17,7 +17,10 @@ import Control.Concurrent.STM.TChan as Import
     readTChan,
     writeTChan,
   )
-import Control.Monad.Extra as Import (fromMaybeM)
+import Control.Monad.Extra as Import
+  ( eitherM,
+    fromMaybeM,
+  )
 import Data.Aeson as Import (FromJSON (..), ToJSON, fromJSON)
 import Data.ByteString as Import (ByteString)
 import Data.Coerce as Import (coerce)
@@ -53,5 +56,15 @@ import Katip as Import
     runKatipContextT,
     sl,
   )
-import Universum as Import hiding (Text, catch)
-import UnliftIO as Import (Handler (..), MonadUnliftIO (..), UnliftIO (..), catch, catches)
+import Universum as Import hiding (Text, catch, finally)
+--
+-- TODO : use Snoyman bracket
+--
+import UnliftIO as Import
+  ( Handler (..),
+    MonadUnliftIO (..),
+    UnliftIO (..),
+    catch,
+    catches,
+    finally,
+  )

@@ -15,11 +15,10 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data ChannelPoint
-  = ChannelPoint
-      { fundingTxId :: TxId 'Funding,
-        outputIndex :: Vout 'Funding
-      }
+data ChannelPoint = ChannelPoint
+  { fundingTxId :: TxId 'Funding,
+    outputIndex :: Vout 'Funding
+  }
   deriving (Eq, Ord, Show)
 
 instance FromGrpc ChannelPoint LnGRPC.ChannelPoint where
@@ -61,4 +60,5 @@ channelPointParser x =
     _ ->
       Left $ FromGrpcError "Invalid ChannelPoint text"
   where
+    str :: ByteString
     str = encodeUtf8 x
