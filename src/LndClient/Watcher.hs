@@ -26,12 +26,11 @@ import LndClient.Import hiding (newSev, spawnLink)
 -- TODO : maybe pass OnSub | OnExit callbacks?
 --
 
-data Watcher req res
-  = Watcher
-      { watcherCmdChan :: TChan (Cmd req),
-        watcherLndChan :: TChan (req, res),
-        watcherProc :: Async ()
-      }
+data Watcher req res = Watcher
+  { watcherCmdChan :: TChan (Cmd req),
+    watcherLndChan :: TChan (req, res),
+    watcherProc :: Async ()
+  }
 
 --
 -- TODO : introduce UnWatchAll
@@ -47,15 +46,14 @@ data Event req res
   | EventLnd res
   | EventTask (req, Either LndError ())
 
-data WatcherState req res m
-  = WatcherState
-      { watcherStateCmdChan :: TChan (Cmd req),
-        watcherStateLndChan :: TChan (req, res),
-        watcherStateSub :: req -> m (Either LndError ()),
-        watcherStateHandler :: req -> Either LndError res -> m (),
-        watcherStateTasks :: Map req (Async (req, Either LndError ())),
-        watcherStateLndEnv :: LndEnv
-      }
+data WatcherState req res m = WatcherState
+  { watcherStateCmdChan :: TChan (Cmd req),
+    watcherStateLndChan :: TChan (req, res),
+    watcherStateSub :: req -> m (Either LndError ()),
+    watcherStateHandler :: req -> Either LndError res -> m (),
+    watcherStateTasks :: Map req (Async (req, Either LndError ())),
+    watcherStateLndEnv :: LndEnv
+  }
 
 newSev :: WatcherState req res m -> Severity -> Severity
 newSev w s = newSeverity (watcherStateLndEnv w) s Nothing Nothing

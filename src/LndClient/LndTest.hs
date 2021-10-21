@@ -100,21 +100,19 @@ newtype BtcLogin = BtcLogin ByteString
 
 newtype BtcPassword = BtcPassword ByteString
 
-data BtcEnv
-  = BtcEnv
-      { btcUrl :: BtcUrl,
-        btcLogin :: BtcLogin,
-        btcPassword :: BtcPassword
-      }
+data BtcEnv = BtcEnv
+  { btcUrl :: BtcUrl,
+    btcLogin :: BtcLogin,
+    btcPassword :: BtcPassword
+  }
 
-data TestEnv
-  = TestEnv
-      { testLndEnv :: LndEnv,
-        testNodeLocation :: NodeLocation,
-        testChannelWatcher :: Watcher () ChannelEventUpdate,
-        testInvoiceWatcher :: Watcher SubscribeInvoicesRequest Invoice,
-        testSingleInvoiceWatcher :: Watcher RHash Invoice
-      }
+data TestEnv = TestEnv
+  { testLndEnv :: LndEnv,
+    testNodeLocation :: NodeLocation,
+    testChannelWatcher :: Watcher () ChannelEventUpdate,
+    testInvoiceWatcher :: Watcher SubscribeInvoicesRequest Invoice,
+    testSingleInvoiceWatcher :: Watcher RHash Invoice
+  }
 
 uniquePairs :: (Ord a, Enum a, Bounded a) => [(a, a)]
 uniquePairs = [(x0, x1) | x0 <- enumerate, x1 <- enumerate, x0 < x1]
@@ -155,7 +153,8 @@ class
     Bounded owner,
     Show owner
   ) =>
-  LndTest m owner where
+  LndTest m owner
+  where
   getBtcClient :: owner -> m Btc.Client
   getTestEnv :: owner -> m TestEnv
   getLndEnv :: owner -> m LndEnv
@@ -248,13 +247,13 @@ mine blocks owner = do
   btcAddr <- walletAddress owner
   bc <- getBtcClient owner
   sev <- getSev owner InfoS
-  $(logTM) sev
-    $ logStr
-    $ ("Mining " :: Text)
-      <> show blocks
-      <> " blocks to "
-      <> show owner
-      <> " wallet"
+  $(logTM) sev $
+    logStr $
+      ("Mining " :: Text)
+        <> show blocks
+        <> " blocks to "
+        <> show owner
+        <> " wallet"
   void . liftIO $
     Btc.generateToAddress
       bc
@@ -318,11 +317,11 @@ syncPendingChannelsFor owner = this 0
       pure . Left $ LndError msg
     this (attempt :: Int) = do
       sev <- getSev owner InfoS
-      $(logTM) sev
-        $ logStr
-        $ "SyncPendingChannelsFor "
-          <> (show owner :: Text)
-          <> " is running"
+      $(logTM) sev $
+        logStr $
+          "SyncPendingChannelsFor "
+            <> (show owner :: Text)
+            <> " is running"
       res <- Lnd.pendingChannels =<< getLndEnv owner
       case res of
         Left {} -> this (attempt + 1)
@@ -345,9 +344,9 @@ receiveClosedChannels po = this 0
     this _ [] =
       pure $ Right ()
     this 30 _ =
-      pure
-        $ Left
-        $ LndError "receiveClosedChannels - exceeded"
+      pure $
+        Left $
+          LndError "receiveClosedChannels - exceeded"
     this (attempt :: Integer) cps = do
       let owners = enumerate :: [owner]
       xs <- rights <$> mapM getOwnersCloseCPs owners
@@ -548,9 +547,9 @@ receiveInvoice ::
 receiveInvoice rh s q = do
   mx0 <- readTChanTimeout (MicroSecondsDelay 30000000) q
   let mx = snd <$> mx0
-  $(logTM) DebugS
-    $ logStr
-    $ "receiveInvoice - " <> (show mx :: Text)
+  $(logTM) DebugS $
+    logStr $
+      "receiveInvoice - " <> (show mx :: Text)
   case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
     Just True -> return $ Right ()
     Just False -> receiveInvoice rh s q

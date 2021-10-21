@@ -21,15 +21,14 @@ import LndClient.LndTest
 import qualified Network.Bitcoin as BTC (Client)
 import Network.GRPC.Client.Helpers (GrpcClientConfig (..))
 
-data Env
-  = Env
-      { envAlice :: TestEnv,
-        envBob :: TestEnv,
-        envBtc :: BTC.Client,
-        envKatipNS :: Namespace,
-        envKatipCTX :: LogContexts,
-        envKatipLE :: LogEnv
-      }
+data Env = Env
+  { envAlice :: TestEnv,
+    envBob :: TestEnv,
+    envBtc :: BTC.Client,
+    envKatipNS :: Namespace,
+    envKatipCTX :: LogContexts,
+    envKatipLE :: LogEnv
+  }
 
 data Owner = Alice | Bob
   deriving (Eq, Ord, Show, Bounded, Enum)
@@ -93,8 +92,8 @@ withEnv action = do
     runKatipContextT le (mempty :: LogContexts) mempty $ do
       withTestEnv aliceLndEnv (NodeLocation "localhost:9735") $ \alice ->
         withTestEnv (newBobEnv aliceLndEnv) (NodeLocation "localhost:9734") $ \bob ->
-          liftIO
-            $ runApp
+          liftIO $
+            runApp
               Env
                 { envAlice = alice,
                   envBob = bob,
@@ -103,9 +102,9 @@ withEnv action = do
                   envKatipCTX = mempty,
                   envKatipNS = mempty
                 }
-            $ do
-              setupZeroChannels proxyOwner
-              action
+              $ do
+                setupZeroChannels proxyOwner
+                action
   where
     rmLogEnv =
       void . liftIO . closeScribes
@@ -118,10 +117,9 @@ btcEnv =
       btcPassword = BtcPassword "developer"
     }
 
-newtype AppM m a
-  = AppM
-      { unAppM :: ReaderT Env m a
-      }
+newtype AppM m a = AppM
+  { unAppM :: ReaderT Env m a
+  }
   deriving (Functor, Applicative, Monad, MonadIO, MonadReader Env, MonadUnliftIO)
 
 instance (MonadIO m) => Katip (AppM m) where

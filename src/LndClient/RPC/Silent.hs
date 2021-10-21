@@ -133,11 +133,12 @@ closeChannelSync env conn req = do
     closeChannelRecursive _ (0 :: Int) = return $ Left $ LndError "Cannot close channel"
     closeChannelRecursive mVar0 n = do
       void $ lazyConnectPeer env conn
-      void $ Util.spawnLink $
-        closeChannel
-          (void . tryPutMVar mVar0)
-          env
-          req
+      void $
+        Util.spawnLink $
+          closeChannel
+            (void . tryPutMVar mVar0)
+            env
+            req
       sleep $ MicroSecondsDelay 1000000
       upd <- tryTakeMVar mVar0
       case upd of
