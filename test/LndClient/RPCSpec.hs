@@ -10,7 +10,7 @@ module LndClient.RPCSpec
   )
 where
 
-import Control.Concurrent.Async
+import qualified Control.Concurrent.Async as Async
 import LndClient.Data.AddHodlInvoice as HodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
@@ -33,6 +33,7 @@ import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
+import qualified LndClient.Data.TrackPayment as TrackPayment
 import LndClient.Import
 import LndClient.LndTest
 import LndClient.QRCode
@@ -261,7 +262,7 @@ spec = do
         <$> (liftLndResult =<< addInvoice lnd addInvoiceRequest)
     let listReq =
           ListInvoiceRequest
-            { pendingOnly = False,
+            { pendingOnly = True,
               indexOffset = AddIndex 0,
               numMaxInvoices = 0,
               reversed = False
@@ -319,36 +320,36 @@ spec = do
               spendUnconfirmed = Nothing,
               closeAddress = Nothing
             }
-    a <- spawnLink $ liftLndResult =<< openChannel (const $ return ()) alice openChannelRequest
+    a <-
+      spawnLink $
+        liftLndResult
+          =<< openChannel (const $ return ()) alice openChannelRequest
     liftIO $ do
-      res <- race (delay 100000) $ cancel a
+      res <- Async.race (sleep $ MicroSecondsDelay 100000) $ Async.cancel a
       res `shouldSatisfy` isRight
+  it "trackPaymentV2" $ withEnv $ do
+    void $ setupOneChannel Alice Bob
+    --
+    -- prepare invoice and subscription
+    --
+    alice <- getLndEnv Alice
+    bob <- getLndEnv Bob
+    inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
+    let req =
+          SendPaymentRequest
+            (AddInvoice.paymentRequest inv)
+            $ AddInvoice.valueMsat addInvoiceRequest
+    --
+    -- spawn payment watcher and settle invoice
+    --
+    Watcher.withWatcher alice trackPaymentV2Chan (\_ _ _ -> pure ()) $ \w -> do
+      void $ liftLndResult =<< sendPayment alice req
+      chan <- Watcher.dupLndTChan w
+      Watcher.watch w $
+        TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
+      res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
+      liftIO $ res `shouldSatisfy` isJust
   where
-    --
-    -- TODO : fix this, it's not really working for some reason
-    -- LND says "payment isn't initiated" error in logs
-    --
-    --it "trackPaymentV2" $ withEnv $ do
-    --  setupOneChannel
-    --  --
-    --  -- prepare invoice and subscription
-    --  --
-    --  bob <- getLndEnv Bob
-    --  inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
-    --  let rh = AddInvoice.rHash inv
-    --  let pr = AddInvoice.paymentRequest inv
-    --  let spr = SendPaymentRequest pr $ MSat 1000
-    --  --
-    --  -- spawn payment watcher and settle invoice
-    --  --
-    --  w <- Watcher.spawnLink bob trackPaymentV2Chan $ \_ _ _ -> pure ()
-    --  chan <- Watcher.dupLndTChan w
-    --  Watcher.watch w $ TrackPaymentRequest rh False
-    --  alice <- getLndEnv Alice
-    --  void $ liftLndResult =<< sendPayment alice spr
-    --  res <- readTChanTimeout (MicroSecondsDelay 500000) chan
-    --  Watcher.terminate w
-    --  liftIO $ res `shouldSatisfy` isJust
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
     addInvoiceRequest =

@@ -290,7 +290,9 @@ syncWallets = const $ this 0
       rs <- mapM (Lnd.getInfo <=< getLndEnv) (enumerate :: [owner])
       if all isInSync rs
         then pure $ Right ()
-        else liftIO (delay 1000000) >> this (attempt + 1)
+        else do
+          sleep $ MicroSecondsDelay 1000000
+          this $ attempt + 1
     isInSync = \case
       Left {} -> False
       Right x -> Lnd.syncedToChain x
@@ -352,7 +354,10 @@ receiveClosedChannels po = this 0
       let filteredCps = filter (checkTwiceCP $ concat xs) cps
       if null filteredCps
         then pure $ Right ()
-        else mine1 po >> liftIO (delay 1000000) >> this (attempt + 1) filteredCps
+        else do
+          mine1 po
+          sleep $ MicroSecondsDelay 1000000
+          this (attempt + 1) filteredCps
     checkTwiceCP :: [ChannelPoint] -> ChannelPoint -> Bool
     checkTwiceCP cps cp = length (filter (cp ==) cps) < 2
     getOwnersCloseCPs :: owner -> m (Either LndError [ChannelPoint])
@@ -389,7 +394,9 @@ cancelAllInvoices =
       is1 <- getInvoices
       if all isRight res && null is1
         then pure ()
-        else liftIO (delay 1000000) >> this (attempt + 1) owner
+        else do
+          sleep $ MicroSecondsDelay 1000000
+          this (attempt + 1) owner
 
 closeAllChannels :: forall m owner. LndTest m owner => Proxy owner -> m ()
 closeAllChannels po = do
@@ -427,7 +434,9 @@ closeAllChannels po = do
       cs1 <- getChannels
       if all isRight res && null cs1
         then liftLndResult =<< receiveClosedChannels po cps
-        else liftIO (delay 1000000) >> this (attempt + 1) (owner0, owner1)
+        else do
+          sleep $ MicroSecondsDelay 1000000
+          this (attempt + 1) (owner0, owner1)
 
 receiveActiveChannel ::
   LndTest m owner =>

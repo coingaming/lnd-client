@@ -71,7 +71,9 @@ waitForGrpc env =
           res <- getInfo $ env {envLndLogStrategy = logDebug}
           if isRight res
             then return $ Right ()
-            else liftIO (delay 1000000) >> this (x - 1)
+            else do
+              sleep $ MicroSecondsDelay 1000000
+              this $ x - 1
         else do
           let msg = "waitForGrpc attempt limit exceeded"
           $(logTM) (newSev env ErrorS) $ logStr msg
@@ -157,7 +159,7 @@ closeChannelSync env mConn req = do
           (void . tryPutMVar mVar0)
           env
           req
-      liftIO $ delay 1000000
+      sleep $ MicroSecondsDelay 1000000
       upd <- tryTakeMVar mVar0
       case upd of
         Just _ -> return $ Right ()

@@ -109,5 +109,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - lnd-client
     - hspec >= 2.7.1 && < 2.7.2

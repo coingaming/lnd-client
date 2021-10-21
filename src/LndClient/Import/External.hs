@@ -8,14 +8,6 @@ import Chronos as Import
   )
 import Control.Concurrent.Async as Import
   ( Async,
-    async,
-    asyncThreadId,
-    cancel,
-    link,
-    linkOnly,
-    wait,
-    waitAnySTM,
-    withAsync,
   )
 import Control.Concurrent.STM as Import (check)
 import Control.Concurrent.STM.TChan as Import
@@ -25,8 +17,6 @@ import Control.Concurrent.STM.TChan as Import
     readTChan,
     writeTChan,
   )
-import Control.Concurrent.STM.TVar as Import (registerDelay)
-import Control.Concurrent.Thread.Delay as Import (delay)
 import Control.Monad.Extra as Import (fromMaybeM)
 import Data.Aeson as Import (FromJSON (..), ToJSON, fromJSON)
 import Data.ByteString as Import (ByteString)

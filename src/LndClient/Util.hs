@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeApplications #-}
 
 module LndClient.Util
   ( retrySilent,
@@ -10,9 +11,13 @@ module LndClient.Util
     catchAsync,
     txIdParser,
     MicroSecondsDelay (..),
+    sleep,
   )
 where
 
+import qualified Control.Concurrent.Async as Async
+import qualified Control.Concurrent.STM.TVar as TVar (registerDelay)
+import qualified Control.Concurrent.Thread.Delay as Delay (delay)
 import Control.Exception hiding (Handler, catches)
 import qualified Data.ByteString as BS (reverse)
 import qualified Data.ByteString.Base16 as B16 (decode)
@@ -39,7 +44,7 @@ retrySilent = this 0
           if attempt > 5
             then pure res
             else do
-              liftIO $ delay 300000
+              sleep $ MicroSecondsDelay 300000
               this attempt f
         _ ->
           pure res
@@ -56,7 +61,7 @@ retryKatip = this 0
           if attempt > 5
             then pure res
             else do
-              liftIO $ delay 300000
+              sleep $ MicroSecondsDelay 300000
               this attempt f
         _ ->
           pure res
@@ -75,26 +80,32 @@ safeFromIntegral x =
 spawnLink :: (MonadUnliftIO m) => m a -> m (Async a)
 spawnLink x =
   withRunInIO $ \run -> do
-    pid <- async $ run x
-    link pid
+    pid <- Async.async $ run x
+    Async.link pid
     pure pid
 
 withSpawnLink :: (MonadUnliftIO m) => m a -> (Async a -> m b) -> m b
 withSpawnLink action inner =
   withRunInIO $ \run ->
-    withAsync
+    Async.withAsync
       (run action)
       ( \pid -> do
-          link pid
+          Async.link pid
           run $ inner pid
       )
 
 readTChanTimeout ::
   MonadUnliftIO m => MicroSecondsDelay -> TChan a -> m (Maybe a)
 readTChanTimeout t x = do
-  t0 <- liftIO . registerDelay $ coerce t
-  (join <$>) . (rightToMaybe <$>) . catchAsync . atomically $
-    Just <$> readTChan x
+  t0 <-
+    liftIO
+      . TVar.registerDelay
+      $ coerce t
+  (join <$>)
+    . (rightToMaybe <$>)
+    . catchAsync
+    . atomically
+    $ Just <$> readTChan x
       <|> Nothing <$ fini t0
 
 fini :: TVar Bool -> STM ()
@@ -103,6 +114,15 @@ fini = check <=< readTVar
 catchAsync :: (MonadUnliftIO m) => m a -> m (Either Text a)
 catchAsync x =
   (Right <$> x)
-    `catches` [ Handler (\(_ :: BlockedIndefinitelyOnMVar) -> pure $ Left "BlockedIndefinitelyOnMVar"),
-                Handler (\(_ :: BlockedIndefinitelyOnSTM) -> pure $ Left "BlockedIndefinitelyOnSTM")
+    `catches` [ Handler
+                  ( \(_ :: BlockedIndefinitelyOnMVar) ->
+                      pure $ Left "BlockedIndefinitelyOnMVar"
+                  ),
+                Handler
+                  ( \(_ :: BlockedIndefinitelyOnSTM) ->
+                      pure $ Left "BlockedIndefinitelyOnSTM"
+                  )
               ]
+
+sleep :: MonadIO m => MicroSecondsDelay -> m ()
+sleep = liftIO . Delay.delay . fromIntegral @Int . coerce

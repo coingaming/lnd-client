@@ -18,6 +18,7 @@ module LndClient.Watcher
   )
 where
 
+import qualified Control.Concurrent.Async as Async
 import qualified Data.Map as Map
 import LndClient.Import hiding (newSev, spawnLink)
 
@@ -87,7 +88,7 @@ withWatcher env sub handler action =
               watcherProc = proc
             }
     varPid <- newEmptyMVar
-    withAsync
+    withSpawnLink
       ( do
           --
           -- TODO : proper bi-directional link
@@ -177,7 +178,7 @@ loop w = do
     tasksEmpty = null ts
     cmd = EventCmd <$> readTChan (watcherStateCmdChan w)
     lnd = EventLnd <$> readTChan (watcherStateLndChan w)
-    task = EventTask . snd <$> waitAnySTM ts
+    task = EventTask . snd <$> Async.waitAnySTM ts
 
 applyCmd ::
   (Ord req, MonadUnliftIO m, KatipContext m) =>
@@ -192,8 +193,8 @@ applyCmd w = \case
       else do
         t <-
           withRunInIO $ \run -> do
-            t <- async . run $ (x,) <$> watcherStateSub w x
-            link t
+            t <- Async.async . run $ (x,) <$> watcherStateSub w x
+            Async.link t
             return t
         loop w {watcherStateTasks = Map.insert x t ts}
   UnWatch x -> do
@@ -201,18 +202,18 @@ applyCmd w = \case
     case Map.lookup x ts of
       Nothing -> loop w
       Just t -> do
-        liftIO $ cancel t
+        liftIO $ Async.cancel t
         loop w {watcherStateTasks = Map.delete x ts}
   Terminate x -> do
     $(logTM) (newSev w InfoS) $
       logStr
         ( "Watcher - applying Cmd Terminate "
-            <> show (asyncThreadId x) ::
+            <> show (Async.asyncThreadId x) ::
             Text
         )
     liftIO $ do
-      mapM_ cancel $ Map.elems ts
-      cancel x
+      mapM_ Async.cancel $ Map.elems ts
+      Async.cancel x
     loop w {watcherStateTasks = mempty}
   where
     ts = watcherStateTasks w
@@ -239,7 +240,7 @@ applyTask w0 (x, res) = do
     Just t -> do
       case res of
         Left (e :: LndError) -> watcherStateHandler w0 x $ Left e
-        Right () -> liftIO $ cancel t
+        Right () -> liftIO $ Async.cancel t
       loop w1
   where
     ts = watcherStateTasks w0
