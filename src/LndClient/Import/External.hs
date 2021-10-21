@@ -53,5 +53,15 @@ import Katip as Import
     runKatipContextT,
     sl,
   )
-import Universum as Import hiding (Text, catch)
-import UnliftIO as Import (Handler (..), MonadUnliftIO (..), UnliftIO (..), catch, catches)
+import Universum as Import hiding (Text, catch, finally)
+--
+-- TODO : use Snoyman bracket
+--
+import UnliftIO as Import
+  ( Handler (..),
+    MonadUnliftIO (..),
+    UnliftIO (..),
+    catch,
+    catches,
+    finally,
+  )
