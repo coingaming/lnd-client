@@ -206,6 +206,7 @@ lazyMineInitialCoins = const $ do
   where
     xs = enumerate :: [owner]
     someone = minBound :: owner
+    numOwners :: Integer
     numOwners = fromIntegral $ length xs
 
 lazyConnectNodes :: forall m owner. LndTest m owner => Proxy owner -> m ()
@@ -279,7 +280,7 @@ syncWallets ::
 syncWallets = const $ this 0
   where
     this 30 = do
-      let msg = "SyncWallets attempt limit exceeded"
+      let msg :: Text = "SyncWallets attempt limit exceeded"
       sev <- getSev (minBound :: owner) ErrorS
       $(logTM) sev $ logStr msg
       pure . Left $ LndError msg
@@ -310,7 +311,7 @@ syncPendingChannelsFor owner = this 0
     this 30 = do
       let msg =
             "SyncPendingChannelsFor "
-              <> show owner
+              <> (show owner :: Text)
               <> " attempt limit exceeded"
       sev <- getSev owner ErrorS
       $(logTM) sev $ logStr msg
@@ -385,7 +386,7 @@ cancelAllInvoices =
       error $ "CancelAllInvoices attempt limit exceeded for " <> show owner
     this attempt owner = do
       lnd <- getLndEnv owner
-      let getInvoices =
+      let getInvoices :: m [Invoice] =
             ListInvoices.invoices
               <$> (liftLndResult =<< Lnd.listInvoices lnd listReq)
       is0 <- getInvoices
@@ -412,7 +413,7 @@ closeAllChannels po = do
       peerLocation <- getNodeLocation owner1
       GetInfoResponse peerPubKey _ _ <-
         liftLndResult =<< Lnd.getInfo =<< getLndEnv owner1
-      let getChannels =
+      let getChannels :: m [Channel] =
             liftLndResult
               =<< Lnd.listChannels
                 lnd0

@@ -23,8 +23,7 @@ module LndClient.Data.LndEnv
 where
 
 import Data.Aeson as A
-  ( (.:?),
-    Result (..),
+  ( Result (..),
     Value (..),
     camelTo2,
     defaultOptions,
@@ -32,6 +31,7 @@ import Data.Aeson as A
     fieldLabelModifier,
     genericParseJSON,
     withObject,
+    (.:?),
   )
 import qualified Data.ByteString.Char8 as C8
 import qualified Data.PEM as Pem
@@ -44,9 +44,9 @@ import LndClient.Data.Newtype
 import LndClient.Data.Type
 import LndClient.Import.External as Ex
 import LndClient.Util as U
-import Network.GRPC.Client.Helpers (
-  GrpcClientConfig (..),
-  grpcClientConfigSimple
+import Network.GRPC.Client.Helpers
+  ( GrpcClientConfig (..),
+    grpcClientConfigSimple,
   )
 import Network.GRPC.HTTP2.Encoding (uncompressed)
 import Network.HTTP2.Client
@@ -68,38 +68,35 @@ newtype LndHost = LndHost Text
 newtype LndPort = LndPort Int
   deriving (PersistField, PersistFieldSql, Eq)
 
-data LndConfig
-  = LndConfig
-      { lndConfigHost :: HostName,
-        lndConfigPort :: PortNumber,
-        lndConfigTlsEnabled :: Bool,
-        lndConfigCompression :: Bool
-      }
+data LndConfig = LndConfig
+  { lndConfigHost :: HostName,
+    lndConfigPort :: PortNumber,
+    lndConfigTlsEnabled :: Bool,
+    lndConfigCompression :: Bool
+  }
   deriving (Show)
 
-data RawConfig
-  = RawConfig
-      { rawConfigLndWalletPassword :: LndWalletPassword,
-        rawConfigLndTlsCert :: LndTlsCert,
-        rawConfigLndHexMacaroon :: LndHexMacaroon,
-        rawConfigLndHost :: LndHost,
-        rawConfigLndPort :: LndPort,
-        rawConfigLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
-        rawConfigLndAezeedPassphrase :: Maybe AezeedPassphrase
-      }
+data RawConfig = RawConfig
+  { rawConfigLndWalletPassword :: LndWalletPassword,
+    rawConfigLndTlsCert :: LndTlsCert,
+    rawConfigLndHexMacaroon :: LndHexMacaroon,
+    rawConfigLndHost :: LndHost,
+    rawConfigLndPort :: LndPort,
+    rawConfigLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
+    rawConfigLndAezeedPassphrase :: Maybe AezeedPassphrase
+  }
   deriving (Eq, Generic)
 
-data LndEnv
-  = LndEnv
-      { envLndWalletPassword :: LndWalletPassword,
-        envLndHexMacaroon :: LndHexMacaroon,
-        envLndLogStrategy :: LoggingStrategy,
-        envLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
-        envLndAezeedPassphrase :: Maybe AezeedPassphrase,
-        envLndSyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
-        envLndAsyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
-        envLndConfig :: GrpcClientConfig
-      }
+data LndEnv = LndEnv
+  { envLndWalletPassword :: LndWalletPassword,
+    envLndHexMacaroon :: LndHexMacaroon,
+    envLndLogStrategy :: LoggingStrategy,
+    envLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
+    envLndAezeedPassphrase :: Maybe AezeedPassphrase,
+    envLndSyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
+    envLndAsyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
+    envLndConfig :: GrpcClientConfig
+  }
 
 instance ToGrpc LndWalletPassword ByteString where
   toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
@@ -119,7 +116,7 @@ instance FromJSON LndPort where
   parseJSON x =
     case x of
       A.Number s -> do
-        let ePort =
+        let ePort :: Either LndError Word32 =
               maybeToRight
                 (LndEnvError "Port should be Int")
                 $ toBoundedInteger s
@@ -191,16 +188,14 @@ readLndEnv =
     parser x =
       first UnreadError $ eitherDecodeStrict $ C8.pack x
 
-
 selfSignedCertificateValidation :: [SignedCertificate] -> TLS.ClientParams -> TLS.ClientParams
-selfSignedCertificateValidation extraCerts cp = cp {
-  TLS.clientShared =
-    (TLS.clientShared cp) { TLS.sharedCAStore = makeCertificateStore extraCerts },
-  TLS.clientSupported =
-    (TLS.clientSupported cp) { TLS.supportedCiphers = TLS.ciphersuite_default }
-}
-
-
+selfSignedCertificateValidation extraCerts cp =
+  cp
+    { TLS.clientShared =
+        (TLS.clientShared cp) {TLS.sharedCAStore = makeCertificateStore extraCerts},
+      TLS.clientSupported =
+        (TLS.clientSupported cp) {TLS.supportedCiphers = TLS.ciphersuite_default}
+    }
 
 newLndEnv ::
   LndWalletPassword ->
@@ -221,14 +216,16 @@ newLndEnv pwd (LndTlsCert _ cert) mac (LndHost host) (LndPort port) seed aezeed 
       envLndSyncGrpcTimeout = Nothing,
       envLndAsyncGrpcTimeout = Nothing,
       envLndConfig =
-        ( grpcClientConfigSimple host_ port_ True)
+        (grpcClientConfigSimple host_ port_ True)
           { _grpcClientConfigCompression = uncompressed,
             _grpcClientConfigHeaders = [("macaroon", encodeUtf8 (coerce mac :: Text))],
             _grpcClientConfigTLS = Just $ selfSignedCertificateValidation [cert] $ TLS.defaultParamsClient host_ (show port_)
           }
     }
-  where host_ = unpack host
-        port_ = fromInteger (toInteger port)
+  where
+    host_ = unpack host
+    port_ :: PortNumber
+    port_ = fromInteger (toInteger port)
 
 katipAddLndContext :: (KatipContext m) => LndEnv -> m a -> m a
 katipAddLndContext env =

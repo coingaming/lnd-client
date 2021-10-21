@@ -17,7 +17,10 @@ import Control.Concurrent.STM.TChan as Import
     readTChan,
     writeTChan,
   )
-import Control.Monad.Extra as Import (fromMaybeM)
+import Control.Monad.Extra as Import
+  ( eitherM,
+    fromMaybeM,
+  )
 import Data.Aeson as Import (FromJSON (..), ToJSON, fromJSON)
 import Data.ByteString as Import (ByteString)
 import Data.Coerce as Import (coerce)

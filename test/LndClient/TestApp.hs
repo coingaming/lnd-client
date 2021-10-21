@@ -106,6 +106,7 @@ withEnv action = do
                 setupZeroChannels proxyOwner
                 action
   where
+    rmLogEnv :: LogEnv -> IO ()
     rmLogEnv =
       void . liftIO . closeScribes
 

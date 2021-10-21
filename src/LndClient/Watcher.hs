@@ -23,10 +23,6 @@ import qualified Control.Concurrent.Async as Async
 import qualified Data.Map as Map
 import LndClient.Import hiding (newSev, spawnLink)
 
---
--- TODO : maybe pass OnSub | OnExit callbacks?
---
-
 newtype WatcherPid = WatcherPid
   { unWatcherPid :: Async ()
   }
@@ -36,7 +32,7 @@ newtype TaskPid req = TaskPid
       Async
         ( Either
             (KilledTask req)
-            (req, Either LndError ())
+            (req, Maybe LndError)
         )
   }
 
@@ -63,12 +59,12 @@ data Cmd req
 data Event req res
   = EventCmd (Cmd req)
   | EventLnd res
-  | EventTask (Either (KilledTask req) (req, Either LndError ()))
+  | EventTask (Either (KilledTask req) (req, Maybe LndError))
 
 data WatcherState req res m = WatcherState
   { watcherStateCmdChan :: TChan (Cmd req),
     watcherStateLndChan :: TChan (req, res),
-    watcherStateSub :: req -> m (Either LndError ()),
+    watcherStateSub :: req -> m (Maybe LndError),
     watcherStateHandler :: req -> Either LndError res -> m (),
     watcherStateTasks :: Map req (TaskPid req),
     watcherStateLndEnv :: LndEnv,
@@ -113,23 +109,21 @@ withWatcher env sub handler action =
               watcherLndChan = writeLndChan,
               watcherPid = proc
             }
-    varPid <- newEmptyMVar
+    varWatchPid <- newEmptyMVar
     finally
       ( withSpawnLink
           ( do
-              --
-              -- TODO : proper bi-directional link
-              --
-              -- TODO : atomically cancel all linked processes
-              -- in case of root process crash/cancel (graceful cleanup)
-              --
-              pid <- takeMVar varPid
+              watchPid <- takeMVar varWatchPid
               run . loop $
                 WatcherState
                   { watcherStateCmdChan = readCmdChan,
                     watcherStateLndChan = readLndChan,
-                    watcherStateSub = sub (Just writeLndChan) env,
-                    watcherStateHandler = handler $ newWatcher pid,
+                    watcherStateSub =
+                      eitherM
+                        (pure . Just)
+                        (\() -> pure Nothing)
+                        . sub (Just writeLndChan) env,
+                    watcherStateHandler = handler $ newWatcher watchPid,
                     watcherStateTasks = mempty,
                     watcherStateLndEnv = env,
                     watcherStateKillChan = writeKillChan
@@ -137,7 +131,7 @@ withWatcher env sub handler action =
           )
           ( \pid0 -> do
               let pid1 = WatcherPid pid0
-              putMVar varPid pid1
+              putMVar varWatchPid pid1
               run . action $ newWatcher pid1
           )
       )
@@ -227,12 +221,13 @@ loop w = do
     task = EventTask . snd <$> Async.waitAnySTM ts
 
 applyCmd ::
+  forall req res m.
   (Ord req, MonadUnliftIO m, KatipContext m) =>
   WatcherState req res m ->
   Cmd req ->
   m ()
 applyCmd w = \case
-  Watch pid x -> do
+  Watch watchPid x -> do
     $(logTM) (newSev w InfoS) "Watcher - applying Cmd Watch"
     if isJust $ Map.lookup x ts
       then loop w
@@ -240,13 +235,13 @@ applyCmd w = \case
         t <-
           withRunInIO $ \run -> do
             readKillChan <- atomically $ dupTChan writeKillChan
-            let rcvKill = do
+            let rcvKill :: IO (KilledTask req) = do
                   KillSignal <- atomically $ readTChan readKillChan
                   pure $ KilledTask x
             let runExpr =
                   run $ (x,) <$> watcherStateSub w x
             t <- Async.async $ do
-              Async.linkOnly (const True) $ unWatcherPid pid
+              Async.linkOnly (const True) $ unWatcherPid watchPid
               Async.race rcvKill runExpr
             Async.link t
             pure $ TaskPid t
@@ -281,7 +276,7 @@ applyLnd w (x0, x1) = do
 applyTask ::
   (Ord req, MonadUnliftIO m, KatipContext m) =>
   WatcherState req res m ->
-  (req, Either LndError ()) ->
+  (req, Maybe LndError) ->
   m ()
 applyTask w0 (x, res) = do
   $(logTM) (newSev w0 InfoS) "Watcher - applying Task"
@@ -289,8 +284,8 @@ applyTask w0 (x, res) = do
     Nothing -> loop w0
     Just t -> do
       case res of
-        Left (e :: LndError) -> watcherStateHandler w0 x $ Left e
-        Right () -> liftIO . Async.cancel $ unTaskPid t
+        Just (e :: LndError) -> watcherStateHandler w0 x $ Left e
+        Nothing -> liftIO . Async.cancel $ unTaskPid t
       loop w1
   where
     ts = watcherStateTasks w0
