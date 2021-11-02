@@ -12,15 +12,16 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data ListChannelsRequest
-  = ListChannelsRequest
-      { activeOnly :: Bool,
-        inactiveOnly :: Bool,
-        publicOnly :: Bool,
-        privateOnly :: Bool,
-        peer :: Maybe NodePubKey
-      }
+data ListChannelsRequest = ListChannelsRequest
+  { activeOnly :: Bool,
+    inactiveOnly :: Bool,
+    publicOnly :: Bool,
+    privateOnly :: Bool,
+    peer :: Maybe NodePubKey
+  }
   deriving (Generic, Show)
+
+instance Out ListChannelsRequest
 
 instance ToGrpc ListChannelsRequest LnGRPC.ListChannelsRequest where
   toGrpc x =

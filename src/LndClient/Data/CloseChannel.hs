@@ -16,15 +16,16 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data CloseChannelRequest
-  = CloseChannelRequest
-      { channelPoint :: ChannelPoint,
-        force :: Bool,
-        targetConf :: Maybe Int32,
-        satPerByte :: Maybe Int64,
-        deliveryAddress :: Maybe Text
-      }
-  deriving (Eq, Ord, Show)
+data CloseChannelRequest = CloseChannelRequest
+  { channelPoint :: ChannelPoint,
+    force :: Bool,
+    targetConf :: Maybe Int32,
+    satPerByte :: Maybe Int64,
+    deliveryAddress :: Maybe Text
+  }
+  deriving (Eq, Ord, Show, Generic)
+
+instance Out CloseChannelRequest
 
 data CloseStatusUpdate
   = Pending (PendingUpdate 'Closing)
@@ -32,21 +33,21 @@ data CloseStatusUpdate
   | NothingUpdate
   deriving (Eq, Ord, Show)
 
-data ChannelCloseUpdate
-  = ChannelCloseUpdate
-      { closingTxid :: TxId 'Closing,
-        success :: Bool
-      }
+data ChannelCloseUpdate = ChannelCloseUpdate
+  { closingTxid :: TxId 'Closing,
+    success :: Bool
+  }
   deriving (Eq, Ord, Show)
 
-data ChannelCloseSummary
-  = ChannelCloseSummary
-      { remotePubkey :: NodePubKey,
-        chPoint :: ChannelPoint,
-        settledBalance :: MSat,
-        closingTxId :: TxId 'Closing
-      }
-  deriving (Eq, Ord, Show)
+data ChannelCloseSummary = ChannelCloseSummary
+  { remotePubkey :: NodePubKey,
+    chPoint :: ChannelPoint,
+    settledBalance :: MSat,
+    closingTxId :: TxId 'Closing
+  }
+  deriving (Eq, Ord, Show, Generic)
+
+instance Out ChannelCloseSummary
 
 instance FromGrpc [ChannelCloseSummary] LnGRPC.ClosedChannelsResponse where
   fromGrpc x = sequence $ fromGrpc <$> (x ^. LnGRPC.channels)

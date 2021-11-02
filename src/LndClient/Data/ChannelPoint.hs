@@ -19,7 +19,9 @@ data ChannelPoint = ChannelPoint
   { fundingTxId :: TxId 'Funding,
     outputIndex :: Vout 'Funding
   }
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
+
+instance Out ChannelPoint
 
 instance FromGrpc ChannelPoint LnGRPC.ChannelPoint where
   fromGrpc x =
@@ -50,9 +52,8 @@ channelPointParser x =
                   FromGrpcError "Invalid ChannelPoint outputIndex"
               )
               $ decodeUtf8' idxBS
-          ChannelPoint
-            <$> (pure . TxId $ BS.reverse txidHex)
-            <*> maybeToRight
+          ChannelPoint (TxId $ BS.reverse txidHex)
+            <$> maybeToRight
               (FromGrpcError "Invalid ChannelPoint outputIndex")
               (readMaybe $ TS.unpack idxTS)
         Left {} ->

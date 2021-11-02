@@ -2,3 +2,16 @@ packages: *.cabal
 
 allow-newer: http2-grpc-proto-lens:proto-lens, http2-grpc-proto-lens:proto-lens, http2-client:http2
 
+source-repository-package
+  type: git
+  location: https://github.com/coingaming/proto-lens.git
+  tag: 7e75e2c95d9bf608965ff8335ee618978181034a
+  --sha256: 11k3y5p7m771n48d5qkzm5dj2rzdc0b26ixm35yh71rvrbxszhnf
+  subdir: proto-lens
+
+source-repository-package
+  type: git
+  location: https://github.com/coingaming/proto-lens.git
+  tag: 7e75e2c95d9bf608965ff8335ee618978181034a
+  --sha256: 11k3y5p7m771n48d5qkzm5dj2rzdc0b26ixm35yh71rvrbxszhnf
+  subdir: proto-lens-runtime

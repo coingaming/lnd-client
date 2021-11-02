@@ -1,5 +1,5 @@
 {- This file was auto-generated from router_grpc.proto by the proto-lens-protoc program. -}
-{-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, DataKinds, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies#-}
+{-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies, DeriveGeneric#-}
 {-# OPTIONS_GHC -Wno-unused-imports#-}
 {-# OPTIONS_GHC -Wno-duplicate-exports#-}
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
@@ -35,6 +35,9 @@ module Proto.RouterGrpc (
     ) where
 import qualified Data.ProtoLens.Runtime.Control.DeepSeq as Control.DeepSeq
 import qualified Data.ProtoLens.Runtime.Data.ProtoLens.Prism as Data.ProtoLens.Prism
+import qualified LndClient.Orphan
+import qualified GHC.Generics
+import qualified Text.PrettyPrint.GenericPretty
 import qualified Data.ProtoLens.Runtime.Prelude as Prelude
 import qualified Data.ProtoLens.Runtime.Data.Int as Data.Int
 import qualified Data.ProtoLens.Runtime.Data.Monoid as Data.Monoid
@@ -74,13 +77,14 @@ data BuildRouteRequest
                                     _BuildRouteRequest'hopPubkeys :: !(Data.Vector.Vector Data.ByteString.ByteString),
                                     _BuildRouteRequest'paymentAddr :: !Data.ByteString.ByteString,
                                     _BuildRouteRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show BuildRouteRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out BuildRouteRequest
 instance Data.ProtoLens.Field.HasField BuildRouteRequest "amtMsat" Data.Int.Int64 where
   fieldOf _
     = (Prelude..)
@@ -381,13 +385,14 @@ instance Control.DeepSeq.NFData BuildRouteRequest where
 data BuildRouteResponse
   = BuildRouteResponse'_constructor {_BuildRouteResponse'route :: !(Prelude.Maybe Proto.LndGrpc.Route),
                                      _BuildRouteResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show BuildRouteResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out BuildRouteResponse
 instance Data.ProtoLens.Field.HasField BuildRouteResponse "route" Proto.LndGrpc.Route where
   fieldOf _
     = (Prelude..)
@@ -496,13 +501,20 @@ instance Control.DeepSeq.NFData BuildRouteResponse where
              (Control.DeepSeq.deepseq (_BuildRouteResponse'route x__) ())
 newtype ChanStatusAction'UnrecognizedValue
   = ChanStatusAction'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out ChanStatusAction'UnrecognizedValue
 data ChanStatusAction
   = ENABLE |
     DISABLE |
     AUTO |
     ChanStatusAction'Unrecognized !ChanStatusAction'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum ChanStatusAction where
   maybeToEnum 0 = Prelude.Just ENABLE
   maybeToEnum 1 = Prelude.Just DISABLE
@@ -565,6 +577,7 @@ instance Data.ProtoLens.FieldDefault ChanStatusAction where
   fieldDefault = ENABLE
 instance Control.DeepSeq.NFData ChanStatusAction where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out ChanStatusAction
 {- | Fields :
      
          * 'Proto.RouterGrpc_Fields.chanId' @:: Lens' CircuitKey Data.Word.Word64@
@@ -573,13 +586,14 @@ data CircuitKey
   = CircuitKey'_constructor {_CircuitKey'chanId :: !Data.Word.Word64,
                              _CircuitKey'htlcId :: !Data.Word.Word64,
                              _CircuitKey'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show CircuitKey where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out CircuitKey
 instance Data.ProtoLens.Field.HasField CircuitKey "chanId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -704,7 +718,11 @@ instance Control.DeepSeq.NFData CircuitKey where
                 (Control.DeepSeq.deepseq (_CircuitKey'htlcId x__) ()))
 newtype FailureDetail'UnrecognizedValue
   = FailureDetail'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out FailureDetail'UnrecognizedValue
 data FailureDetail
   = UNKNOWN |
     NO_DETAIL |
@@ -730,7 +748,10 @@ data FailureDetail
     MPP_IN_PROGRESS |
     CIRCULAR_ROUTE |
     FailureDetail'Unrecognized !FailureDetail'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum FailureDetail where
   maybeToEnum 0 = Prelude.Just UNKNOWN
   maybeToEnum 1 = Prelude.Just NO_DETAIL
@@ -922,6 +943,7 @@ instance Data.ProtoLens.FieldDefault FailureDetail where
   fieldDefault = UNKNOWN
 instance Control.DeepSeq.NFData FailureDetail where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out FailureDetail
 {- | Fields :
      
          * 'Proto.RouterGrpc_Fields.info' @:: Lens' ForwardEvent HtlcInfo@
@@ -929,13 +951,14 @@ instance Control.DeepSeq.NFData FailureDetail where
 data ForwardEvent
   = ForwardEvent'_constructor {_ForwardEvent'info :: !(Prelude.Maybe HtlcInfo),
                                _ForwardEvent'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ForwardEvent where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ForwardEvent
 instance Data.ProtoLens.Field.HasField ForwardEvent "info" HtlcInfo where
   fieldOf _
     = (Prelude..)
@@ -1043,13 +1066,14 @@ instance Control.DeepSeq.NFData ForwardEvent where
       -}
 data ForwardFailEvent
   = ForwardFailEvent'_constructor {_ForwardFailEvent'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ForwardFailEvent where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ForwardFailEvent
 instance Data.ProtoLens.Message ForwardFailEvent where
   messageName _ = Data.Text.pack "routerrpc.ForwardFailEvent"
   packedMessageDescriptor _
@@ -1128,13 +1152,14 @@ data ForwardHtlcInterceptRequest
                                               _ForwardHtlcInterceptRequest'customRecords :: !(Data.Map.Map Data.Word.Word64 Data.ByteString.ByteString),
                                               _ForwardHtlcInterceptRequest'onionBlob :: !Data.ByteString.ByteString,
                                               _ForwardHtlcInterceptRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ForwardHtlcInterceptRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ForwardHtlcInterceptRequest
 instance Data.ProtoLens.Field.HasField ForwardHtlcInterceptRequest "incomingCircuitKey" CircuitKey where
   fieldOf _
     = (Prelude..)
@@ -1636,13 +1661,14 @@ data ForwardHtlcInterceptRequest'CustomRecordsEntry
   = ForwardHtlcInterceptRequest'CustomRecordsEntry'_constructor {_ForwardHtlcInterceptRequest'CustomRecordsEntry'key :: !Data.Word.Word64,
                                                                  _ForwardHtlcInterceptRequest'CustomRecordsEntry'value :: !Data.ByteString.ByteString,
                                                                  _ForwardHtlcInterceptRequest'CustomRecordsEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ForwardHtlcInterceptRequest'CustomRecordsEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ForwardHtlcInterceptRequest'CustomRecordsEntry
 instance Data.ProtoLens.Field.HasField ForwardHtlcInterceptRequest'CustomRecordsEntry "key" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -1795,13 +1821,14 @@ data ForwardHtlcInterceptResponse
                                                _ForwardHtlcInterceptResponse'action :: !ResolveHoldForwardAction,
                                                _ForwardHtlcInterceptResponse'preimage :: !Data.ByteString.ByteString,
                                                _ForwardHtlcInterceptResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ForwardHtlcInterceptResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ForwardHtlcInterceptResponse
 instance Data.ProtoLens.Field.HasField ForwardHtlcInterceptResponse "incomingCircuitKey" CircuitKey where
   fieldOf _
     = (Prelude..)
@@ -2008,13 +2035,14 @@ instance Control.DeepSeq.NFData ForwardHtlcInterceptResponse where
       -}
 data GetMissionControlConfigRequest
   = GetMissionControlConfigRequest'_constructor {_GetMissionControlConfigRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GetMissionControlConfigRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GetMissionControlConfigRequest
 instance Data.ProtoLens.Message GetMissionControlConfigRequest where
   messageName _
     = Data.Text.pack "routerrpc.GetMissionControlConfigRequest"
@@ -2080,13 +2108,14 @@ instance Control.DeepSeq.NFData GetMissionControlConfigRequest where
 data GetMissionControlConfigResponse
   = GetMissionControlConfigResponse'_constructor {_GetMissionControlConfigResponse'config :: !(Prelude.Maybe MissionControlConfig),
                                                   _GetMissionControlConfigResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GetMissionControlConfigResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GetMissionControlConfigResponse
 instance Data.ProtoLens.Field.HasField GetMissionControlConfigResponse "config" MissionControlConfig where
   fieldOf _
     = (Prelude..)
@@ -2224,19 +2253,24 @@ data HtlcEvent
                             _HtlcEvent'eventType :: !HtlcEvent'EventType,
                             _HtlcEvent'event :: !(Prelude.Maybe HtlcEvent'Event),
                             _HtlcEvent'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show HtlcEvent where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out HtlcEvent
 data HtlcEvent'Event
   = HtlcEvent'ForwardEvent !ForwardEvent |
     HtlcEvent'ForwardFailEvent !ForwardFailEvent |
     HtlcEvent'SettleEvent !SettleEvent |
     HtlcEvent'LinkFailEvent !LinkFailEvent
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out HtlcEvent'Event
 instance Data.ProtoLens.Field.HasField HtlcEvent "incomingChannelId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -2821,14 +2855,21 @@ _HtlcEvent'LinkFailEvent
               _otherwise -> Prelude.Nothing)
 newtype HtlcEvent'EventType'UnrecognizedValue
   = HtlcEvent'EventType'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out HtlcEvent'EventType'UnrecognizedValue
 data HtlcEvent'EventType
   = HtlcEvent'UNKNOWN |
     HtlcEvent'SEND |
     HtlcEvent'RECEIVE |
     HtlcEvent'FORWARD |
     HtlcEvent'EventType'Unrecognized !HtlcEvent'EventType'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum HtlcEvent'EventType where
   maybeToEnum 0 = Prelude.Just HtlcEvent'UNKNOWN
   maybeToEnum 1 = Prelude.Just HtlcEvent'SEND
@@ -2896,6 +2937,7 @@ instance Data.ProtoLens.FieldDefault HtlcEvent'EventType where
   fieldDefault = HtlcEvent'UNKNOWN
 instance Control.DeepSeq.NFData HtlcEvent'EventType where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out HtlcEvent'EventType
 {- | Fields :
      
          * 'Proto.RouterGrpc_Fields.incomingTimelock' @:: Lens' HtlcInfo Data.Word.Word32@
@@ -2908,13 +2950,14 @@ data HtlcInfo
                            _HtlcInfo'incomingAmtMsat :: !Data.Word.Word64,
                            _HtlcInfo'outgoingAmtMsat :: !Data.Word.Word64,
                            _HtlcInfo'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show HtlcInfo where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out HtlcInfo
 instance Data.ProtoLens.Field.HasField HtlcInfo "incomingTimelock" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -3146,13 +3189,14 @@ data LinkFailEvent
                                 _LinkFailEvent'failureDetail :: !FailureDetail,
                                 _LinkFailEvent'failureString :: !Data.Text.Text,
                                 _LinkFailEvent'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show LinkFailEvent where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out LinkFailEvent
 instance Data.ProtoLens.Field.HasField LinkFailEvent "info" HtlcInfo where
   fieldOf _
     = (Prelude..)
@@ -3419,13 +3463,14 @@ data MissionControlConfig
                                        _MissionControlConfig'maximumPaymentResults :: !Data.Word.Word32,
                                        _MissionControlConfig'minimumFailureRelaxInterval :: !Data.Word.Word64,
                                        _MissionControlConfig'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show MissionControlConfig where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out MissionControlConfig
 instance Data.ProtoLens.Field.HasField MissionControlConfig "halfLifeSeconds" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -3711,13 +3756,14 @@ data PairData
                            _PairData'successAmtSat :: !Data.Int.Int64,
                            _PairData'successAmtMsat :: !Data.Int.Int64,
                            _PairData'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PairData where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PairData
 instance Data.ProtoLens.Field.HasField PairData "failTime" Data.Int.Int64 where
   fieldOf _
     = (Prelude..)
@@ -4036,13 +4082,14 @@ data PairHistory
                               _PairHistory'nodeTo :: !Data.ByteString.ByteString,
                               _PairHistory'history :: !(Prelude.Maybe PairData),
                               _PairHistory'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PairHistory where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PairHistory
 instance Data.ProtoLens.Field.HasField PairHistory "nodeFrom" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -4236,7 +4283,11 @@ instance Control.DeepSeq.NFData PairHistory where
                    (Control.DeepSeq.deepseq (_PairHistory'history x__) ())))
 newtype PaymentState'UnrecognizedValue
   = PaymentState'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out PaymentState'UnrecognizedValue
 data PaymentState
   = IN_FLIGHT |
     SUCCEEDED |
@@ -4246,7 +4297,10 @@ data PaymentState
     FAILED_INCORRECT_PAYMENT_DETAILS |
     FAILED_INSUFFICIENT_BALANCE |
     PaymentState'Unrecognized !PaymentState'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum PaymentState where
   maybeToEnum 0 = Prelude.Just IN_FLIGHT
   maybeToEnum 1 = Prelude.Just SUCCEEDED
@@ -4337,6 +4391,7 @@ instance Data.ProtoLens.FieldDefault PaymentState where
   fieldDefault = IN_FLIGHT
 instance Control.DeepSeq.NFData PaymentState where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out PaymentState
 {- | Fields :
      
          * 'Proto.RouterGrpc_Fields.state' @:: Lens' PaymentStatus PaymentState@
@@ -4348,13 +4403,14 @@ data PaymentStatus
                                 _PaymentStatus'preimage :: !Data.ByteString.ByteString,
                                 _PaymentStatus'htlcs :: !(Data.Vector.Vector Proto.LndGrpc.HTLCAttempt),
                                 _PaymentStatus'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PaymentStatus where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PaymentStatus
 instance Data.ProtoLens.Field.HasField PaymentStatus "state" PaymentState where
   fieldOf _
     = (Prelude..)
@@ -4568,13 +4624,14 @@ instance Control.DeepSeq.NFData PaymentStatus where
       -}
 data QueryMissionControlRequest
   = QueryMissionControlRequest'_constructor {_QueryMissionControlRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show QueryMissionControlRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out QueryMissionControlRequest
 instance Data.ProtoLens.Message QueryMissionControlRequest where
   messageName _
     = Data.Text.pack "routerrpc.QueryMissionControlRequest"
@@ -4639,13 +4696,14 @@ instance Control.DeepSeq.NFData QueryMissionControlRequest where
 data QueryMissionControlResponse
   = QueryMissionControlResponse'_constructor {_QueryMissionControlResponse'pairs :: !(Data.Vector.Vector PairHistory),
                                               _QueryMissionControlResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show QueryMissionControlResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out QueryMissionControlResponse
 instance Data.ProtoLens.Field.HasField QueryMissionControlResponse "pairs" [PairHistory] where
   fieldOf _
     = (Prelude..)
@@ -4778,13 +4836,14 @@ data QueryProbabilityRequest
                                           _QueryProbabilityRequest'toNode :: !Data.ByteString.ByteString,
                                           _QueryProbabilityRequest'amtMsat :: !Data.Int.Int64,
                                           _QueryProbabilityRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show QueryProbabilityRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out QueryProbabilityRequest
 instance Data.ProtoLens.Field.HasField QueryProbabilityRequest "fromNode" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -4976,13 +5035,14 @@ data QueryProbabilityResponse
   = QueryProbabilityResponse'_constructor {_QueryProbabilityResponse'probability :: !Prelude.Double,
                                            _QueryProbabilityResponse'history :: !(Prelude.Maybe PairData),
                                            _QueryProbabilityResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show QueryProbabilityResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out QueryProbabilityResponse
 instance Data.ProtoLens.Field.HasField QueryProbabilityResponse "probability" Prelude.Double where
   fieldOf _
     = (Prelude..)
@@ -5137,13 +5197,14 @@ instance Control.DeepSeq.NFData QueryProbabilityResponse where
       -}
 data ResetMissionControlRequest
   = ResetMissionControlRequest'_constructor {_ResetMissionControlRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ResetMissionControlRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ResetMissionControlRequest
 instance Data.ProtoLens.Message ResetMissionControlRequest where
   messageName _
     = Data.Text.pack "routerrpc.ResetMissionControlRequest"
@@ -5205,13 +5266,14 @@ instance Control.DeepSeq.NFData ResetMissionControlRequest where
       -}
 data ResetMissionControlResponse
   = ResetMissionControlResponse'_constructor {_ResetMissionControlResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ResetMissionControlResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ResetMissionControlResponse
 instance Data.ProtoLens.Message ResetMissionControlResponse where
   messageName _
     = Data.Text.pack "routerrpc.ResetMissionControlResponse"
@@ -5271,13 +5333,20 @@ instance Control.DeepSeq.NFData ResetMissionControlResponse where
              (_ResetMissionControlResponse'_unknownFields x__) ()
 newtype ResolveHoldForwardAction'UnrecognizedValue
   = ResolveHoldForwardAction'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out ResolveHoldForwardAction'UnrecognizedValue
 data ResolveHoldForwardAction
   = SETTLE |
     FAIL |
     RESUME |
     ResolveHoldForwardAction'Unrecognized !ResolveHoldForwardAction'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum ResolveHoldForwardAction where
   maybeToEnum 0 = Prelude.Just SETTLE
   maybeToEnum 1 = Prelude.Just FAIL
@@ -5341,6 +5410,7 @@ instance Data.ProtoLens.FieldDefault ResolveHoldForwardAction where
   fieldDefault = SETTLE
 instance Control.DeepSeq.NFData ResolveHoldForwardAction where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out ResolveHoldForwardAction
 {- | Fields :
      
          * 'Proto.RouterGrpc_Fields.dest' @:: Lens' RouteFeeRequest Data.ByteString.ByteString@
@@ -5349,13 +5419,14 @@ data RouteFeeRequest
   = RouteFeeRequest'_constructor {_RouteFeeRequest'dest :: !Data.ByteString.ByteString,
                                   _RouteFeeRequest'amtSat :: !Data.Int.Int64,
                                   _RouteFeeRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show RouteFeeRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out RouteFeeRequest
 instance Data.ProtoLens.Field.HasField RouteFeeRequest "dest" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -5500,13 +5571,14 @@ data RouteFeeResponse
   = RouteFeeResponse'_constructor {_RouteFeeResponse'routingFeeMsat :: !Data.Int.Int64,
                                    _RouteFeeResponse'timeLockDelay :: !Data.Int.Int64,
                                    _RouteFeeResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show RouteFeeResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out RouteFeeResponse
 instance Data.ProtoLens.Field.HasField RouteFeeResponse "routingFeeMsat" Data.Int.Int64 where
   fieldOf _
     = (Prelude..)
@@ -5700,13 +5772,14 @@ data SendPaymentRequest
                                      _SendPaymentRequest'maxShardSizeMsat :: !Data.Word.Word64,
                                      _SendPaymentRequest'amp :: !Prelude.Bool,
                                      _SendPaymentRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendPaymentRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendPaymentRequest
 instance Data.ProtoLens.Field.HasField SendPaymentRequest "dest" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -7028,13 +7101,14 @@ data SendPaymentRequest'DestCustomRecordsEntry
   = SendPaymentRequest'DestCustomRecordsEntry'_constructor {_SendPaymentRequest'DestCustomRecordsEntry'key :: !Data.Word.Word64,
                                                             _SendPaymentRequest'DestCustomRecordsEntry'value :: !Data.ByteString.ByteString,
                                                             _SendPaymentRequest'DestCustomRecordsEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendPaymentRequest'DestCustomRecordsEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendPaymentRequest'DestCustomRecordsEntry
 instance Data.ProtoLens.Field.HasField SendPaymentRequest'DestCustomRecordsEntry "key" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -7182,13 +7256,14 @@ data SendToRouteRequest
   = SendToRouteRequest'_constructor {_SendToRouteRequest'paymentHash :: !Data.ByteString.ByteString,
                                      _SendToRouteRequest'route :: !(Prelude.Maybe Proto.LndGrpc.Route),
                                      _SendToRouteRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendToRouteRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendToRouteRequest
 instance Data.ProtoLens.Field.HasField SendToRouteRequest "paymentHash" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -7350,13 +7425,14 @@ data SendToRouteResponse
   = SendToRouteResponse'_constructor {_SendToRouteResponse'preimage :: !Data.ByteString.ByteString,
                                       _SendToRouteResponse'failure :: !(Prelude.Maybe Proto.LndGrpc.Failure),
                                       _SendToRouteResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendToRouteResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendToRouteResponse
 instance Data.ProtoLens.Field.HasField SendToRouteResponse "preimage" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -7515,13 +7591,14 @@ instance Control.DeepSeq.NFData SendToRouteResponse where
 data SetMissionControlConfigRequest
   = SetMissionControlConfigRequest'_constructor {_SetMissionControlConfigRequest'config :: !(Prelude.Maybe MissionControlConfig),
                                                  _SetMissionControlConfigRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SetMissionControlConfigRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SetMissionControlConfigRequest
 instance Data.ProtoLens.Field.HasField SetMissionControlConfigRequest "config" MissionControlConfig where
   fieldOf _
     = (Prelude..)
@@ -7637,13 +7714,14 @@ instance Control.DeepSeq.NFData SetMissionControlConfigRequest where
       -}
 data SetMissionControlConfigResponse
   = SetMissionControlConfigResponse'_constructor {_SetMissionControlConfigResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SetMissionControlConfigResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SetMissionControlConfigResponse
 instance Data.ProtoLens.Message SetMissionControlConfigResponse where
   messageName _
     = Data.Text.pack "routerrpc.SetMissionControlConfigResponse"
@@ -7708,13 +7786,14 @@ instance Control.DeepSeq.NFData SetMissionControlConfigResponse where
 data SettleEvent
   = SettleEvent'_constructor {_SettleEvent'preimage :: !Data.ByteString.ByteString,
                               _SettleEvent'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SettleEvent where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SettleEvent
 instance Data.ProtoLens.Field.HasField SettleEvent "preimage" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -7819,13 +7898,14 @@ instance Control.DeepSeq.NFData SettleEvent where
       -}
 data SubscribeHtlcEventsRequest
   = SubscribeHtlcEventsRequest'_constructor {_SubscribeHtlcEventsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SubscribeHtlcEventsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SubscribeHtlcEventsRequest
 instance Data.ProtoLens.Message SubscribeHtlcEventsRequest where
   messageName _
     = Data.Text.pack "routerrpc.SubscribeHtlcEventsRequest"
@@ -7891,13 +7971,14 @@ data TrackPaymentRequest
   = TrackPaymentRequest'_constructor {_TrackPaymentRequest'paymentHash :: !Data.ByteString.ByteString,
                                       _TrackPaymentRequest'noInflightUpdates :: !Prelude.Bool,
                                       _TrackPaymentRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show TrackPaymentRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out TrackPaymentRequest
 instance Data.ProtoLens.Field.HasField TrackPaymentRequest "paymentHash" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -8054,13 +8135,14 @@ data UpdateChanStatusRequest
   = UpdateChanStatusRequest'_constructor {_UpdateChanStatusRequest'chanPoint :: !(Prelude.Maybe Proto.LndGrpc.ChannelPoint),
                                           _UpdateChanStatusRequest'action :: !ChanStatusAction,
                                           _UpdateChanStatusRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show UpdateChanStatusRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out UpdateChanStatusRequest
 instance Data.ProtoLens.Field.HasField UpdateChanStatusRequest "chanPoint" Proto.LndGrpc.ChannelPoint where
   fieldOf _
     = (Prelude..)
@@ -8218,13 +8300,14 @@ instance Control.DeepSeq.NFData UpdateChanStatusRequest where
       -}
 data UpdateChanStatusResponse
   = UpdateChanStatusResponse'_constructor {_UpdateChanStatusResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show UpdateChanStatusResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out UpdateChanStatusResponse
 instance Data.ProtoLens.Message UpdateChanStatusResponse where
   messageName _ = Data.Text.pack "routerrpc.UpdateChanStatusResponse"
   packedMessageDescriptor _
@@ -8287,13 +8370,14 @@ instance Control.DeepSeq.NFData UpdateChanStatusResponse where
 data XImportMissionControlRequest
   = XImportMissionControlRequest'_constructor {_XImportMissionControlRequest'pairs :: !(Data.Vector.Vector PairHistory),
                                                _XImportMissionControlRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show XImportMissionControlRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out XImportMissionControlRequest
 instance Data.ProtoLens.Field.HasField XImportMissionControlRequest "pairs" [PairHistory] where
   fieldOf _
     = (Prelude..)
@@ -8420,13 +8504,14 @@ instance Control.DeepSeq.NFData XImportMissionControlRequest where
       -}
 data XImportMissionControlResponse
   = XImportMissionControlResponse'_constructor {_XImportMissionControlResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show XImportMissionControlResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out XImportMissionControlResponse
 instance Data.ProtoLens.Message XImportMissionControlResponse where
   messageName _
     = Data.Text.pack "routerrpc.XImportMissionControlResponse"
@@ -8505,6 +8590,27 @@ instance Data.ProtoLens.Service.Types.Service Router where
                                  "trackPaymentV2",
                                  "updateChanStatus",
                                  "ximportMissionControl"]
+  packedServiceDescriptor _
+    = "\n\
+      \\ACKRouter\DC2@\n\
+      \\rSendPaymentV2\DC2\GS.routerrpc.SendPaymentRequest\SUB\SO.lnrpc.Payment0\SOH\DC2B\n\
+      \\SOTrackPaymentV2\DC2\RS.routerrpc.TrackPaymentRequest\SUB\SO.lnrpc.Payment0\SOH\DC2K\n\
+      \\DLEEstimateRouteFee\DC2\SUB.routerrpc.RouteFeeRequest\SUB\ESC.routerrpc.RouteFeeResponse\DC2Q\n\
+      \\vSendToRoute\DC2\GS.routerrpc.SendToRouteRequest\SUB\RS.routerrpc.SendToRouteResponse\"\ETX\136\STX\SOH\DC2B\n\
+      \\rSendToRouteV2\DC2\GS.routerrpc.SendToRouteRequest\SUB\DC2.lnrpc.HTLCAttempt\DC2d\n\
+      \\DC3ResetMissionControl\DC2%.routerrpc.ResetMissionControlRequest\SUB&.routerrpc.ResetMissionControlResponse\DC2d\n\
+      \\DC3QueryMissionControl\DC2%.routerrpc.QueryMissionControlRequest\SUB&.routerrpc.QueryMissionControlResponse\DC2j\n\
+      \\NAKXImportMissionControl\DC2'.routerrpc.XImportMissionControlRequest\SUB(.routerrpc.XImportMissionControlResponse\DC2p\n\
+      \\ETBGetMissionControlConfig\DC2).routerrpc.GetMissionControlConfigRequest\SUB*.routerrpc.GetMissionControlConfigResponse\DC2p\n\
+      \\ETBSetMissionControlConfig\DC2).routerrpc.SetMissionControlConfigRequest\SUB*.routerrpc.SetMissionControlConfigResponse\DC2[\n\
+      \\DLEQueryProbability\DC2\".routerrpc.QueryProbabilityRequest\SUB#.routerrpc.QueryProbabilityResponse\DC2I\n\
+      \\n\
+      \BuildRoute\DC2\FS.routerrpc.BuildRouteRequest\SUB\GS.routerrpc.BuildRouteResponse\DC2T\n\
+      \\DC3SubscribeHtlcEvents\DC2%.routerrpc.SubscribeHtlcEventsRequest\SUB\DC4.routerrpc.HtlcEvent0\SOH\DC2M\n\
+      \\vSendPayment\DC2\GS.routerrpc.SendPaymentRequest\SUB\CAN.routerrpc.PaymentStatus\"\ETX\136\STX\SOH0\SOH\DC2O\n\
+      \\fTrackPayment\DC2\RS.routerrpc.TrackPaymentRequest\SUB\CAN.routerrpc.PaymentStatus\"\ETX\136\STX\SOH0\SOH\DC2f\n\
+      \\SIHtlcInterceptor\DC2'.routerrpc.ForwardHtlcInterceptResponse\SUB&.routerrpc.ForwardHtlcInterceptRequest(\SOH0\SOH\DC2[\n\
+      \\DLEUpdateChanStatus\DC2\".routerrpc.UpdateChanStatusRequest\SUB#.routerrpc.UpdateChanStatusResponse"
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "sendPaymentV2" where
   type MethodName Router "sendPaymentV2" = "SendPaymentV2"
   type MethodInput Router "sendPaymentV2" = SendPaymentRequest
@@ -8814,7 +8920,7 @@ packedFileDescriptor
     \\vSendPayment\DC2\GS.routerrpc.SendPaymentRequest\SUB\CAN.routerrpc.PaymentStatus\"\ETX\136\STX\SOH0\SOH\DC2O\n\
     \\fTrackPayment\DC2\RS.routerrpc.TrackPaymentRequest\SUB\CAN.routerrpc.PaymentStatus\"\ETX\136\STX\SOH0\SOH\DC2f\n\
     \\SIHtlcInterceptor\DC2'.routerrpc.ForwardHtlcInterceptResponse\SUB&.routerrpc.ForwardHtlcInterceptRequest(\SOH0\SOH\DC2[\n\
-    \\DLEUpdateChanStatus\DC2\".routerrpc.UpdateChanStatusRequest\SUB#.routerrpc.UpdateChanStatusResponseB1Z/github.com/lightningnetwork/lnd/lnrpc/routerrpcJ\196\202\SOH\n\
+    \\DLEUpdateChanStatus\DC2\".routerrpc.UpdateChanStatusRequest\SUB#.routerrpc.UpdateChanStatusResponseB1Z/github.com/lightningnetwork/lnd/lnrpc/routerrpcJ\219\190\SOH\n\
     \\a\DC2\ENQ\STX\NUL\161\ACK\SOH\n\
     \\143\SOH\n\
     \\SOH\f\DC2\ETX\STX\NUL\DC22\132\SOHsource https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/routerrpc/router.proto\n\
@@ -9072,8 +9178,6 @@ packedFileDescriptor
     \<\n\
     \\EOT\EOT\NUL\STX\NUL\DC2\EOT\147\SOH\EOT\DC3\SUB. The identity pubkey of the payment recipient\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\NUL\EOT\DC2\ACK\147\SOH\EOT\145\SOH\FS\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\EOT\147\SOH\EOT\t\n\
     \\r\n\
@@ -9087,8 +9191,6 @@ packedFileDescriptor
     \\n\
     \The fields amt and amt_msat are mutually exclusive.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\SOH\EOT\DC2\ACK\154\SOH\EOT\147\SOH\DC3\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\EOT\154\SOH\EOT\t\n\
     \\r\n\
@@ -9102,8 +9204,6 @@ packedFileDescriptor
     \\n\
     \The fields amt and amt_msat are mutually exclusive.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\STX\EOT\DC2\ACK\161\SOH\EOT\154\SOH\DC2\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\STX\ENQ\DC2\EOT\161\SOH\EOT\t\n\
     \\r\n\
@@ -9114,8 +9214,6 @@ packedFileDescriptor
     \9\n\
     \\EOT\EOT\NUL\STX\ETX\DC2\EOT\164\SOH\EOT\ESC\SUB+ The hash to use within the payment's HTLC\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\ETX\EOT\DC2\ACK\164\SOH\EOT\161\SOH\CAN\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\ETX\ENQ\DC2\EOT\164\SOH\EOT\t\n\
     \\r\n\
@@ -9128,8 +9226,6 @@ packedFileDescriptor
     \The CLTV delta from the current height that should be used to set the\n\
     \timelock for the final hop.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\EOT\EOT\DC2\ACK\170\SOH\EOT\164\SOH\ESC\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\EOT\ENQ\DC2\EOT\170\SOH\EOT\t\n\
     \\r\n\
@@ -9140,8 +9236,6 @@ packedFileDescriptor
     \Y\n\
     \\EOT\EOT\NUL\STX\ENQ\DC2\EOT\173\SOH\EOT\FS\SUBK An optional payment addr to be included within the last hop of the route.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\ENQ\EOT\DC2\ACK\173\SOH\EOT\170\SOH\US\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\ENQ\ENQ\DC2\EOT\173\SOH\EOT\t\n\
     \\r\n\
@@ -9157,8 +9251,6 @@ packedFileDescriptor
     \that case it is required to set the amt field as well. If no payment request\n\
     \is specified, the following fields are required: dest, amt and payment_hash.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\ACK\EOT\DC2\ACK\182\SOH\EOT\173\SOH\FS\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\ACK\ENQ\DC2\EOT\182\SOH\EOT\n\
     \\n\
@@ -9173,8 +9265,6 @@ packedFileDescriptor
     \successful payment within this time frame, an error will be returned.\n\
     \This field must be non-zero.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\a\EOT\DC2\ACK\190\SOH\EOT\182\SOH\US\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\a\ENQ\DC2\EOT\190\SOH\EOT\t\n\
     \\r\n\
@@ -9191,8 +9281,6 @@ packedFileDescriptor
     \\n\
     \The fields fee_limit_sat and fee_limit_msat are mutually exclusive.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\b\EOT\DC2\ACK\200\SOH\EOT\190\SOH\RS\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\b\ENQ\DC2\EOT\200\SOH\EOT\t\n\
     \\r\n\
@@ -9210,8 +9298,6 @@ packedFileDescriptor
     \\n\
     \The fields fee_limit_sat and fee_limit_msat are mutually exclusive.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\t\EOT\DC2\ACK\211\SOH\EOT\200\SOH\FS\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\t\ENQ\DC2\EOT\211\SOH\EOT\t\n\
     \\r\n\
@@ -9226,9 +9312,6 @@ packedFileDescriptor
     \be taken to the first hop. If zero, any channel may be used (unless\n\
     \outgoing_chan_ids are set).\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\n\
-    \\EOT\DC2\ACK\218\SOH\EOT\211\SOH\RS\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\n\
     \\ENQ\DC2\EOT\218\SOH\EOT\n\
@@ -9265,8 +9348,6 @@ packedFileDescriptor
     \\EOT\EOT\NUL\STX\f\DC2\EOT\229\SOH\EOT\US\SUBI\n\
     \The pubkey of the last hop of the route. If empty, any hop may be used.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\f\EOT\DC2\ACK\229\SOH\EOT\224\SOH+\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\f\ENQ\DC2\EOT\229\SOH\EOT\t\n\
     \\r\n\
@@ -9280,8 +9361,6 @@ packedFileDescriptor
     \lnd's `--max-cltv-expiry` setting. If zero, then the value of\n\
     \`--max-cltv-expiry` is enforced.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\r\EOT\DC2\ACK\236\SOH\EOT\229\SOH\US\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\r\ENQ\DC2\EOT\236\SOH\EOT\t\n\
     \\r\n\
@@ -9309,8 +9388,6 @@ packedFileDescriptor
     \required to be in the custom range >= 65536. When using REST, the values\n\
     \must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\SI\EOT\DC2\ACK\250\SOH\EOT\241\SOH.\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\SI\ACK\DC2\EOT\250\SOH\EOT\SYN\n\
     \\r\n\
@@ -9320,8 +9397,6 @@ packedFileDescriptor
     \@\n\
     \\EOT\EOT\NUL\STX\DLE\DC2\EOT\253\SOH\EOT!\SUB2 If set, circular payments to self are permitted.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\DLE\EOT\DC2\ACK\253\SOH\EOT\250\SOH0\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\DLE\ENQ\DC2\EOT\253\SOH\EOT\b\n\
     \\r\n\
@@ -9349,8 +9424,6 @@ packedFileDescriptor
     \The maximum number of partial payments that may be use to complete the full\n\
     \amount.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\DC2\EOT\DC2\ACK\140\STX\EOT\134\STX1\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\DC2\ENQ\DC2\EOT\140\STX\EOT\n\
     \\n\
@@ -9363,8 +9436,6 @@ packedFileDescriptor
     \If set, only the final payment update is streamed back. Intermediate updates\n\
     \that show which htlcs are still in flight are suppressed.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\DC3\EOT\DC2\ACK\146\STX\EOT\140\STX\SUB\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\DC3\ENQ\DC2\EOT\146\STX\EOT\b\n\
     \\r\n\
@@ -9378,8 +9449,6 @@ packedFileDescriptor
     \split more aggressively, vs only when it thinks it needs to. Note that this\n\
     \value is in milli-satoshis.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\DC4\EOT\DC2\ACK\154\STX\EOT\146\STX\"\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\DC4\ENQ\DC2\EOT\154\STX\EOT\n\
     \\n\
@@ -9391,8 +9460,6 @@ packedFileDescriptor
     \\EOT\EOT\NUL\STX\NAK\DC2\EOT\159\STX\EOT\DC2\SUB+\n\
     \If set, an AMP-payment will be attempted.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\NAK\EOT\DC2\ACK\159\STX\EOT\154\STX$\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\NAK\ENQ\DC2\EOT\159\STX\EOT\b\n\
     \\r\n\
@@ -9406,8 +9473,6 @@ packedFileDescriptor
     \3\n\
     \\EOT\EOT\SOH\STX\NUL\DC2\EOT\164\STX\EOT\ESC\SUB% The hash of the payment to look up.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\NUL\EOT\DC2\ACK\164\STX\EOT\162\STX\GS\n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\NUL\ENQ\DC2\EOT\164\STX\EOT\t\n\
     \\r\n\
@@ -9420,8 +9485,6 @@ packedFileDescriptor
     \If set, only the final payment update is streamed back. Intermediate updates\n\
     \that show which htlcs are still in flight are suppressed.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\SOH\EOT\DC2\ACK\170\STX\EOT\164\STX\ESC\n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\SOH\ENQ\DC2\EOT\170\STX\EOT\b\n\
     \\r\n\
@@ -9436,8 +9499,6 @@ packedFileDescriptor
     \\EOT\EOT\STX\STX\NUL\DC2\EOT\177\STX\EOT\DC3\SUB?\n\
     \The destination once wishes to obtain a routing fee quote to.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\STX\STX\NUL\EOT\DC2\ACK\177\STX\EOT\173\STX\EM\n\
     \\r\n\
     \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\EOT\177\STX\EOT\t\n\
     \\r\n\
@@ -9449,8 +9510,6 @@ packedFileDescriptor
     \\EOT\EOT\STX\STX\SOH\DC2\EOT\182\STX\EOT\SYN\SUB:\n\
     \The amount one wishes to send to the target destination.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\ACK\182\STX\EOT\177\STX\DC3\n\
     \\r\n\
     \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\EOT\182\STX\EOT\t\n\
     \\r\n\
@@ -9467,8 +9526,6 @@ packedFileDescriptor
     \A lower bound of the estimated fee to the target destination within the\n\
     \network, expressed in milli-satoshis.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ETX\STX\NUL\EOT\DC2\ACK\190\STX\EOT\185\STX\SUB\n\
     \\r\n\
     \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\EOT\190\STX\EOT\t\n\
     \\r\n\
@@ -9482,8 +9539,6 @@ packedFileDescriptor
     \will still need to factor in the final CLTV delta of the last hop into this\n\
     \value.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ETX\STX\SOH\EOT\DC2\ACK\197\STX\EOT\190\STX\US\n\
     \\r\n\
     \\ENQ\EOT\ETX\STX\SOH\ENQ\DC2\EOT\197\STX\EOT\t\n\
     \\r\n\
@@ -9498,8 +9553,6 @@ packedFileDescriptor
     \5\n\
     \\EOT\EOT\EOT\STX\NUL\DC2\EOT\202\STX\EOT\ESC\SUB' The payment hash to use for the HTLC.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EOT\STX\NUL\EOT\DC2\ACK\202\STX\EOT\200\STX\FS\n\
     \\r\n\
     \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\202\STX\EOT\t\n\
     \\r\n\
@@ -9510,8 +9563,6 @@ packedFileDescriptor
     \M\n\
     \\EOT\EOT\EOT\STX\SOH\DC2\EOT\205\STX\EOT\SUB\SUB? Route that should be used to attempt to complete the payment.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EOT\STX\SOH\EOT\DC2\ACK\205\STX\EOT\202\STX\ESC\n\
     \\r\n\
     \\ENQ\EOT\EOT\STX\SOH\ACK\DC2\EOT\205\STX\EOT\SI\n\
     \\r\n\
@@ -9525,8 +9576,6 @@ packedFileDescriptor
     \<\n\
     \\EOT\EOT\ENQ\STX\NUL\DC2\EOT\210\STX\EOT\ETB\SUB. The preimage obtained by making the payment.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\NUL\EOT\DC2\ACK\210\STX\EOT\208\STX\GS\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\NUL\ENQ\DC2\EOT\210\STX\EOT\t\n\
     \\r\n\
@@ -9537,8 +9586,6 @@ packedFileDescriptor
     \?\n\
     \\EOT\EOT\ENQ\STX\SOH\DC2\EOT\213\STX\EOT\RS\SUB1 The failure message in case the payment failed.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\SOH\EOT\DC2\ACK\213\STX\EOT\210\STX\ETB\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\SOH\ACK\DC2\EOT\213\STX\EOT\DC1\n\
     \\r\n\
@@ -9615,8 +9662,6 @@ packedFileDescriptor
     \3\n\
     \\EOT\EOT\f\STX\NUL\DC2\EOT\244\STX\EOT\CAN\SUB% The source node pubkey of the pair.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\f\STX\NUL\EOT\DC2\ACK\244\STX\EOT\242\STX\NAK\n\
     \\r\n\
     \\ENQ\EOT\f\STX\NUL\ENQ\DC2\EOT\244\STX\EOT\t\n\
     \\r\n\
@@ -9627,8 +9672,6 @@ packedFileDescriptor
     \8\n\
     \\EOT\EOT\f\STX\SOH\DC2\EOT\247\STX\EOT\SYN\SUB* The destination node pubkey of the pair.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\f\STX\SOH\EOT\DC2\ACK\247\STX\EOT\244\STX\CAN\n\
     \\r\n\
     \\ENQ\EOT\f\STX\SOH\ENQ\DC2\EOT\247\STX\EOT\t\n\
     \\r\n\
@@ -9664,8 +9707,6 @@ packedFileDescriptor
     \\ENQ\EOT\f\t\ETX\STX\DC2\EOT\249\STX\SYN\ETB\n\
     \\f\n\
     \\EOT\EOT\f\STX\STX\DC2\EOT\251\STX\EOT\EM\n\
-    \\SI\n\
-    \\ENQ\EOT\f\STX\STX\EOT\DC2\ACK\251\STX\EOT\249\STX\CAN\n\
     \\r\n\
     \\ENQ\EOT\f\STX\STX\ACK\DC2\EOT\251\STX\EOT\f\n\
     \\r\n\
@@ -9679,8 +9720,6 @@ packedFileDescriptor
     \%\n\
     \\EOT\EOT\r\STX\NUL\DC2\EOT\128\ETX\EOT\CAN\SUB\ETB Time of last failure.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\r\STX\NUL\EOT\DC2\ACK\128\ETX\EOT\254\STX\DC2\n\
     \\r\n\
     \\ENQ\EOT\r\STX\NUL\ENQ\DC2\EOT\128\ETX\EOT\t\n\
     \\r\n\
@@ -9693,8 +9732,6 @@ packedFileDescriptor
     \Lowest amount that failed to forward rounded to whole sats. This may be\n\
     \set to zero if the failure is independent of amount.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\r\STX\SOH\EOT\DC2\ACK\134\ETX\EOT\128\ETX\CAN\n\
     \\r\n\
     \\ENQ\EOT\r\STX\SOH\ENQ\DC2\EOT\134\ETX\EOT\t\n\
     \\r\n\
@@ -9707,8 +9744,6 @@ packedFileDescriptor
     \Lowest amount that failed to forward in millisats. This may be\n\
     \set to zero if the failure is independent of amount.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\r\STX\STX\EOT\DC2\ACK\140\ETX\EOT\134\ETX\ESC\n\
     \\r\n\
     \\ENQ\EOT\r\STX\STX\ENQ\DC2\EOT\140\ETX\EOT\t\n\
     \\r\n\
@@ -9727,8 +9762,6 @@ packedFileDescriptor
     \%\n\
     \\EOT\EOT\r\STX\ETX\DC2\EOT\145\ETX\EOT\ESC\SUB\ETB Time of last success.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\r\STX\ETX\EOT\DC2\ACK\145\ETX\EOT\142\ETX\SI\n\
     \\r\n\
     \\ENQ\EOT\r\STX\ETX\ENQ\DC2\EOT\145\ETX\EOT\t\n\
     \\r\n\
@@ -9739,8 +9772,6 @@ packedFileDescriptor
     \X\n\
     \\EOT\EOT\r\STX\EOT\DC2\EOT\148\ETX\EOT\RS\SUBJ Highest amount that we could successfully forward rounded to whole sats.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\r\STX\EOT\EOT\DC2\ACK\148\ETX\EOT\145\ETX\ESC\n\
     \\r\n\
     \\ENQ\EOT\r\STX\EOT\ENQ\DC2\EOT\148\ETX\EOT\t\n\
     \\r\n\
@@ -9751,8 +9782,6 @@ packedFileDescriptor
     \O\n\
     \\EOT\EOT\r\STX\ENQ\DC2\EOT\151\ETX\EOT\US\SUBA Highest amount that we could successfully forward in millisats.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\r\STX\ENQ\EOT\DC2\ACK\151\ETX\EOT\148\ETX\RS\n\
     \\r\n\
     \\ENQ\EOT\r\STX\ENQ\ENQ\DC2\EOT\151\ETX\EOT\t\n\
     \\r\n\
@@ -9772,8 +9801,6 @@ packedFileDescriptor
     \\EOT\EOT\SI\STX\NUL\DC2\EOT\161\ETX\EOT$\SUB,\n\
     \Mission control's currently active config.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\NUL\EOT\DC2\ACK\161\ETX\EOT\157\ETX)\n\
     \\r\n\
     \\ENQ\EOT\SI\STX\NUL\ACK\DC2\EOT\161\ETX\EOT\CAN\n\
     \\r\n\
@@ -9789,8 +9816,6 @@ packedFileDescriptor
     \The config to set for mission control. Note that all values *must* be set,\n\
     \because the full config will be applied.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DLE\STX\NUL\EOT\DC2\ACK\169\ETX\EOT\164\ETX(\n\
     \\r\n\
     \\ENQ\EOT\DLE\STX\NUL\ACK\DC2\EOT\169\ETX\EOT\CAN\n\
     \\r\n\
@@ -9813,8 +9838,6 @@ packedFileDescriptor
     \mission control less likely to route through nodes and channels that we\n\
     \have previously recorded failures for.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC2\STX\NUL\EOT\DC2\ACK\183\ETX\EOT\175\ETX\RS\n\
     \\r\n\
     \\ENQ\EOT\DC2\STX\NUL\ENQ\DC2\EOT\183\ETX\EOT\n\
     \\n\
@@ -9829,8 +9852,6 @@ packedFileDescriptor
     \control more willing to try hops that we have no information about, lower\n\
     \values will discourage trying these hops.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC2\STX\SOH\EOT\DC2\ACK\191\ETX\EOT\183\ETX!\n\
     \\r\n\
     \\ENQ\EOT\DC2\STX\SOH\ENQ\DC2\EOT\191\ETX\EOT\t\n\
     \\r\n\
@@ -9847,8 +9868,6 @@ packedFileDescriptor
     \completely and relies entirely on historical results, unless none are\n\
     \available.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC2\STX\STX\EOT\DC2\ACK\201\ETX\EOT\191\ETX\RS\n\
     \\r\n\
     \\ENQ\EOT\DC2\STX\STX\ENQ\DC2\EOT\201\ETX\EOT\t\n\
     \\r\n\
@@ -9860,8 +9879,6 @@ packedFileDescriptor
     \\EOT\EOT\DC2\STX\ETX\DC2\EOT\206\ETX\EOT'\SUBH\n\
     \The maximum number of payment results that mission control will store.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC2\STX\ETX\EOT\DC2\ACK\206\ETX\EOT\201\ETX\NAK\n\
     \\r\n\
     \\ENQ\EOT\DC2\STX\ETX\ENQ\DC2\EOT\206\ETX\EOT\n\
     \\n\
@@ -9874,8 +9891,6 @@ packedFileDescriptor
     \The minimum time that must have passed since the previously recorded failure\n\
     \before we raise the failure amount.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC2\STX\EOT\EOT\DC2\ACK\212\ETX\EOT\206\ETX'\n\
     \\r\n\
     \\ENQ\EOT\DC2\STX\EOT\ENQ\DC2\EOT\212\ETX\EOT\n\
     \\n\
@@ -9890,8 +9905,6 @@ packedFileDescriptor
     \3\n\
     \\EOT\EOT\DC3\STX\NUL\DC2\EOT\217\ETX\EOT\CAN\SUB% The source node pubkey of the pair.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC3\STX\NUL\EOT\DC2\ACK\217\ETX\EOT\215\ETX!\n\
     \\r\n\
     \\ENQ\EOT\DC3\STX\NUL\ENQ\DC2\EOT\217\ETX\EOT\t\n\
     \\r\n\
@@ -9902,8 +9915,6 @@ packedFileDescriptor
     \8\n\
     \\EOT\EOT\DC3\STX\SOH\DC2\EOT\220\ETX\EOT\SYN\SUB* The destination node pubkey of the pair.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC3\STX\SOH\EOT\DC2\ACK\220\ETX\EOT\217\ETX\CAN\n\
     \\r\n\
     \\ENQ\EOT\DC3\STX\SOH\ENQ\DC2\EOT\220\ETX\EOT\t\n\
     \\r\n\
@@ -9914,8 +9925,6 @@ packedFileDescriptor
     \@\n\
     \\EOT\EOT\DC3\STX\STX\DC2\EOT\223\ETX\EOT\ETB\SUB2 The amount for which to calculate a probability.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC3\STX\STX\EOT\DC2\ACK\223\ETX\EOT\220\ETX\SYN\n\
     \\r\n\
     \\ENQ\EOT\DC3\STX\STX\ENQ\DC2\EOT\223\ETX\EOT\t\n\
     \\r\n\
@@ -9930,8 +9939,6 @@ packedFileDescriptor
     \?\n\
     \\EOT\EOT\DC4\STX\NUL\DC2\EOT\228\ETX\EOT\ESC\SUB1 The success probability for the requested pair.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC4\STX\NUL\EOT\DC2\ACK\228\ETX\EOT\226\ETX\"\n\
     \\r\n\
     \\ENQ\EOT\DC4\STX\NUL\ENQ\DC2\EOT\228\ETX\EOT\n\
     \\n\
@@ -9942,8 +9949,6 @@ packedFileDescriptor
     \;\n\
     \\EOT\EOT\DC4\STX\SOH\DC2\EOT\231\ETX\EOT\EM\SUB- The historical data for the requested pair.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC4\STX\SOH\EOT\DC2\ACK\231\ETX\EOT\228\ETX\ESC\n\
     \\r\n\
     \\ENQ\EOT\DC4\STX\SOH\ACK\DC2\EOT\231\ETX\EOT\f\n\
     \\r\n\
@@ -9959,8 +9964,6 @@ packedFileDescriptor
     \The amount to send expressed in msat. If set to zero, the minimum routable\n\
     \amount is used.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NAK\STX\NUL\EOT\DC2\ACK\239\ETX\EOT\234\ETX\ESC\n\
     \\r\n\
     \\ENQ\EOT\NAK\STX\NUL\ENQ\DC2\EOT\239\ETX\EOT\t\n\
     \\r\n\
@@ -9973,8 +9976,6 @@ packedFileDescriptor
     \CLTV delta from the current height that should be used for the timelock\n\
     \of the final hop\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NAK\STX\SOH\EOT\DC2\ACK\245\ETX\EOT\239\ETX\ETB\n\
     \\r\n\
     \\ENQ\EOT\NAK\STX\SOH\ENQ\DC2\EOT\245\ETX\EOT\t\n\
     \\r\n\
@@ -9987,8 +9988,6 @@ packedFileDescriptor
     \The channel id of the channel that must be taken to the first hop. If zero,\n\
     \any channel may be used.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NAK\STX\STX\EOT\DC2\ACK\251\ETX\EOT\245\ETX\US\n\
     \\r\n\
     \\ENQ\EOT\NAK\STX\STX\ENQ\DC2\EOT\251\ETX\EOT\n\
     \\n\
@@ -10016,8 +10015,6 @@ packedFileDescriptor
     \Y\n\
     \\EOT\EOT\NAK\STX\EOT\DC2\EOT\132\EOT\EOT\ESC\SUBK An optional payment addr to be included within the last hop of the route.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NAK\STX\EOT\EOT\DC2\ACK\132\EOT\EOT\129\EOT#\n\
     \\r\n\
     \\ENQ\EOT\NAK\STX\EOT\ENQ\DC2\EOT\132\EOT\EOT\t\n\
     \\r\n\
@@ -10033,8 +10030,6 @@ packedFileDescriptor
     \\EOT\EOT\SYN\STX\NUL\DC2\EOT\139\EOT\EOT\SUB\SUB@\n\
     \Fully specified route that can be used to execute the payment.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SYN\STX\NUL\EOT\DC2\ACK\139\EOT\EOT\135\EOT\FS\n\
     \\r\n\
     \\ENQ\EOT\SYN\STX\NUL\ACK\DC2\EOT\139\EOT\EOT\SI\n\
     \\r\n\
@@ -10061,8 +10056,6 @@ packedFileDescriptor
     \The short channel id that the incoming htlc arrived at our node on. This\n\
     \value is zero for sends.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\CAN\STX\NUL\EOT\DC2\ACK\158\EOT\EOT\153\EOT\DC3\n\
     \\r\n\
     \\ENQ\EOT\CAN\STX\NUL\ENQ\DC2\EOT\158\EOT\EOT\n\
     \\n\
@@ -10075,8 +10068,6 @@ packedFileDescriptor
     \The short channel id that the outgoing htlc left our node on. This value\n\
     \is zero for receives.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\CAN\STX\SOH\EOT\DC2\ACK\164\EOT\EOT\158\EOT#\n\
     \\r\n\
     \\ENQ\EOT\CAN\STX\SOH\ENQ\DC2\EOT\164\EOT\EOT\n\
     \\n\
@@ -10089,8 +10080,6 @@ packedFileDescriptor
     \Incoming id is the index of the incoming htlc in the incoming channel.\n\
     \This value is zero for sends.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\CAN\STX\STX\EOT\DC2\ACK\170\EOT\EOT\164\EOT#\n\
     \\r\n\
     \\ENQ\EOT\CAN\STX\STX\ENQ\DC2\EOT\170\EOT\EOT\n\
     \\n\
@@ -10103,8 +10092,6 @@ packedFileDescriptor
     \Outgoing id is the index of the outgoing htlc in the outgoing channel.\n\
     \This value is zero for receives.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\CAN\STX\ETX\EOT\DC2\ACK\176\EOT\EOT\170\EOT \n\
     \\r\n\
     \\ENQ\EOT\CAN\STX\ETX\ENQ\DC2\EOT\176\EOT\EOT\n\
     \\n\
@@ -10116,8 +10103,6 @@ packedFileDescriptor
     \\EOT\EOT\CAN\STX\EOT\DC2\EOT\181\EOT\EOT\FS\SUB7\n\
     \The time in unix nanoseconds that the event occurred.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\CAN\STX\EOT\EOT\DC2\ACK\181\EOT\EOT\176\EOT \n\
     \\r\n\
     \\ENQ\EOT\CAN\STX\EOT\ENQ\DC2\EOT\181\EOT\EOT\n\
     \\n\
@@ -10158,8 +10143,6 @@ packedFileDescriptor
     \The event type indicates whether the htlc was part of a send, receive or\n\
     \forward.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\CAN\STX\ENQ\EOT\DC2\ACK\194\EOT\EOT\188\EOT\ENQ\n\
     \\r\n\
     \\ENQ\EOT\CAN\STX\ENQ\ACK\DC2\EOT\194\EOT\EOT\r\n\
     \\r\n\
@@ -10210,8 +10193,6 @@ packedFileDescriptor
     \2\n\
     \\EOT\EOT\EM\STX\NUL\DC2\EOT\206\EOT\EOT!\SUB$ The timelock on the incoming htlc.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EM\STX\NUL\EOT\DC2\ACK\206\EOT\EOT\204\EOT\DC2\n\
     \\r\n\
     \\ENQ\EOT\EM\STX\NUL\ENQ\DC2\EOT\206\EOT\EOT\n\
     \\n\
@@ -10222,8 +10203,6 @@ packedFileDescriptor
     \2\n\
     \\EOT\EOT\EM\STX\SOH\DC2\EOT\209\EOT\EOT!\SUB$ The timelock on the outgoing htlc.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EM\STX\SOH\EOT\DC2\ACK\209\EOT\EOT\206\EOT!\n\
     \\r\n\
     \\ENQ\EOT\EM\STX\SOH\ENQ\DC2\EOT\209\EOT\EOT\n\
     \\n\
@@ -10234,8 +10213,6 @@ packedFileDescriptor
     \0\n\
     \\EOT\EOT\EM\STX\STX\DC2\EOT\212\EOT\EOT!\SUB\" The amount of the incoming htlc.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EM\STX\STX\EOT\DC2\ACK\212\EOT\EOT\209\EOT!\n\
     \\r\n\
     \\ENQ\EOT\EM\STX\STX\ENQ\DC2\EOT\212\EOT\EOT\n\
     \\n\
@@ -10246,8 +10223,6 @@ packedFileDescriptor
     \0\n\
     \\EOT\EOT\EM\STX\ETX\DC2\EOT\215\EOT\EOT!\SUB\" The amount of the outgoing htlc.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EM\STX\ETX\EOT\DC2\ACK\215\EOT\EOT\212\EOT!\n\
     \\r\n\
     \\ENQ\EOT\EM\STX\ETX\ENQ\DC2\EOT\215\EOT\EOT\n\
     \\n\
@@ -10262,8 +10237,6 @@ packedFileDescriptor
     \H\n\
     \\EOT\EOT\SUB\STX\NUL\DC2\EOT\220\EOT\EOT\SYN\SUB: Info contains details about the htlc that was forwarded.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SUB\STX\NUL\EOT\DC2\ACK\220\EOT\EOT\218\EOT\SYN\n\
     \\r\n\
     \\ENQ\EOT\SUB\STX\NUL\ACK\DC2\EOT\220\EOT\EOT\f\n\
     \\r\n\
@@ -10281,8 +10254,6 @@ packedFileDescriptor
     \&\n\
     \\EOT\EOT\FS\STX\NUL\DC2\EOT\228\EOT\EOT\ETB\SUB\CAN The revealed preimage.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\FS\STX\NUL\EOT\DC2\ACK\228\EOT\EOT\226\EOT\NAK\n\
     \\r\n\
     \\ENQ\EOT\FS\STX\NUL\ENQ\DC2\EOT\228\EOT\EOT\t\n\
     \\r\n\
@@ -10297,8 +10268,6 @@ packedFileDescriptor
     \D\n\
     \\EOT\EOT\GS\STX\NUL\DC2\EOT\233\EOT\EOT\SYN\SUB6 Info contains details about the htlc that we failed.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\GS\STX\NUL\EOT\DC2\ACK\233\EOT\EOT\231\EOT\ETB\n\
     \\r\n\
     \\ENQ\EOT\GS\STX\NUL\ACK\DC2\EOT\233\EOT\EOT\f\n\
     \\r\n\
@@ -10308,8 +10277,6 @@ packedFileDescriptor
     \C\n\
     \\EOT\EOT\GS\STX\SOH\DC2\EOT\236\EOT\EOT/\SUB5 FailureCode is the BOLT error code for the failure.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\GS\STX\SOH\EOT\DC2\ACK\236\EOT\EOT\233\EOT\SYN\n\
     \\r\n\
     \\ENQ\EOT\GS\STX\SOH\ACK\DC2\EOT\236\EOT\EOT\GS\n\
     \\r\n\
@@ -10322,8 +10289,6 @@ packedFileDescriptor
     \failure. This detail enriches the information provided by the wire message\n\
     \and may be 'no detail' if the wire message requires no additional metadata.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\GS\STX\STX\EOT\DC2\ACK\243\EOT\EOT\236\EOT/\n\
     \\r\n\
     \\ENQ\EOT\GS\STX\STX\ACK\DC2\EOT\243\EOT\EOT\DC1\n\
     \\r\n\
@@ -10333,8 +10298,6 @@ packedFileDescriptor
     \<\n\
     \\EOT\EOT\GS\STX\ETX\DC2\EOT\246\EOT\EOT\RS\SUB. A string representation of the link failure.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\GS\STX\ETX\EOT\DC2\ACK\246\EOT\EOT\243\EOT%\n\
     \\r\n\
     \\ENQ\EOT\GS\STX\ETX\ENQ\DC2\EOT\246\EOT\EOT\n\
     \\n\
@@ -10556,8 +10519,6 @@ packedFileDescriptor
     \0\n\
     \\EOT\EOT\RS\STX\NUL\DC2\EOT\188\ENQ\EOT\ESC\SUB\" Current state the payment is in.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\RS\STX\NUL\EOT\DC2\ACK\188\ENQ\EOT\186\ENQ\ETB\n\
     \\r\n\
     \\ENQ\EOT\RS\STX\NUL\ACK\DC2\EOT\188\ENQ\EOT\DLE\n\
     \\r\n\
@@ -10568,8 +10529,6 @@ packedFileDescriptor
     \\EOT\EOT\RS\STX\SOH\DC2\EOT\193\ENQ\EOT\ETB\SUB7\n\
     \The pre-image of the payment when state is SUCCEEDED.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\RS\STX\SOH\EOT\DC2\ACK\193\ENQ\EOT\188\ENQ\ESC\n\
     \\r\n\
     \\ENQ\EOT\RS\STX\SOH\ENQ\DC2\EOT\193\ENQ\EOT\t\n\
     \\r\n\
@@ -10604,8 +10563,6 @@ packedFileDescriptor
     \H\n\
     \\EOT\EOT\US\STX\NUL\DC2\EOT\205\ENQ\EOT\ETB\SUB:/ The id of the channel that the is part of this circuit.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\US\STX\NUL\EOT\DC2\ACK\205\ENQ\EOT\203\ENQ\DC4\n\
     \\r\n\
     \\ENQ\EOT\US\STX\NUL\ENQ\DC2\EOT\205\ENQ\EOT\n\
     \\n\
@@ -10616,8 +10573,6 @@ packedFileDescriptor
     \H\n\
     \\EOT\EOT\US\STX\SOH\DC2\EOT\208\ENQ\EOT\ETB\SUB:/ The index of the incoming htlc in the incoming channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\US\STX\SOH\EOT\DC2\ACK\208\ENQ\EOT\205\ENQ\ETB\n\
     \\r\n\
     \\ENQ\EOT\US\STX\SOH\ENQ\DC2\EOT\208\ENQ\EOT\n\
     \\n\
@@ -10634,8 +10589,6 @@ packedFileDescriptor
     \The key of this forwarded htlc. It defines the incoming channel id and\n\
     \the index in this channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\NUL\EOT\DC2\ACK\216\ENQ\EOT\211\ENQ%\n\
     \\r\n\
     \\ENQ\EOT \STX\NUL\ACK\DC2\EOT\216\ENQ\EOT\SO\n\
     \\r\n\
@@ -10645,8 +10598,6 @@ packedFileDescriptor
     \)\n\
     \\EOT\EOT \STX\SOH\DC2\EOT\219\ENQ\EOT$\SUB\ESC The incoming htlc amount.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\SOH\EOT\DC2\ACK\219\ENQ\EOT\216\ENQ(\n\
     \\r\n\
     \\ENQ\EOT \STX\SOH\ENQ\DC2\EOT\219\ENQ\EOT\n\
     \\n\
@@ -10657,8 +10608,6 @@ packedFileDescriptor
     \)\n\
     \\EOT\EOT \STX\STX\DC2\EOT\222\ENQ\EOT\US\SUB\ESC The incoming htlc expiry.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\STX\EOT\DC2\ACK\222\ENQ\EOT\219\ENQ$\n\
     \\r\n\
     \\ENQ\EOT \STX\STX\ENQ\DC2\EOT\222\ENQ\EOT\n\
     \\n\
@@ -10671,8 +10620,6 @@ packedFileDescriptor
     \The htlc payment hash. This value is not guaranteed to be unique per\n\
     \request.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\ETX\EOT\DC2\ACK\228\ENQ\EOT\222\ENQ\US\n\
     \\r\n\
     \\ENQ\EOT \STX\ETX\ENQ\DC2\EOT\228\ENQ\EOT\t\n\
     \\r\n\
@@ -10686,8 +10633,6 @@ packedFileDescriptor
     \ packet will be forwarded eventually. A different channel to the same peer\n\
     \ may be selected as well.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\EOT\EOT\DC2\ACK\234\ENQ\EOT\228\ENQ\ESC\n\
     \\r\n\
     \\ENQ\EOT \STX\EOT\ENQ\DC2\EOT\234\ENQ\EOT\n\
     \\n\
@@ -10698,8 +10643,6 @@ packedFileDescriptor
     \)\n\
     \\EOT\EOT \STX\ENQ\DC2\EOT\237\ENQ\EOT$\SUB\ESC The outgoing htlc amount.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\ENQ\EOT\DC2\ACK\237\ENQ\EOT\234\ENQ*\n\
     \\r\n\
     \\ENQ\EOT \STX\ENQ\ENQ\DC2\EOT\237\ENQ\EOT\n\
     \\n\
@@ -10710,8 +10653,6 @@ packedFileDescriptor
     \)\n\
     \\EOT\EOT \STX\ACK\DC2\EOT\240\ENQ\EOT\US\SUB\ESC The outgoing htlc expiry.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\ACK\EOT\DC2\ACK\240\ENQ\EOT\237\ENQ$\n\
     \\r\n\
     \\ENQ\EOT \STX\ACK\ENQ\DC2\EOT\240\ENQ\EOT\n\
     \\n\
@@ -10722,8 +10663,6 @@ packedFileDescriptor
     \D\n\
     \\EOT\EOT \STX\a\DC2\EOT\243\ENQ\EOT*\SUB6 Any custom records that were present in the payload.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\a\EOT\DC2\ACK\243\ENQ\EOT\240\ENQ\US\n\
     \\r\n\
     \\ENQ\EOT \STX\a\ACK\DC2\EOT\243\ENQ\EOT\SYN\n\
     \\r\n\
@@ -10733,8 +10672,6 @@ packedFileDescriptor
     \/\n\
     \\EOT\EOT \STX\b\DC2\EOT\246\ENQ\EOT\EM\SUB! The onion blob for the next hop\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\b\EOT\DC2\ACK\246\ENQ\EOT\243\ENQ*\n\
     \\r\n\
     \\ENQ\EOT \STX\b\ENQ\DC2\EOT\246\ENQ\EOT\t\n\
     \\r\n\
@@ -10757,8 +10694,6 @@ packedFileDescriptor
     \The key of this forwarded htlc. It defines the incoming channel id and\n\
     \the index in this channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\NUL\EOT\DC2\ACK\133\ACK\EOT\128\ACK&\n\
     \\r\n\
     \\ENQ\EOT!\STX\NUL\ACK\DC2\EOT\133\ACK\EOT\SO\n\
     \\r\n\
@@ -10768,8 +10703,6 @@ packedFileDescriptor
     \=\n\
     \\EOT\EOT!\STX\SOH\DC2\EOT\136\ACK\EOT(\SUB/ The resolve action for this intercepted htlc.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\SOH\EOT\DC2\ACK\136\ACK\EOT\133\ACK(\n\
     \\r\n\
     \\ENQ\EOT!\STX\SOH\ACK\DC2\EOT\136\ACK\EOT\FS\n\
     \\r\n\
@@ -10779,8 +10712,6 @@ packedFileDescriptor
     \B\n\
     \\EOT\EOT!\STX\STX\DC2\EOT\139\ACK\EOT\ETB\SUB4 The preimage in case the resolve action is Settle.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\STX\EOT\DC2\ACK\139\ACK\EOT\136\ACK(\n\
     \\r\n\
     \\ENQ\EOT!\STX\STX\ENQ\DC2\EOT\139\ACK\EOT\t\n\
     \\r\n\
@@ -10818,8 +10749,6 @@ packedFileDescriptor
     \\ETX\EOT\"\SOH\DC2\EOT\148\ACK\b\US\n\
     \\f\n\
     \\EOT\EOT\"\STX\NUL\DC2\EOT\149\ACK\EOT&\n\
-    \\SI\n\
-    \\ENQ\EOT\"\STX\NUL\EOT\DC2\ACK\149\ACK\EOT\148\ACK!\n\
     \\r\n\
     \\ENQ\EOT\"\STX\NUL\ACK\DC2\EOT\149\ACK\EOT\SYN\n\
     \\r\n\
@@ -10828,8 +10757,6 @@ packedFileDescriptor
     \\ENQ\EOT\"\STX\NUL\ETX\DC2\EOT\149\ACK$%\n\
     \\f\n\
     \\EOT\EOT\"\STX\SOH\DC2\EOT\151\ACK\EOT \n\
-    \\SI\n\
-    \\ENQ\EOT\"\STX\SOH\EOT\DC2\ACK\151\ACK\EOT\149\ACK&\n\
     \\r\n\
     \\ENQ\EOT\"\STX\SOH\ACK\DC2\EOT\151\ACK\EOT\DC4\n\
     \\r\n\

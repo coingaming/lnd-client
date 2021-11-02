@@ -8,6 +8,7 @@ let
   haskellPackages = header.haskellPackages;
   pkgs = header.pkgs;
   lnd = import ./nix/lnd.nix { inherit pkgs; };
+  proto-lens-protoc = import ./nix/proto-lens-protoc.nix;
 in
 project.shellFor {
   withHoogle = true;
@@ -22,6 +23,8 @@ project.shellFor {
     pkgs.ps
     pkgs.jq
     lnd
+    pkgs.protobuf
+    proto-lens-protoc
   ];
   tools = {
     ghcid = "latest";

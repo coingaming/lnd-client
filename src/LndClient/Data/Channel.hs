@@ -15,24 +15,24 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data Channel
-  = Channel
-      { remotePubkey :: NodePubKey,
-        channelPoint :: ChannelPoint,
-        capacity :: MSat,
-        localBalance :: MSat,
-        remoteBalance :: MSat,
-        commitFee :: MSat,
-        active :: Bool,
-        initiator :: LnInitiator
-      }
-  deriving (Eq, Ord, Show)
+data Channel = Channel
+  { remotePubkey :: NodePubKey,
+    channelPoint :: ChannelPoint,
+    capacity :: MSat,
+    localBalance :: MSat,
+    remoteBalance :: MSat,
+    commitFee :: MSat,
+    active :: Bool,
+    initiator :: LnInitiator
+  }
+  deriving (Eq, Ord, Show, Generic)
 
-data PendingUpdate (a :: TxKind)
-  = PendingUpdate
-      { txid :: TxId a,
-        outputIndex :: Vout a
-      }
+instance Out Channel
+
+data PendingUpdate (a :: TxKind) = PendingUpdate
+  { txid :: TxId a,
+    outputIndex :: Vout a
+  }
   deriving (Eq, Ord, Show)
 
 instance FromGrpc Channel LnGRPC.Channel where

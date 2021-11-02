@@ -2,8 +2,8 @@ name:                lnd-client
 version:             0.1.0.0
 github:              "coingaming/lnd-client"
 license:             BSD3
-author:              "Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>"
-maintainer:          "Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <tkachuk.labs@gmail.com>, Artem Markov <drownbes@gmail.com>"
+author:              "Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <21it@protonmail.com>, Artem Markov <drownbes@gmail.com>"
+maintainer:          "Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <21it@protonmail.com>, Artem Markov <drownbes@gmail.com>"
 copyright:           "2021 Coingaming <hello@coingaming.io>"
 synopsis:            Lightning Network Daemon (LND) client library for Haskell
 category:            Lightning, Bitcoin, Finance, Network, Payments
@@ -25,6 +25,9 @@ dependencies:
 - persistent-template   >= 2.9
 # logging
 - katip                 >= 0.8.3.0
+- pretty-simple
+- pretty
+- GenericPretty
 # byte and text
 - bytestring            >= 0.10.8.2 && < 0.10.9
 - base16-bytestring     >= 1.0.1.0 && < 1.0.2
@@ -57,6 +60,7 @@ dependencies:
 - extra                 >= 1.6.18 && < 1.6.20
 - scientific            >= 0.3.6.2 && < 0.3.7
 - template-haskell      >= 2.14.0.0 && < 2.14.1
+- vector
 # protobuf
 - microlens             >= 0.4.10
 - proto-lens            >= 0.7.0
@@ -81,6 +85,7 @@ default-extensions:
 - DataKinds
 - KindSignatures
 - StrictData
+- DeriveGeneric
 
 ghc-options:
 # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html

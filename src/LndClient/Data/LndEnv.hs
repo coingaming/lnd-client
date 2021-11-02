@@ -52,6 +52,8 @@ import Network.GRPC.HTTP2.Encoding (uncompressed)
 import Network.HTTP2.Client
 import qualified Network.TLS as TLS
 import qualified Network.TLS.Extra.Cipher as TLS
+import qualified Universum
+import qualified Prelude
 
 newtype LndWalletPassword = LndWalletPassword Text
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
@@ -110,7 +112,9 @@ instance FromJSON LndTlsCert where
           Left e -> failure e
       e -> failure e
     where
-      failure err = fail $ "Json certificate parsing error: " <> " " <> show err
+      failure err =
+        fail $
+          "Json certificate parsing error: " <> Prelude.show err
 
 instance FromJSON LndPort where
   parseJSON x =
@@ -125,7 +129,9 @@ instance FromJSON LndPort where
           Left err -> failure err
       err -> failure err
     where
-      failure err = fail $ "Json port loading error: " <> " " <> show err
+      failure err =
+        fail $
+          "Json port loading error: " <> Prelude.show err
 
 instance FromJSON RawConfig where
   parseJSON =
@@ -218,8 +224,12 @@ newLndEnv pwd (LndTlsCert _ cert) mac (LndHost host) (LndPort port) seed aezeed 
       envLndConfig =
         (grpcClientConfigSimple host_ port_ True)
           { _grpcClientConfigCompression = uncompressed,
-            _grpcClientConfigHeaders = [("macaroon", encodeUtf8 (coerce mac :: Text))],
-            _grpcClientConfigTLS = Just $ selfSignedCertificateValidation [cert] $ TLS.defaultParamsClient host_ (show port_)
+            _grpcClientConfigHeaders =
+              [ ("macaroon", encodeUtf8 (coerce mac :: Text))
+              ],
+            _grpcClientConfigTLS =
+              Just . selfSignedCertificateValidation [cert] $
+                TLS.defaultParamsClient host_ (Universum.show port_)
           }
     }
   where

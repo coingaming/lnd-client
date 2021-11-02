@@ -25,8 +25,7 @@ import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (ListChannelsRequest (..))
 import LndClient.Data.ListInvoices (ListInvoiceRequest (..), ListInvoiceResponse (..))
 import LndClient.Data.NewAddress (NewAddressRequest (..), NewAddressResponse (..))
-import LndClient.Data.OpenChannel
-import LndClient.Data.OpenChannel (OpenChannelRequest (..))
+import LndClient.Data.OpenChannel (OpenChannelRequest (..), OpenStatusUpdate (..))
 import LndClient.Data.PayReq (PayReq (..))
 import LndClient.Data.Payment (Payment (..))
 import LndClient.Data.Peer
@@ -249,10 +248,8 @@ mkRpc k = do
       LndEnv ->
       OpenChannelRequest ->
       m (Either LndError ChannelPoint)
-    openChannelSync env =
-      $(grpcSync)
-        (RPC :: RPC LnGRPC.Lightning "openChannelSync")
-        env
+    openChannelSync =
+      $(grpcSync) (RPC :: RPC LnGRPC.Lightning "openChannelSync")
 
     listChannels ::
       ($(tcc) m) =>

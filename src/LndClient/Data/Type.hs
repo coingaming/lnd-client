@@ -12,7 +12,8 @@ where
 import Chronos (Timespan)
 import Control.Exception (Exception)
 import LndClient.Import.External
-import Network.HTTP2.Client.Exceptions as E
+import LndClient.Orphan ()
+import qualified Network.HTTP2.Client.Exceptions as E
 
 data LndError
   = ToGrpcError Text
@@ -24,7 +25,9 @@ data LndError
   | LndError Text
   | LndEnvError Text
   | TChanTimeout Text
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance Out LndError
 
 newtype LoggingStrategy
   = LoggingStrategy
@@ -35,7 +38,9 @@ data LnInitiator
   | LnInitiatorLocal
   | LnInitiatorRemote
   | LnInitiatorBoth
-  deriving (Eq, Ord, Show, Read)
+  deriving (Eq, Ord, Show, Read, Generic)
+
+instance Out LnInitiator
 
 derivePersistField "LnInitiator"
 

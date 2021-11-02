@@ -13,12 +13,13 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data Peer
-  = Peer
-      { pubKey :: NodePubKey,
-        address :: NodeLocation
-      }
-  deriving (Eq, Show)
+data Peer = Peer
+  { pubKey :: NodePubKey,
+    address :: NodeLocation
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out Peer
 
 instance FromGrpc Peer LnGRPC.Peer where
   fromGrpc x =
@@ -26,12 +27,13 @@ instance FromGrpc Peer LnGRPC.Peer where
       <$> fromGrpc (x ^. LnGRPC.pubKey)
       <*> fromGrpc (x ^. LnGRPC.address)
 
-data LightningAddress
-  = LightningAddress
-      { pubkey :: NodePubKey,
-        host :: NodeLocation
-      }
-  deriving (Eq, Show, Read)
+data LightningAddress = LightningAddress
+  { pubkey :: NodePubKey,
+    host :: NodeLocation
+  }
+  deriving (Eq, Show, Read, Generic)
+
+instance Out LightningAddress
 
 instance ToGrpc LightningAddress LnGRPC.LightningAddress where
   toGrpc x =
@@ -44,12 +46,13 @@ instance ToGrpc LightningAddress LnGRPC.LightningAddress where
           & LnGRPC.pubkey .~ gPubkey
           & LnGRPC.host .~ gHost
 
-data ConnectPeerRequest
-  = ConnectPeerRequest
-      { addr :: LightningAddress,
-        perm :: Bool
-      }
-  deriving (Eq, Show)
+data ConnectPeerRequest = ConnectPeerRequest
+  { addr :: LightningAddress,
+    perm :: Bool
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out ConnectPeerRequest
 
 instance ToGrpc ConnectPeerRequest LnGRPC.ConnectPeerRequest where
   toGrpc x =
