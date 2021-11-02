@@ -31,7 +31,16 @@ data Env = Env
   }
 
 data Owner = Alice | Bob
-  deriving (Eq, Ord, Show, Bounded, Enum)
+  deriving
+    ( Eq,
+      Ord,
+      Show,
+      Bounded,
+      Enum,
+      Generic
+    )
+
+instance Out Owner
 
 proxyOwner :: Proxy Owner
 proxyOwner = Proxy

@@ -11,16 +11,19 @@ import qualified Proto.WalletUnlockerGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc_Fields as LnGRPC
 import Prelude (Show (..))
 
-data InitWalletRequest
-  = InitWalletRequest
-      { walletPassword :: LndWalletPassword,
-        cipherSeedMnemonic :: CipherSeedMnemonic,
-        aezeedPassphrase :: Maybe AezeedPassphrase
-      }
+data InitWalletRequest = InitWalletRequest
+  { walletPassword :: LndWalletPassword,
+    cipherSeedMnemonic :: CipherSeedMnemonic,
+    aezeedPassphrase :: Maybe AezeedPassphrase
+  }
   deriving (Eq)
 
 instance Show InitWalletRequest where
   show = const "SECRET"
+
+instance Out InitWalletRequest where
+  docPrec = const $ const "SECRET"
+  doc = const "SECRET"
 
 instance ToGrpc InitWalletRequest LnGRPC.InitWalletRequest where
   toGrpc x =

@@ -8,12 +8,13 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data ClosedChannel
-  = ClosedChannel
-      { channel :: PendingChannel,
-        closingTxid :: TxId 'Closing
-      }
-  deriving (Eq, Show)
+data ClosedChannel = ClosedChannel
+  { channel :: PendingChannel,
+    closingTxid :: TxId 'Closing
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out ClosedChannel
 
 instance
   FromGrpc

@@ -1,5 +1,5 @@
 {- This file was auto-generated from lnd_grpc.proto by the proto-lens-protoc program. -}
-{-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, DataKinds, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies#-}
+{-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies, DeriveGeneric#-}
 {-# OPTIONS_GHC -Wno-unused-imports#-}
 {-# OPTIONS_GHC -Wno-duplicate-exports#-}
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
@@ -132,6 +132,9 @@ module Proto.LndGrpc (
     ) where
 import qualified Data.ProtoLens.Runtime.Control.DeepSeq as Control.DeepSeq
 import qualified Data.ProtoLens.Runtime.Data.ProtoLens.Prism as Data.ProtoLens.Prism
+import qualified LndClient.Orphan
+import qualified GHC.Generics
+import qualified Text.PrettyPrint.GenericPretty
 import qualified Data.ProtoLens.Runtime.Prelude as Prelude
 import qualified Data.ProtoLens.Runtime.Data.Int as Data.Int
 import qualified Data.ProtoLens.Runtime.Data.Monoid as Data.Monoid
@@ -169,13 +172,14 @@ data AMP
                       _AMP'hash :: !Data.ByteString.ByteString,
                       _AMP'preimage :: !Data.ByteString.ByteString,
                       _AMP'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show AMP where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out AMP
 instance Data.ProtoLens.Field.HasField AMP "rootShare" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -449,13 +453,14 @@ data AMPRecord
                             _AMPRecord'setId :: !Data.ByteString.ByteString,
                             _AMPRecord'childIndex :: !Data.Word.Word32,
                             _AMPRecord'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show AMPRecord where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out AMPRecord
 instance Data.ProtoLens.Field.HasField AMPRecord "rootShare" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -650,13 +655,14 @@ data AbandonChannelRequest
                                         _AbandonChannelRequest'pendingFundingShimOnly :: !Prelude.Bool,
                                         _AbandonChannelRequest'iKnowWhatIAmDoing :: !Prelude.Bool,
                                         _AbandonChannelRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show AbandonChannelRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out AbandonChannelRequest
 instance Data.ProtoLens.Field.HasField AbandonChannelRequest "channelPoint" ChannelPoint where
   fieldOf _
     = (Prelude..)
@@ -862,13 +868,14 @@ instance Control.DeepSeq.NFData AbandonChannelRequest where
       -}
 data AbandonChannelResponse
   = AbandonChannelResponse'_constructor {_AbandonChannelResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show AbandonChannelResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out AbandonChannelResponse
 instance Data.ProtoLens.Message AbandonChannelResponse where
   messageName _ = Data.Text.pack "lnrpc.AbandonChannelResponse"
   packedMessageDescriptor _
@@ -936,13 +943,14 @@ data AddInvoiceResponse
                                      _AddInvoiceResponse'addIndex :: !Data.Word.Word64,
                                      _AddInvoiceResponse'paymentAddr :: !Data.ByteString.ByteString,
                                      _AddInvoiceResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show AddInvoiceResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out AddInvoiceResponse
 instance Data.ProtoLens.Field.HasField AddInvoiceResponse "rHash" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -1180,14 +1188,21 @@ instance Control.DeepSeq.NFData AddInvoiceResponse where
                          (_AddInvoiceResponse'paymentAddr x__) ()))))
 newtype AddressType'UnrecognizedValue
   = AddressType'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out AddressType'UnrecognizedValue
 data AddressType
   = WITNESS_PUBKEY_HASH |
     NESTED_PUBKEY_HASH |
     UNUSED_WITNESS_PUBKEY_HASH |
     UNUSED_NESTED_PUBKEY_HASH |
     AddressType'Unrecognized !AddressType'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum AddressType where
   maybeToEnum 0 = Prelude.Just WITNESS_PUBKEY_HASH
   maybeToEnum 1 = Prelude.Just NESTED_PUBKEY_HASH
@@ -1259,6 +1274,7 @@ instance Data.ProtoLens.FieldDefault AddressType where
   fieldDefault = WITNESS_PUBKEY_HASH
 instance Control.DeepSeq.NFData AddressType where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out AddressType
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.sat' @:: Lens' Amount Data.Word.Word64@
@@ -1267,13 +1283,14 @@ data Amount
   = Amount'_constructor {_Amount'sat :: !Data.Word.Word64,
                          _Amount'msat :: !Data.Word.Word64,
                          _Amount'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Amount where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Amount
 instance Data.ProtoLens.Field.HasField Amount "sat" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -1400,13 +1417,14 @@ data BakeMacaroonRequest
   = BakeMacaroonRequest'_constructor {_BakeMacaroonRequest'permissions :: !(Data.Vector.Vector MacaroonPermission),
                                       _BakeMacaroonRequest'rootKeyId :: !Data.Word.Word64,
                                       _BakeMacaroonRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show BakeMacaroonRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out BakeMacaroonRequest
 instance Data.ProtoLens.Field.HasField BakeMacaroonRequest "permissions" [MacaroonPermission] where
   fieldOf _
     = (Prelude..)
@@ -1576,13 +1594,14 @@ instance Control.DeepSeq.NFData BakeMacaroonRequest where
 data BakeMacaroonResponse
   = BakeMacaroonResponse'_constructor {_BakeMacaroonResponse'macaroon :: !Data.Text.Text,
                                        _BakeMacaroonResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show BakeMacaroonResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out BakeMacaroonResponse
 instance Data.ProtoLens.Field.HasField BakeMacaroonResponse "macaroon" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -1699,13 +1718,14 @@ data Chain
   = Chain'_constructor {_Chain'chain :: !Data.Text.Text,
                         _Chain'network :: !Data.Text.Text,
                         _Chain'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Chain where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Chain
 instance Data.ProtoLens.Field.HasField Chain "chain" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -1861,13 +1881,14 @@ instance Control.DeepSeq.NFData Chain where
       -}
 data ChanBackupExportRequest
   = ChanBackupExportRequest'_constructor {_ChanBackupExportRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChanBackupExportRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChanBackupExportRequest
 instance Data.ProtoLens.Message ChanBackupExportRequest where
   messageName _ = Data.Text.pack "lnrpc.ChanBackupExportRequest"
   packedMessageDescriptor _
@@ -1933,13 +1954,14 @@ data ChanBackupSnapshot
   = ChanBackupSnapshot'_constructor {_ChanBackupSnapshot'singleChanBackups :: !(Prelude.Maybe ChannelBackups),
                                      _ChanBackupSnapshot'multiChanBackup :: !(Prelude.Maybe MultiChanBackup),
                                      _ChanBackupSnapshot'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChanBackupSnapshot where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChanBackupSnapshot
 instance Data.ProtoLens.Field.HasField ChanBackupSnapshot "singleChanBackups" ChannelBackups where
   fieldOf _
     = (Prelude..)
@@ -2110,13 +2132,14 @@ instance Control.DeepSeq.NFData ChanBackupSnapshot where
 data ChanInfoRequest
   = ChanInfoRequest'_constructor {_ChanInfoRequest'chanId :: !Data.Word.Word64,
                                   _ChanInfoRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChanInfoRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChanInfoRequest
 instance Data.ProtoLens.Field.HasField ChanInfoRequest "chanId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -2225,13 +2248,14 @@ data ChanPointShim
                                 _ChanPointShim'pendingChanId :: !Data.ByteString.ByteString,
                                 _ChanPointShim'thawHeight :: !Data.Word.Word32,
                                 _ChanPointShim'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChanPointShim where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChanPointShim
 instance Data.ProtoLens.Field.HasField ChanPointShim "amt" Data.Int.Int64 where
   fieldOf _
     = (Prelude..)
@@ -2630,13 +2654,14 @@ data Channel
                           _Channel'localConstraints :: !(Prelude.Maybe ChannelConstraints),
                           _Channel'remoteConstraints :: !(Prelude.Maybe ChannelConstraints),
                           _Channel'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Channel where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Channel
 instance Data.ProtoLens.Field.HasField Channel "active" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -4255,13 +4280,14 @@ data ChannelAcceptRequest
                                        _ChannelAcceptRequest'maxAcceptedHtlcs :: !Data.Word.Word32,
                                        _ChannelAcceptRequest'channelFlags :: !Data.Word.Word32,
                                        _ChannelAcceptRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelAcceptRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelAcceptRequest
 instance Data.ProtoLens.Field.HasField ChannelAcceptRequest "nodePubkey" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -4887,13 +4913,14 @@ data ChannelAcceptResponse
                                         _ChannelAcceptResponse'minHtlcIn :: !Data.Word.Word64,
                                         _ChannelAcceptResponse'minAcceptDepth :: !Data.Word.Word32,
                                         _ChannelAcceptResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelAcceptResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelAcceptResponse
 instance Data.ProtoLens.Field.HasField ChannelAcceptResponse "accept" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -5398,13 +5425,14 @@ data ChannelBackup
   = ChannelBackup'_constructor {_ChannelBackup'chanPoint :: !(Prelude.Maybe ChannelPoint),
                                 _ChannelBackup'chanBackup :: !Data.ByteString.ByteString,
                                 _ChannelBackup'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelBackup where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelBackup
 instance Data.ProtoLens.Field.HasField ChannelBackup "chanPoint" ChannelPoint where
   fieldOf _
     = (Prelude..)
@@ -5564,13 +5592,14 @@ instance Control.DeepSeq.NFData ChannelBackup where
       -}
 data ChannelBackupSubscription
   = ChannelBackupSubscription'_constructor {_ChannelBackupSubscription'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelBackupSubscription where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelBackupSubscription
 instance Data.ProtoLens.Message ChannelBackupSubscription where
   messageName _ = Data.Text.pack "lnrpc.ChannelBackupSubscription"
   packedMessageDescriptor _
@@ -5634,13 +5663,14 @@ instance Control.DeepSeq.NFData ChannelBackupSubscription where
 data ChannelBackups
   = ChannelBackups'_constructor {_ChannelBackups'chanBackups :: !(Data.Vector.Vector ChannelBackup),
                                  _ChannelBackups'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelBackups where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelBackups
 instance Data.ProtoLens.Field.HasField ChannelBackups "chanBackups" [ChannelBackup] where
   fieldOf _
     = (Prelude..)
@@ -5771,13 +5801,14 @@ instance Control.DeepSeq.NFData ChannelBackups where
       -}
 data ChannelBalanceRequest
   = ChannelBalanceRequest'_constructor {_ChannelBalanceRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelBalanceRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelBalanceRequest
 instance Data.ProtoLens.Message ChannelBalanceRequest where
   messageName _ = Data.Text.pack "lnrpc.ChannelBalanceRequest"
   packedMessageDescriptor _
@@ -5859,13 +5890,14 @@ data ChannelBalanceResponse
                                          _ChannelBalanceResponse'pendingOpenLocalBalance :: !(Prelude.Maybe Amount),
                                          _ChannelBalanceResponse'pendingOpenRemoteBalance :: !(Prelude.Maybe Amount),
                                          _ChannelBalanceResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelBalanceResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelBalanceResponse
 instance Data.ProtoLens.Field.HasField ChannelBalanceResponse "balance" Data.Int.Int64 where
   fieldOf _
     = (Prelude..)
@@ -6369,13 +6401,14 @@ data ChannelCloseSummary
                                       _ChannelCloseSummary'closeInitiator :: !Initiator,
                                       _ChannelCloseSummary'resolutions :: !(Data.Vector.Vector Resolution),
                                       _ChannelCloseSummary'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelCloseSummary where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelCloseSummary
 instance Data.ProtoLens.Field.HasField ChannelCloseSummary "channelPoint" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -7105,7 +7138,11 @@ instance Control.DeepSeq.NFData ChannelCloseSummary where
                                                     ())))))))))))))
 newtype ChannelCloseSummary'ClosureType'UnrecognizedValue
   = ChannelCloseSummary'ClosureType'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out ChannelCloseSummary'ClosureType'UnrecognizedValue
 data ChannelCloseSummary'ClosureType
   = ChannelCloseSummary'COOPERATIVE_CLOSE |
     ChannelCloseSummary'LOCAL_FORCE_CLOSE |
@@ -7114,7 +7151,10 @@ data ChannelCloseSummary'ClosureType
     ChannelCloseSummary'FUNDING_CANCELED |
     ChannelCloseSummary'ABANDONED |
     ChannelCloseSummary'ClosureType'Unrecognized !ChannelCloseSummary'ClosureType'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum ChannelCloseSummary'ClosureType where
   maybeToEnum 0 = Prelude.Just ChannelCloseSummary'COOPERATIVE_CLOSE
   maybeToEnum 1 = Prelude.Just ChannelCloseSummary'LOCAL_FORCE_CLOSE
@@ -7214,6 +7254,7 @@ instance Data.ProtoLens.FieldDefault ChannelCloseSummary'ClosureType where
   fieldDefault = ChannelCloseSummary'COOPERATIVE_CLOSE
 instance Control.DeepSeq.NFData ChannelCloseSummary'ClosureType where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out ChannelCloseSummary'ClosureType
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.closingTxid' @:: Lens' ChannelCloseUpdate Data.ByteString.ByteString@
@@ -7222,13 +7263,14 @@ data ChannelCloseUpdate
   = ChannelCloseUpdate'_constructor {_ChannelCloseUpdate'closingTxid :: !Data.ByteString.ByteString,
                                      _ChannelCloseUpdate'success :: !Prelude.Bool,
                                      _ChannelCloseUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelCloseUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelCloseUpdate
 instance Data.ProtoLens.Field.HasField ChannelCloseUpdate "closingTxid" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -7386,13 +7428,14 @@ data ChannelConstraints
                                      _ChannelConstraints'minHtlcMsat :: !Data.Word.Word64,
                                      _ChannelConstraints'maxAcceptedHtlcs :: !Data.Word.Word32,
                                      _ChannelConstraints'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelConstraints where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelConstraints
 instance Data.ProtoLens.Field.HasField ChannelConstraints "csvDelay" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -7711,13 +7754,14 @@ data ChannelEdge
                               _ChannelEdge'node1Policy :: !(Prelude.Maybe RoutingPolicy),
                               _ChannelEdge'node2Policy :: !(Prelude.Maybe RoutingPolicy),
                               _ChannelEdge'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelEdge where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelEdge
 instance Data.ProtoLens.Field.HasField ChannelEdge "channelId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -8172,13 +8216,14 @@ data ChannelEdgeUpdate
                                     _ChannelEdgeUpdate'advertisingNode :: !Data.Text.Text,
                                     _ChannelEdgeUpdate'connectingNode :: !Data.Text.Text,
                                     _ChannelEdgeUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelEdgeUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelEdgeUpdate
 instance Data.ProtoLens.Field.HasField ChannelEdgeUpdate "chanId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -8529,13 +8574,14 @@ instance Control.DeepSeq.NFData ChannelEdgeUpdate where
       -}
 data ChannelEventSubscription
   = ChannelEventSubscription'_constructor {_ChannelEventSubscription'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelEventSubscription where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelEventSubscription
 instance Data.ProtoLens.Message ChannelEventSubscription where
   messageName _ = Data.Text.pack "lnrpc.ChannelEventSubscription"
   packedMessageDescriptor _
@@ -8609,20 +8655,25 @@ data ChannelEventUpdate
   = ChannelEventUpdate'_constructor {_ChannelEventUpdate'type' :: !ChannelEventUpdate'UpdateType,
                                      _ChannelEventUpdate'channel :: !(Prelude.Maybe ChannelEventUpdate'Channel),
                                      _ChannelEventUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelEventUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelEventUpdate
 data ChannelEventUpdate'Channel
   = ChannelEventUpdate'OpenChannel !Channel |
     ChannelEventUpdate'ClosedChannel !ChannelCloseSummary |
     ChannelEventUpdate'ActiveChannel !ChannelPoint |
     ChannelEventUpdate'InactiveChannel !ChannelPoint |
     ChannelEventUpdate'PendingOpenChannel !PendingUpdate
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out ChannelEventUpdate'Channel
 instance Data.ProtoLens.Field.HasField ChannelEventUpdate "type'" ChannelEventUpdate'UpdateType where
   fieldOf _
     = (Prelude..)
@@ -9095,7 +9146,11 @@ _ChannelEventUpdate'PendingOpenChannel
               _otherwise -> Prelude.Nothing)
 newtype ChannelEventUpdate'UpdateType'UnrecognizedValue
   = ChannelEventUpdate'UpdateType'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out ChannelEventUpdate'UpdateType'UnrecognizedValue
 data ChannelEventUpdate'UpdateType
   = ChannelEventUpdate'OPEN_CHANNEL |
     ChannelEventUpdate'CLOSED_CHANNEL |
@@ -9103,7 +9158,10 @@ data ChannelEventUpdate'UpdateType
     ChannelEventUpdate'INACTIVE_CHANNEL |
     ChannelEventUpdate'PENDING_OPEN_CHANNEL |
     ChannelEventUpdate'UpdateType'Unrecognized !ChannelEventUpdate'UpdateType'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum ChannelEventUpdate'UpdateType where
   maybeToEnum 0 = Prelude.Just ChannelEventUpdate'OPEN_CHANNEL
   maybeToEnum 1 = Prelude.Just ChannelEventUpdate'CLOSED_CHANNEL
@@ -9193,6 +9251,7 @@ instance Data.ProtoLens.FieldDefault ChannelEventUpdate'UpdateType where
   fieldDefault = ChannelEventUpdate'OPEN_CHANNEL
 instance Control.DeepSeq.NFData ChannelEventUpdate'UpdateType where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out ChannelEventUpdate'UpdateType
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.chanId' @:: Lens' ChannelFeeReport Data.Word.Word64@
@@ -9207,13 +9266,14 @@ data ChannelFeeReport
                                    _ChannelFeeReport'feePerMil :: !Data.Int.Int64,
                                    _ChannelFeeReport'feeRate :: !Prelude.Double,
                                    _ChannelFeeReport'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelFeeReport where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelFeeReport
 instance Data.ProtoLens.Field.HasField ChannelFeeReport "chanId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -9489,13 +9549,14 @@ data ChannelGraph
   = ChannelGraph'_constructor {_ChannelGraph'nodes :: !(Data.Vector.Vector LightningNode),
                                _ChannelGraph'edges :: !(Data.Vector.Vector ChannelEdge),
                                _ChannelGraph'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelGraph where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelGraph
 instance Data.ProtoLens.Field.HasField ChannelGraph "nodes" [LightningNode] where
   fieldOf _
     = (Prelude..)
@@ -9680,13 +9741,14 @@ instance Control.DeepSeq.NFData ChannelGraph where
 data ChannelGraphRequest
   = ChannelGraphRequest'_constructor {_ChannelGraphRequest'includeUnannounced :: !Prelude.Bool,
                                       _ChannelGraphRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelGraphRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelGraphRequest
 instance Data.ProtoLens.Field.HasField ChannelGraphRequest "includeUnannounced" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -9795,13 +9857,14 @@ instance Control.DeepSeq.NFData ChannelGraphRequest where
 data ChannelOpenUpdate
   = ChannelOpenUpdate'_constructor {_ChannelOpenUpdate'channelPoint :: !(Prelude.Maybe ChannelPoint),
                                     _ChannelOpenUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelOpenUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelOpenUpdate
 instance Data.ProtoLens.Field.HasField ChannelOpenUpdate "channelPoint" ChannelPoint where
   fieldOf _
     = (Prelude..)
@@ -9924,17 +9987,22 @@ data ChannelPoint
   = ChannelPoint'_constructor {_ChannelPoint'outputIndex :: !Data.Word.Word32,
                                _ChannelPoint'fundingTxid :: !(Prelude.Maybe ChannelPoint'FundingTxid),
                                _ChannelPoint'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelPoint where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelPoint
 data ChannelPoint'FundingTxid
   = ChannelPoint'FundingTxidBytes !Data.ByteString.ByteString |
     ChannelPoint'FundingTxidStr !Data.Text.Text
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out ChannelPoint'FundingTxid
 instance Data.ProtoLens.Field.HasField ChannelPoint "outputIndex" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -10217,13 +10285,14 @@ data ChannelUpdate
                                 _ChannelUpdate'htlcMaximumMsat :: !Data.Word.Word64,
                                 _ChannelUpdate'extraOpaqueData :: !Data.ByteString.ByteString,
                                 _ChannelUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChannelUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChannelUpdate
 instance Data.ProtoLens.Field.HasField ChannelUpdate "signature" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -10810,13 +10879,14 @@ data CloseChannelRequest
                                       _CloseChannelRequest'deliveryAddress :: !Data.Text.Text,
                                       _CloseChannelRequest'satPerVbyte :: !Data.Word.Word64,
                                       _CloseChannelRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show CloseChannelRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out CloseChannelRequest
 instance Data.ProtoLens.Field.HasField CloseChannelRequest "channelPoint" ChannelPoint where
   fieldOf _
     = (Prelude..)
@@ -11152,17 +11222,22 @@ instance Control.DeepSeq.NFData CloseChannelRequest where
 data CloseStatusUpdate
   = CloseStatusUpdate'_constructor {_CloseStatusUpdate'update :: !(Prelude.Maybe CloseStatusUpdate'Update),
                                     _CloseStatusUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show CloseStatusUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out CloseStatusUpdate
 data CloseStatusUpdate'Update
   = CloseStatusUpdate'ClosePending !PendingUpdate |
     CloseStatusUpdate'ChanClose !ChannelCloseUpdate
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out CloseStatusUpdate'Update
 instance Data.ProtoLens.Field.HasField CloseStatusUpdate "maybe'update" (Prelude.Maybe CloseStatusUpdate'Update) where
   fieldOf _
     = (Prelude..)
@@ -11386,13 +11461,14 @@ data ClosedChannelUpdate
                                       _ClosedChannelUpdate'closedHeight :: !Data.Word.Word32,
                                       _ClosedChannelUpdate'chanPoint :: !(Prelude.Maybe ChannelPoint),
                                       _ClosedChannelUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ClosedChannelUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ClosedChannelUpdate
 instance Data.ProtoLens.Field.HasField ClosedChannelUpdate "chanId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -11635,13 +11711,14 @@ data ClosedChannelsRequest
                                         _ClosedChannelsRequest'fundingCanceled :: !Prelude.Bool,
                                         _ClosedChannelsRequest'abandoned :: !Prelude.Bool,
                                         _ClosedChannelsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ClosedChannelsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ClosedChannelsRequest
 instance Data.ProtoLens.Field.HasField ClosedChannelsRequest "cooperative" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -11957,13 +12034,14 @@ instance Control.DeepSeq.NFData ClosedChannelsRequest where
 data ClosedChannelsResponse
   = ClosedChannelsResponse'_constructor {_ClosedChannelsResponse'channels :: !(Data.Vector.Vector ChannelCloseSummary),
                                          _ClosedChannelsResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ClosedChannelsResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ClosedChannelsResponse
 instance Data.ProtoLens.Field.HasField ClosedChannelsResponse "channels" [ChannelCloseSummary] where
   fieldOf _
     = (Prelude..)
@@ -12089,14 +12167,21 @@ instance Control.DeepSeq.NFData ClosedChannelsResponse where
              (Control.DeepSeq.deepseq (_ClosedChannelsResponse'channels x__) ())
 newtype CommitmentType'UnrecognizedValue
   = CommitmentType'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out CommitmentType'UnrecognizedValue
 data CommitmentType
   = LEGACY |
     STATIC_REMOTE_KEY |
     ANCHORS |
     UNKNOWN_COMMITMENT_TYPE |
     CommitmentType'Unrecognized !CommitmentType'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum CommitmentType where
   maybeToEnum 0 = Prelude.Just LEGACY
   maybeToEnum 1 = Prelude.Just STATIC_REMOTE_KEY
@@ -12167,6 +12252,7 @@ instance Data.ProtoLens.FieldDefault CommitmentType where
   fieldDefault = LEGACY
 instance Control.DeepSeq.NFData CommitmentType where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out CommitmentType
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.blockSha' @:: Lens' ConfirmationUpdate Data.ByteString.ByteString@
@@ -12177,13 +12263,14 @@ data ConfirmationUpdate
                                      _ConfirmationUpdate'blockHeight :: !Data.Int.Int32,
                                      _ConfirmationUpdate'numConfsLeft :: !Data.Word.Word32,
                                      _ConfirmationUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ConfirmationUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ConfirmationUpdate
 instance Data.ProtoLens.Field.HasField ConfirmationUpdate "blockSha" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -12380,13 +12467,14 @@ data ConnectPeerRequest
                                      _ConnectPeerRequest'perm :: !Prelude.Bool,
                                      _ConnectPeerRequest'timeout :: !Data.Word.Word64,
                                      _ConnectPeerRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ConnectPeerRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ConnectPeerRequest
 instance Data.ProtoLens.Field.HasField ConnectPeerRequest "addr" LightningAddress where
   fieldOf _
     = (Prelude..)
@@ -12570,13 +12658,14 @@ instance Control.DeepSeq.NFData ConnectPeerRequest where
       -}
 data ConnectPeerResponse
   = ConnectPeerResponse'_constructor {_ConnectPeerResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ConnectPeerResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ConnectPeerResponse
 instance Data.ProtoLens.Message ConnectPeerResponse where
   messageName _ = Data.Text.pack "lnrpc.ConnectPeerResponse"
   packedMessageDescriptor _
@@ -12640,13 +12729,14 @@ data DebugLevelRequest
   = DebugLevelRequest'_constructor {_DebugLevelRequest'show :: !Prelude.Bool,
                                     _DebugLevelRequest'levelSpec :: !Data.Text.Text,
                                     _DebugLevelRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show DebugLevelRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out DebugLevelRequest
 instance Data.ProtoLens.Field.HasField DebugLevelRequest "show" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -12799,13 +12889,14 @@ instance Control.DeepSeq.NFData DebugLevelRequest where
 data DebugLevelResponse
   = DebugLevelResponse'_constructor {_DebugLevelResponse'subSystems :: !Data.Text.Text,
                                      _DebugLevelResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show DebugLevelResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out DebugLevelResponse
 instance Data.ProtoLens.Field.HasField DebugLevelResponse "subSystems" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -12924,13 +13015,14 @@ data DeleteAllPaymentsRequest
   = DeleteAllPaymentsRequest'_constructor {_DeleteAllPaymentsRequest'failedPaymentsOnly :: !Prelude.Bool,
                                            _DeleteAllPaymentsRequest'failedHtlcsOnly :: !Prelude.Bool,
                                            _DeleteAllPaymentsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show DeleteAllPaymentsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out DeleteAllPaymentsRequest
 instance Data.ProtoLens.Field.HasField DeleteAllPaymentsRequest "failedPaymentsOnly" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -13082,13 +13174,14 @@ instance Control.DeepSeq.NFData DeleteAllPaymentsRequest where
       -}
 data DeleteAllPaymentsResponse
   = DeleteAllPaymentsResponse'_constructor {_DeleteAllPaymentsResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show DeleteAllPaymentsResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out DeleteAllPaymentsResponse
 instance Data.ProtoLens.Message DeleteAllPaymentsResponse where
   messageName _ = Data.Text.pack "lnrpc.DeleteAllPaymentsResponse"
   packedMessageDescriptor _
@@ -13151,13 +13244,14 @@ instance Control.DeepSeq.NFData DeleteAllPaymentsResponse where
 data DeleteMacaroonIDRequest
   = DeleteMacaroonIDRequest'_constructor {_DeleteMacaroonIDRequest'rootKeyId :: !Data.Word.Word64,
                                           _DeleteMacaroonIDRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show DeleteMacaroonIDRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out DeleteMacaroonIDRequest
 instance Data.ProtoLens.Field.HasField DeleteMacaroonIDRequest "rootKeyId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -13257,13 +13351,14 @@ instance Control.DeepSeq.NFData DeleteMacaroonIDRequest where
 data DeleteMacaroonIDResponse
   = DeleteMacaroonIDResponse'_constructor {_DeleteMacaroonIDResponse'deleted :: !Prelude.Bool,
                                            _DeleteMacaroonIDResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show DeleteMacaroonIDResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out DeleteMacaroonIDResponse
 instance Data.ProtoLens.Field.HasField DeleteMacaroonIDResponse "deleted" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -13366,13 +13461,14 @@ instance Control.DeepSeq.NFData DeleteMacaroonIDResponse where
 data DisconnectPeerRequest
   = DisconnectPeerRequest'_constructor {_DisconnectPeerRequest'pubKey :: !Data.Text.Text,
                                         _DisconnectPeerRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show DisconnectPeerRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out DisconnectPeerRequest
 instance Data.ProtoLens.Field.HasField DisconnectPeerRequest "pubKey" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -13483,13 +13579,14 @@ instance Control.DeepSeq.NFData DisconnectPeerRequest where
       -}
 data DisconnectPeerResponse
   = DisconnectPeerResponse'_constructor {_DisconnectPeerResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show DisconnectPeerResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out DisconnectPeerResponse
 instance Data.ProtoLens.Message DisconnectPeerResponse where
   messageName _ = Data.Text.pack "lnrpc.DisconnectPeerResponse"
   packedMessageDescriptor _
@@ -13553,13 +13650,14 @@ data EdgeLocator
   = EdgeLocator'_constructor {_EdgeLocator'channelId :: !Data.Word.Word64,
                               _EdgeLocator'directionReverse :: !Prelude.Bool,
                               _EdgeLocator'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show EdgeLocator where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out EdgeLocator
 instance Data.ProtoLens.Field.HasField EdgeLocator "channelId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -13708,13 +13806,14 @@ data EstimateFeeRequest
                                      _EstimateFeeRequest'minConfs :: !Data.Int.Int32,
                                      _EstimateFeeRequest'spendUnconfirmed :: !Prelude.Bool,
                                      _EstimateFeeRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show EstimateFeeRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out EstimateFeeRequest
 instance Data.ProtoLens.Field.HasField EstimateFeeRequest "addrToAmount" (Data.Map.Map Data.Text.Text Data.Int.Int64) where
   fieldOf _
     = (Prelude..)
@@ -13974,13 +14073,14 @@ data EstimateFeeRequest'AddrToAmountEntry
   = EstimateFeeRequest'AddrToAmountEntry'_constructor {_EstimateFeeRequest'AddrToAmountEntry'key :: !Data.Text.Text,
                                                        _EstimateFeeRequest'AddrToAmountEntry'value :: !Data.Int.Int64,
                                                        _EstimateFeeRequest'AddrToAmountEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show EstimateFeeRequest'AddrToAmountEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out EstimateFeeRequest'AddrToAmountEntry
 instance Data.ProtoLens.Field.HasField EstimateFeeRequest'AddrToAmountEntry "key" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -14140,13 +14240,14 @@ data EstimateFeeResponse
                                       _EstimateFeeResponse'feerateSatPerByte :: !Data.Int.Int64,
                                       _EstimateFeeResponse'satPerVbyte :: !Data.Word.Word64,
                                       _EstimateFeeResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show EstimateFeeResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out EstimateFeeResponse
 instance Data.ProtoLens.Field.HasField EstimateFeeResponse "feeSat" Data.Int.Int64 where
   fieldOf _
     = (Prelude..)
@@ -14329,13 +14430,14 @@ instance Control.DeepSeq.NFData EstimateFeeResponse where
 data ExportChannelBackupRequest
   = ExportChannelBackupRequest'_constructor {_ExportChannelBackupRequest'chanPoint :: !(Prelude.Maybe ChannelPoint),
                                              _ExportChannelBackupRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ExportChannelBackupRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ExportChannelBackupRequest
 instance Data.ProtoLens.Field.HasField ExportChannelBackupRequest "chanPoint" ChannelPoint where
   fieldOf _
     = (Prelude..)
@@ -14469,13 +14571,14 @@ data Failure
                           _Failure'failureSourceIndex :: !Data.Word.Word32,
                           _Failure'height :: !Data.Word.Word32,
                           _Failure'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Failure where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Failure
 instance Data.ProtoLens.Field.HasField Failure "code" Failure'FailureCode where
   fieldOf _
     = (Prelude..)
@@ -14903,7 +15006,11 @@ instance Control.DeepSeq.NFData Failure where
                                   (Control.DeepSeq.deepseq (_Failure'height x__) ()))))))))
 newtype Failure'FailureCode'UnrecognizedValue
   = Failure'FailureCode'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out Failure'FailureCode'UnrecognizedValue
 data Failure'FailureCode
   = Failure'RESERVED |
     Failure'INCORRECT_OR_UNKNOWN_PAYMENT_DETAILS |
@@ -14934,7 +15041,10 @@ data Failure'FailureCode
     Failure'UNKNOWN_FAILURE |
     Failure'UNREADABLE_FAILURE |
     Failure'FailureCode'Unrecognized !Failure'FailureCode'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum Failure'FailureCode where
   maybeToEnum 0 = Prelude.Just Failure'RESERVED
   maybeToEnum 1
@@ -15202,6 +15312,7 @@ instance Data.ProtoLens.FieldDefault Failure'FailureCode where
   fieldDefault = Failure'RESERVED
 instance Control.DeepSeq.NFData Failure'FailureCode where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out Failure'FailureCode
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.name' @:: Lens' Feature Data.Text.Text@
@@ -15212,13 +15323,14 @@ data Feature
                           _Feature'isRequired :: !Prelude.Bool,
                           _Feature'isKnown :: !Prelude.Bool,
                           _Feature'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Feature where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Feature
 instance Data.ProtoLens.Field.HasField Feature "name" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -15403,7 +15515,11 @@ instance Control.DeepSeq.NFData Feature where
                    (Control.DeepSeq.deepseq (_Feature'isKnown x__) ())))
 newtype FeatureBit'UnrecognizedValue
   = FeatureBit'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out FeatureBit'UnrecognizedValue
 data FeatureBit
   = DATALOSS_PROTECT_REQ |
     DATALOSS_PROTECT_OPT |
@@ -15431,7 +15547,10 @@ data FeatureBit
     AMP_REQ |
     AMP_OPT |
     FeatureBit'Unrecognized !FeatureBit'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum FeatureBit where
   maybeToEnum 0 = Prelude.Just DATALOSS_PROTECT_REQ
   maybeToEnum 1 = Prelude.Just DATALOSS_PROTECT_OPT
@@ -15638,6 +15757,7 @@ instance Data.ProtoLens.FieldDefault FeatureBit where
   fieldDefault = DATALOSS_PROTECT_REQ
 instance Control.DeepSeq.NFData FeatureBit where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out FeatureBit
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.maybe'limit' @:: Lens' FeeLimit (Prelude.Maybe FeeLimit'Limit)@
@@ -15650,18 +15770,23 @@ instance Control.DeepSeq.NFData FeatureBit where
 data FeeLimit
   = FeeLimit'_constructor {_FeeLimit'limit :: !(Prelude.Maybe FeeLimit'Limit),
                            _FeeLimit'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show FeeLimit where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out FeeLimit
 data FeeLimit'Limit
   = FeeLimit'Fixed !Data.Int.Int64 |
     FeeLimit'FixedMsat !Data.Int.Int64 |
     FeeLimit'Percent !Data.Int.Int64
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out FeeLimit'Limit
 instance Data.ProtoLens.Field.HasField FeeLimit "maybe'limit" (Prelude.Maybe FeeLimit'Limit) where
   fieldOf _
     = (Prelude..)
@@ -15905,13 +16030,14 @@ _FeeLimit'Percent
       -}
 data FeeReportRequest
   = FeeReportRequest'_constructor {_FeeReportRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show FeeReportRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out FeeReportRequest
 instance Data.ProtoLens.Message FeeReportRequest where
   messageName _ = Data.Text.pack "lnrpc.FeeReportRequest"
   packedMessageDescriptor _
@@ -15980,13 +16106,14 @@ data FeeReportResponse
                                     _FeeReportResponse'weekFeeSum :: !Data.Word.Word64,
                                     _FeeReportResponse'monthFeeSum :: !Data.Word.Word64,
                                     _FeeReportResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show FeeReportResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out FeeReportResponse
 instance Data.ProtoLens.Field.HasField FeeReportResponse "channelFees" [ChannelFeeReport] where
   fieldOf _
     = (Prelude..)
@@ -16236,13 +16363,14 @@ data FloatMetric
   = FloatMetric'_constructor {_FloatMetric'value :: !Prelude.Double,
                               _FloatMetric'normalizedValue :: !Prelude.Double,
                               _FloatMetric'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show FloatMetric where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out FloatMetric
 instance Data.ProtoLens.Field.HasField FloatMetric "value" Prelude.Double where
   fieldOf _
     = (Prelude..)
@@ -16406,13 +16534,14 @@ data ForwardingEvent
                                   _ForwardingEvent'amtOutMsat :: !Data.Word.Word64,
                                   _ForwardingEvent'timestampNs :: !Data.Word.Word64,
                                   _ForwardingEvent'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ForwardingEvent where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ForwardingEvent
 instance Data.ProtoLens.Field.HasField ForwardingEvent "timestamp" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -16843,13 +16972,14 @@ data ForwardingHistoryRequest
                                            _ForwardingHistoryRequest'indexOffset :: !Data.Word.Word32,
                                            _ForwardingHistoryRequest'numMaxEvents :: !Data.Word.Word32,
                                            _ForwardingHistoryRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ForwardingHistoryRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ForwardingHistoryRequest
 instance Data.ProtoLens.Field.HasField ForwardingHistoryRequest "startTime" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -17070,13 +17200,14 @@ data ForwardingHistoryResponse
   = ForwardingHistoryResponse'_constructor {_ForwardingHistoryResponse'forwardingEvents :: !(Data.Vector.Vector ForwardingEvent),
                                             _ForwardingHistoryResponse'lastOffsetIndex :: !Data.Word.Word32,
                                             _ForwardingHistoryResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ForwardingHistoryResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ForwardingHistoryResponse
 instance Data.ProtoLens.Field.HasField ForwardingHistoryResponse "forwardingEvents" [ForwardingEvent] where
   fieldOf _
     = (Prelude..)
@@ -17262,13 +17393,14 @@ data FundingPsbtFinalize
                                       _FundingPsbtFinalize'pendingChanId :: !Data.ByteString.ByteString,
                                       _FundingPsbtFinalize'finalRawTx :: !Data.ByteString.ByteString,
                                       _FundingPsbtFinalize'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show FundingPsbtFinalize where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out FundingPsbtFinalize
 instance Data.ProtoLens.Field.HasField FundingPsbtFinalize "signedPsbt" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -17474,13 +17606,14 @@ data FundingPsbtVerify
   = FundingPsbtVerify'_constructor {_FundingPsbtVerify'fundedPsbt :: !Data.ByteString.ByteString,
                                     _FundingPsbtVerify'pendingChanId :: !Data.ByteString.ByteString,
                                     _FundingPsbtVerify'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show FundingPsbtVerify where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out FundingPsbtVerify
 instance Data.ProtoLens.Field.HasField FundingPsbtVerify "fundedPsbt" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -17642,17 +17775,22 @@ instance Control.DeepSeq.NFData FundingPsbtVerify where
 data FundingShim
   = FundingShim'_constructor {_FundingShim'shim :: !(Prelude.Maybe FundingShim'Shim),
                               _FundingShim'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show FundingShim where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out FundingShim
 data FundingShim'Shim
   = FundingShim'ChanPointShim !ChanPointShim |
     FundingShim'PsbtShim !PsbtShim
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out FundingShim'Shim
 instance Data.ProtoLens.Field.HasField FundingShim "maybe'shim" (Prelude.Maybe FundingShim'Shim) where
   fieldOf _
     = (Prelude..)
@@ -17860,13 +17998,14 @@ _FundingShim'PsbtShim
 data FundingShimCancel
   = FundingShimCancel'_constructor {_FundingShimCancel'pendingChanId :: !Data.ByteString.ByteString,
                                     _FundingShimCancel'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show FundingShimCancel where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out FundingShimCancel
 instance Data.ProtoLens.Field.HasField FundingShimCancel "pendingChanId" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -17975,13 +18114,14 @@ instance Control.DeepSeq.NFData FundingShimCancel where
       -}
 data FundingStateStepResp
   = FundingStateStepResp'_constructor {_FundingStateStepResp'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show FundingStateStepResp where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out FundingStateStepResp
 instance Data.ProtoLens.Message FundingStateStepResp where
   messageName _ = Data.Text.pack "lnrpc.FundingStateStepResp"
   packedMessageDescriptor _
@@ -18051,19 +18191,24 @@ instance Control.DeepSeq.NFData FundingStateStepResp where
 data FundingTransitionMsg
   = FundingTransitionMsg'_constructor {_FundingTransitionMsg'trigger :: !(Prelude.Maybe FundingTransitionMsg'Trigger),
                                        _FundingTransitionMsg'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show FundingTransitionMsg where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out FundingTransitionMsg
 data FundingTransitionMsg'Trigger
   = FundingTransitionMsg'ShimRegister !FundingShim |
     FundingTransitionMsg'ShimCancel !FundingShimCancel |
     FundingTransitionMsg'PsbtVerify !FundingPsbtVerify |
     FundingTransitionMsg'PsbtFinalize !FundingPsbtFinalize
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out FundingTransitionMsg'Trigger
 instance Data.ProtoLens.Field.HasField FundingTransitionMsg "maybe'trigger" (Prelude.Maybe FundingTransitionMsg'Trigger) where
   fieldOf _
     = (Prelude..)
@@ -18416,13 +18561,14 @@ _FundingTransitionMsg'PsbtFinalize
       -}
 data GetInfoRequest
   = GetInfoRequest'_constructor {_GetInfoRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GetInfoRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GetInfoRequest
 instance Data.ProtoLens.Message GetInfoRequest where
   messageName _ = Data.Text.pack "lnrpc.GetInfoRequest"
   packedMessageDescriptor _
@@ -18518,13 +18664,14 @@ data GetInfoResponse
                                   _GetInfoResponse'uris :: !(Data.Vector.Vector Data.Text.Text),
                                   _GetInfoResponse'features :: !(Data.Map.Map Data.Word.Word32 Feature),
                                   _GetInfoResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GetInfoResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GetInfoResponse
 instance Data.ProtoLens.Field.HasField GetInfoResponse "version" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -19573,13 +19720,14 @@ data GetInfoResponse'FeaturesEntry
   = GetInfoResponse'FeaturesEntry'_constructor {_GetInfoResponse'FeaturesEntry'key :: !Data.Word.Word32,
                                                 _GetInfoResponse'FeaturesEntry'value :: !(Prelude.Maybe Feature),
                                                 _GetInfoResponse'FeaturesEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GetInfoResponse'FeaturesEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GetInfoResponse'FeaturesEntry
 instance Data.ProtoLens.Field.HasField GetInfoResponse'FeaturesEntry "key" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -19730,13 +19878,14 @@ instance Control.DeepSeq.NFData GetInfoResponse'FeaturesEntry where
       -}
 data GetRecoveryInfoRequest
   = GetRecoveryInfoRequest'_constructor {_GetRecoveryInfoRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GetRecoveryInfoRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GetRecoveryInfoRequest
 instance Data.ProtoLens.Message GetRecoveryInfoRequest where
   messageName _ = Data.Text.pack "lnrpc.GetRecoveryInfoRequest"
   packedMessageDescriptor _
@@ -19802,13 +19951,14 @@ data GetRecoveryInfoResponse
                                           _GetRecoveryInfoResponse'recoveryFinished :: !Prelude.Bool,
                                           _GetRecoveryInfoResponse'progress :: !Prelude.Double,
                                           _GetRecoveryInfoResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GetRecoveryInfoResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GetRecoveryInfoResponse
 instance Data.ProtoLens.Field.HasField GetRecoveryInfoResponse "recoveryMode" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -20006,13 +20156,14 @@ data GetTransactionsRequest
                                          _GetTransactionsRequest'endHeight :: !Data.Int.Int32,
                                          _GetTransactionsRequest'account :: !Data.Text.Text,
                                          _GetTransactionsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GetTransactionsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GetTransactionsRequest
 instance Data.ProtoLens.Field.HasField GetTransactionsRequest "startHeight" Data.Int.Int32 where
   fieldOf _
     = (Prelude..)
@@ -20205,13 +20356,14 @@ instance Control.DeepSeq.NFData GetTransactionsRequest where
       -}
 data GraphTopologySubscription
   = GraphTopologySubscription'_constructor {_GraphTopologySubscription'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GraphTopologySubscription where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GraphTopologySubscription
 instance Data.ProtoLens.Message GraphTopologySubscription where
   messageName _ = Data.Text.pack "lnrpc.GraphTopologySubscription"
   packedMessageDescriptor _
@@ -20281,13 +20433,14 @@ data GraphTopologyUpdate
                                       _GraphTopologyUpdate'channelUpdates :: !(Data.Vector.Vector ChannelEdgeUpdate),
                                       _GraphTopologyUpdate'closedChans :: !(Data.Vector.Vector ClosedChannelUpdate),
                                       _GraphTopologyUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GraphTopologyUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GraphTopologyUpdate
 instance Data.ProtoLens.Field.HasField GraphTopologyUpdate "nodeUpdates" [NodeUpdate] where
   fieldOf _
     = (Prelude..)
@@ -20573,13 +20726,14 @@ data HTLC
                        _HTLC'forwardingChannel :: !Data.Word.Word64,
                        _HTLC'forwardingHtlcIndex :: !Data.Word.Word64,
                        _HTLC'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show HTLC where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out HTLC
 instance Data.ProtoLens.Field.HasField HTLC "incoming" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -20932,13 +21086,14 @@ data HTLCAttempt
                               _HTLCAttempt'failure :: !(Prelude.Maybe Failure),
                               _HTLCAttempt'preimage :: !Data.ByteString.ByteString,
                               _HTLCAttempt'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show HTLCAttempt where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out HTLCAttempt
 instance Data.ProtoLens.Field.HasField HTLCAttempt "attemptId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -21313,13 +21468,20 @@ instance Control.DeepSeq.NFData HTLCAttempt where
                                (Control.DeepSeq.deepseq (_HTLCAttempt'preimage x__) ())))))))
 newtype HTLCAttempt'HTLCStatus'UnrecognizedValue
   = HTLCAttempt'HTLCStatus'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out HTLCAttempt'HTLCStatus'UnrecognizedValue
 data HTLCAttempt'HTLCStatus
   = HTLCAttempt'IN_FLIGHT |
     HTLCAttempt'SUCCEEDED |
     HTLCAttempt'FAILED |
     HTLCAttempt'HTLCStatus'Unrecognized !HTLCAttempt'HTLCStatus'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum HTLCAttempt'HTLCStatus where
   maybeToEnum 0 = Prelude.Just HTLCAttempt'IN_FLIGHT
   maybeToEnum 1 = Prelude.Just HTLCAttempt'SUCCEEDED
@@ -21382,6 +21544,7 @@ instance Data.ProtoLens.FieldDefault HTLCAttempt'HTLCStatus where
   fieldDefault = HTLCAttempt'IN_FLIGHT
 instance Control.DeepSeq.NFData HTLCAttempt'HTLCStatus where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out HTLCAttempt'HTLCStatus
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.chanId' @:: Lens' Hop Data.Word.Word64@
@@ -21412,13 +21575,14 @@ data Hop
                       _Hop'ampRecord :: !(Prelude.Maybe AMPRecord),
                       _Hop'customRecords :: !(Data.Map.Map Data.Word.Word64 Data.ByteString.ByteString),
                       _Hop'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Hop where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Hop
 instance Data.ProtoLens.Field.HasField Hop "chanId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -22028,13 +22192,14 @@ data Hop'CustomRecordsEntry
   = Hop'CustomRecordsEntry'_constructor {_Hop'CustomRecordsEntry'key :: !Data.Word.Word64,
                                          _Hop'CustomRecordsEntry'value :: !Data.ByteString.ByteString,
                                          _Hop'CustomRecordsEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Hop'CustomRecordsEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Hop'CustomRecordsEntry
 instance Data.ProtoLens.Field.HasField Hop'CustomRecordsEntry "key" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -22180,13 +22345,14 @@ data HopHint
                           _HopHint'feeProportionalMillionths :: !Data.Word.Word32,
                           _HopHint'cltvExpiryDelta :: !Data.Word.Word32,
                           _HopHint'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show HopHint where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out HopHint
 instance Data.ProtoLens.Field.HasField HopHint "nodeId" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -22455,14 +22621,21 @@ instance Control.DeepSeq.NFData HopHint where
                          (Control.DeepSeq.deepseq (_HopHint'cltvExpiryDelta x__) ())))))
 newtype Initiator'UnrecognizedValue
   = Initiator'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out Initiator'UnrecognizedValue
 data Initiator
   = INITIATOR_UNKNOWN |
     INITIATOR_LOCAL |
     INITIATOR_REMOTE |
     INITIATOR_BOTH |
     Initiator'Unrecognized !Initiator'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum Initiator where
   maybeToEnum 0 = Prelude.Just INITIATOR_UNKNOWN
   maybeToEnum 1 = Prelude.Just INITIATOR_LOCAL
@@ -22527,6 +22700,7 @@ instance Data.ProtoLens.FieldDefault Initiator where
   fieldDefault = INITIATOR_UNKNOWN
 instance Control.DeepSeq.NFData Initiator where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out Initiator
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.memo' @:: Lens' Invoice Data.Text.Text@
@@ -22585,13 +22759,14 @@ data Invoice
                           _Invoice'paymentAddr :: !Data.ByteString.ByteString,
                           _Invoice'isAmp :: !Prelude.Bool,
                           _Invoice'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Invoice where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Invoice
 instance Data.ProtoLens.Field.HasField Invoice "memo" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -24009,13 +24184,14 @@ data Invoice'FeaturesEntry
   = Invoice'FeaturesEntry'_constructor {_Invoice'FeaturesEntry'key :: !Data.Word.Word32,
                                         _Invoice'FeaturesEntry'value :: !(Prelude.Maybe Feature),
                                         _Invoice'FeaturesEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Invoice'FeaturesEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Invoice'FeaturesEntry
 instance Data.ProtoLens.Field.HasField Invoice'FeaturesEntry "key" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -24161,14 +24337,21 @@ instance Control.DeepSeq.NFData Invoice'FeaturesEntry where
                 (Control.DeepSeq.deepseq (_Invoice'FeaturesEntry'value x__) ()))
 newtype Invoice'InvoiceState'UnrecognizedValue
   = Invoice'InvoiceState'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out Invoice'InvoiceState'UnrecognizedValue
 data Invoice'InvoiceState
   = Invoice'OPEN |
     Invoice'SETTLED |
     Invoice'CANCELED |
     Invoice'ACCEPTED |
     Invoice'InvoiceState'Unrecognized !Invoice'InvoiceState'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum Invoice'InvoiceState where
   maybeToEnum 0 = Prelude.Just Invoice'OPEN
   maybeToEnum 1 = Prelude.Just Invoice'SETTLED
@@ -24237,6 +24420,7 @@ instance Data.ProtoLens.FieldDefault Invoice'InvoiceState where
   fieldDefault = Invoice'OPEN
 instance Control.DeepSeq.NFData Invoice'InvoiceState where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out Invoice'InvoiceState
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.chanId' @:: Lens' InvoiceHTLC Data.Word.Word64@
@@ -24264,13 +24448,14 @@ data InvoiceHTLC
                               _InvoiceHTLC'mppTotalAmtMsat :: !Data.Word.Word64,
                               _InvoiceHTLC'amp :: !(Prelude.Maybe AMP),
                               _InvoiceHTLC'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show InvoiceHTLC where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out InvoiceHTLC
 instance Data.ProtoLens.Field.HasField InvoiceHTLC "chanId" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -24819,13 +25004,14 @@ data InvoiceHTLC'CustomRecordsEntry
   = InvoiceHTLC'CustomRecordsEntry'_constructor {_InvoiceHTLC'CustomRecordsEntry'key :: !Data.Word.Word64,
                                                  _InvoiceHTLC'CustomRecordsEntry'value :: !Data.ByteString.ByteString,
                                                  _InvoiceHTLC'CustomRecordsEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show InvoiceHTLC'CustomRecordsEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out InvoiceHTLC'CustomRecordsEntry
 instance Data.ProtoLens.Field.HasField InvoiceHTLC'CustomRecordsEntry "key" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -24962,13 +25148,20 @@ instance Control.DeepSeq.NFData InvoiceHTLC'CustomRecordsEntry where
                    (_InvoiceHTLC'CustomRecordsEntry'value x__) ()))
 newtype InvoiceHTLCState'UnrecognizedValue
   = InvoiceHTLCState'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out InvoiceHTLCState'UnrecognizedValue
 data InvoiceHTLCState
   = ACCEPTED |
     SETTLED |
     CANCELED |
     InvoiceHTLCState'Unrecognized !InvoiceHTLCState'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum InvoiceHTLCState where
   maybeToEnum 0 = Prelude.Just ACCEPTED
   maybeToEnum 1 = Prelude.Just SETTLED
@@ -25031,6 +25224,7 @@ instance Data.ProtoLens.FieldDefault InvoiceHTLCState where
   fieldDefault = ACCEPTED
 instance Control.DeepSeq.NFData InvoiceHTLCState where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out InvoiceHTLCState
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.addIndex' @:: Lens' InvoiceSubscription Data.Word.Word64@
@@ -25039,13 +25233,14 @@ data InvoiceSubscription
   = InvoiceSubscription'_constructor {_InvoiceSubscription'addIndex :: !Data.Word.Word64,
                                       _InvoiceSubscription'settleIndex :: !Data.Word.Word64,
                                       _InvoiceSubscription'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show InvoiceSubscription where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out InvoiceSubscription
 instance Data.ProtoLens.Field.HasField InvoiceSubscription "addIndex" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -25185,13 +25380,14 @@ data KeyDescriptor
   = KeyDescriptor'_constructor {_KeyDescriptor'rawKeyBytes :: !Data.ByteString.ByteString,
                                 _KeyDescriptor'keyLoc :: !(Prelude.Maybe KeyLocator),
                                 _KeyDescriptor'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show KeyDescriptor where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out KeyDescriptor
 instance Data.ProtoLens.Field.HasField KeyDescriptor "rawKeyBytes" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -25351,13 +25547,14 @@ data KeyLocator
   = KeyLocator'_constructor {_KeyLocator'keyFamily :: !Data.Int.Int32,
                              _KeyLocator'keyIndex :: !Data.Int.Int32,
                              _KeyLocator'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show KeyLocator where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out KeyLocator
 instance Data.ProtoLens.Field.HasField KeyLocator "keyFamily" Data.Int.Int32 where
   fieldOf _
     = (Prelude..)
@@ -25503,13 +25700,14 @@ data LightningAddress
   = LightningAddress'_constructor {_LightningAddress'pubkey :: !Data.Text.Text,
                                    _LightningAddress'host :: !Data.Text.Text,
                                    _LightningAddress'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show LightningAddress where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out LightningAddress
 instance Data.ProtoLens.Field.HasField LightningAddress "pubkey" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -25681,13 +25879,14 @@ data LightningNode
                                 _LightningNode'color :: !Data.Text.Text,
                                 _LightningNode'features :: !(Data.Map.Map Data.Word.Word32 Feature),
                                 _LightningNode'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show LightningNode where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out LightningNode
 instance Data.ProtoLens.Field.HasField LightningNode "lastUpdate" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -26084,13 +26283,14 @@ data LightningNode'FeaturesEntry
   = LightningNode'FeaturesEntry'_constructor {_LightningNode'FeaturesEntry'key :: !Data.Word.Word32,
                                               _LightningNode'FeaturesEntry'value :: !(Prelude.Maybe Feature),
                                               _LightningNode'FeaturesEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show LightningNode'FeaturesEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out LightningNode'FeaturesEntry
 instance Data.ProtoLens.Field.HasField LightningNode'FeaturesEntry "key" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -26250,13 +26450,14 @@ data ListChannelsRequest
                                       _ListChannelsRequest'privateOnly :: !Prelude.Bool,
                                       _ListChannelsRequest'peer :: !Data.ByteString.ByteString,
                                       _ListChannelsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListChannelsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListChannelsRequest
 instance Data.ProtoLens.Field.HasField ListChannelsRequest "activeOnly" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -26532,13 +26733,14 @@ instance Control.DeepSeq.NFData ListChannelsRequest where
 data ListChannelsResponse
   = ListChannelsResponse'_constructor {_ListChannelsResponse'channels :: !(Data.Vector.Vector Channel),
                                        _ListChannelsResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListChannelsResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListChannelsResponse
 instance Data.ProtoLens.Field.HasField ListChannelsResponse "channels" [Channel] where
   fieldOf _
     = (Prelude..)
@@ -26674,13 +26876,14 @@ data ListInvoiceRequest
                                      _ListInvoiceRequest'numMaxInvoices :: !Data.Word.Word64,
                                      _ListInvoiceRequest'reversed :: !Prelude.Bool,
                                      _ListInvoiceRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListInvoiceRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListInvoiceRequest
 instance Data.ProtoLens.Field.HasField ListInvoiceRequest "pendingOnly" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -26907,13 +27110,14 @@ data ListInvoiceResponse
                                       _ListInvoiceResponse'lastIndexOffset :: !Data.Word.Word64,
                                       _ListInvoiceResponse'firstIndexOffset :: !Data.Word.Word64,
                                       _ListInvoiceResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListInvoiceResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListInvoiceResponse
 instance Data.ProtoLens.Field.HasField ListInvoiceResponse "invoices" [Invoice] where
   fieldOf _
     = (Prelude..)
@@ -27122,13 +27326,14 @@ instance Control.DeepSeq.NFData ListInvoiceResponse where
       -}
 data ListMacaroonIDsRequest
   = ListMacaroonIDsRequest'_constructor {_ListMacaroonIDsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListMacaroonIDsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListMacaroonIDsRequest
 instance Data.ProtoLens.Message ListMacaroonIDsRequest where
   messageName _ = Data.Text.pack "lnrpc.ListMacaroonIDsRequest"
   packedMessageDescriptor _
@@ -27191,13 +27396,14 @@ instance Control.DeepSeq.NFData ListMacaroonIDsRequest where
 data ListMacaroonIDsResponse
   = ListMacaroonIDsResponse'_constructor {_ListMacaroonIDsResponse'rootKeyIds :: !(Data.Vector.Unboxed.Vector Data.Word.Word64),
                                           _ListMacaroonIDsResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListMacaroonIDsResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListMacaroonIDsResponse
 instance Data.ProtoLens.Field.HasField ListMacaroonIDsResponse "rootKeyIds" [Data.Word.Word64] where
   fieldOf _
     = (Prelude..)
@@ -27355,13 +27561,14 @@ data ListPaymentsRequest
                                       _ListPaymentsRequest'maxPayments :: !Data.Word.Word64,
                                       _ListPaymentsRequest'reversed :: !Prelude.Bool,
                                       _ListPaymentsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListPaymentsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListPaymentsRequest
 instance Data.ProtoLens.Field.HasField ListPaymentsRequest "includeIncomplete" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -27588,13 +27795,14 @@ data ListPaymentsResponse
                                        _ListPaymentsResponse'firstIndexOffset :: !Data.Word.Word64,
                                        _ListPaymentsResponse'lastIndexOffset :: !Data.Word.Word64,
                                        _ListPaymentsResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListPaymentsResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListPaymentsResponse
 instance Data.ProtoLens.Field.HasField ListPaymentsResponse "payments" [Payment] where
   fieldOf _
     = (Prelude..)
@@ -27805,13 +28013,14 @@ instance Control.DeepSeq.NFData ListPaymentsResponse where
 data ListPeersRequest
   = ListPeersRequest'_constructor {_ListPeersRequest'latestError :: !Prelude.Bool,
                                    _ListPeersRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListPeersRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListPeersRequest
 instance Data.ProtoLens.Field.HasField ListPeersRequest "latestError" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -27917,13 +28126,14 @@ instance Control.DeepSeq.NFData ListPeersRequest where
 data ListPeersResponse
   = ListPeersResponse'_constructor {_ListPeersResponse'peers :: !(Data.Vector.Vector Peer),
                                     _ListPeersResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListPeersResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListPeersResponse
 instance Data.ProtoLens.Field.HasField ListPeersResponse "peers" [Peer] where
   fieldOf _
     = (Prelude..)
@@ -28047,13 +28257,14 @@ instance Control.DeepSeq.NFData ListPeersResponse where
       -}
 data ListPermissionsRequest
   = ListPermissionsRequest'_constructor {_ListPermissionsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListPermissionsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListPermissionsRequest
 instance Data.ProtoLens.Message ListPermissionsRequest where
   messageName _ = Data.Text.pack "lnrpc.ListPermissionsRequest"
   packedMessageDescriptor _
@@ -28115,13 +28326,14 @@ instance Control.DeepSeq.NFData ListPermissionsRequest where
 data ListPermissionsResponse
   = ListPermissionsResponse'_constructor {_ListPermissionsResponse'methodPermissions :: !(Data.Map.Map Data.Text.Text MacaroonPermissionList),
                                           _ListPermissionsResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListPermissionsResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListPermissionsResponse
 instance Data.ProtoLens.Field.HasField ListPermissionsResponse "methodPermissions" (Data.Map.Map Data.Text.Text MacaroonPermissionList) where
   fieldOf _
     = (Prelude..)
@@ -28257,13 +28469,14 @@ data ListPermissionsResponse'MethodPermissionsEntry
   = ListPermissionsResponse'MethodPermissionsEntry'_constructor {_ListPermissionsResponse'MethodPermissionsEntry'key :: !Data.Text.Text,
                                                                  _ListPermissionsResponse'MethodPermissionsEntry'value :: !(Prelude.Maybe MacaroonPermissionList),
                                                                  _ListPermissionsResponse'MethodPermissionsEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListPermissionsResponse'MethodPermissionsEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListPermissionsResponse'MethodPermissionsEntry
 instance Data.ProtoLens.Field.HasField ListPermissionsResponse'MethodPermissionsEntry "key" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -28441,13 +28654,14 @@ data ListUnspentRequest
                                      _ListUnspentRequest'maxConfs :: !Data.Int.Int32,
                                      _ListUnspentRequest'account :: !Data.Text.Text,
                                      _ListUnspentRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListUnspentRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListUnspentRequest
 instance Data.ProtoLens.Field.HasField ListUnspentRequest "minConfs" Data.Int.Int32 where
   fieldOf _
     = (Prelude..)
@@ -28640,13 +28854,14 @@ instance Control.DeepSeq.NFData ListUnspentRequest where
 data ListUnspentResponse
   = ListUnspentResponse'_constructor {_ListUnspentResponse'utxos :: !(Data.Vector.Vector Utxo),
                                       _ListUnspentResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ListUnspentResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ListUnspentResponse
 instance Data.ProtoLens.Field.HasField ListUnspentResponse "utxos" [Utxo] where
   fieldOf _
     = (Prelude..)
@@ -28774,13 +28989,14 @@ data MPPRecord
   = MPPRecord'_constructor {_MPPRecord'paymentAddr :: !Data.ByteString.ByteString,
                             _MPPRecord'totalAmtMsat :: !Data.Int.Int64,
                             _MPPRecord'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show MPPRecord where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out MPPRecord
 instance Data.ProtoLens.Field.HasField MPPRecord "paymentAddr" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -28935,13 +29151,14 @@ data MacaroonId
                              _MacaroonId'storageId :: !Data.ByteString.ByteString,
                              _MacaroonId'ops :: !(Data.Vector.Vector Op),
                              _MacaroonId'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show MacaroonId where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out MacaroonId
 instance Data.ProtoLens.Field.HasField MacaroonId "nonce" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -29157,13 +29374,14 @@ data MacaroonPermission
   = MacaroonPermission'_constructor {_MacaroonPermission'entity :: !Data.Text.Text,
                                      _MacaroonPermission'action :: !Data.Text.Text,
                                      _MacaroonPermission'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show MacaroonPermission where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out MacaroonPermission
 instance Data.ProtoLens.Field.HasField MacaroonPermission "entity" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -29326,13 +29544,14 @@ instance Control.DeepSeq.NFData MacaroonPermission where
 data MacaroonPermissionList
   = MacaroonPermissionList'_constructor {_MacaroonPermissionList'permissions :: !(Data.Vector.Vector MacaroonPermission),
                                          _MacaroonPermissionList'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show MacaroonPermissionList where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out MacaroonPermissionList
 instance Data.ProtoLens.Field.HasField MacaroonPermissionList "permissions" [MacaroonPermission] where
   fieldOf _
     = (Prelude..)
@@ -29469,13 +29688,14 @@ data MultiChanBackup
   = MultiChanBackup'_constructor {_MultiChanBackup'chanPoints :: !(Data.Vector.Vector ChannelPoint),
                                   _MultiChanBackup'multiChanBackup :: !Data.ByteString.ByteString,
                                   _MultiChanBackup'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show MultiChanBackup where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out MultiChanBackup
 instance Data.ProtoLens.Field.HasField MultiChanBackup "chanPoints" [ChannelPoint] where
   fieldOf _
     = (Prelude..)
@@ -29677,13 +29897,14 @@ data NetworkInfo
                               _NetworkInfo'medianChannelSizeSat :: !Data.Int.Int64,
                               _NetworkInfo'numZombieChans :: !Data.Word.Word64,
                               _NetworkInfo'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NetworkInfo where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NetworkInfo
 instance Data.ProtoLens.Field.HasField NetworkInfo "graphDiameter" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -30225,13 +30446,14 @@ instance Control.DeepSeq.NFData NetworkInfo where
       -}
 data NetworkInfoRequest
   = NetworkInfoRequest'_constructor {_NetworkInfoRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NetworkInfoRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NetworkInfoRequest
 instance Data.ProtoLens.Message NetworkInfoRequest where
   messageName _ = Data.Text.pack "lnrpc.NetworkInfoRequest"
   packedMessageDescriptor _
@@ -30295,13 +30517,14 @@ data NewAddressRequest
   = NewAddressRequest'_constructor {_NewAddressRequest'type' :: !AddressType,
                                     _NewAddressRequest'account :: !Data.Text.Text,
                                     _NewAddressRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NewAddressRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NewAddressRequest
 instance Data.ProtoLens.Field.HasField NewAddressRequest "type'" AddressType where
   fieldOf _
     = (Prelude..)
@@ -30456,13 +30679,14 @@ instance Control.DeepSeq.NFData NewAddressRequest where
 data NewAddressResponse
   = NewAddressResponse'_constructor {_NewAddressResponse'address :: !Data.Text.Text,
                                      _NewAddressResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NewAddressResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NewAddressResponse
 instance Data.ProtoLens.Field.HasField NewAddressResponse "address" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -30577,13 +30801,14 @@ data NodeAddress
   = NodeAddress'_constructor {_NodeAddress'network :: !Data.Text.Text,
                               _NodeAddress'addr :: !Data.Text.Text,
                               _NodeAddress'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NodeAddress where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NodeAddress
 instance Data.ProtoLens.Field.HasField NodeAddress "network" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -30750,13 +30975,14 @@ data NodeInfo
                            _NodeInfo'totalCapacity :: !Data.Int.Int64,
                            _NodeInfo'channels :: !(Data.Vector.Vector ChannelEdge),
                            _NodeInfo'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NodeInfo where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NodeInfo
 instance Data.ProtoLens.Field.HasField NodeInfo "node" LightningNode where
   fieldOf _
     = (Prelude..)
@@ -31022,13 +31248,14 @@ data NodeInfoRequest
   = NodeInfoRequest'_constructor {_NodeInfoRequest'pubKey :: !Data.Text.Text,
                                   _NodeInfoRequest'includeChannels :: !Prelude.Bool,
                                   _NodeInfoRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NodeInfoRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NodeInfoRequest
 instance Data.ProtoLens.Field.HasField NodeInfoRequest "pubKey" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -31182,12 +31409,19 @@ instance Control.DeepSeq.NFData NodeInfoRequest where
                    (_NodeInfoRequest'includeChannels x__) ()))
 newtype NodeMetricType'UnrecognizedValue
   = NodeMetricType'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out NodeMetricType'UnrecognizedValue
 data NodeMetricType
   = UNKNOWN |
     BETWEENNESS_CENTRALITY |
     NodeMetricType'Unrecognized !NodeMetricType'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum NodeMetricType where
   maybeToEnum 0 = Prelude.Just UNKNOWN
   maybeToEnum 1 = Prelude.Just BETWEENNESS_CENTRALITY
@@ -31245,6 +31479,7 @@ instance Data.ProtoLens.FieldDefault NodeMetricType where
   fieldDefault = UNKNOWN
 instance Control.DeepSeq.NFData NodeMetricType where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out NodeMetricType
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.types' @:: Lens' NodeMetricsRequest [NodeMetricType]@
@@ -31252,13 +31487,14 @@ instance Control.DeepSeq.NFData NodeMetricType where
 data NodeMetricsRequest
   = NodeMetricsRequest'_constructor {_NodeMetricsRequest'types :: !(Data.Vector.Vector NodeMetricType),
                                      _NodeMetricsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NodeMetricsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NodeMetricsRequest
 instance Data.ProtoLens.Field.HasField NodeMetricsRequest "types" [NodeMetricType] where
   fieldOf _
     = (Prelude..)
@@ -31415,13 +31651,14 @@ instance Control.DeepSeq.NFData NodeMetricsRequest where
 data NodeMetricsResponse
   = NodeMetricsResponse'_constructor {_NodeMetricsResponse'betweennessCentrality :: !(Data.Map.Map Data.Text.Text FloatMetric),
                                       _NodeMetricsResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NodeMetricsResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NodeMetricsResponse
 instance Data.ProtoLens.Field.HasField NodeMetricsResponse "betweennessCentrality" (Data.Map.Map Data.Text.Text FloatMetric) where
   fieldOf _
     = (Prelude..)
@@ -31557,13 +31794,14 @@ data NodeMetricsResponse'BetweennessCentralityEntry
   = NodeMetricsResponse'BetweennessCentralityEntry'_constructor {_NodeMetricsResponse'BetweennessCentralityEntry'key :: !Data.Text.Text,
                                                                  _NodeMetricsResponse'BetweennessCentralityEntry'value :: !(Prelude.Maybe FloatMetric),
                                                                  _NodeMetricsResponse'BetweennessCentralityEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NodeMetricsResponse'BetweennessCentralityEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NodeMetricsResponse'BetweennessCentralityEntry
 instance Data.ProtoLens.Field.HasField NodeMetricsResponse'BetweennessCentralityEntry "key" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -31739,13 +31977,14 @@ data NodePair
   = NodePair'_constructor {_NodePair'from :: !Data.ByteString.ByteString,
                            _NodePair'to :: !Data.ByteString.ByteString,
                            _NodePair'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NodePair where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NodePair
 instance Data.ProtoLens.Field.HasField NodePair "from" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -31901,13 +32140,14 @@ data NodeUpdate
                              _NodeUpdate'nodeAddresses :: !(Data.Vector.Vector NodeAddress),
                              _NodeUpdate'features :: !(Data.Map.Map Data.Word.Word32 Feature),
                              _NodeUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NodeUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NodeUpdate
 instance Data.ProtoLens.Field.HasField NodeUpdate "addresses" [Data.Text.Text] where
   fieldOf _
     = (Prelude..)
@@ -32390,13 +32630,14 @@ data NodeUpdate'FeaturesEntry
   = NodeUpdate'FeaturesEntry'_constructor {_NodeUpdate'FeaturesEntry'key :: !Data.Word.Word32,
                                            _NodeUpdate'FeaturesEntry'value :: !(Prelude.Maybe Feature),
                                            _NodeUpdate'FeaturesEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show NodeUpdate'FeaturesEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out NodeUpdate'FeaturesEntry
 instance Data.ProtoLens.Field.HasField NodeUpdate'FeaturesEntry "key" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -32549,13 +32790,14 @@ data Op
   = Op'_constructor {_Op'entity :: !Data.Text.Text,
                      _Op'actions :: !(Data.Vector.Vector Data.Text.Text),
                      _Op'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Op where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Op
 instance Data.ProtoLens.Field.HasField Op "entity" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -32765,13 +33007,14 @@ data OpenChannelRequest
                                      _OpenChannelRequest'remoteMaxHtlcs :: !Data.Word.Word32,
                                      _OpenChannelRequest'maxLocalCsv :: !Data.Word.Word32,
                                      _OpenChannelRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show OpenChannelRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out OpenChannelRequest
 instance Data.ProtoLens.Field.HasField OpenChannelRequest "satPerVbyte" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -33644,18 +33887,23 @@ data OpenStatusUpdate
   = OpenStatusUpdate'_constructor {_OpenStatusUpdate'pendingChanId :: !Data.ByteString.ByteString,
                                    _OpenStatusUpdate'update :: !(Prelude.Maybe OpenStatusUpdate'Update),
                                    _OpenStatusUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show OpenStatusUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out OpenStatusUpdate
 data OpenStatusUpdate'Update
   = OpenStatusUpdate'ChanPending !PendingUpdate |
     OpenStatusUpdate'ChanOpen !ChannelOpenUpdate |
     OpenStatusUpdate'PsbtFund !ReadyForPsbtFunding
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out OpenStatusUpdate'Update
 instance Data.ProtoLens.Field.HasField OpenStatusUpdate "pendingChanId" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -33988,13 +34236,14 @@ data OutPoint
                            _OutPoint'txidStr :: !Data.Text.Text,
                            _OutPoint'outputIndex :: !Data.Word.Word32,
                            _OutPoint'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show OutPoint where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out OutPoint
 instance Data.ProtoLens.Field.HasField OutPoint "txidBytes" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -34214,13 +34463,14 @@ data PayReq
                          _PayReq'numMsat :: !Data.Int.Int64,
                          _PayReq'features :: !(Data.Map.Map Data.Word.Word32 Feature),
                          _PayReq'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PayReq where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PayReq
 instance Data.ProtoLens.Field.HasField PayReq "destination" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -34960,13 +35210,14 @@ data PayReq'FeaturesEntry
   = PayReq'FeaturesEntry'_constructor {_PayReq'FeaturesEntry'key :: !Data.Word.Word32,
                                        _PayReq'FeaturesEntry'value :: !(Prelude.Maybe Feature),
                                        _PayReq'FeaturesEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PayReq'FeaturesEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PayReq'FeaturesEntry
 instance Data.ProtoLens.Field.HasField PayReq'FeaturesEntry "key" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -35116,13 +35367,14 @@ instance Control.DeepSeq.NFData PayReq'FeaturesEntry where
 data PayReqString
   = PayReqString'_constructor {_PayReqString'payReq :: !Data.Text.Text,
                                _PayReqString'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PayReqString where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PayReqString
 instance Data.ProtoLens.Field.HasField PayReqString "payReq" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -35263,13 +35515,14 @@ data Payment
                           _Payment'paymentIndex :: !Data.Word.Word64,
                           _Payment'failureReason :: !PaymentFailureReason,
                           _Payment'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Payment where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Payment
 instance Data.ProtoLens.Field.HasField Payment "paymentHash" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -36057,14 +36310,21 @@ instance Control.DeepSeq.NFData Payment where
                                                           ())))))))))))))))
 newtype Payment'PaymentStatus'UnrecognizedValue
   = Payment'PaymentStatus'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out Payment'PaymentStatus'UnrecognizedValue
 data Payment'PaymentStatus
   = Payment'UNKNOWN |
     Payment'IN_FLIGHT |
     Payment'SUCCEEDED |
     Payment'FAILED |
     Payment'PaymentStatus'Unrecognized !Payment'PaymentStatus'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum Payment'PaymentStatus where
   maybeToEnum 0 = Prelude.Just Payment'UNKNOWN
   maybeToEnum 1 = Prelude.Just Payment'IN_FLIGHT
@@ -36133,9 +36393,14 @@ instance Data.ProtoLens.FieldDefault Payment'PaymentStatus where
   fieldDefault = Payment'UNKNOWN
 instance Control.DeepSeq.NFData Payment'PaymentStatus where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out Payment'PaymentStatus
 newtype PaymentFailureReason'UnrecognizedValue
   = PaymentFailureReason'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out PaymentFailureReason'UnrecognizedValue
 data PaymentFailureReason
   = FAILURE_REASON_NONE |
     FAILURE_REASON_TIMEOUT |
@@ -36144,7 +36409,10 @@ data PaymentFailureReason
     FAILURE_REASON_INCORRECT_PAYMENT_DETAILS |
     FAILURE_REASON_INSUFFICIENT_BALANCE |
     PaymentFailureReason'Unrecognized !PaymentFailureReason'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum PaymentFailureReason where
   maybeToEnum 0 = Prelude.Just FAILURE_REASON_NONE
   maybeToEnum 1 = Prelude.Just FAILURE_REASON_TIMEOUT
@@ -36238,6 +36506,7 @@ instance Data.ProtoLens.FieldDefault PaymentFailureReason where
   fieldDefault = FAILURE_REASON_NONE
 instance Control.DeepSeq.NFData PaymentFailureReason where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out PaymentFailureReason
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.rHashStr' @:: Lens' PaymentHash Data.Text.Text@
@@ -36246,13 +36515,14 @@ data PaymentHash
   = PaymentHash'_constructor {_PaymentHash'rHashStr :: !Data.Text.Text,
                               _PaymentHash'rHash :: !Data.ByteString.ByteString,
                               _PaymentHash'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PaymentHash where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PaymentHash
 instance Data.ProtoLens.Field.HasField PaymentHash "rHashStr" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -36433,13 +36703,14 @@ data Peer
                        _Peer'flapCount :: !Data.Int.Int32,
                        _Peer'lastFlapNs :: !Data.Int.Int64,
                        _Peer'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Peer where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Peer
 instance Data.ProtoLens.Field.HasField Peer "pubKey" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -37128,13 +37399,14 @@ data Peer'FeaturesEntry
   = Peer'FeaturesEntry'_constructor {_Peer'FeaturesEntry'key :: !Data.Word.Word32,
                                      _Peer'FeaturesEntry'value :: !(Prelude.Maybe Feature),
                                      _Peer'FeaturesEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Peer'FeaturesEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Peer'FeaturesEntry
 instance Data.ProtoLens.Field.HasField Peer'FeaturesEntry "key" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -37280,14 +37552,21 @@ instance Control.DeepSeq.NFData Peer'FeaturesEntry where
                 (Control.DeepSeq.deepseq (_Peer'FeaturesEntry'value x__) ()))
 newtype Peer'SyncType'UnrecognizedValue
   = Peer'SyncType'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out Peer'SyncType'UnrecognizedValue
 data Peer'SyncType
   = Peer'UNKNOWN_SYNC |
     Peer'ACTIVE_SYNC |
     Peer'PASSIVE_SYNC |
     Peer'PINNED_SYNC |
     Peer'SyncType'Unrecognized !Peer'SyncType'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum Peer'SyncType where
   maybeToEnum 0 = Prelude.Just Peer'UNKNOWN_SYNC
   maybeToEnum 1 = Prelude.Just Peer'ACTIVE_SYNC
@@ -37355,6 +37634,7 @@ instance Data.ProtoLens.FieldDefault Peer'SyncType where
   fieldDefault = Peer'UNKNOWN_SYNC
 instance Control.DeepSeq.NFData Peer'SyncType where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out Peer'SyncType
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.pubKey' @:: Lens' PeerEvent Data.Text.Text@
@@ -37363,13 +37643,14 @@ data PeerEvent
   = PeerEvent'_constructor {_PeerEvent'pubKey :: !Data.Text.Text,
                             _PeerEvent'type' :: !PeerEvent'EventType,
                             _PeerEvent'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PeerEvent where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PeerEvent
 instance Data.ProtoLens.Field.HasField PeerEvent "pubKey" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -37520,12 +37801,19 @@ instance Control.DeepSeq.NFData PeerEvent where
                 (Control.DeepSeq.deepseq (_PeerEvent'type' x__) ()))
 newtype PeerEvent'EventType'UnrecognizedValue
   = PeerEvent'EventType'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out PeerEvent'EventType'UnrecognizedValue
 data PeerEvent'EventType
   = PeerEvent'PEER_ONLINE |
     PeerEvent'PEER_OFFLINE |
     PeerEvent'EventType'Unrecognized !PeerEvent'EventType'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum PeerEvent'EventType where
   maybeToEnum 0 = Prelude.Just PeerEvent'PEER_ONLINE
   maybeToEnum 1 = Prelude.Just PeerEvent'PEER_OFFLINE
@@ -37582,17 +37870,19 @@ instance Data.ProtoLens.FieldDefault PeerEvent'EventType where
   fieldDefault = PeerEvent'PEER_ONLINE
 instance Control.DeepSeq.NFData PeerEvent'EventType where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out PeerEvent'EventType
 {- | Fields :
       -}
 data PeerEventSubscription
   = PeerEventSubscription'_constructor {_PeerEventSubscription'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PeerEventSubscription where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PeerEventSubscription
 instance Data.ProtoLens.Message PeerEventSubscription where
   messageName _ = Data.Text.pack "lnrpc.PeerEventSubscription"
   packedMessageDescriptor _
@@ -37652,13 +37942,14 @@ instance Control.DeepSeq.NFData PeerEventSubscription where
       -}
 data PendingChannelsRequest
   = PendingChannelsRequest'_constructor {_PendingChannelsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PendingChannelsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PendingChannelsRequest
 instance Data.ProtoLens.Message PendingChannelsRequest where
   messageName _ = Data.Text.pack "lnrpc.PendingChannelsRequest"
   packedMessageDescriptor _
@@ -37732,13 +38023,14 @@ data PendingChannelsResponse
                                           _PendingChannelsResponse'pendingForceClosingChannels :: !(Data.Vector.Vector PendingChannelsResponse'ForceClosedChannel),
                                           _PendingChannelsResponse'waitingCloseChannels :: !(Data.Vector.Vector PendingChannelsResponse'WaitingCloseChannel),
                                           _PendingChannelsResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PendingChannelsResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PendingChannelsResponse
 instance Data.ProtoLens.Field.HasField PendingChannelsResponse "totalLimboBalance" Data.Int.Int64 where
   fieldOf _
     = (Prelude..)
@@ -38210,13 +38502,14 @@ data PendingChannelsResponse'ClosedChannel
   = PendingChannelsResponse'ClosedChannel'_constructor {_PendingChannelsResponse'ClosedChannel'channel :: !(Prelude.Maybe PendingChannelsResponse'PendingChannel),
                                                         _PendingChannelsResponse'ClosedChannel'closingTxid :: !Data.Text.Text,
                                                         _PendingChannelsResponse'ClosedChannel'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PendingChannelsResponse'ClosedChannel where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PendingChannelsResponse'ClosedChannel
 instance Data.ProtoLens.Field.HasField PendingChannelsResponse'ClosedChannel "channel" PendingChannelsResponse'PendingChannel where
   fieldOf _
     = (Prelude..)
@@ -38399,13 +38692,14 @@ data PendingChannelsResponse'Commitments
                                                       _PendingChannelsResponse'Commitments'remoteCommitFeeSat :: !Data.Word.Word64,
                                                       _PendingChannelsResponse'Commitments'remotePendingCommitFeeSat :: !Data.Word.Word64,
                                                       _PendingChannelsResponse'Commitments'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PendingChannelsResponse'Commitments where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PendingChannelsResponse'Commitments
 instance Data.ProtoLens.Field.HasField PendingChannelsResponse'Commitments "localTxid" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -38780,13 +39074,14 @@ data PendingChannelsResponse'ForceClosedChannel
                                                              _PendingChannelsResponse'ForceClosedChannel'pendingHtlcs :: !(Data.Vector.Vector PendingHTLC),
                                                              _PendingChannelsResponse'ForceClosedChannel'anchor :: !PendingChannelsResponse'ForceClosedChannel'AnchorState,
                                                              _PendingChannelsResponse'ForceClosedChannel'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PendingChannelsResponse'ForceClosedChannel where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PendingChannelsResponse'ForceClosedChannel
 instance Data.ProtoLens.Field.HasField PendingChannelsResponse'ForceClosedChannel "channel" PendingChannelsResponse'PendingChannel where
   fieldOf _
     = (Prelude..)
@@ -39275,13 +39570,20 @@ instance Control.DeepSeq.NFData PendingChannelsResponse'ForceClosedChannel where
                                      ()))))))))
 newtype PendingChannelsResponse'ForceClosedChannel'AnchorState'UnrecognizedValue
   = PendingChannelsResponse'ForceClosedChannel'AnchorState'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out PendingChannelsResponse'ForceClosedChannel'AnchorState'UnrecognizedValue
 data PendingChannelsResponse'ForceClosedChannel'AnchorState
   = PendingChannelsResponse'ForceClosedChannel'LIMBO |
     PendingChannelsResponse'ForceClosedChannel'RECOVERED |
     PendingChannelsResponse'ForceClosedChannel'LOST |
     PendingChannelsResponse'ForceClosedChannel'AnchorState'Unrecognized !PendingChannelsResponse'ForceClosedChannel'AnchorState'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum PendingChannelsResponse'ForceClosedChannel'AnchorState where
   maybeToEnum 0
     = Prelude.Just PendingChannelsResponse'ForceClosedChannel'LIMBO
@@ -39357,6 +39659,7 @@ instance Data.ProtoLens.FieldDefault PendingChannelsResponse'ForceClosedChannel'
   fieldDefault = PendingChannelsResponse'ForceClosedChannel'LIMBO
 instance Control.DeepSeq.NFData PendingChannelsResponse'ForceClosedChannel'AnchorState where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out PendingChannelsResponse'ForceClosedChannel'AnchorState
 {- | Fields :
      
          * 'Proto.LndGrpc_Fields.remoteNodePub' @:: Lens' PendingChannelsResponse'PendingChannel Data.Text.Text@
@@ -39379,13 +39682,14 @@ data PendingChannelsResponse'PendingChannel
                                                          _PendingChannelsResponse'PendingChannel'initiator :: !Initiator,
                                                          _PendingChannelsResponse'PendingChannel'commitmentType :: !CommitmentType,
                                                          _PendingChannelsResponse'PendingChannel'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PendingChannelsResponse'PendingChannel where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PendingChannelsResponse'PendingChannel
 instance Data.ProtoLens.Field.HasField PendingChannelsResponse'PendingChannel "remoteNodePub" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -39900,13 +40204,14 @@ data PendingChannelsResponse'PendingOpenChannel
                                                              _PendingChannelsResponse'PendingOpenChannel'commitWeight :: !Data.Int.Int64,
                                                              _PendingChannelsResponse'PendingOpenChannel'feePerKw :: !Data.Int.Int64,
                                                              _PendingChannelsResponse'PendingOpenChannel'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PendingChannelsResponse'PendingOpenChannel where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PendingChannelsResponse'PendingOpenChannel
 instance Data.ProtoLens.Field.HasField PendingChannelsResponse'PendingOpenChannel "channel" PendingChannelsResponse'PendingChannel where
   fieldOf _
     = (Prelude..)
@@ -40212,13 +40517,14 @@ data PendingChannelsResponse'WaitingCloseChannel
                                                               _PendingChannelsResponse'WaitingCloseChannel'limboBalance :: !Data.Int.Int64,
                                                               _PendingChannelsResponse'WaitingCloseChannel'commitments :: !(Prelude.Maybe PendingChannelsResponse'Commitments),
                                                               _PendingChannelsResponse'WaitingCloseChannel'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PendingChannelsResponse'WaitingCloseChannel where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PendingChannelsResponse'WaitingCloseChannel
 instance Data.ProtoLens.Field.HasField PendingChannelsResponse'WaitingCloseChannel "channel" PendingChannelsResponse'PendingChannel where
   fieldOf _
     = (Prelude..)
@@ -40452,13 +40758,14 @@ data PendingHTLC
                               _PendingHTLC'blocksTilMaturity :: !Data.Int.Int32,
                               _PendingHTLC'stage :: !Data.Word.Word32,
                               _PendingHTLC'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PendingHTLC where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PendingHTLC
 instance Data.ProtoLens.Field.HasField PendingHTLC "incoming" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -40778,13 +41085,14 @@ data PendingUpdate
   = PendingUpdate'_constructor {_PendingUpdate'txid :: !Data.ByteString.ByteString,
                                 _PendingUpdate'outputIndex :: !Data.Word.Word32,
                                 _PendingUpdate'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PendingUpdate where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PendingUpdate
 instance Data.ProtoLens.Field.HasField PendingUpdate "txid" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -40944,17 +41252,22 @@ data PolicyUpdateRequest
                                       _PolicyUpdateRequest'minHtlcMsatSpecified :: !Prelude.Bool,
                                       _PolicyUpdateRequest'scope :: !(Prelude.Maybe PolicyUpdateRequest'Scope),
                                       _PolicyUpdateRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PolicyUpdateRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PolicyUpdateRequest
 data PolicyUpdateRequest'Scope
   = PolicyUpdateRequest'Global !Prelude.Bool |
     PolicyUpdateRequest'ChanPoint !ChannelPoint
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out PolicyUpdateRequest'Scope
 instance Data.ProtoLens.Field.HasField PolicyUpdateRequest "baseFeeMsat" Data.Int.Int64 where
   fieldOf _
     = (Prelude..)
@@ -41405,13 +41718,14 @@ _PolicyUpdateRequest'ChanPoint
       -}
 data PolicyUpdateResponse
   = PolicyUpdateResponse'_constructor {_PolicyUpdateResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PolicyUpdateResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PolicyUpdateResponse
 instance Data.ProtoLens.Message PolicyUpdateResponse where
   messageName _ = Data.Text.pack "lnrpc.PolicyUpdateResponse"
   packedMessageDescriptor _
@@ -41477,13 +41791,14 @@ data PsbtShim
                            _PsbtShim'basePsbt :: !Data.ByteString.ByteString,
                            _PsbtShim'noPublish :: !Prelude.Bool,
                            _PsbtShim'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show PsbtShim where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out PsbtShim
 instance Data.ProtoLens.Field.HasField PsbtShim "pendingChanId" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -41712,13 +42027,14 @@ data QueryRoutesRequest
                                      _QueryRoutesRequest'routeHints :: !(Data.Vector.Vector RouteHint),
                                      _QueryRoutesRequest'destFeatures :: !(Data.Vector.Vector FeatureBit),
                                      _QueryRoutesRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show QueryRoutesRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out QueryRoutesRequest
 instance Data.ProtoLens.Field.HasField QueryRoutesRequest "pubKey" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -42809,13 +43125,14 @@ data QueryRoutesRequest'DestCustomRecordsEntry
   = QueryRoutesRequest'DestCustomRecordsEntry'_constructor {_QueryRoutesRequest'DestCustomRecordsEntry'key :: !Data.Word.Word64,
                                                             _QueryRoutesRequest'DestCustomRecordsEntry'value :: !Data.ByteString.ByteString,
                                                             _QueryRoutesRequest'DestCustomRecordsEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show QueryRoutesRequest'DestCustomRecordsEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out QueryRoutesRequest'DestCustomRecordsEntry
 instance Data.ProtoLens.Field.HasField QueryRoutesRequest'DestCustomRecordsEntry "key" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -42962,13 +43279,14 @@ data QueryRoutesResponse
   = QueryRoutesResponse'_constructor {_QueryRoutesResponse'routes :: !(Data.Vector.Vector Route),
                                       _QueryRoutesResponse'successProb :: !Prelude.Double,
                                       _QueryRoutesResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show QueryRoutesResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out QueryRoutesResponse
 instance Data.ProtoLens.Field.HasField QueryRoutesResponse "routes" [Route] where
   fieldOf _
     = (Prelude..)
@@ -43145,13 +43463,14 @@ data ReadyForPsbtFunding
                                       _ReadyForPsbtFunding'fundingAmount :: !Data.Int.Int64,
                                       _ReadyForPsbtFunding'psbt :: !Data.ByteString.ByteString,
                                       _ReadyForPsbtFunding'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ReadyForPsbtFunding where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ReadyForPsbtFunding
 instance Data.ProtoLens.Field.HasField ReadyForPsbtFunding "fundingAddress" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -43362,13 +43681,14 @@ data Resolution
                              _Resolution'amountSat :: !Data.Word.Word64,
                              _Resolution'sweepTxid :: !Data.Text.Text,
                              _Resolution'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Resolution where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Resolution
 instance Data.ProtoLens.Field.HasField Resolution "resolutionType" ResolutionType where
   fieldOf _
     = (Prelude..)
@@ -43657,7 +43977,11 @@ instance Control.DeepSeq.NFData Resolution where
                          (Control.DeepSeq.deepseq (_Resolution'sweepTxid x__) ())))))
 newtype ResolutionOutcome'UnrecognizedValue
   = ResolutionOutcome'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out ResolutionOutcome'UnrecognizedValue
 data ResolutionOutcome
   = OUTCOME_UNKNOWN |
     CLAIMED |
@@ -43666,7 +43990,10 @@ data ResolutionOutcome
     FIRST_STAGE |
     TIMEOUT |
     ResolutionOutcome'Unrecognized !ResolutionOutcome'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum ResolutionOutcome where
   maybeToEnum 0 = Prelude.Just OUTCOME_UNKNOWN
   maybeToEnum 1 = Prelude.Just CLAIMED
@@ -43747,9 +44074,14 @@ instance Data.ProtoLens.FieldDefault ResolutionOutcome where
   fieldDefault = OUTCOME_UNKNOWN
 instance Control.DeepSeq.NFData ResolutionOutcome where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out ResolutionOutcome
 newtype ResolutionType'UnrecognizedValue
   = ResolutionType'UnrecognizedValue Data.Int.Int32
-  deriving stock (Prelude.Eq, Prelude.Ord, Prelude.Show)
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out ResolutionType'UnrecognizedValue
 data ResolutionType
   = TYPE_UNKNOWN |
     ANCHOR |
@@ -43757,7 +44089,10 @@ data ResolutionType
     OUTGOING_HTLC |
     COMMIT |
     ResolutionType'Unrecognized !ResolutionType'UnrecognizedValue
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
 instance Data.ProtoLens.MessageEnum ResolutionType where
   maybeToEnum 0 = Prelude.Just TYPE_UNKNOWN
   maybeToEnum 1 = Prelude.Just ANCHOR
@@ -43832,17 +44167,19 @@ instance Data.ProtoLens.FieldDefault ResolutionType where
   fieldDefault = TYPE_UNKNOWN
 instance Control.DeepSeq.NFData ResolutionType where
   rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out ResolutionType
 {- | Fields :
       -}
 data RestoreBackupResponse
   = RestoreBackupResponse'_constructor {_RestoreBackupResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show RestoreBackupResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out RestoreBackupResponse
 instance Data.ProtoLens.Message RestoreBackupResponse where
   messageName _ = Data.Text.pack "lnrpc.RestoreBackupResponse"
   packedMessageDescriptor _
@@ -43908,17 +44245,22 @@ instance Control.DeepSeq.NFData RestoreBackupResponse where
 data RestoreChanBackupRequest
   = RestoreChanBackupRequest'_constructor {_RestoreChanBackupRequest'backup :: !(Prelude.Maybe RestoreChanBackupRequest'Backup),
                                            _RestoreChanBackupRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show RestoreChanBackupRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out RestoreChanBackupRequest
 data RestoreChanBackupRequest'Backup
   = RestoreChanBackupRequest'ChanBackups !ChannelBackups |
     RestoreChanBackupRequest'MultiChanBackup !Data.ByteString.ByteString
-  deriving stock (Prelude.Show, Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out RestoreChanBackupRequest'Backup
 instance Data.ProtoLens.Field.HasField RestoreChanBackupRequest "maybe'backup" (Prelude.Maybe RestoreChanBackupRequest'Backup) where
   fieldOf _
     = (Prelude..)
@@ -44149,13 +44491,14 @@ data Route
                         _Route'totalFeesMsat :: !Data.Int.Int64,
                         _Route'totalAmtMsat :: !Data.Int.Int64,
                         _Route'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Route where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Route
 instance Data.ProtoLens.Field.HasField Route "totalTimeLock" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -44496,13 +44839,14 @@ instance Control.DeepSeq.NFData Route where
 data RouteHint
   = RouteHint'_constructor {_RouteHint'hopHints :: !(Data.Vector.Vector HopHint),
                             _RouteHint'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show RouteHint where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out RouteHint
 instance Data.ProtoLens.Field.HasField RouteHint "hopHints" [HopHint] where
   fieldOf _
     = (Prelude..)
@@ -44642,13 +44986,14 @@ data RoutingPolicy
                                 _RoutingPolicy'maxHtlcMsat :: !Data.Word.Word64,
                                 _RoutingPolicy'lastUpdate :: !Data.Word.Word32,
                                 _RoutingPolicy'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show RoutingPolicy where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out RoutingPolicy
 instance Data.ProtoLens.Field.HasField RoutingPolicy "timeLockDelta" Data.Word.Word32 where
   fieldOf _
     = (Prelude..)
@@ -45014,13 +45359,14 @@ data SendCoinsRequest
                                    _SendCoinsRequest'minConfs :: !Data.Int.Int32,
                                    _SendCoinsRequest'spendUnconfirmed :: !Prelude.Bool,
                                    _SendCoinsRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendCoinsRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendCoinsRequest
 instance Data.ProtoLens.Field.HasField SendCoinsRequest "addr" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -45471,13 +45817,14 @@ instance Control.DeepSeq.NFData SendCoinsRequest where
 data SendCoinsResponse
   = SendCoinsResponse'_constructor {_SendCoinsResponse'txid :: !Data.Text.Text,
                                     _SendCoinsResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendCoinsResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendCoinsResponse
 instance Data.ProtoLens.Field.HasField SendCoinsResponse "txid" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -45600,13 +45947,14 @@ data SendManyRequest
                                   _SendManyRequest'minConfs :: !Data.Int.Int32,
                                   _SendManyRequest'spendUnconfirmed :: !Prelude.Bool,
                                   _SendManyRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendManyRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendManyRequest
 instance Data.ProtoLens.Field.HasField SendManyRequest "addrToAmount" (Data.Map.Map Data.Text.Text Data.Int.Int64) where
   fieldOf _
     = (Prelude..)
@@ -45996,13 +46344,14 @@ data SendManyRequest'AddrToAmountEntry
   = SendManyRequest'AddrToAmountEntry'_constructor {_SendManyRequest'AddrToAmountEntry'key :: !Data.Text.Text,
                                                     _SendManyRequest'AddrToAmountEntry'value :: !Data.Int.Int64,
                                                     _SendManyRequest'AddrToAmountEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendManyRequest'AddrToAmountEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendManyRequest'AddrToAmountEntry
 instance Data.ProtoLens.Field.HasField SendManyRequest'AddrToAmountEntry "key" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -46156,13 +46505,14 @@ instance Control.DeepSeq.NFData SendManyRequest'AddrToAmountEntry where
 data SendManyResponse
   = SendManyResponse'_constructor {_SendManyResponse'txid :: !Data.Text.Text,
                                    _SendManyResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendManyResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendManyResponse
 instance Data.ProtoLens.Field.HasField SendManyResponse "txid" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -46305,13 +46655,14 @@ data SendRequest
                               _SendRequest'destFeatures :: !(Data.Vector.Vector FeatureBit),
                               _SendRequest'paymentAddr :: !Data.ByteString.ByteString,
                               _SendRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendRequest
 instance Data.ProtoLens.Field.HasField SendRequest "dest" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -47239,13 +47590,14 @@ data SendRequest'DestCustomRecordsEntry
   = SendRequest'DestCustomRecordsEntry'_constructor {_SendRequest'DestCustomRecordsEntry'key :: !Data.Word.Word64,
                                                      _SendRequest'DestCustomRecordsEntry'value :: !Data.ByteString.ByteString,
                                                      _SendRequest'DestCustomRecordsEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendRequest'DestCustomRecordsEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendRequest'DestCustomRecordsEntry
 instance Data.ProtoLens.Field.HasField SendRequest'DestCustomRecordsEntry "key" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -47394,13 +47746,14 @@ data SendResponse
                                _SendResponse'paymentRoute :: !(Prelude.Maybe Route),
                                _SendResponse'paymentHash :: !Data.ByteString.ByteString,
                                _SendResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendResponse
 instance Data.ProtoLens.Field.HasField SendResponse "paymentError" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -47666,13 +48019,14 @@ data SendToRouteRequest
                                      _SendToRouteRequest'paymentHashString :: !Data.Text.Text,
                                      _SendToRouteRequest'route :: !(Prelude.Maybe Route),
                                      _SendToRouteRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SendToRouteRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SendToRouteRequest
 instance Data.ProtoLens.Field.HasField SendToRouteRequest "paymentHash" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -47885,13 +48239,14 @@ instance Control.DeepSeq.NFData SendToRouteRequest where
 data SignMessageRequest
   = SignMessageRequest'_constructor {_SignMessageRequest'msg :: !Data.ByteString.ByteString,
                                      _SignMessageRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SignMessageRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SignMessageRequest
 instance Data.ProtoLens.Field.HasField SignMessageRequest "msg" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -47995,13 +48350,14 @@ instance Control.DeepSeq.NFData SignMessageRequest where
 data SignMessageResponse
   = SignMessageResponse'_constructor {_SignMessageResponse'signature :: !Data.Text.Text,
                                       _SignMessageResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SignMessageResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SignMessageResponse
 instance Data.ProtoLens.Field.HasField SignMessageResponse "signature" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -48114,13 +48470,14 @@ instance Control.DeepSeq.NFData SignMessageResponse where
       -}
 data StopRequest
   = StopRequest'_constructor {_StopRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show StopRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out StopRequest
 instance Data.ProtoLens.Message StopRequest where
   messageName _ = Data.Text.pack "lnrpc.StopRequest"
   packedMessageDescriptor _
@@ -48177,13 +48534,14 @@ instance Control.DeepSeq.NFData StopRequest where
       -}
 data StopResponse
   = StopResponse'_constructor {_StopResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show StopResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out StopResponse
 instance Data.ProtoLens.Message StopResponse where
   messageName _ = Data.Text.pack "lnrpc.StopResponse"
   packedMessageDescriptor _
@@ -48244,13 +48602,14 @@ data TimestampedError
   = TimestampedError'_constructor {_TimestampedError'timestamp :: !Data.Word.Word64,
                                    _TimestampedError'error :: !Data.Text.Text,
                                    _TimestampedError'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show TimestampedError where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out TimestampedError
 instance Data.ProtoLens.Field.HasField TimestampedError "timestamp" Data.Word.Word64 where
   fieldOf _
     = (Prelude..)
@@ -48417,13 +48776,14 @@ data Transaction
                               _Transaction'rawTxHex :: !Data.Text.Text,
                               _Transaction'label :: !Data.Text.Text,
                               _Transaction'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Transaction where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Transaction
 instance Data.ProtoLens.Field.HasField Transaction "txHash" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -48995,13 +49355,14 @@ instance Control.DeepSeq.NFData Transaction where
 data TransactionDetails
   = TransactionDetails'_constructor {_TransactionDetails'transactions :: !(Data.Vector.Vector Transaction),
                                      _TransactionDetails'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show TransactionDetails where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out TransactionDetails
 instance Data.ProtoLens.Field.HasField TransactionDetails "transactions" [Transaction] where
   fieldOf _
     = (Prelude..)
@@ -49145,13 +49506,14 @@ data Utxo
                        _Utxo'outpoint :: !(Prelude.Maybe OutPoint),
                        _Utxo'confirmations :: !Data.Int.Int64,
                        _Utxo'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show Utxo where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out Utxo
 instance Data.ProtoLens.Field.HasField Utxo "addressType" AddressType where
   fieldOf _
     = (Prelude..)
@@ -49486,13 +49848,14 @@ instance Control.DeepSeq.NFData Utxo where
       -}
 data VerifyChanBackupResponse
   = VerifyChanBackupResponse'_constructor {_VerifyChanBackupResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show VerifyChanBackupResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out VerifyChanBackupResponse
 instance Data.ProtoLens.Message VerifyChanBackupResponse where
   messageName _ = Data.Text.pack "lnrpc.VerifyChanBackupResponse"
   packedMessageDescriptor _
@@ -49556,13 +49919,14 @@ data VerifyMessageRequest
   = VerifyMessageRequest'_constructor {_VerifyMessageRequest'msg :: !Data.ByteString.ByteString,
                                        _VerifyMessageRequest'signature :: !Data.Text.Text,
                                        _VerifyMessageRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show VerifyMessageRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out VerifyMessageRequest
 instance Data.ProtoLens.Field.HasField VerifyMessageRequest "msg" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -49720,13 +50084,14 @@ data VerifyMessageResponse
   = VerifyMessageResponse'_constructor {_VerifyMessageResponse'valid :: !Prelude.Bool,
                                         _VerifyMessageResponse'pubkey :: !Data.Text.Text,
                                         _VerifyMessageResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show VerifyMessageResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out VerifyMessageResponse
 instance Data.ProtoLens.Field.HasField VerifyMessageResponse "valid" Prelude.Bool where
   fieldOf _
     = (Prelude..)
@@ -49879,13 +50244,14 @@ data WalletAccountBalance
   = WalletAccountBalance'_constructor {_WalletAccountBalance'confirmedBalance :: !Data.Int.Int64,
                                        _WalletAccountBalance'unconfirmedBalance :: !Data.Int.Int64,
                                        _WalletAccountBalance'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show WalletAccountBalance where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out WalletAccountBalance
 instance Data.ProtoLens.Field.HasField WalletAccountBalance "confirmedBalance" Data.Int.Int64 where
   fieldOf _
     = (Prelude..)
@@ -50034,13 +50400,14 @@ instance Control.DeepSeq.NFData WalletAccountBalance where
       -}
 data WalletBalanceRequest
   = WalletBalanceRequest'_constructor {_WalletBalanceRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show WalletBalanceRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out WalletBalanceRequest
 instance Data.ProtoLens.Message WalletBalanceRequest where
   messageName _ = Data.Text.pack "lnrpc.WalletBalanceRequest"
   packedMessageDescriptor _
@@ -50108,13 +50475,14 @@ data WalletBalanceResponse
                                         _WalletBalanceResponse'unconfirmedBalance :: !Data.Int.Int64,
                                         _WalletBalanceResponse'accountBalance :: !(Data.Map.Map Data.Text.Text WalletAccountBalance),
                                         _WalletBalanceResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show WalletBalanceResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out WalletBalanceResponse
 instance Data.ProtoLens.Field.HasField WalletBalanceResponse "totalBalance" Data.Int.Int64 where
   fieldOf _
     = (Prelude..)
@@ -50378,13 +50746,14 @@ data WalletBalanceResponse'AccountBalanceEntry
   = WalletBalanceResponse'AccountBalanceEntry'_constructor {_WalletBalanceResponse'AccountBalanceEntry'key :: !Data.Text.Text,
                                                             _WalletBalanceResponse'AccountBalanceEntry'value :: !(Prelude.Maybe WalletAccountBalance),
                                                             _WalletBalanceResponse'AccountBalanceEntry'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show WalletBalanceResponse'AccountBalanceEntry where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out WalletBalanceResponse'AccountBalanceEntry
 instance Data.ProtoLens.Field.HasField WalletBalanceResponse'AccountBalanceEntry "key" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -50610,6 +50979,72 @@ instance Data.ProtoLens.Service.Types.Service Lightning where
                                     "verifyChanBackup",
                                     "verifyMessage",
                                     "walletBalance"]
+  packedServiceDescriptor _
+    = "\n\
+      \\tLightning\DC2J\n\
+      \\rWalletBalance\DC2\ESC.lnrpc.WalletBalanceRequest\SUB\FS.lnrpc.WalletBalanceResponse\DC2M\n\
+      \\SOChannelBalance\DC2\FS.lnrpc.ChannelBalanceRequest\SUB\GS.lnrpc.ChannelBalanceResponse\DC2K\n\
+      \\SIGetTransactions\DC2\GS.lnrpc.GetTransactionsRequest\SUB\EM.lnrpc.TransactionDetails\DC2D\n\
+      \\vEstimateFee\DC2\EM.lnrpc.EstimateFeeRequest\SUB\SUB.lnrpc.EstimateFeeResponse\DC2>\n\
+      \\tSendCoins\DC2\ETB.lnrpc.SendCoinsRequest\SUB\CAN.lnrpc.SendCoinsResponse\DC2D\n\
+      \\vListUnspent\DC2\EM.lnrpc.ListUnspentRequest\SUB\SUB.lnrpc.ListUnspentResponse\DC2L\n\
+      \\NAKSubscribeTransactions\DC2\GS.lnrpc.GetTransactionsRequest\SUB\DC2.lnrpc.Transaction0\SOH\DC2;\n\
+      \\bSendMany\DC2\SYN.lnrpc.SendManyRequest\SUB\ETB.lnrpc.SendManyResponse\DC2A\n\
+      \\n\
+      \NewAddress\DC2\CAN.lnrpc.NewAddressRequest\SUB\EM.lnrpc.NewAddressResponse\DC2D\n\
+      \\vSignMessage\DC2\EM.lnrpc.SignMessageRequest\SUB\SUB.lnrpc.SignMessageResponse\DC2J\n\
+      \\rVerifyMessage\DC2\ESC.lnrpc.VerifyMessageRequest\SUB\FS.lnrpc.VerifyMessageResponse\DC2D\n\
+      \\vConnectPeer\DC2\EM.lnrpc.ConnectPeerRequest\SUB\SUB.lnrpc.ConnectPeerResponse\DC2M\n\
+      \\SODisconnectPeer\DC2\FS.lnrpc.DisconnectPeerRequest\SUB\GS.lnrpc.DisconnectPeerResponse\DC2>\n\
+      \\tListPeers\DC2\ETB.lnrpc.ListPeersRequest\SUB\CAN.lnrpc.ListPeersResponse\DC2G\n\
+      \\DC3SubscribePeerEvents\DC2\FS.lnrpc.PeerEventSubscription\SUB\DLE.lnrpc.PeerEvent0\SOH\DC28\n\
+      \\aGetInfo\DC2\NAK.lnrpc.GetInfoRequest\SUB\SYN.lnrpc.GetInfoResponse\DC2P\n\
+      \\SIGetRecoveryInfo\DC2\GS.lnrpc.GetRecoveryInfoRequest\SUB\RS.lnrpc.GetRecoveryInfoResponse\DC2P\n\
+      \\SIPendingChannels\DC2\GS.lnrpc.PendingChannelsRequest\SUB\RS.lnrpc.PendingChannelsResponse\DC2G\n\
+      \\fListChannels\DC2\SUB.lnrpc.ListChannelsRequest\SUB\ESC.lnrpc.ListChannelsResponse\DC2V\n\
+      \\SYNSubscribeChannelEvents\DC2\US.lnrpc.ChannelEventSubscription\SUB\EM.lnrpc.ChannelEventUpdate0\SOH\DC2M\n\
+      \\SOClosedChannels\DC2\FS.lnrpc.ClosedChannelsRequest\SUB\GS.lnrpc.ClosedChannelsResponse\DC2A\n\
+      \\SIOpenChannelSync\DC2\EM.lnrpc.OpenChannelRequest\SUB\DC3.lnrpc.ChannelPoint\DC2C\n\
+      \\vOpenChannel\DC2\EM.lnrpc.OpenChannelRequest\SUB\ETB.lnrpc.OpenStatusUpdate0\SOH\DC2L\n\
+      \\DLEFundingStateStep\DC2\ESC.lnrpc.FundingTransitionMsg\SUB\ESC.lnrpc.FundingStateStepResp\DC2P\n\
+      \\SIChannelAcceptor\DC2\FS.lnrpc.ChannelAcceptResponse\SUB\ESC.lnrpc.ChannelAcceptRequest(\SOH0\SOH\DC2F\n\
+      \\fCloseChannel\DC2\SUB.lnrpc.CloseChannelRequest\SUB\CAN.lnrpc.CloseStatusUpdate0\SOH\DC2M\n\
+      \\SOAbandonChannel\DC2\FS.lnrpc.AbandonChannelRequest\SUB\GS.lnrpc.AbandonChannelResponse\DC2?\n\
+      \\vSendPayment\DC2\DC2.lnrpc.SendRequest\SUB\DC3.lnrpc.SendResponse\"\ETX\136\STX\SOH(\SOH0\SOH\DC2:\n\
+      \\SISendPaymentSync\DC2\DC2.lnrpc.SendRequest\SUB\DC3.lnrpc.SendResponse\DC2F\n\
+      \\vSendToRoute\DC2\EM.lnrpc.SendToRouteRequest\SUB\DC3.lnrpc.SendResponse\"\ETX\136\STX\SOH(\SOH0\SOH\DC2A\n\
+      \\SISendToRouteSync\DC2\EM.lnrpc.SendToRouteRequest\SUB\DC3.lnrpc.SendResponse\DC27\n\
+      \\n\
+      \AddInvoice\DC2\SO.lnrpc.Invoice\SUB\EM.lnrpc.AddInvoiceResponse\DC2E\n\
+      \\fListInvoices\DC2\EM.lnrpc.ListInvoiceRequest\SUB\SUB.lnrpc.ListInvoiceResponse\DC23\n\
+      \\rLookupInvoice\DC2\DC2.lnrpc.PaymentHash\SUB\SO.lnrpc.Invoice\DC2A\n\
+      \\DC1SubscribeInvoices\DC2\SUB.lnrpc.InvoiceSubscription\SUB\SO.lnrpc.Invoice0\SOH\DC22\n\
+      \\fDecodePayReq\DC2\DC3.lnrpc.PayReqString\SUB\r.lnrpc.PayReq\DC2G\n\
+      \\fListPayments\DC2\SUB.lnrpc.ListPaymentsRequest\SUB\ESC.lnrpc.ListPaymentsResponse\DC2V\n\
+      \\DC1DeleteAllPayments\DC2\US.lnrpc.DeleteAllPaymentsRequest\SUB .lnrpc.DeleteAllPaymentsResponse\DC2@\n\
+      \\rDescribeGraph\DC2\SUB.lnrpc.ChannelGraphRequest\SUB\DC3.lnrpc.ChannelGraph\DC2G\n\
+      \\SOGetNodeMetrics\DC2\EM.lnrpc.NodeMetricsRequest\SUB\SUB.lnrpc.NodeMetricsResponse\DC29\n\
+      \\vGetChanInfo\DC2\SYN.lnrpc.ChanInfoRequest\SUB\DC2.lnrpc.ChannelEdge\DC26\n\
+      \\vGetNodeInfo\DC2\SYN.lnrpc.NodeInfoRequest\SUB\SI.lnrpc.NodeInfo\DC2D\n\
+      \\vQueryRoutes\DC2\EM.lnrpc.QueryRoutesRequest\SUB\SUB.lnrpc.QueryRoutesResponse\DC2?\n\
+      \\SOGetNetworkInfo\DC2\EM.lnrpc.NetworkInfoRequest\SUB\DC2.lnrpc.NetworkInfo\DC25\n\
+      \\n\
+      \StopDaemon\DC2\DC2.lnrpc.StopRequest\SUB\DC3.lnrpc.StopResponse\DC2W\n\
+      \\NAKSubscribeChannelGraph\DC2 .lnrpc.GraphTopologySubscription\SUB\SUB.lnrpc.GraphTopologyUpdate0\SOH\DC2A\n\
+      \\n\
+      \DebugLevel\DC2\CAN.lnrpc.DebugLevelRequest\SUB\EM.lnrpc.DebugLevelResponse\DC2>\n\
+      \\tFeeReport\DC2\ETB.lnrpc.FeeReportRequest\SUB\CAN.lnrpc.FeeReportResponse\DC2N\n\
+      \\DC3UpdateChannelPolicy\DC2\SUB.lnrpc.PolicyUpdateRequest\SUB\ESC.lnrpc.PolicyUpdateResponse\DC2V\n\
+      \\DC1ForwardingHistory\DC2\US.lnrpc.ForwardingHistoryRequest\SUB .lnrpc.ForwardingHistoryResponse\DC2N\n\
+      \\DC3ExportChannelBackup\DC2!.lnrpc.ExportChannelBackupRequest\SUB\DC4.lnrpc.ChannelBackup\DC2T\n\
+      \\ETBExportAllChannelBackups\DC2\RS.lnrpc.ChanBackupExportRequest\SUB\EM.lnrpc.ChanBackupSnapshot\DC2N\n\
+      \\DLEVerifyChanBackup\DC2\EM.lnrpc.ChanBackupSnapshot\SUB\US.lnrpc.VerifyChanBackupResponse\DC2V\n\
+      \\NAKRestoreChannelBackups\DC2\US.lnrpc.RestoreChanBackupRequest\SUB\FS.lnrpc.RestoreBackupResponse\DC2X\n\
+      \\ETBSubscribeChannelBackups\DC2 .lnrpc.ChannelBackupSubscription\SUB\EM.lnrpc.ChanBackupSnapshot0\SOH\DC2G\n\
+      \\fBakeMacaroon\DC2\SUB.lnrpc.BakeMacaroonRequest\SUB\ESC.lnrpc.BakeMacaroonResponse\DC2P\n\
+      \\SIListMacaroonIDs\DC2\GS.lnrpc.ListMacaroonIDsRequest\SUB\RS.lnrpc.ListMacaroonIDsResponse\DC2S\n\
+      \\DLEDeleteMacaroonID\DC2\RS.lnrpc.DeleteMacaroonIDRequest\SUB\US.lnrpc.DeleteMacaroonIDResponse\DC2P\n\
+      \\SIListPermissions\DC2\GS.lnrpc.ListPermissionsRequest\SUB\RS.lnrpc.ListPermissionsResponse"
 instance Data.ProtoLens.Service.Types.HasMethodImpl Lightning "walletBalance" where
   type MethodName Lightning "walletBalance" = "WalletBalance"
   type MethodInput Lightning "walletBalance" = WalletBalanceRequest
@@ -52148,7 +52583,7 @@ packedFileDescriptor
     \\fBakeMacaroon\DC2\SUB.lnrpc.BakeMacaroonRequest\SUB\ESC.lnrpc.BakeMacaroonResponse\DC2P\n\
     \\SIListMacaroonIDs\DC2\GS.lnrpc.ListMacaroonIDsRequest\SUB\RS.lnrpc.ListMacaroonIDsResponse\DC2S\n\
     \\DLEDeleteMacaroonID\DC2\RS.lnrpc.DeleteMacaroonIDRequest\SUB\US.lnrpc.DeleteMacaroonIDResponse\DC2P\n\
-    \\SIListPermissions\DC2\GS.lnrpc.ListPermissionsRequest\SUB\RS.lnrpc.ListPermissionsResponseB'Z%github.com/lightningnetwork/lnd/lnrpcJ\205\234\b\n\
+    \\SIListPermissions\DC2\GS.lnrpc.ListPermissionsRequest\SUB\RS.lnrpc.ListPermissionsResponseB'Z%github.com/lightningnetwork/lnd/lnrpcJ\242\153\b\n\
     \\a\DC2\ENQ\STX\NUL\176\RS\SOH\n\
     \\130\SOH\n\
     \\SOH\f\DC2\ETX\STX\NUL\DC22x source https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/rpc.proto\n\
@@ -52994,8 +53429,6 @@ packedFileDescriptor
     \#\n\
     \\EOT\EOT\NUL\STX\NUL\DC2\EOT\139\EOT\EOT!\SUB\NAK The type of address\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\NUL\EOT\DC2\ACK\139\EOT\EOT\137\EOT\SO\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\NUL\ACK\DC2\EOT\139\EOT\EOT\SI\n\
     \\r\n\
@@ -53005,8 +53438,6 @@ packedFileDescriptor
     \\ESC\n\
     \\EOT\EOT\NUL\STX\SOH\DC2\EOT\142\EOT\EOT\ETB\SUB\r The address\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\SOH\EOT\DC2\ACK\142\EOT\EOT\139\EOT!\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\EOT\142\EOT\EOT\n\
     \\n\
@@ -53017,8 +53448,6 @@ packedFileDescriptor
     \9\n\
     \\EOT\EOT\NUL\STX\STX\DC2\EOT\145\EOT\EOT\EM\SUB+ The value of the unspent coin in satoshis\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\STX\EOT\DC2\ACK\145\EOT\EOT\142\EOT\ETB\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\STX\ENQ\DC2\EOT\145\EOT\EOT\t\n\
     \\r\n\
@@ -53029,8 +53458,6 @@ packedFileDescriptor
     \#\n\
     \\EOT\EOT\NUL\STX\ETX\DC2\EOT\148\EOT\EOT\EM\SUB\NAK The pkscript in hex\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\ETX\EOT\DC2\ACK\148\EOT\EOT\145\EOT\EM\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\ETX\ENQ\DC2\EOT\148\EOT\EOT\n\
     \\n\
@@ -53041,8 +53468,6 @@ packedFileDescriptor
     \-\n\
     \\EOT\EOT\NUL\STX\EOT\DC2\EOT\151\EOT\EOT\SUB\SUB\US The outpoint in format txid:n\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\EOT\EOT\DC2\ACK\151\EOT\EOT\148\EOT\EM\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\EOT\ACK\DC2\EOT\151\EOT\EOT\f\n\
     \\r\n\
@@ -53052,8 +53477,6 @@ packedFileDescriptor
     \8\n\
     \\EOT\EOT\NUL\STX\ENQ\DC2\EOT\154\EOT\EOT\FS\SUB* The number of confirmations for the Utxo\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NUL\STX\ENQ\EOT\DC2\ACK\154\EOT\EOT\151\EOT\SUB\n\
     \\r\n\
     \\ENQ\EOT\NUL\STX\ENQ\ENQ\DC2\EOT\154\EOT\EOT\t\n\
     \\r\n\
@@ -53068,8 +53491,6 @@ packedFileDescriptor
     \$\n\
     \\EOT\EOT\SOH\STX\NUL\DC2\EOT\159\EOT\EOT\ETB\SUB\SYN The transaction hash\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\NUL\EOT\DC2\ACK\159\EOT\EOT\157\EOT\NAK\n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\NUL\ENQ\DC2\EOT\159\EOT\EOT\n\
     \\n\
@@ -53080,8 +53501,6 @@ packedFileDescriptor
     \?\n\
     \\EOT\EOT\SOH\STX\SOH\DC2\EOT\162\EOT\EOT\NAK\SUB1 The transaction amount, denominated in satoshis\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\SOH\EOT\DC2\ACK\162\EOT\EOT\159\EOT\ETB\n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\SOH\ENQ\DC2\EOT\162\EOT\EOT\t\n\
     \\r\n\
@@ -53092,8 +53511,6 @@ packedFileDescriptor
     \+\n\
     \\EOT\EOT\SOH\STX\STX\DC2\EOT\165\EOT\EOT \SUB\GS The number of confirmations\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\STX\EOT\DC2\ACK\165\EOT\EOT\162\EOT\NAK\n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\STX\ENQ\DC2\EOT\165\EOT\EOT\t\n\
     \\r\n\
@@ -53104,8 +53521,6 @@ packedFileDescriptor
     \F\n\
     \\EOT\EOT\SOH\STX\ETX\DC2\EOT\168\EOT\EOT\SUB\SUB8 The hash of the block this transaction was included in\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\ETX\EOT\DC2\ACK\168\EOT\EOT\165\EOT \n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\ETX\ENQ\DC2\EOT\168\EOT\EOT\n\
     \\n\
@@ -53116,8 +53531,6 @@ packedFileDescriptor
     \H\n\
     \\EOT\EOT\SOH\STX\EOT\DC2\EOT\171\EOT\EOT\ESC\SUB: The height of the block this transaction was included in\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\EOT\EOT\DC2\ACK\171\EOT\EOT\168\EOT\SUB\n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\EOT\ENQ\DC2\EOT\171\EOT\EOT\t\n\
     \\r\n\
@@ -53128,8 +53541,6 @@ packedFileDescriptor
     \-\n\
     \\EOT\EOT\SOH\STX\ENQ\DC2\EOT\174\EOT\EOT\EM\SUB\US Timestamp of this transaction\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\ENQ\EOT\DC2\ACK\174\EOT\EOT\171\EOT\ESC\n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\ENQ\ENQ\DC2\EOT\174\EOT\EOT\t\n\
     \\r\n\
@@ -53140,8 +53551,6 @@ packedFileDescriptor
     \.\n\
     \\EOT\EOT\SOH\STX\ACK\DC2\EOT\177\EOT\EOT\EM\SUB  Fees paid for this transaction\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\ACK\EOT\DC2\ACK\177\EOT\EOT\174\EOT\EM\n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\ACK\ENQ\DC2\EOT\177\EOT\EOT\t\n\
     \\r\n\
@@ -53163,8 +53572,6 @@ packedFileDescriptor
     \(\n\
     \\EOT\EOT\SOH\STX\b\DC2\EOT\183\EOT\EOT\SUB\SUB\SUB The raw transaction hex.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\b\EOT\DC2\ACK\183\EOT\EOT\180\EOT'\n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\b\ENQ\DC2\EOT\183\EOT\EOT\n\
     \\n\
@@ -53175,8 +53582,6 @@ packedFileDescriptor
     \I\n\
     \\EOT\EOT\SOH\STX\t\DC2\EOT\186\EOT\EOT\SYN\SUB; A label that was optionally set on transaction broadcast.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SOH\STX\t\EOT\DC2\ACK\186\EOT\EOT\183\EOT\SUB\n\
     \\r\n\
     \\ENQ\EOT\SOH\STX\t\ENQ\DC2\EOT\186\EOT\EOT\n\
     \\n\
@@ -53193,8 +53598,6 @@ packedFileDescriptor
     \The height from which to list transactions, inclusive. If this value is\n\
     \greater than end_height, transactions will be read in reverse.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\STX\STX\NUL\EOT\DC2\ACK\193\EOT\EOT\188\EOT \n\
     \\r\n\
     \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\EOT\193\EOT\EOT\t\n\
     \\r\n\
@@ -53210,8 +53613,6 @@ packedFileDescriptor
     \unconfirmed transactions. If no end_height is provided, the call will\n\
     \default to this option.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\ACK\202\EOT\EOT\193\EOT\ESC\n\
     \\r\n\
     \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\EOT\202\EOT\EOT\t\n\
     \\r\n\
@@ -53222,8 +53623,6 @@ packedFileDescriptor
     \W\n\
     \\EOT\EOT\STX\STX\STX\DC2\EOT\205\EOT\EOT\ETB\SUBI An optional filter to only include transactions relevant to an account.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\STX\STX\STX\EOT\DC2\ACK\205\EOT\EOT\202\EOT\EM\n\
     \\r\n\
     \\ENQ\EOT\STX\STX\STX\ENQ\DC2\EOT\205\EOT\EOT\n\
     \\n\
@@ -53297,8 +53696,6 @@ packedFileDescriptor
     \The identity pubkey of the payment recipient. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\NUL\EOT\DC2\ACK\239\EOT\EOT\234\EOT\NAK\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\NUL\ENQ\DC2\EOT\239\EOT\EOT\t\n\
     \\r\n\
@@ -53311,8 +53708,6 @@ packedFileDescriptor
     \The hex-encoded identity pubkey of the payment recipient. Deprecated now\n\
     \that the REST gateway supports base64 encoding of bytes fields.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\SOH\EOT\DC2\ACK\245\EOT\EOT\239\EOT\DC3\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\SOH\ENQ\DC2\EOT\245\EOT\EOT\n\
     \\n\
@@ -53330,8 +53725,6 @@ packedFileDescriptor
     \\n\
     \The fields amt and amt_msat are mutually exclusive.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\STX\EOT\DC2\ACK\252\EOT\EOT\245\EOT/\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\STX\ENQ\DC2\EOT\252\EOT\EOT\t\n\
     \\r\n\
@@ -53345,8 +53738,6 @@ packedFileDescriptor
     \\n\
     \The fields amt and amt_msat are mutually exclusive.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\ETX\EOT\DC2\ACK\131\ENQ\EOT\252\EOT\DC2\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\ETX\ENQ\DC2\EOT\131\ENQ\EOT\t\n\
     \\r\n\
@@ -53359,8 +53750,6 @@ packedFileDescriptor
     \The hash to use within the payment's HTLC. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\EOT\EOT\DC2\ACK\137\ENQ\EOT\131\ENQ\CAN\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\EOT\ENQ\DC2\EOT\137\ENQ\EOT\t\n\
     \\r\n\
@@ -53373,8 +53762,6 @@ packedFileDescriptor
     \The hex-encoded hash to use within the payment's HTLC. Deprecated now\n\
     \that the REST gateway supports base64 encoding of bytes fields.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\ENQ\EOT\DC2\ACK\143\ENQ\EOT\137\ENQ\ESC\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\ENQ\ENQ\DC2\EOT\143\ENQ\EOT\n\
     \\n\
@@ -53392,8 +53779,6 @@ packedFileDescriptor
     \details of the invoice, the sender has all the data necessary to send a\n\
     \payment to the recipient.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\ACK\EOT\DC2\ACK\150\ENQ\EOT\143\ENQ7\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\ACK\ENQ\DC2\EOT\150\ENQ\EOT\n\
     \\n\
@@ -53406,8 +53791,6 @@ packedFileDescriptor
     \The CLTV delta from the current height that should be used to set the\n\
     \timelock for the final hop.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\a\EOT\DC2\ACK\156\ENQ\EOT\150\ENQ\US\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\a\ENQ\DC2\EOT\156\ENQ\EOT\t\n\
     \\r\n\
@@ -53422,8 +53805,6 @@ packedFileDescriptor
     \sent, or as a fixed amount of the maximum fee the user is willing the pay to\n\
     \send the payment.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\b\EOT\DC2\ACK\164\ENQ\EOT\156\ENQ\US\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\b\ACK\DC2\EOT\164\ENQ\EOT\f\n\
     \\r\n\
@@ -53435,8 +53816,6 @@ packedFileDescriptor
     \The channel id of the channel that must be taken to the first hop. If zero,\n\
     \any channel may be used.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\t\EOT\DC2\ACK\170\ENQ\EOT\164\ENQ\ESC\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\t\ENQ\DC2\EOT\170\ENQ\EOT\n\
     \\n\
@@ -53453,9 +53832,6 @@ packedFileDescriptor
     \\DC2\EOT\175\ENQ\EOT\US\SUBI\n\
     \The pubkey of the last hop of the route. If empty, any hop may be used.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\n\
-    \\EOT\DC2\ACK\175\ENQ\EOT\170\ENQ5\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\n\
     \\ENQ\DC2\EOT\175\ENQ\EOT\t\n\
@@ -53472,8 +53848,6 @@ packedFileDescriptor
     \lnd's `--max-cltv-expiry` setting. If zero, then the value of\n\
     \`--max-cltv-expiry` is enforced.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\v\EOT\DC2\ACK\182\ENQ\EOT\175\ENQ\US\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\v\ENQ\DC2\EOT\182\ENQ\EOT\n\
     \\n\
@@ -53489,8 +53863,6 @@ packedFileDescriptor
     \required to be in the custom range >= 65536. When using REST, the values\n\
     \must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\f\EOT\DC2\ACK\191\ENQ\EOT\182\ENQ\ESC\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\f\ACK\DC2\EOT\191\ENQ\EOT\SYN\n\
     \\r\n\
@@ -53500,8 +53872,6 @@ packedFileDescriptor
     \@\n\
     \\EOT\EOT\ENQ\STX\r\DC2\EOT\194\ENQ\EOT!\SUB2 If set, circular payments to self are permitted.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\r\EOT\DC2\ACK\194\ENQ\EOT\191\ENQ0\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\r\ENQ\DC2\EOT\194\ENQ\EOT\b\n\
     \\r\n\
@@ -53528,8 +53898,6 @@ packedFileDescriptor
     \\EOT\EOT\ENQ\STX\SI\DC2\EOT\208\ENQ\EOT\FS\SUB/\n\
     \The payment address of the generated invoice.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ENQ\STX\SI\EOT\DC2\ACK\208\ENQ\EOT\203\ENQ+\n\
     \\r\n\
     \\ENQ\EOT\ENQ\STX\SI\ENQ\DC2\EOT\208\ENQ\EOT\t\n\
     \\r\n\
@@ -53543,8 +53911,6 @@ packedFileDescriptor
     \\ETX\EOT\ACK\SOH\DC2\EOT\211\ENQ\b\DC4\n\
     \\f\n\
     \\EOT\EOT\ACK\STX\NUL\DC2\EOT\212\ENQ\EOT\GS\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\NUL\EOT\DC2\ACK\212\ENQ\EOT\211\ENQ\SYN\n\
     \\r\n\
     \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\212\ENQ\EOT\n\
     \\n\
@@ -53554,8 +53920,6 @@ packedFileDescriptor
     \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\212\ENQ\ESC\FS\n\
     \\f\n\
     \\EOT\EOT\ACK\STX\SOH\DC2\EOT\213\ENQ\EOT\US\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\SOH\EOT\DC2\ACK\213\ENQ\EOT\212\ENQ\GS\n\
     \\r\n\
     \\ENQ\EOT\ACK\STX\SOH\ENQ\DC2\EOT\213\ENQ\EOT\t\n\
     \\r\n\
@@ -53565,8 +53929,6 @@ packedFileDescriptor
     \\ENQ\EOT\ACK\STX\SOH\ETX\DC2\EOT\213\ENQ\GS\RS\n\
     \\f\n\
     \\EOT\EOT\ACK\STX\STX\DC2\EOT\214\ENQ\EOT\FS\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\STX\EOT\DC2\ACK\214\ENQ\EOT\213\ENQ\US\n\
     \\r\n\
     \\ENQ\EOT\ACK\STX\STX\ACK\DC2\EOT\214\ENQ\EOT\t\n\
     \\r\n\
@@ -53576,8 +53938,6 @@ packedFileDescriptor
     \\ENQ\EOT\ACK\STX\STX\ETX\DC2\EOT\214\ENQ\SUB\ESC\n\
     \\f\n\
     \\EOT\EOT\ACK\STX\ETX\DC2\EOT\215\ENQ\EOT\ESC\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\ETX\EOT\DC2\ACK\215\ENQ\EOT\214\ENQ\FS\n\
     \\r\n\
     \\ENQ\EOT\ACK\STX\ETX\ENQ\DC2\EOT\215\ENQ\EOT\t\n\
     \\r\n\
@@ -53594,8 +53954,6 @@ packedFileDescriptor
     \The payment hash to use for the HTLC. When using REST, this field must be\n\
     \encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\a\STX\NUL\EOT\DC2\ACK\223\ENQ\EOT\218\ENQ\FS\n\
     \\r\n\
     \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\223\ENQ\EOT\t\n\
     \\r\n\
@@ -53608,8 +53966,6 @@ packedFileDescriptor
     \An optional hex-encoded payment hash to be used for the HTLC. Deprecated now\n\
     \that the REST gateway supports base64 encoding of bytes fields.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\a\STX\SOH\EOT\DC2\ACK\229\ENQ\EOT\223\ENQ\ESC\n\
     \\r\n\
     \\ENQ\EOT\a\STX\SOH\ENQ\DC2\EOT\229\ENQ\EOT\n\
     \\n\
@@ -53632,8 +53988,6 @@ packedFileDescriptor
     \M\n\
     \\EOT\EOT\a\STX\STX\DC2\EOT\234\ENQ\EOT\DC4\SUB? Route that should be used to attempt to complete the payment.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\a\STX\STX\EOT\DC2\ACK\234\ENQ\EOT\231\ENQ\SI\n\
     \\r\n\
     \\ENQ\EOT\a\STX\STX\ACK\DC2\EOT\234\ENQ\EOT\t\n\
     \\r\n\
@@ -53648,8 +54002,6 @@ packedFileDescriptor
     \N\n\
     \\EOT\EOT\b\STX\NUL\DC2\EOT\239\ENQ\EOT\SUB\SUB@ The pubkey of the node that wishes to open an inbound channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\NUL\EOT\DC2\ACK\239\ENQ\EOT\237\ENQ\RS\n\
     \\r\n\
     \\ENQ\EOT\b\STX\NUL\ENQ\DC2\EOT\239\ENQ\EOT\t\n\
     \\r\n\
@@ -53660,8 +54012,6 @@ packedFileDescriptor
     \S\n\
     \\EOT\EOT\b\STX\SOH\DC2\EOT\242\ENQ\EOT\EM\SUBE The hash of the genesis block that the proposed channel resides in.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\SOH\EOT\DC2\ACK\242\ENQ\EOT\239\ENQ\SUB\n\
     \\r\n\
     \\ENQ\EOT\b\STX\SOH\ENQ\DC2\EOT\242\ENQ\EOT\t\n\
     \\r\n\
@@ -53672,8 +54022,6 @@ packedFileDescriptor
     \'\n\
     \\EOT\EOT\b\STX\STX\DC2\EOT\245\ENQ\EOT\RS\SUB\EM The pending channel id.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\STX\EOT\DC2\ACK\245\ENQ\EOT\242\ENQ\EM\n\
     \\r\n\
     \\ENQ\EOT\b\STX\STX\ENQ\DC2\EOT\245\ENQ\EOT\t\n\
     \\r\n\
@@ -53685,8 +54033,6 @@ packedFileDescriptor
     \\EOT\EOT\b\STX\ETX\DC2\EOT\249\ENQ\EOT\ESC\SUBN The funding amount in satoshis that initiator wishes to use in the\n\
     \ channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\ETX\EOT\DC2\ACK\249\ENQ\EOT\245\ENQ\RS\n\
     \\r\n\
     \\ENQ\EOT\b\STX\ETX\ENQ\DC2\EOT\249\ENQ\EOT\n\
     \\n\
@@ -53697,8 +54043,6 @@ packedFileDescriptor
     \I\n\
     \\EOT\EOT\b\STX\EOT\DC2\EOT\252\ENQ\EOT\CAN\SUB; The push amount of the proposed channel in millisatoshis.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\EOT\EOT\DC2\ACK\252\ENQ\EOT\249\ENQ\ESC\n\
     \\r\n\
     \\ENQ\EOT\b\STX\EOT\ENQ\DC2\EOT\252\ENQ\EOT\n\
     \\n\
@@ -53709,8 +54053,6 @@ packedFileDescriptor
     \@\n\
     \\EOT\EOT\b\STX\ENQ\DC2\EOT\255\ENQ\EOT\SUB\SUB2 The dust limit of the initiator's commitment tx.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\ENQ\EOT\DC2\ACK\255\ENQ\EOT\252\ENQ\CAN\n\
     \\r\n\
     \\ENQ\EOT\b\STX\ENQ\ENQ\DC2\EOT\255\ENQ\EOT\n\
     \\n\
@@ -53722,8 +54064,6 @@ packedFileDescriptor
     \\EOT\EOT\b\STX\ACK\DC2\EOT\131\ACK\EOT#\SUBT The maximum amount of coins in millisatoshis that can be pending in this\n\
     \ channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\ACK\EOT\DC2\ACK\131\ACK\EOT\255\ENQ\SUB\n\
     \\r\n\
     \\ENQ\EOT\b\STX\ACK\ENQ\DC2\EOT\131\ACK\EOT\n\
     \\n\
@@ -53735,8 +54075,6 @@ packedFileDescriptor
     \\EOT\EOT\b\STX\a\DC2\EOT\135\ACK\EOT\US\SUBQ The minimum amount of satoshis the initiator requires us to have at all\n\
     \ times.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\a\EOT\DC2\ACK\135\ACK\EOT\131\ACK#\n\
     \\r\n\
     \\ENQ\EOT\b\STX\a\ENQ\DC2\EOT\135\ACK\EOT\n\
     \\n\
@@ -53747,8 +54085,6 @@ packedFileDescriptor
     \R\n\
     \\EOT\EOT\b\STX\b\DC2\EOT\138\ACK\EOT\CAN\SUBD The smallest HTLC in millisatoshis that the initiator will accept.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\b\EOT\DC2\ACK\138\ACK\EOT\135\ACK\US\n\
     \\r\n\
     \\ENQ\EOT\b\STX\b\ENQ\DC2\EOT\138\ACK\EOT\n\
     \\n\
@@ -53760,8 +54096,6 @@ packedFileDescriptor
     \\EOT\EOT\b\STX\t\DC2\EOT\142\ACK\EOT\ESC\SUBU The initial fee rate that the initiator suggests for both commitment\n\
     \ transactions.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\t\EOT\DC2\ACK\142\ACK\EOT\138\ACK\CAN\n\
     \\r\n\
     \\ENQ\EOT\b\STX\t\ENQ\DC2\EOT\142\ACK\EOT\n\
     \\n\
@@ -53775,9 +54109,6 @@ packedFileDescriptor
     \The number of blocks to use for the relative time lock in the pay-to-self\n\
     \output of both commitment transactions.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\n\
-    \\EOT\DC2\ACK\148\ACK\EOT\142\ACK\ESC\n\
     \\r\n\
     \\ENQ\EOT\b\STX\n\
     \\ENQ\DC2\EOT\148\ACK\EOT\n\
@@ -53791,8 +54122,6 @@ packedFileDescriptor
     \S\n\
     \\EOT\EOT\b\STX\v\DC2\EOT\151\ACK\EOT#\SUBE The total number of incoming HTLC's that the initiator will accept.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\v\EOT\DC2\ACK\151\ACK\EOT\148\ACK\SUB\n\
     \\r\n\
     \\ENQ\EOT\b\STX\v\ENQ\DC2\EOT\151\ACK\EOT\n\
     \\n\
@@ -53804,8 +54133,6 @@ packedFileDescriptor
     \\EOT\EOT\b\STX\f\DC2\EOT\155\ACK\EOT\RS\SUBM A bit-field which the initiator uses to specify proposed channel\n\
     \ behavior.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\b\STX\f\EOT\DC2\ACK\155\ACK\EOT\151\ACK#\n\
     \\r\n\
     \\ENQ\EOT\b\STX\f\ENQ\DC2\EOT\155\ACK\EOT\n\
     \\n\
@@ -53820,8 +54147,6 @@ packedFileDescriptor
     \>\n\
     \\EOT\EOT\t\STX\NUL\DC2\EOT\160\ACK\EOT\DC4\SUB0 Whether or not the client accepts the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\t\STX\NUL\EOT\DC2\ACK\160\ACK\EOT\158\ACK\US\n\
     \\r\n\
     \\ENQ\EOT\t\STX\NUL\ENQ\DC2\EOT\160\ACK\EOT\b\n\
     \\r\n\
@@ -53831,8 +54156,6 @@ packedFileDescriptor
     \F\n\
     \\EOT\EOT\t\STX\SOH\DC2\EOT\163\ACK\EOT\RS\SUB8 The pending channel id to which this response applies.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\t\STX\SOH\EOT\DC2\ACK\163\ACK\EOT\160\ACK\DC4\n\
     \\r\n\
     \\ENQ\EOT\t\STX\SOH\ENQ\DC2\EOT\163\ACK\EOT\t\n\
     \\r\n\
@@ -53849,8 +54172,6 @@ packedFileDescriptor
     \because the meaning of this response is ambiguous. Limited to 500\n\
     \characters.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\t\STX\STX\EOT\DC2\ACK\173\ACK\EOT\163\ACK\RS\n\
     \\r\n\
     \\ENQ\EOT\t\STX\STX\ENQ\DC2\EOT\173\ACK\EOT\n\
     \\n\
@@ -53865,8 +54186,6 @@ packedFileDescriptor
     \that the channel open will fail if this value is set for a peer that does\n\
     \not support this feature bit.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\t\STX\ETX\EOT\DC2\ACK\181\ACK\EOT\173\ACK\NAK\n\
     \\r\n\
     \\ENQ\EOT\t\STX\ETX\ENQ\DC2\EOT\181\ACK\EOT\n\
     \\n\
@@ -53878,8 +54197,6 @@ packedFileDescriptor
     \\EOT\EOT\t\STX\EOT\DC2\EOT\186\ACK\EOT\EM\SUBA\n\
     \The csv delay (in blocks) that we require for the remote party.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\t\STX\EOT\EOT\DC2\ACK\186\ACK\EOT\181\ACK \n\
     \\r\n\
     \\ENQ\EOT\t\STX\EOT\ENQ\DC2\EOT\186\ACK\EOT\n\
     \\n\
@@ -53894,8 +54211,6 @@ packedFileDescriptor
     \them so that there is always a disincentive to broadcast old state (if they\n\
     \hold 0 sats on their side of the channel, there is nothing to lose).\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\t\STX\ENQ\EOT\DC2\ACK\194\ACK\EOT\186\ACK\EM\n\
     \\r\n\
     \\ENQ\EOT\t\STX\ENQ\ENQ\DC2\EOT\194\ACK\EOT\n\
     \\n\
@@ -53908,8 +54223,6 @@ packedFileDescriptor
     \The maximum amount of funds in millisatoshis that we allow the remote peer\n\
     \to have in outstanding htlcs.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\t\STX\ACK\EOT\DC2\ACK\200\ACK\EOT\194\ACK\ESC\n\
     \\r\n\
     \\ENQ\EOT\t\STX\ACK\ENQ\DC2\EOT\200\ACK\EOT\n\
     \\n\
@@ -53921,8 +54234,6 @@ packedFileDescriptor
     \\EOT\EOT\t\STX\a\DC2\EOT\205\ACK\EOT\RS\SUB@\n\
     \The maximum number of htlcs that the remote peer can offer us.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\t\STX\a\EOT\DC2\ACK\205\ACK\EOT\200\ACK\"\n\
     \\r\n\
     \\ENQ\EOT\t\STX\a\ENQ\DC2\EOT\205\ACK\EOT\n\
     \\n\
@@ -53934,8 +54245,6 @@ packedFileDescriptor
     \\EOT\EOT\t\STX\b\DC2\EOT\210\ACK\EOT\ESC\SUBG\n\
     \The minimum value in millisatoshis for incoming htlcs on the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\t\STX\b\EOT\DC2\ACK\210\ACK\EOT\205\ACK\RS\n\
     \\r\n\
     \\ENQ\EOT\t\STX\b\ENQ\DC2\EOT\210\ACK\EOT\n\
     \\n\
@@ -53947,8 +54256,6 @@ packedFileDescriptor
     \\EOT\EOT\t\STX\t\DC2\EOT\215\ACK\EOT!\SUBM\n\
     \The number of confirmations we require before we consider the channel open.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\t\STX\t\EOT\DC2\ACK\215\ACK\EOT\210\ACK\ESC\n\
     \\r\n\
     \\ENQ\EOT\t\STX\t\ENQ\DC2\EOT\215\ACK\EOT\n\
     \\n\
@@ -54003,9 +54310,6 @@ packedFileDescriptor
     \\EOT\EOT\n\
     \\STX\STX\DC2\EOT\234\ACK\EOT\FS\SUB4 The index of the output of the funding transaction\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\n\
-    \\STX\STX\EOT\DC2\ACK\234\ACK\EOT\231\ACK\ENQ\n\
     \\r\n\
     \\ENQ\EOT\n\
     \\STX\STX\ENQ\DC2\EOT\234\ACK\EOT\n\
@@ -54023,8 +54327,6 @@ packedFileDescriptor
     \:\n\
     \\EOT\EOT\v\STX\NUL\DC2\EOT\239\ACK\EOT\EM\SUB, Raw bytes representing the transaction id.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\v\STX\NUL\EOT\DC2\ACK\239\ACK\EOT\237\ACK\DC2\n\
     \\r\n\
     \\ENQ\EOT\v\STX\NUL\ENQ\DC2\EOT\239\ACK\EOT\t\n\
     \\r\n\
@@ -54035,8 +54337,6 @@ packedFileDescriptor
     \M\n\
     \\EOT\EOT\v\STX\SOH\DC2\EOT\242\ACK\EOT\CAN\SUB? Reversed, hex-encoded string representing the transaction id.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\v\STX\SOH\EOT\DC2\ACK\242\ACK\EOT\239\ACK\EM\n\
     \\r\n\
     \\ENQ\EOT\v\STX\SOH\ENQ\DC2\EOT\242\ACK\EOT\n\
     \\n\
@@ -54047,8 +54347,6 @@ packedFileDescriptor
     \;\n\
     \\EOT\EOT\v\STX\STX\DC2\EOT\245\ACK\EOT\FS\SUB- The index of the output on the transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\v\STX\STX\EOT\DC2\ACK\245\ACK\EOT\242\ACK\CAN\n\
     \\r\n\
     \\ENQ\EOT\v\STX\STX\ENQ\DC2\EOT\245\ACK\EOT\n\
     \\n\
@@ -54063,8 +54361,6 @@ packedFileDescriptor
     \9\n\
     \\EOT\EOT\f\STX\NUL\DC2\EOT\250\ACK\EOT\SYN\SUB+ The identity pubkey of the Lightning node\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\f\STX\NUL\EOT\DC2\ACK\250\ACK\EOT\248\ACK\SUB\n\
     \\r\n\
     \\ENQ\EOT\f\STX\NUL\ENQ\DC2\EOT\250\ACK\EOT\n\
     \\n\
@@ -54076,8 +54372,6 @@ packedFileDescriptor
     \\EOT\EOT\f\STX\SOH\DC2\EOT\254\ACK\EOT\DC4\SUB[ The network location of the lightning node, e.g. `69.69.69.69:1337` or\n\
     \ `localhost:10011`\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\f\STX\SOH\EOT\DC2\ACK\254\ACK\EOT\250\ACK\SYN\n\
     \\r\n\
     \\ENQ\EOT\f\STX\SOH\ENQ\DC2\EOT\254\ACK\EOT\n\
     \\n\
@@ -54092,8 +54386,6 @@ packedFileDescriptor
     \F\n\
     \\EOT\EOT\r\STX\NUL\DC2\EOT\131\a\EOT(\SUB8 The map from addresses to amounts for the transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\r\STX\NUL\EOT\DC2\ACK\131\a\EOT\129\a\FS\n\
     \\r\n\
     \\ENQ\EOT\r\STX\NUL\ACK\DC2\EOT\131\a\EOT\SYN\n\
     \\r\n\
@@ -54104,8 +54396,6 @@ packedFileDescriptor
     \\EOT\EOT\r\STX\SOH\DC2\EOT\135\a\EOT\SUB\SUBL The target number of blocks that this transaction should be confirmed\n\
     \ by.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\r\STX\SOH\EOT\DC2\ACK\135\a\EOT\131\a(\n\
     \\r\n\
     \\ENQ\EOT\r\STX\SOH\ENQ\DC2\EOT\135\a\EOT\t\n\
     \\r\n\
@@ -54117,8 +54407,6 @@ packedFileDescriptor
     \\EOT\EOT\r\STX\STX\DC2\EOT\139\a\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
     \ the transaction must satisfy.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\r\STX\STX\EOT\DC2\ACK\139\a\EOT\135\a\SUB\n\
     \\r\n\
     \\ENQ\EOT\r\STX\STX\ENQ\DC2\EOT\139\a\EOT\t\n\
     \\r\n\
@@ -54129,8 +54417,6 @@ packedFileDescriptor
     \Y\n\
     \\EOT\EOT\r\STX\ETX\DC2\EOT\142\a\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\r\STX\ETX\EOT\DC2\ACK\142\a\EOT\139\a\CAN\n\
     \\r\n\
     \\ENQ\EOT\r\STX\ETX\ENQ\DC2\EOT\142\a\EOT\b\n\
     \\r\n\
@@ -54144,8 +54430,6 @@ packedFileDescriptor
     \*\n\
     \\EOT\EOT\SO\STX\NUL\DC2\EOT\147\a\EOT\SYN\SUB\FS The total fee in satoshis.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SO\STX\NUL\EOT\DC2\ACK\147\a\EOT\145\a\GS\n\
     \\r\n\
     \\ENQ\EOT\SO\STX\NUL\ENQ\DC2\EOT\147\a\EOT\t\n\
     \\r\n\
@@ -54157,8 +54441,6 @@ packedFileDescriptor
     \\EOT\EOT\SO\STX\SOH\DC2\EOT\151\a\EOT7\SUB@ Deprecated, use sat_per_vbyte.\n\
     \ The fee rate in satoshi/vbyte.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SO\STX\SOH\EOT\DC2\ACK\151\a\EOT\147\a\SYN\n\
     \\r\n\
     \\ENQ\EOT\SO\STX\SOH\ENQ\DC2\EOT\151\a\EOT\t\n\
     \\r\n\
@@ -54173,8 +54455,6 @@ packedFileDescriptor
     \.\n\
     \\EOT\EOT\SO\STX\STX\DC2\EOT\154\a\EOT\GS\SUB  The fee rate in satoshi/vbyte.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SO\STX\STX\EOT\DC2\ACK\154\a\EOT\151\a7\n\
     \\r\n\
     \\ENQ\EOT\SO\STX\STX\ENQ\DC2\EOT\154\a\EOT\n\
     \\n\
@@ -54189,8 +54469,6 @@ packedFileDescriptor
     \1\n\
     \\EOT\EOT\SI\STX\NUL\DC2\EOT\159\a\EOT(\SUB# The map from addresses to amounts\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\NUL\EOT\DC2\ACK\159\a\EOT\157\a\EM\n\
     \\r\n\
     \\ENQ\EOT\SI\STX\NUL\ACK\DC2\EOT\159\a\EOT\SYN\n\
     \\r\n\
@@ -54201,8 +54479,6 @@ packedFileDescriptor
     \\EOT\EOT\SI\STX\SOH\DC2\EOT\163\a\EOT\SUB\SUBL The target number of blocks that this transaction should be confirmed\n\
     \ by.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\SOH\EOT\DC2\ACK\163\a\EOT\159\a(\n\
     \\r\n\
     \\ENQ\EOT\SI\STX\SOH\ENQ\DC2\EOT\163\a\EOT\t\n\
     \\r\n\
@@ -54214,8 +54490,6 @@ packedFileDescriptor
     \\EOT\EOT\SI\STX\STX\DC2\EOT\167\a\EOT\GS\SUBX A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\STX\EOT\DC2\ACK\167\a\EOT\163\a\SUB\n\
     \\r\n\
     \\ENQ\EOT\SI\STX\STX\ENQ\DC2\EOT\167\a\EOT\n\
     \\n\
@@ -54228,8 +54502,6 @@ packedFileDescriptor
     \ A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\ETX\EOT\DC2\ACK\172\a\EOT\167\a\GS\n\
     \\r\n\
     \\ENQ\EOT\SI\STX\ETX\ENQ\DC2\EOT\172\a\EOT\t\n\
     \\r\n\
@@ -54244,8 +54516,6 @@ packedFileDescriptor
     \Q\n\
     \\EOT\EOT\SI\STX\EOT\DC2\EOT\175\a\EOT\NAK\SUBC An optional label for the transaction, limited to 500 characters.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\EOT\EOT\DC2\ACK\175\a\EOT\172\a/\n\
     \\r\n\
     \\ENQ\EOT\SI\STX\EOT\ENQ\DC2\EOT\175\a\EOT\n\
     \\n\
@@ -54257,8 +54527,6 @@ packedFileDescriptor
     \\EOT\EOT\SI\STX\ENQ\DC2\EOT\179\a\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
     \ the transaction must satisfy.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\ENQ\EOT\DC2\ACK\179\a\EOT\175\a\NAK\n\
     \\r\n\
     \\ENQ\EOT\SI\STX\ENQ\ENQ\DC2\EOT\179\a\EOT\t\n\
     \\r\n\
@@ -54269,8 +54537,6 @@ packedFileDescriptor
     \Y\n\
     \\EOT\EOT\SI\STX\ACK\DC2\EOT\182\a\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SI\STX\ACK\EOT\DC2\ACK\182\a\EOT\179\a\CAN\n\
     \\r\n\
     \\ENQ\EOT\SI\STX\ACK\ENQ\DC2\EOT\182\a\EOT\b\n\
     \\r\n\
@@ -54284,8 +54550,6 @@ packedFileDescriptor
     \)\n\
     \\EOT\EOT\DLE\STX\NUL\DC2\EOT\186\a\EOT\DC4\SUB\ESC The id of the transaction\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DLE\STX\NUL\EOT\DC2\ACK\186\a\EOT\184\a\SUB\n\
     \\r\n\
     \\ENQ\EOT\DLE\STX\NUL\ENQ\DC2\EOT\186\a\EOT\n\
     \\n\
@@ -54300,8 +54564,6 @@ packedFileDescriptor
     \,\n\
     \\EOT\EOT\DC1\STX\NUL\DC2\EOT\191\a\EOT\DC4\SUB\RS The address to send coins to\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC1\STX\NUL\EOT\DC2\ACK\191\a\EOT\189\a\SUB\n\
     \\r\n\
     \\ENQ\EOT\DC1\STX\NUL\ENQ\DC2\EOT\191\a\EOT\n\
     \\n\
@@ -54312,8 +54574,6 @@ packedFileDescriptor
     \.\n\
     \\EOT\EOT\DC1\STX\SOH\DC2\EOT\194\a\EOT\NAK\SUB  The amount in satoshis to send\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC1\STX\SOH\EOT\DC2\ACK\194\a\EOT\191\a\DC4\n\
     \\r\n\
     \\ENQ\EOT\DC1\STX\SOH\ENQ\DC2\EOT\194\a\EOT\t\n\
     \\r\n\
@@ -54325,8 +54585,6 @@ packedFileDescriptor
     \\EOT\EOT\DC1\STX\STX\DC2\EOT\198\a\EOT\SUB\SUBL The target number of blocks that this transaction should be confirmed\n\
     \ by.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC1\STX\STX\EOT\DC2\ACK\198\a\EOT\194\a\NAK\n\
     \\r\n\
     \\ENQ\EOT\DC1\STX\STX\ENQ\DC2\EOT\198\a\EOT\t\n\
     \\r\n\
@@ -54338,8 +54596,6 @@ packedFileDescriptor
     \\EOT\EOT\DC1\STX\ETX\DC2\EOT\202\a\EOT\GS\SUBX A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC1\STX\ETX\EOT\DC2\ACK\202\a\EOT\198\a\SUB\n\
     \\r\n\
     \\ENQ\EOT\DC1\STX\ETX\ENQ\DC2\EOT\202\a\EOT\n\
     \\n\
@@ -54352,8 +54608,6 @@ packedFileDescriptor
     \ A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC1\STX\EOT\EOT\DC2\ACK\207\a\EOT\202\a\GS\n\
     \\r\n\
     \\ENQ\EOT\DC1\STX\EOT\ENQ\DC2\EOT\207\a\EOT\t\n\
     \\r\n\
@@ -54371,8 +54625,6 @@ packedFileDescriptor
     \send all the coins under control of the internal wallet to the specified\n\
     \address.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC1\STX\ENQ\EOT\DC2\ACK\214\a\EOT\207\a/\n\
     \\r\n\
     \\ENQ\EOT\DC1\STX\ENQ\ENQ\DC2\EOT\214\a\EOT\b\n\
     \\r\n\
@@ -54382,8 +54634,6 @@ packedFileDescriptor
     \Q\n\
     \\EOT\EOT\DC1\STX\ACK\DC2\EOT\217\a\EOT\NAK\SUBC An optional label for the transaction, limited to 500 characters.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC1\STX\ACK\EOT\DC2\ACK\217\a\EOT\214\a\SYN\n\
     \\r\n\
     \\ENQ\EOT\DC1\STX\ACK\ENQ\DC2\EOT\217\a\EOT\n\
     \\n\
@@ -54395,8 +54645,6 @@ packedFileDescriptor
     \\EOT\EOT\DC1\STX\a\DC2\EOT\221\a\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
     \ the transaction must satisfy.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC1\STX\a\EOT\DC2\ACK\221\a\EOT\217\a\NAK\n\
     \\r\n\
     \\ENQ\EOT\DC1\STX\a\ENQ\DC2\EOT\221\a\EOT\t\n\
     \\r\n\
@@ -54407,8 +54655,6 @@ packedFileDescriptor
     \Y\n\
     \\EOT\EOT\DC1\STX\b\DC2\EOT\224\a\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC1\STX\b\EOT\DC2\ACK\224\a\EOT\221\a\CAN\n\
     \\r\n\
     \\ENQ\EOT\DC1\STX\b\ENQ\DC2\EOT\224\a\EOT\b\n\
     \\r\n\
@@ -54422,8 +54668,6 @@ packedFileDescriptor
     \5\n\
     \\EOT\EOT\DC2\STX\NUL\DC2\EOT\228\a\EOT\DC4\SUB' The transaction ID of the transaction\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC2\STX\NUL\EOT\DC2\ACK\228\a\EOT\226\a\ESC\n\
     \\r\n\
     \\ENQ\EOT\DC2\STX\NUL\ENQ\DC2\EOT\228\a\EOT\n\
     \\n\
@@ -54438,8 +54682,6 @@ packedFileDescriptor
     \C\n\
     \\EOT\EOT\DC3\STX\NUL\DC2\EOT\233\a\EOT\CAN\SUB5 The minimum number of confirmations to be included.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC3\STX\NUL\EOT\DC2\ACK\233\a\EOT\231\a\FS\n\
     \\r\n\
     \\ENQ\EOT\DC3\STX\NUL\ENQ\DC2\EOT\233\a\EOT\t\n\
     \\r\n\
@@ -54450,8 +54692,6 @@ packedFileDescriptor
     \C\n\
     \\EOT\EOT\DC3\STX\SOH\DC2\EOT\236\a\EOT\CAN\SUB5 The maximum number of confirmations to be included.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC3\STX\SOH\EOT\DC2\ACK\236\a\EOT\233\a\CAN\n\
     \\r\n\
     \\ENQ\EOT\DC3\STX\SOH\ENQ\DC2\EOT\236\a\EOT\t\n\
     \\r\n\
@@ -54462,8 +54702,6 @@ packedFileDescriptor
     \S\n\
     \\EOT\EOT\DC3\STX\STX\DC2\EOT\239\a\EOT\ETB\SUBE An optional filter to only include outputs belonging to an account.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\DC3\STX\STX\EOT\DC2\ACK\239\a\EOT\236\a\CAN\n\
     \\r\n\
     \\ENQ\EOT\DC3\STX\STX\ENQ\DC2\EOT\239\a\EOT\n\
     \\n\
@@ -54526,8 +54764,6 @@ packedFileDescriptor
     \0\n\
     \\EOT\EOT\NAK\STX\NUL\DC2\EOT\133\b\EOT\EM\SUB\" The type of address to generate.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NAK\STX\NUL\EOT\DC2\ACK\133\b\EOT\131\b\ESC\n\
     \\r\n\
     \\ENQ\EOT\NAK\STX\NUL\ACK\DC2\EOT\133\b\EOT\SI\n\
     \\r\n\
@@ -54539,8 +54775,6 @@ packedFileDescriptor
     \The name of the account to generate a new address for. If empty, the\n\
     \default wallet account is used.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\NAK\STX\SOH\EOT\DC2\ACK\139\b\EOT\133\b\EM\n\
     \\r\n\
     \\ENQ\EOT\NAK\STX\SOH\ENQ\DC2\EOT\139\b\EOT\n\
     \\n\
@@ -54555,8 +54789,6 @@ packedFileDescriptor
     \2\n\
     \\EOT\EOT\SYN\STX\NUL\DC2\EOT\143\b\EOT\ETB\SUB$ The newly generated wallet address\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SYN\STX\NUL\EOT\DC2\ACK\143\b\EOT\141\b\FS\n\
     \\r\n\
     \\ENQ\EOT\SYN\STX\NUL\ENQ\DC2\EOT\143\b\EOT\n\
     \\n\
@@ -54573,8 +54805,6 @@ packedFileDescriptor
     \The message to be signed. When using REST, this field must be encoded as\n\
     \base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ETB\STX\NUL\EOT\DC2\ACK\151\b\EOT\146\b\FS\n\
     \\r\n\
     \\ENQ\EOT\ETB\STX\NUL\ENQ\DC2\EOT\151\b\EOT\t\n\
     \\r\n\
@@ -54589,8 +54819,6 @@ packedFileDescriptor
     \3\n\
     \\EOT\EOT\CAN\STX\NUL\DC2\EOT\155\b\EOT\EM\SUB% The signature for the given message\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\CAN\STX\NUL\EOT\DC2\ACK\155\b\EOT\153\b\GS\n\
     \\r\n\
     \\ENQ\EOT\CAN\STX\NUL\ENQ\DC2\EOT\155\b\EOT\n\
     \\n\
@@ -54607,8 +54835,6 @@ packedFileDescriptor
     \The message over which the signature is to be verified. When using REST,\n\
     \this field must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EM\STX\NUL\EOT\DC2\ACK\163\b\EOT\158\b\RS\n\
     \\r\n\
     \\ENQ\EOT\EM\STX\NUL\ENQ\DC2\EOT\163\b\EOT\t\n\
     \\r\n\
@@ -54619,8 +54845,6 @@ packedFileDescriptor
     \C\n\
     \\EOT\EOT\EM\STX\SOH\DC2\EOT\166\b\EOT\EM\SUB5 The signature to be verified over the given message\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EM\STX\SOH\EOT\DC2\ACK\166\b\EOT\163\b\DC2\n\
     \\r\n\
     \\ENQ\EOT\EM\STX\SOH\ENQ\DC2\EOT\166\b\EOT\n\
     \\n\
@@ -54635,8 +54859,6 @@ packedFileDescriptor
     \F\n\
     \\EOT\EOT\SUB\STX\NUL\DC2\EOT\170\b\EOT\DC3\SUB8 Whether the signature was valid over the given message\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SUB\STX\NUL\EOT\DC2\ACK\170\b\EOT\168\b\US\n\
     \\r\n\
     \\ENQ\EOT\SUB\STX\NUL\ENQ\DC2\EOT\170\b\EOT\b\n\
     \\r\n\
@@ -54646,8 +54868,6 @@ packedFileDescriptor
     \7\n\
     \\EOT\EOT\SUB\STX\SOH\DC2\EOT\173\b\EOT\SYN\SUB) The pubkey recovered from the signature\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\SUB\STX\SOH\EOT\DC2\ACK\173\b\EOT\170\b\DC3\n\
     \\r\n\
     \\ENQ\EOT\SUB\STX\SOH\ENQ\DC2\EOT\173\b\EOT\n\
     \\n\
@@ -54662,8 +54882,6 @@ packedFileDescriptor
     \L\n\
     \\EOT\EOT\ESC\STX\NUL\DC2\EOT\178\b\EOT\RS\SUB> Lightning address of the peer, in the format `<pubkey>@host`\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ESC\STX\NUL\EOT\DC2\ACK\178\b\EOT\176\b\FS\n\
     \\r\n\
     \\ENQ\EOT\ESC\STX\NUL\ACK\DC2\EOT\178\b\EOT\DC4\n\
     \\r\n\
@@ -54673,8 +54891,6 @@ packedFileDescriptor
     \\133\SOH\n\
     \\EOT\EOT\ESC\STX\SOH\DC2\EOT\182\b\EOT\DC2\SUBw If set, the daemon will attempt to persistently connect to the target\n\
     \ peer. Otherwise, the call will be synchronous. \n\
-    \\SI\n\
-    \\ENQ\EOT\ESC\STX\SOH\EOT\DC2\ACK\182\b\EOT\178\b\RS\n\
     \\r\n\
     \\ENQ\EOT\ESC\STX\SOH\ENQ\DC2\EOT\182\b\EOT\b\n\
     \\r\n\
@@ -54686,8 +54902,6 @@ packedFileDescriptor
     \The connection timeout value (in seconds) for this request. It won't affect\n\
     \other requests.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ESC\STX\STX\EOT\DC2\ACK\188\b\EOT\182\b\DC2\n\
     \\r\n\
     \\ENQ\EOT\ESC\STX\STX\ENQ\DC2\EOT\188\b\EOT\n\
     \\n\
@@ -54706,8 +54920,6 @@ packedFileDescriptor
     \9\n\
     \\EOT\EOT\GS\STX\NUL\DC2\EOT\195\b\EOT\ETB\SUB+ The pubkey of the node to disconnect from\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\GS\STX\NUL\EOT\DC2\ACK\195\b\EOT\193\b\US\n\
     \\r\n\
     \\ENQ\EOT\GS\STX\NUL\ENQ\DC2\EOT\195\b\EOT\n\
     \\n\
@@ -54725,8 +54937,6 @@ packedFileDescriptor
     \\ETX\EOT\US\SOH\DC2\EOT\200\b\b\f\n\
     \\f\n\
     \\EOT\EOT\US\STX\NUL\DC2\EOT\201\b\EOT\SYN\n\
-    \\SI\n\
-    \\ENQ\EOT\US\STX\NUL\EOT\DC2\ACK\201\b\EOT\200\b\SO\n\
     \\r\n\
     \\ENQ\EOT\US\STX\NUL\ENQ\DC2\EOT\201\b\EOT\b\n\
     \\r\n\
@@ -54735,8 +54945,6 @@ packedFileDescriptor
     \\ENQ\EOT\US\STX\NUL\ETX\DC2\EOT\201\b\DC4\NAK\n\
     \\f\n\
     \\EOT\EOT\US\STX\SOH\DC2\EOT\202\b\EOT\NAK\n\
-    \\SI\n\
-    \\ENQ\EOT\US\STX\SOH\EOT\DC2\ACK\202\b\EOT\201\b\SYN\n\
     \\r\n\
     \\ENQ\EOT\US\STX\SOH\ENQ\DC2\EOT\202\b\EOT\t\n\
     \\r\n\
@@ -54746,8 +54954,6 @@ packedFileDescriptor
     \\ENQ\EOT\US\STX\SOH\ETX\DC2\EOT\202\b\DC3\DC4\n\
     \\f\n\
     \\EOT\EOT\US\STX\STX\DC2\EOT\203\b\EOT\CAN\n\
-    \\SI\n\
-    \\ENQ\EOT\US\STX\STX\EOT\DC2\ACK\203\b\EOT\202\b\NAK\n\
     \\r\n\
     \\ENQ\EOT\US\STX\STX\ENQ\DC2\EOT\203\b\EOT\t\n\
     \\r\n\
@@ -54757,8 +54963,6 @@ packedFileDescriptor
     \\ENQ\EOT\US\STX\STX\ETX\DC2\EOT\203\b\SYN\ETB\n\
     \\f\n\
     \\EOT\EOT\US\STX\ETX\DC2\EOT\204\b\EOT!\n\
-    \\SI\n\
-    \\ENQ\EOT\US\STX\ETX\EOT\DC2\ACK\204\b\EOT\203\b\CAN\n\
     \\r\n\
     \\ENQ\EOT\US\STX\ETX\ENQ\DC2\EOT\204\b\EOT\n\
     \\n\
@@ -54769,8 +54973,6 @@ packedFileDescriptor
     \:\n\
     \\EOT\EOT\US\STX\EOT\DC2\EOT\207\b\EOT\SUB\SUB, Index identifying the htlc on the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\US\STX\EOT\EOT\DC2\ACK\207\b\EOT\204\b!\n\
     \\r\n\
     \\ENQ\EOT\US\STX\EOT\ENQ\DC2\EOT\207\b\EOT\n\
     \\n\
@@ -54787,8 +54989,6 @@ packedFileDescriptor
     \ for htlcs that need to be forwarded but don't have a forwarding decision\n\
     \ persisted yet.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\US\STX\ENQ\EOT\DC2\ACK\216\b\EOT\207\b\SUB\n\
     \\r\n\
     \\ENQ\EOT\US\STX\ENQ\ENQ\DC2\EOT\216\b\EOT\n\
     \\n\
@@ -54799,8 +54999,6 @@ packedFileDescriptor
     \E\n\
     \\EOT\EOT\US\STX\ACK\DC2\EOT\219\b\EOT%\SUB7 Index identifying the htlc on the forwarding channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\US\STX\ACK\EOT\DC2\ACK\219\b\EOT\216\b\"\n\
     \\r\n\
     \\ENQ\EOT\US\STX\ACK\ENQ\DC2\EOT\219\b\EOT\n\
     \\n\
@@ -54860,8 +55058,6 @@ packedFileDescriptor
     \The CSV delay expressed in relative blocks. If the channel is force closed,\n\
     \we will need to wait for this many blocks before we can regain our funds.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\NUL\EOT\DC2\ACK\255\b\EOT\250\b\FS\n\
     \\r\n\
     \\ENQ\EOT \STX\NUL\ENQ\DC2\EOT\255\b\EOT\n\
     \\n\
@@ -54872,8 +55068,6 @@ packedFileDescriptor
     \U\n\
     \\EOT\EOT \STX\SOH\DC2\EOT\130\t\EOT \SUBG The minimum satoshis this node is required to reserve in its balance.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\SOH\EOT\DC2\ACK\130\t\EOT\255\b\EM\n\
     \\r\n\
     \\ENQ\EOT \STX\SOH\ENQ\DC2\EOT\130\t\EOT\n\
     \\n\
@@ -54884,8 +55078,6 @@ packedFileDescriptor
     \N\n\
     \\EOT\EOT \STX\STX\DC2\EOT\133\t\EOT\RS\SUB@ The dust limit (in satoshis) of the initiator's commitment tx.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\STX\EOT\DC2\ACK\133\t\EOT\130\t \n\
     \\r\n\
     \\ENQ\EOT \STX\STX\ENQ\DC2\EOT\133\t\EOT\n\
     \\n\
@@ -54897,8 +55089,6 @@ packedFileDescriptor
     \\EOT\EOT \STX\ETX\DC2\EOT\137\t\EOT$\SUBT The maximum amount of coins in millisatoshis that can be pending in this\n\
     \ channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\ETX\EOT\DC2\ACK\137\t\EOT\133\t\RS\n\
     \\r\n\
     \\ENQ\EOT \STX\ETX\ENQ\DC2\EOT\137\t\EOT\n\
     \\n\
@@ -54909,8 +55099,6 @@ packedFileDescriptor
     \R\n\
     \\EOT\EOT \STX\EOT\DC2\EOT\140\t\EOT\GS\SUBD The smallest HTLC in millisatoshis that the initiator will accept.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\EOT\EOT\DC2\ACK\140\t\EOT\137\t$\n\
     \\r\n\
     \\ENQ\EOT \STX\EOT\ENQ\DC2\EOT\140\t\EOT\n\
     \\n\
@@ -54921,8 +55109,6 @@ packedFileDescriptor
     \S\n\
     \\EOT\EOT \STX\ENQ\DC2\EOT\143\t\EOT\"\SUBE The total number of incoming HTLC's that the initiator will accept.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT \STX\ENQ\EOT\DC2\ACK\143\t\EOT\140\t\GS\n\
     \\r\n\
     \\ENQ\EOT \STX\ENQ\ENQ\DC2\EOT\143\t\EOT\n\
     \\n\
@@ -54938,8 +55124,6 @@ packedFileDescriptor
     \5\n\
     \\EOT\EOT!\STX\NUL\DC2\EOT\148\t\EOT\DC4\SUB' Whether this channel is active or not\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\NUL\EOT\DC2\ACK\148\t\EOT\146\t\DC1\n\
     \\r\n\
     \\ENQ\EOT!\STX\NUL\ENQ\DC2\EOT\148\t\EOT\b\n\
     \\r\n\
@@ -54949,8 +55133,6 @@ packedFileDescriptor
     \6\n\
     \\EOT\EOT!\STX\SOH\DC2\EOT\151\t\EOT\GS\SUB( The identity pubkey of the remote node\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\SOH\EOT\DC2\ACK\151\t\EOT\148\t\DC4\n\
     \\r\n\
     \\ENQ\EOT!\STX\SOH\ENQ\DC2\EOT\151\t\EOT\n\
     \\n\
@@ -54964,8 +55146,6 @@ packedFileDescriptor
     \will be able to generate a signature for Alice's version of the commitment\n\
     \transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\STX\EOT\DC2\ACK\158\t\EOT\151\t\GS\n\
     \\r\n\
     \\ENQ\EOT!\STX\STX\ENQ\DC2\EOT\158\t\EOT\n\
     \\n\
@@ -54979,8 +55159,6 @@ packedFileDescriptor
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\ETX\EOT\DC2\ACK\165\t\EOT\158\t\GS\n\
     \\r\n\
     \\ENQ\EOT!\STX\ETX\ENQ\DC2\EOT\165\t\EOT\n\
     \\n\
@@ -54995,8 +55173,6 @@ packedFileDescriptor
     \>\n\
     \\EOT\EOT!\STX\EOT\DC2\EOT\168\t\EOT\ETB\SUB0 The total amount of funds held in this channel\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\EOT\EOT\DC2\ACK\168\t\EOT\165\t,\n\
     \\r\n\
     \\ENQ\EOT!\STX\EOT\ENQ\DC2\EOT\168\t\EOT\t\n\
     \\r\n\
@@ -55007,8 +55183,6 @@ packedFileDescriptor
     \;\n\
     \\EOT\EOT!\STX\ENQ\DC2\EOT\171\t\EOT\FS\SUB- This node's current balance in this channel\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\ENQ\EOT\DC2\ACK\171\t\EOT\168\t\ETB\n\
     \\r\n\
     \\ENQ\EOT!\STX\ENQ\ENQ\DC2\EOT\171\t\EOT\t\n\
     \\r\n\
@@ -55019,8 +55193,6 @@ packedFileDescriptor
     \B\n\
     \\EOT\EOT!\STX\ACK\DC2\EOT\174\t\EOT\GS\SUB4 The counterparty's current balance in this channel\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\ACK\EOT\DC2\ACK\174\t\EOT\171\t\FS\n\
     \\r\n\
     \\ENQ\EOT!\STX\ACK\ENQ\DC2\EOT\174\t\EOT\t\n\
     \\r\n\
@@ -55035,8 +55207,6 @@ packedFileDescriptor
     \allow the fee amount to be removed and recalculated with each channel state\n\
     \update, including updates that happen after a system restart.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\a\EOT\DC2\ACK\182\t\EOT\174\t\GS\n\
     \\r\n\
     \\ENQ\EOT!\STX\a\ENQ\DC2\EOT\182\t\EOT\t\n\
     \\r\n\
@@ -55047,8 +55217,6 @@ packedFileDescriptor
     \8\n\
     \\EOT\EOT!\STX\b\DC2\EOT\185\t\EOT\FS\SUB* The weight of the commitment transaction\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\b\EOT\DC2\ACK\185\t\EOT\182\t\EM\n\
     \\r\n\
     \\ENQ\EOT!\STX\b\ENQ\DC2\EOT\185\t\EOT\t\n\
     \\r\n\
@@ -55062,8 +55230,6 @@ packedFileDescriptor
     \at all times, for both the funding transaction and commitment transaction.\n\
     \This value can later be updated once the channel is open.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\t\EOT\DC2\ACK\192\t\EOT\185\t\FS\n\
     \\r\n\
     \\ENQ\EOT!\STX\t\ENQ\DC2\EOT\192\t\EOT\t\n\
     \\r\n\
@@ -55075,9 +55241,6 @@ packedFileDescriptor
     \\EOT\EOT!\STX\n\
     \\DC2\EOT\195\t\EOT!\SUB' The unsettled balance in this channel\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\n\
-    \\EOT\DC2\ACK\195\t\EOT\192\t\SUB\n\
     \\r\n\
     \\ENQ\EOT!\STX\n\
     \\ENQ\DC2\EOT\195\t\EOT\t\n\
@@ -55092,8 +55255,6 @@ packedFileDescriptor
     \\EOT\EOT!\STX\v\DC2\EOT\200\t\EOT#\SUB>\n\
     \The total number of satoshis we've sent within this channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\v\EOT\DC2\ACK\200\t\EOT\195\t!\n\
     \\r\n\
     \\ENQ\EOT!\STX\v\ENQ\DC2\EOT\200\t\EOT\t\n\
     \\r\n\
@@ -55105,8 +55266,6 @@ packedFileDescriptor
     \\EOT\EOT!\STX\f\DC2\EOT\205\t\EOT'\SUBB\n\
     \The total number of satoshis we've received within this channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\f\EOT\DC2\ACK\205\t\EOT\200\t#\n\
     \\r\n\
     \\ENQ\EOT!\STX\f\ENQ\DC2\EOT\205\t\EOT\t\n\
     \\r\n\
@@ -55118,8 +55277,6 @@ packedFileDescriptor
     \\EOT\EOT!\STX\r\DC2\EOT\210\t\EOT\FS\SUB<\n\
     \The total number of updates conducted within this channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\r\EOT\DC2\ACK\210\t\EOT\205\t'\n\
     \\r\n\
     \\ENQ\EOT!\STX\r\ENQ\DC2\EOT\210\t\EOT\n\
     \\n\
@@ -55145,8 +55302,6 @@ packedFileDescriptor
     \force closed, we will need to wait for this many blocks before we can regain\n\
     \our funds.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\SI\EOT\DC2\ACK\222\t\EOT\215\t%\n\
     \\r\n\
     \\ENQ\EOT!\STX\SI\ENQ\DC2\EOT\222\t\EOT\n\
     \\n\
@@ -55161,8 +55316,6 @@ packedFileDescriptor
     \I\n\
     \\EOT\EOT!\STX\DLE\DC2\EOT\225\t\EOT\SYN\SUB; Whether this channel is advertised to the network or not.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\DLE\EOT\DC2\ACK\225\t\EOT\222\t.\n\
     \\r\n\
     \\ENQ\EOT!\STX\DLE\ENQ\DC2\EOT\225\t\EOT\b\n\
     \\r\n\
@@ -55172,8 +55325,6 @@ packedFileDescriptor
     \B\n\
     \\EOT\EOT!\STX\DC1\DC2\EOT\228\t\EOT\CAN\SUB4 True if we were the ones that created the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\DC1\EOT\DC2\ACK\228\t\EOT\225\t\SYN\n\
     \\r\n\
     \\ENQ\EOT!\STX\DC1\ENQ\DC2\EOT\228\t\EOT\b\n\
     \\r\n\
@@ -55183,8 +55334,6 @@ packedFileDescriptor
     \H\n\
     \\EOT\EOT!\STX\DC2\DC2\EOT\231\t\EOT\"\SUB: A set of flags showing the current state of the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\DC2\EOT\DC2\ACK\231\t\EOT\228\t\CAN\n\
     \\r\n\
     \\ENQ\EOT!\STX\DC2\ENQ\DC2\EOT\231\t\EOT\n\
     \\n\
@@ -55196,8 +55345,6 @@ packedFileDescriptor
     \\EOT\EOT!\STX\DC3\DC2\EOT\235\t\EOT:\SUBT Deprecated. The minimum satoshis this node is required to reserve in its\n\
     \ balance.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\DC3\EOT\DC2\ACK\235\t\EOT\231\t\"\n\
     \\r\n\
     \\ENQ\EOT!\STX\DC3\ENQ\DC2\EOT\235\t\EOT\t\n\
     \\r\n\
@@ -55214,8 +55361,6 @@ packedFileDescriptor
     \Deprecated. The minimum satoshis the other node is required to reserve in\n\
     \its balance.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\DC4\EOT\DC2\ACK\241\t\EOT\235\t:\n\
     \\r\n\
     \\ENQ\EOT!\STX\DC4\ENQ\DC2\EOT\241\t\EOT\t\n\
     \\r\n\
@@ -55230,8 +55375,6 @@ packedFileDescriptor
     \0\n\
     \\EOT\EOT!\STX\NAK\DC2\EOT\244\t\EOT4\SUB\" Deprecated. Use commitment_type.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\NAK\EOT\DC2\ACK\244\t\EOT\241\t;\n\
     \\r\n\
     \\ENQ\EOT!\STX\NAK\ENQ\DC2\EOT\244\t\EOT\b\n\
     \\r\n\
@@ -55245,8 +55388,6 @@ packedFileDescriptor
     \9\n\
     \\EOT\EOT!\STX\SYN\DC2\EOT\247\t\EOT(\SUB+ The commitment type used by this channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\SYN\EOT\DC2\ACK\247\t\EOT\244\t4\n\
     \\r\n\
     \\ENQ\EOT!\STX\SYN\ACK\DC2\EOT\247\t\EOT\DC2\n\
     \\r\n\
@@ -55259,8 +55400,6 @@ packedFileDescriptor
     \scoring system. Scores are currently not persisted, so this value may be\n\
     \less than the lifetime of the channel [EXPERIMENTAL].\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\ETB\EOT\DC2\ACK\254\t\EOT\247\t(\n\
     \\r\n\
     \\ENQ\EOT!\STX\ETB\ENQ\DC2\EOT\254\t\EOT\t\n\
     \\r\n\
@@ -55275,9 +55414,6 @@ packedFileDescriptor
     \by the channel scoring system over the lifetime of the channel\n\
     \[EXPERIMENTAL].\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\CAN\EOT\DC2\ACK\133\n\
-    \\EOT\254\t\CAN\n\
     \\r\n\
     \\ENQ\EOT!\STX\CAN\ENQ\DC2\EOT\133\n\
     \\EOT\t\n\
@@ -55297,10 +55433,6 @@ packedFileDescriptor
     \request. If this value is not set, you can still choose a payout address by\n\
     \cooperatively closing with the delivery_address field set.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\EM\EOT\DC2\ACK\142\n\
-    \\EOT\133\n\
-    \\SYN\n\
     \\r\n\
     \\ENQ\EOT!\STX\EM\ENQ\DC2\EOT\142\n\
     \\EOT\n\
@@ -55320,10 +55452,6 @@ packedFileDescriptor
     \pushed this amount to our peer, if it is false, the remote peer pushed this\n\
     \amount to us.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\SUB\EOT\DC2\ACK\151\n\
-    \\EOT\142\n\
-    \\RS\n\
     \\r\n\
     \\ENQ\EOT!\STX\SUB\ENQ\DC2\EOT\151\n\
     \\EOT\n\
@@ -55345,10 +55473,6 @@ packedFileDescriptor
     \height can be interpreted in two ways: as a relative height if the value is\n\
     \less than 500,000, or as an absolute height otherwise.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\ESC\EOT\DC2\ACK\162\n\
-    \\EOT\151\n\
-    \ \n\
     \\r\n\
     \\ENQ\EOT!\STX\ESC\ENQ\DC2\EOT\162\n\
     \\EOT\n\
@@ -55363,10 +55487,6 @@ packedFileDescriptor
     \\EOT\EOT!\STX\FS\DC2\EOT\165\n\
     \\EOT.\SUB& List constraints for the local node.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\FS\EOT\DC2\ACK\165\n\
-    \\EOT\162\n\
-    \\FS\n\
     \\r\n\
     \\ENQ\EOT!\STX\FS\ACK\DC2\EOT\165\n\
     \\EOT\SYN\n\
@@ -55380,10 +55500,6 @@ packedFileDescriptor
     \\EOT\EOT!\STX\GS\DC2\EOT\168\n\
     \\EOT/\SUB' List constraints for the remote node.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT!\STX\GS\EOT\DC2\ACK\168\n\
-    \\EOT\165\n\
-    \.\n\
     \\r\n\
     \\ENQ\EOT!\STX\GS\ACK\DC2\EOT\168\n\
     \\EOT\SYN\n\
@@ -55403,10 +55519,6 @@ packedFileDescriptor
     \\f\n\
     \\EOT\EOT\"\STX\NUL\DC2\EOT\172\n\
     \\EOT\EM\n\
-    \\SI\n\
-    \\ENQ\EOT\"\STX\NUL\EOT\DC2\ACK\172\n\
-    \\EOT\171\n\
-    \\GS\n\
     \\r\n\
     \\ENQ\EOT\"\STX\NUL\ENQ\DC2\EOT\172\n\
     \\EOT\b\n\
@@ -55419,10 +55531,6 @@ packedFileDescriptor
     \\f\n\
     \\EOT\EOT\"\STX\SOH\DC2\EOT\173\n\
     \\EOT\ESC\n\
-    \\SI\n\
-    \\ENQ\EOT\"\STX\SOH\EOT\DC2\ACK\173\n\
-    \\EOT\172\n\
-    \\EM\n\
     \\r\n\
     \\ENQ\EOT\"\STX\SOH\ENQ\DC2\EOT\173\n\
     \\EOT\b\n\
@@ -55435,10 +55543,6 @@ packedFileDescriptor
     \\f\n\
     \\EOT\EOT\"\STX\STX\DC2\EOT\174\n\
     \\EOT\EM\n\
-    \\SI\n\
-    \\ENQ\EOT\"\STX\STX\EOT\DC2\ACK\174\n\
-    \\EOT\173\n\
-    \\ESC\n\
     \\r\n\
     \\ENQ\EOT\"\STX\STX\ENQ\DC2\EOT\174\n\
     \\EOT\b\n\
@@ -55451,10 +55555,6 @@ packedFileDescriptor
     \\f\n\
     \\EOT\EOT\"\STX\ETX\DC2\EOT\175\n\
     \\EOT\SUB\n\
-    \\SI\n\
-    \\ENQ\EOT\"\STX\ETX\EOT\DC2\ACK\175\n\
-    \\EOT\174\n\
-    \\EM\n\
     \\r\n\
     \\ENQ\EOT\"\STX\ETX\ENQ\DC2\EOT\175\n\
     \\EOT\b\n\
@@ -55470,10 +55570,6 @@ packedFileDescriptor
     \Filters the response for channels with a target peer's pubkey. If peer is\n\
     \empty, all channels will be returned.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\"\STX\EOT\EOT\DC2\ACK\181\n\
-    \\EOT\175\n\
-    \\SUB\n\
     \\r\n\
     \\ENQ\EOT\"\STX\EOT\ENQ\DC2\EOT\181\n\
     \\EOT\t\n\
@@ -55561,10 +55657,6 @@ packedFileDescriptor
     \\EOT\EOT$\STX\NUL\DC2\EOT\197\n\
     \\EOT\GS\SUB7 The outpoint (txid:index) of the funding transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\NUL\EOT\DC2\ACK\197\n\
-    \\EOT\195\n\
-    \\GS\n\
     \\r\n\
     \\ENQ\EOT$\STX\NUL\ENQ\DC2\EOT\197\n\
     \\EOT\n\
@@ -55579,10 +55671,6 @@ packedFileDescriptor
     \\EOT\EOT$\STX\SOH\DC2\EOT\200\n\
     \\EOT,\SUB)  The unique channel ID for the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\SOH\EOT\DC2\ACK\200\n\
-    \\EOT\197\n\
-    \\GS\n\
     \\r\n\
     \\ENQ\EOT$\STX\SOH\ENQ\DC2\EOT\200\n\
     \\EOT\n\
@@ -55603,10 +55691,6 @@ packedFileDescriptor
     \\EOT\EOT$\STX\STX\DC2\EOT\203\n\
     \\EOT\SUB\SUBA The hash of the genesis block that this channel resides within.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\STX\EOT\DC2\ACK\203\n\
-    \\EOT\200\n\
-    \,\n\
     \\r\n\
     \\ENQ\EOT$\STX\STX\ENQ\DC2\EOT\203\n\
     \\EOT\n\
@@ -55621,10 +55705,6 @@ packedFileDescriptor
     \\EOT\EOT$\STX\ETX\DC2\EOT\206\n\
     \\EOT\US\SUBC The txid of the transaction which ultimately closed this channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\ETX\EOT\DC2\ACK\206\n\
-    \\EOT\203\n\
-    \\SUB\n\
     \\r\n\
     \\ENQ\EOT$\STX\ETX\ENQ\DC2\EOT\206\n\
     \\EOT\n\
@@ -55639,10 +55719,6 @@ packedFileDescriptor
     \\EOT\EOT$\STX\EOT\DC2\EOT\209\n\
     \\EOT\GS\SUBD Public key of the remote peer that we formerly had a channel with.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\EOT\EOT\DC2\ACK\209\n\
-    \\EOT\206\n\
-    \\US\n\
     \\r\n\
     \\ENQ\EOT$\STX\EOT\ENQ\DC2\EOT\209\n\
     \\EOT\n\
@@ -55657,10 +55733,6 @@ packedFileDescriptor
     \\EOT\EOT$\STX\ENQ\DC2\EOT\212\n\
     \\EOT\ETB\SUB  Total capacity of the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\ENQ\EOT\DC2\ACK\212\n\
-    \\EOT\209\n\
-    \\GS\n\
     \\r\n\
     \\ENQ\EOT$\STX\ENQ\ENQ\DC2\EOT\212\n\
     \\EOT\t\n\
@@ -55675,10 +55747,6 @@ packedFileDescriptor
     \\EOT\EOT$\STX\ACK\DC2\EOT\215\n\
     \\EOT\FS\SUB4 Height at which the funding transaction was spent.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\ACK\EOT\DC2\ACK\215\n\
-    \\EOT\212\n\
-    \\ETB\n\
     \\r\n\
     \\ENQ\EOT$\STX\ACK\ENQ\DC2\EOT\215\n\
     \\EOT\n\
@@ -55693,10 +55761,6 @@ packedFileDescriptor
     \\EOT\EOT$\STX\a\DC2\EOT\218\n\
     \\EOT\RS\SUB0 Settled balance at the time of channel closure\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\a\EOT\DC2\ACK\218\n\
-    \\EOT\215\n\
-    \\FS\n\
     \\r\n\
     \\ENQ\EOT$\STX\a\ENQ\DC2\EOT\218\n\
     \\EOT\t\n\
@@ -55711,10 +55775,6 @@ packedFileDescriptor
     \\EOT\EOT$\STX\b\DC2\EOT\221\n\
     \\EOT\"\SUBG The sum of all the time-locked outputs at the time of channel closure\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\b\EOT\DC2\ACK\221\n\
-    \\EOT\218\n\
-    \\RS\n\
     \\r\n\
     \\ENQ\EOT$\STX\b\ENQ\DC2\EOT\221\n\
     \\EOT\t\n\
@@ -55790,10 +55850,6 @@ packedFileDescriptor
     \\EOT\EOT$\STX\t\DC2\EOT\233\n\
     \\EOT \SUB( Details on how the channel was closed.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\t\EOT\DC2\ACK\233\n\
-    \\EOT\230\n\
-    \\ENQ\n\
     \\r\n\
     \\ENQ\EOT$\STX\t\ACK\DC2\EOT\233\n\
     \\EOT\SI\n\
@@ -55811,11 +55867,6 @@ packedFileDescriptor
     \this value may be unknown if the channel was closed before we migrated to\n\
     \store open channel information after close.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\n\
-    \\EOT\DC2\ACK\240\n\
-    \\EOT\233\n\
-    \ \n\
     \\r\n\
     \\ENQ\EOT$\STX\n\
     \\ACK\DC2\EOT\240\n\
@@ -55837,10 +55888,6 @@ packedFileDescriptor
     \initiated a close, and it is possible for both to initiate cooperative or\n\
     \force closes, although only one party's close will be confirmed on chain.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT$\STX\v\EOT\DC2\ACK\249\n\
-    \\EOT\240\n\
-    \\"\n\
     \\r\n\
     \\ENQ\EOT$\STX\v\ACK\DC2\EOT\249\n\
     \\EOT\r\n\
@@ -55976,8 +56023,6 @@ packedFileDescriptor
     \4\n\
     \\EOT\EOT%\STX\NUL\DC2\EOT\181\v\EOT'\SUB& The type of output we are resolving.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT%\STX\NUL\EOT\DC2\ACK\181\v\EOT\179\v\DC4\n\
     \\r\n\
     \\ENQ\EOT%\STX\NUL\ACK\DC2\EOT\181\v\EOT\DC2\n\
     \\r\n\
@@ -55987,8 +56032,6 @@ packedFileDescriptor
     \N\n\
     \\EOT\EOT%\STX\SOH\DC2\EOT\184\v\EOT\"\SUB@ The outcome of our on chain action that resolved the outpoint.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT%\STX\SOH\EOT\DC2\ACK\184\v\EOT\181\v'\n\
     \\r\n\
     \\ENQ\EOT%\STX\SOH\ACK\DC2\EOT\184\v\EOT\NAK\n\
     \\r\n\
@@ -55998,8 +56041,6 @@ packedFileDescriptor
     \>\n\
     \\EOT\EOT%\STX\STX\DC2\EOT\187\v\EOT\SUB\SUB0 The outpoint that was spent by the resolution.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT%\STX\STX\EOT\DC2\ACK\187\v\EOT\184\v\"\n\
     \\r\n\
     \\ENQ\EOT%\STX\STX\ACK\DC2\EOT\187\v\EOT\f\n\
     \\r\n\
@@ -56009,8 +56050,6 @@ packedFileDescriptor
     \>\n\
     \\EOT\EOT%\STX\ETX\DC2\EOT\190\v\EOT\SUB\SUB0 The amount that was claimed by the resolution.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT%\STX\ETX\EOT\DC2\ACK\190\v\EOT\187\v\SUB\n\
     \\r\n\
     \\ENQ\EOT%\STX\ETX\ENQ\DC2\EOT\190\v\EOT\n\
     \\n\
@@ -56022,8 +56061,6 @@ packedFileDescriptor
     \\EOT\EOT%\STX\EOT\DC2\EOT\194\v\EOT\SUB\SUBQ The hex-encoded transaction ID of the sweep transaction that spent the\n\
     \ output.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT%\STX\EOT\EOT\DC2\ACK\194\v\EOT\190\v\SUB\n\
     \\r\n\
     \\ENQ\EOT%\STX\EOT\ENQ\DC2\EOT\194\v\EOT\n\
     \\n\
@@ -56037,8 +56074,6 @@ packedFileDescriptor
     \\ETX\EOT&\SOH\DC2\EOT\197\v\b\GS\n\
     \\f\n\
     \\EOT\EOT&\STX\NUL\DC2\EOT\198\v\EOT\EM\n\
-    \\SI\n\
-    \\ENQ\EOT&\STX\NUL\EOT\DC2\ACK\198\v\EOT\197\v\US\n\
     \\r\n\
     \\ENQ\EOT&\STX\NUL\ENQ\DC2\EOT\198\v\EOT\b\n\
     \\r\n\
@@ -56047,8 +56082,6 @@ packedFileDescriptor
     \\ENQ\EOT&\STX\NUL\ETX\DC2\EOT\198\v\ETB\CAN\n\
     \\f\n\
     \\EOT\EOT&\STX\SOH\DC2\EOT\199\v\EOT\EM\n\
-    \\SI\n\
-    \\ENQ\EOT&\STX\SOH\EOT\DC2\ACK\199\v\EOT\198\v\EM\n\
     \\r\n\
     \\ENQ\EOT&\STX\SOH\ENQ\DC2\EOT\199\v\EOT\b\n\
     \\r\n\
@@ -56057,8 +56090,6 @@ packedFileDescriptor
     \\ENQ\EOT&\STX\SOH\ETX\DC2\EOT\199\v\ETB\CAN\n\
     \\f\n\
     \\EOT\EOT&\STX\STX\DC2\EOT\200\v\EOT\SUB\n\
-    \\SI\n\
-    \\ENQ\EOT&\STX\STX\EOT\DC2\ACK\200\v\EOT\199\v\EM\n\
     \\r\n\
     \\ENQ\EOT&\STX\STX\ENQ\DC2\EOT\200\v\EOT\b\n\
     \\r\n\
@@ -56067,8 +56098,6 @@ packedFileDescriptor
     \\ENQ\EOT&\STX\STX\ETX\DC2\EOT\200\v\CAN\EM\n\
     \\f\n\
     \\EOT\EOT&\STX\ETX\DC2\EOT\201\v\EOT\DC4\n\
-    \\SI\n\
-    \\ENQ\EOT&\STX\ETX\EOT\DC2\ACK\201\v\EOT\200\v\SUB\n\
     \\r\n\
     \\ENQ\EOT&\STX\ETX\ENQ\DC2\EOT\201\v\EOT\b\n\
     \\r\n\
@@ -56077,8 +56106,6 @@ packedFileDescriptor
     \\ENQ\EOT&\STX\ETX\ETX\DC2\EOT\201\v\DC2\DC3\n\
     \\f\n\
     \\EOT\EOT&\STX\EOT\DC2\EOT\202\v\EOT\RS\n\
-    \\SI\n\
-    \\ENQ\EOT&\STX\EOT\EOT\DC2\ACK\202\v\EOT\201\v\DC4\n\
     \\r\n\
     \\ENQ\EOT&\STX\EOT\ENQ\DC2\EOT\202\v\EOT\b\n\
     \\r\n\
@@ -56087,8 +56114,6 @@ packedFileDescriptor
     \\ENQ\EOT&\STX\EOT\ETX\DC2\EOT\202\v\FS\GS\n\
     \\f\n\
     \\EOT\EOT&\STX\ENQ\DC2\EOT\203\v\EOT\ETB\n\
-    \\SI\n\
-    \\ENQ\EOT&\STX\ENQ\EOT\DC2\ACK\203\v\EOT\202\v\RS\n\
     \\r\n\
     \\ENQ\EOT&\STX\ENQ\ENQ\DC2\EOT\203\v\EOT\b\n\
     \\r\n\
@@ -56116,8 +56141,6 @@ packedFileDescriptor
     \/\n\
     \\EOT\EOT(\STX\NUL\DC2\EOT\212\v\EOT\ETB\SUB! The identity pubkey of the peer\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\NUL\EOT\DC2\ACK\212\v\EOT\210\v\SO\n\
     \\r\n\
     \\ENQ\EOT(\STX\NUL\ENQ\DC2\EOT\212\v\EOT\n\
     \\n\
@@ -56128,8 +56151,6 @@ packedFileDescriptor
     \A\n\
     \\EOT\EOT(\STX\SOH\DC2\EOT\215\v\EOT\ETB\SUB3 Network address of the peer; eg `127.0.0.1:10011`\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\SOH\EOT\DC2\ACK\215\v\EOT\212\v\ETB\n\
     \\r\n\
     \\ENQ\EOT(\STX\SOH\ENQ\DC2\EOT\215\v\EOT\n\
     \\n\
@@ -56140,8 +56161,6 @@ packedFileDescriptor
     \6\n\
     \\EOT\EOT(\STX\STX\DC2\EOT\218\v\EOT\SUB\SUB( Bytes of data transmitted to this peer\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\STX\EOT\DC2\ACK\218\v\EOT\215\v\ETB\n\
     \\r\n\
     \\ENQ\EOT(\STX\STX\ENQ\DC2\EOT\218\v\EOT\n\
     \\n\
@@ -56152,8 +56171,6 @@ packedFileDescriptor
     \8\n\
     \\EOT\EOT(\STX\ETX\DC2\EOT\221\v\EOT\SUB\SUB* Bytes of data transmitted from this peer\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\ETX\EOT\DC2\ACK\221\v\EOT\218\v\SUB\n\
     \\r\n\
     \\ENQ\EOT(\STX\ETX\ENQ\DC2\EOT\221\v\EOT\n\
     \\n\
@@ -56164,8 +56181,6 @@ packedFileDescriptor
     \*\n\
     \\EOT\EOT(\STX\EOT\DC2\EOT\224\v\EOT\ETB\SUB\FS Satoshis sent to this peer\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\EOT\EOT\DC2\ACK\224\v\EOT\221\v\SUB\n\
     \\r\n\
     \\ENQ\EOT(\STX\EOT\ENQ\DC2\EOT\224\v\EOT\t\n\
     \\r\n\
@@ -56176,8 +56191,6 @@ packedFileDescriptor
     \0\n\
     \\EOT\EOT(\STX\ENQ\DC2\EOT\227\v\EOT\ETB\SUB\" Satoshis received from this peer\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\ENQ\EOT\DC2\ACK\227\v\EOT\224\v\ETB\n\
     \\r\n\
     \\ENQ\EOT(\STX\ENQ\ENQ\DC2\EOT\227\v\EOT\t\n\
     \\r\n\
@@ -56188,8 +56201,6 @@ packedFileDescriptor
     \N\n\
     \\EOT\EOT(\STX\ACK\DC2\EOT\230\v\EOT\NAK\SUB@ A channel is inbound if the counterparty initiated the channel\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\ACK\EOT\DC2\ACK\230\v\EOT\227\v\ETB\n\
     \\r\n\
     \\ENQ\EOT(\STX\ACK\ENQ\DC2\EOT\230\v\EOT\b\n\
     \\r\n\
@@ -56199,8 +56210,6 @@ packedFileDescriptor
     \&\n\
     \\EOT\EOT(\STX\a\DC2\EOT\233\v\EOT\CAN\SUB\CAN Ping time to this peer\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\a\EOT\DC2\ACK\233\v\EOT\230\v\NAK\n\
     \\r\n\
     \\ENQ\EOT(\STX\a\ENQ\DC2\EOT\233\v\EOT\t\n\
     \\r\n\
@@ -56247,8 +56256,6 @@ packedFileDescriptor
     \L\n\
     \\EOT\EOT(\STX\b\DC2\EOT\130\f\EOT\FS\SUB> The type of sync we are currently performing with this peer.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\b\EOT\DC2\ACK\130\f\EOT\255\v\ENQ\n\
     \\r\n\
     \\ENQ\EOT(\STX\b\ACK\DC2\EOT\130\f\EOT\f\n\
     \\r\n\
@@ -56258,8 +56265,6 @@ packedFileDescriptor
     \M\n\
     \\EOT\EOT(\STX\t\DC2\EOT\133\f\EOT'\SUB? Features advertised by the remote peer in their init message.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\t\EOT\DC2\ACK\133\f\EOT\130\f\FS\n\
     \\r\n\
     \\ENQ\EOT(\STX\t\ACK\DC2\EOT\133\f\EOT\CAN\n\
     \\r\n\
@@ -56294,8 +56299,6 @@ packedFileDescriptor
     \time if the peer has not recently flapped, so that we can forgive peers\n\
     \with historically high flap counts.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\v\EOT\DC2\ACK\150\f\EOT\142\f*\n\
     \\r\n\
     \\ENQ\EOT(\STX\v\ENQ\DC2\EOT\150\f\EOT\t\n\
     \\r\n\
@@ -56308,8 +56311,6 @@ packedFileDescriptor
     \The timestamp of the last flap we observed for this peer. If this value is\n\
     \zero, we have not observed any flaps for this peer.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT(\STX\f\EOT\DC2\ACK\156\f\EOT\150\f\SUB\n\
     \\r\n\
     \\ENQ\EOT(\STX\f\ENQ\DC2\EOT\156\f\EOT\t\n\
     \\r\n\
@@ -56324,8 +56325,6 @@ packedFileDescriptor
     \F\n\
     \\EOT\EOT)\STX\NUL\DC2\EOT\161\f\EOT\EM\SUB8 The unix timestamp in seconds when the error occurred.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT)\STX\NUL\EOT\DC2\ACK\161\f\EOT\159\f\SUB\n\
     \\r\n\
     \\ENQ\EOT)\STX\NUL\ENQ\DC2\EOT\161\f\EOT\n\
     \\n\
@@ -56336,8 +56335,6 @@ packedFileDescriptor
     \H\n\
     \\EOT\EOT)\STX\SOH\DC2\EOT\164\f\EOT\NAK\SUB: The string representation of the error sent by our peer.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT)\STX\SOH\EOT\DC2\ACK\164\f\EOT\161\f\EM\n\
     \\r\n\
     \\ENQ\EOT)\STX\SOH\ENQ\DC2\EOT\164\f\EOT\n\
     \\n\
@@ -56355,8 +56352,6 @@ packedFileDescriptor
     \the peer's information, rather than the full set of historic errors we have\n\
     \stored.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT*\STX\NUL\EOT\DC2\ACK\173\f\EOT\167\f\SUB\n\
     \\r\n\
     \\ENQ\EOT*\STX\NUL\ENQ\DC2\EOT\173\f\EOT\b\n\
     \\r\n\
@@ -56389,8 +56384,6 @@ packedFileDescriptor
     \0\n\
     \\EOT\EOT-\STX\NUL\DC2\EOT\185\f\EOT\ETB\SUB\" The identity pubkey of the peer.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT-\STX\NUL\EOT\DC2\ACK\185\f\EOT\183\f\DC3\n\
     \\r\n\
     \\ENQ\EOT-\STX\NUL\ENQ\DC2\EOT\185\f\EOT\n\
     \\n\
@@ -56416,8 +56409,6 @@ packedFileDescriptor
     \\a\EOT-\EOT\NUL\STX\SOH\STX\DC2\EOT\189\f\ETB\CAN\n\
     \\f\n\
     \\EOT\EOT-\STX\SOH\DC2\EOT\192\f\EOT\ETB\n\
-    \\SI\n\
-    \\ENQ\EOT-\STX\SOH\EOT\DC2\ACK\192\f\EOT\190\f\ENQ\n\
     \\r\n\
     \\ENQ\EOT-\STX\SOH\ACK\DC2\EOT\192\f\EOT\r\n\
     \\r\n\
@@ -56435,8 +56426,6 @@ packedFileDescriptor
     \I\n\
     \\EOT\EOT/\STX\NUL\DC2\EOT\199\f\EOT\CAN\SUB; The version of the LND software that the node is running.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\NUL\EOT\DC2\ACK\199\f\EOT\197\f\EM\n\
     \\r\n\
     \\ENQ\EOT/\STX\NUL\ENQ\DC2\EOT\199\f\EOT\n\
     \\n\
@@ -56447,8 +56436,6 @@ packedFileDescriptor
     \F\n\
     \\EOT\EOT/\STX\SOH\DC2\EOT\202\f\EOT\FS\SUB8 The SHA1 commit hash that the daemon is compiled with.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\SOH\EOT\DC2\ACK\202\f\EOT\199\f\CAN\n\
     \\r\n\
     \\ENQ\EOT/\STX\SOH\ENQ\DC2\EOT\202\f\EOT\n\
     \\n\
@@ -56459,8 +56446,6 @@ packedFileDescriptor
     \8\n\
     \\EOT\EOT/\STX\STX\DC2\EOT\205\f\EOT\US\SUB* The identity pubkey of the current node.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\STX\EOT\DC2\ACK\205\f\EOT\202\f\FS\n\
     \\r\n\
     \\ENQ\EOT/\STX\STX\ENQ\DC2\EOT\205\f\EOT\n\
     \\n\
@@ -56471,8 +56456,6 @@ packedFileDescriptor
     \H\n\
     \\EOT\EOT/\STX\ETX\DC2\EOT\208\f\EOT\NAK\SUB: If applicable, the alias of the current node, e.g. \"bob\"\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\ETX\EOT\DC2\ACK\208\f\EOT\205\f\US\n\
     \\r\n\
     \\ENQ\EOT/\STX\ETX\ENQ\DC2\EOT\208\f\EOT\n\
     \\n\
@@ -56483,8 +56466,6 @@ packedFileDescriptor
     \@\n\
     \\EOT\EOT/\STX\EOT\DC2\EOT\211\f\EOT\SYN\SUB2 The color of the current node in hex code format\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\EOT\EOT\DC2\ACK\211\f\EOT\208\f\NAK\n\
     \\r\n\
     \\ENQ\EOT/\STX\EOT\ENQ\DC2\EOT\211\f\EOT\n\
     \\n\
@@ -56495,8 +56476,6 @@ packedFileDescriptor
     \*\n\
     \\EOT\EOT/\STX\ENQ\DC2\EOT\214\f\EOT$\SUB\FS Number of pending channels\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\ENQ\EOT\DC2\ACK\214\f\EOT\211\f\SYN\n\
     \\r\n\
     \\ENQ\EOT/\STX\ENQ\ENQ\DC2\EOT\214\f\EOT\n\
     \\n\
@@ -56507,8 +56486,6 @@ packedFileDescriptor
     \)\n\
     \\EOT\EOT/\STX\ACK\DC2\EOT\217\f\EOT#\SUB\ESC Number of active channels\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\ACK\EOT\DC2\ACK\217\f\EOT\214\f$\n\
     \\r\n\
     \\ENQ\EOT/\STX\ACK\ENQ\DC2\EOT\217\f\EOT\n\
     \\n\
@@ -56519,8 +56496,6 @@ packedFileDescriptor
     \+\n\
     \\EOT\EOT/\STX\a\DC2\EOT\220\f\EOT&\SUB\GS Number of inactive channels\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\a\EOT\DC2\ACK\220\f\EOT\217\f#\n\
     \\r\n\
     \\ENQ\EOT/\STX\a\ENQ\DC2\EOT\220\f\EOT\n\
     \\n\
@@ -56531,8 +56506,6 @@ packedFileDescriptor
     \\US\n\
     \\EOT\EOT/\STX\b\DC2\EOT\223\f\EOT\EM\SUB\DC1 Number of peers\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\b\EOT\DC2\ACK\223\f\EOT\220\f&\n\
     \\r\n\
     \\ENQ\EOT/\STX\b\ENQ\DC2\EOT\223\f\EOT\n\
     \\n\
@@ -56543,8 +56516,6 @@ packedFileDescriptor
     \G\n\
     \\EOT\EOT/\STX\t\DC2\EOT\226\f\EOT\FS\SUB9 The node's current view of the height of the best block\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\t\EOT\DC2\ACK\226\f\EOT\223\f\EM\n\
     \\r\n\
     \\ENQ\EOT/\STX\t\ENQ\DC2\EOT\226\f\EOT\n\
     \\n\
@@ -56556,9 +56527,6 @@ packedFileDescriptor
     \\EOT\EOT/\STX\n\
     \\DC2\EOT\229\f\EOT\SUB\SUB7 The node's current view of the hash of the best block\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\n\
-    \\EOT\DC2\ACK\229\f\EOT\226\f\FS\n\
     \\r\n\
     \\ENQ\EOT/\STX\n\
     \\ENQ\DC2\EOT\229\f\EOT\n\
@@ -56572,8 +56540,6 @@ packedFileDescriptor
     \?\n\
     \\EOT\EOT/\STX\v\DC2\EOT\232\f\EOT%\SUB1 Timestamp of the block best known to the wallet\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\v\EOT\DC2\ACK\232\f\EOT\229\f\SUB\n\
     \\r\n\
     \\ENQ\EOT/\STX\v\ENQ\DC2\EOT\232\f\EOT\t\n\
     \\r\n\
@@ -56584,8 +56550,6 @@ packedFileDescriptor
     \E\n\
     \\EOT\EOT/\STX\f\DC2\EOT\235\f\EOT\GS\SUB7 Whether the wallet's view is synced to the main chain\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\f\EOT\DC2\ACK\235\f\EOT\232\f%\n\
     \\r\n\
     \\ENQ\EOT/\STX\f\ENQ\DC2\EOT\235\f\EOT\b\n\
     \\r\n\
@@ -56595,8 +56559,6 @@ packedFileDescriptor
     \S\n\
     \\EOT\EOT/\STX\r\DC2\EOT\238\f\EOT\RS\SUBE Whether we consider ourselves synced with the public channel graph.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\r\EOT\DC2\ACK\238\f\EOT\235\f\GS\n\
     \\r\n\
     \\ENQ\EOT/\STX\r\ENQ\DC2\EOT\238\f\EOT\b\n\
     \\r\n\
@@ -56608,8 +56570,6 @@ packedFileDescriptor
     \Whether the current node is connected to testnet. This field is\n\
     \deprecated and the network field should be used instead\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\SO\EOT\DC2\ACK\244\f\EOT\238\f\RS\n\
     \\r\n\
     \\ENQ\EOT/\STX\SO\ENQ\DC2\EOT\244\f\EOT\b\n\
     \\r\n\
@@ -56655,8 +56615,6 @@ packedFileDescriptor
     \Features that our node has advertised in our init message, node\n\
     \announcements and invoices.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT/\STX\DC1\EOT\DC2\ACK\130\r\EOT\252\f\RS\n\
     \\r\n\
     \\ENQ\EOT/\STX\DC1\ACK\DC2\EOT\130\r\EOT\CAN\n\
     \\r\n\
@@ -56674,8 +56632,6 @@ packedFileDescriptor
     \6\n\
     \\EOT\EOT1\STX\NUL\DC2\EOT\137\r\EOT\ESC\SUB( Whether the wallet is in recovery mode\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT1\STX\NUL\EOT\DC2\ACK\137\r\EOT\135\r!\n\
     \\r\n\
     \\ENQ\EOT1\STX\NUL\ENQ\DC2\EOT\137\r\EOT\b\n\
     \\r\n\
@@ -56685,8 +56641,6 @@ packedFileDescriptor
     \@\n\
     \\EOT\EOT1\STX\SOH\DC2\EOT\140\r\EOT\US\SUB2 Whether the wallet recovery progress is finished\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT1\STX\SOH\EOT\DC2\ACK\140\r\EOT\137\r\ESC\n\
     \\r\n\
     \\ENQ\EOT1\STX\SOH\ENQ\DC2\EOT\140\r\EOT\b\n\
     \\r\n\
@@ -56696,8 +56650,6 @@ packedFileDescriptor
     \;\n\
     \\EOT\EOT1\STX\STX\DC2\EOT\143\r\EOT\CAN\SUB- The recovery progress, ranging from 0 to 1.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT1\STX\STX\EOT\DC2\ACK\143\r\EOT\140\r\US\n\
     \\r\n\
     \\ENQ\EOT1\STX\STX\ENQ\DC2\EOT\143\r\EOT\n\
     \\n\
@@ -56712,8 +56664,6 @@ packedFileDescriptor
     \D\n\
     \\EOT\EOT2\STX\NUL\DC2\EOT\148\r\EOT\NAK\SUB6 The blockchain the node is on (eg bitcoin, litecoin)\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT2\STX\NUL\EOT\DC2\ACK\148\r\EOT\146\r\SI\n\
     \\r\n\
     \\ENQ\EOT2\STX\NUL\ENQ\DC2\EOT\148\r\EOT\n\
     \\n\
@@ -56724,8 +56674,6 @@ packedFileDescriptor
     \I\n\
     \\EOT\EOT2\STX\SOH\DC2\EOT\151\r\EOT\ETB\SUB; The network the node is on (eg regtest, testnet, mainnet)\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT2\STX\SOH\EOT\DC2\ACK\151\r\EOT\148\r\NAK\n\
     \\r\n\
     \\ENQ\EOT2\STX\SOH\ENQ\DC2\EOT\151\r\EOT\n\
     \\n\
@@ -56739,8 +56687,6 @@ packedFileDescriptor
     \\ETX\EOT3\SOH\DC2\EOT\154\r\b\SUB\n\
     \\f\n\
     \\EOT\EOT3\STX\NUL\DC2\EOT\155\r\EOT\CAN\n\
-    \\SI\n\
-    \\ENQ\EOT3\STX\NUL\EOT\DC2\ACK\155\r\EOT\154\r\FS\n\
     \\r\n\
     \\ENQ\EOT3\STX\NUL\ENQ\DC2\EOT\155\r\EOT\t\n\
     \\r\n\
@@ -56750,8 +56696,6 @@ packedFileDescriptor
     \\ENQ\EOT3\STX\NUL\ETX\DC2\EOT\155\r\SYN\ETB\n\
     \\f\n\
     \\EOT\EOT3\STX\SOH\DC2\EOT\156\r\EOT\ESC\n\
-    \\SI\n\
-    \\ENQ\EOT3\STX\SOH\EOT\DC2\ACK\156\r\EOT\155\r\CAN\n\
     \\r\n\
     \\ENQ\EOT3\STX\SOH\ENQ\DC2\EOT\156\r\EOT\t\n\
     \\r\n\
@@ -56761,8 +56705,6 @@ packedFileDescriptor
     \\ENQ\EOT3\STX\SOH\ETX\DC2\EOT\156\r\EM\SUB\n\
     \\f\n\
     \\EOT\EOT3\STX\STX\DC2\EOT\158\r\EOT\RS\n\
-    \\SI\n\
-    \\ENQ\EOT3\STX\STX\EOT\DC2\ACK\158\r\EOT\156\r\ESC\n\
     \\r\n\
     \\ENQ\EOT3\STX\STX\ENQ\DC2\EOT\158\r\EOT\n\
     \\n\
@@ -56776,8 +56718,6 @@ packedFileDescriptor
     \\ETX\EOT4\SOH\DC2\EOT\161\r\b\EM\n\
     \\f\n\
     \\EOT\EOT4\STX\NUL\DC2\EOT\162\r\EOT#\n\
-    \\SI\n\
-    \\ENQ\EOT4\STX\NUL\EOT\DC2\ACK\162\r\EOT\161\r\ESC\n\
     \\r\n\
     \\ENQ\EOT4\STX\NUL\ACK\DC2\EOT\162\r\EOT\DLE\n\
     \\r\n\
@@ -56790,8 +56730,6 @@ packedFileDescriptor
     \\ETX\EOT5\SOH\DC2\EOT\165\r\b\SUB\n\
     \\f\n\
     \\EOT\EOT5\STX\NUL\DC2\EOT\166\r\EOT\ESC\n\
-    \\SI\n\
-    \\ENQ\EOT5\STX\NUL\EOT\DC2\ACK\166\r\EOT\165\r\FS\n\
     \\r\n\
     \\ENQ\EOT5\STX\NUL\ENQ\DC2\EOT\166\r\EOT\t\n\
     \\r\n\
@@ -56801,8 +56739,6 @@ packedFileDescriptor
     \\ENQ\EOT5\STX\NUL\ETX\DC2\EOT\166\r\EM\SUB\n\
     \\f\n\
     \\EOT\EOT5\STX\SOH\DC2\EOT\168\r\EOT\NAK\n\
-    \\SI\n\
-    \\ENQ\EOT5\STX\SOH\EOT\DC2\ACK\168\r\EOT\166\r\ESC\n\
     \\r\n\
     \\ENQ\EOT5\STX\SOH\ENQ\DC2\EOT\168\r\EOT\b\n\
     \\r\n\
@@ -56819,8 +56755,6 @@ packedFileDescriptor
     \will be able to generate a signature for Alice's version of the commitment\n\
     \transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT6\STX\NUL\EOT\DC2\ACK\177\r\EOT\171\r\GS\n\
     \\r\n\
     \\ENQ\EOT6\STX\NUL\ACK\DC2\EOT\177\r\EOT\DLE\n\
     \\r\n\
@@ -56831,8 +56765,6 @@ packedFileDescriptor
     \\EOT\EOT6\STX\SOH\DC2\EOT\181\r\EOT\DC3\SUB\129\SOH If true, then the channel will be closed forcibly. This means the\n\
     \ current commitment transaction will be signed and broadcast.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT6\STX\SOH\EOT\DC2\ACK\181\r\EOT\177\r#\n\
     \\r\n\
     \\ENQ\EOT6\STX\SOH\ENQ\DC2\EOT\181\r\EOT\b\n\
     \\r\n\
@@ -56843,8 +56775,6 @@ packedFileDescriptor
     \\EOT\EOT6\STX\STX\DC2\EOT\185\r\EOT\SUB\SUBS The target number of blocks that the closure transaction should be\n\
     \ confirmed by.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT6\STX\STX\EOT\DC2\ACK\185\r\EOT\181\r\DC3\n\
     \\r\n\
     \\ENQ\EOT6\STX\STX\ENQ\DC2\EOT\185\r\EOT\t\n\
     \\r\n\
@@ -56857,8 +56787,6 @@ packedFileDescriptor
     \ A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ closure transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT6\STX\ETX\EOT\DC2\ACK\190\r\EOT\185\r\SUB\n\
     \\r\n\
     \\ENQ\EOT6\STX\ETX\ENQ\DC2\EOT\190\r\EOT\t\n\
     \\r\n\
@@ -56877,8 +56805,6 @@ packedFileDescriptor
     \is set, the request to close will fail because the channel must pay out\n\
     \to the upfront shutdown addresss.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT6\STX\EOT\EOT\DC2\ACK\198\r\EOT\190\r/\n\
     \\r\n\
     \\ENQ\EOT6\STX\EOT\ENQ\DC2\EOT\198\r\EOT\n\
     \\n\
@@ -56890,8 +56816,6 @@ packedFileDescriptor
     \\EOT\EOT6\STX\ENQ\DC2\EOT\202\r\EOT\GS\SUB` A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ closure transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT6\STX\ENQ\EOT\DC2\ACK\202\r\EOT\198\r \n\
     \\r\n\
     \\ENQ\EOT6\STX\ENQ\ENQ\DC2\EOT\202\r\EOT\n\
     \\n\
@@ -56930,8 +56854,6 @@ packedFileDescriptor
     \\ETX\EOT8\SOH\DC2\EOT\212\r\b\NAK\n\
     \\f\n\
     \\EOT\EOT8\STX\NUL\DC2\EOT\213\r\EOT\DC3\n\
-    \\SI\n\
-    \\ENQ\EOT8\STX\NUL\EOT\DC2\ACK\213\r\EOT\212\r\ETB\n\
     \\r\n\
     \\ENQ\EOT8\STX\NUL\ENQ\DC2\EOT\213\r\EOT\t\n\
     \\r\n\
@@ -56941,8 +56863,6 @@ packedFileDescriptor
     \\ENQ\EOT8\STX\NUL\ETX\DC2\EOT\213\r\DC1\DC2\n\
     \\f\n\
     \\EOT\EOT8\STX\SOH\DC2\EOT\214\r\EOT\FS\n\
-    \\SI\n\
-    \\ENQ\EOT8\STX\SOH\EOT\DC2\ACK\214\r\EOT\213\r\DC3\n\
     \\r\n\
     \\ENQ\EOT8\STX\SOH\ENQ\DC2\EOT\214\r\EOT\n\
     \\n\
@@ -56959,8 +56879,6 @@ packedFileDescriptor
     \The P2WSH address of the channel funding multisig address that the below\n\
     \specified amount in satoshis needs to be sent to.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT9\STX\NUL\EOT\DC2\ACK\222\r\EOT\217\r\GS\n\
     \\r\n\
     \\ENQ\EOT9\STX\NUL\ENQ\DC2\EOT\222\r\EOT\n\
     \\n\
@@ -56973,8 +56891,6 @@ packedFileDescriptor
     \The exact amount in satoshis that needs to be sent to the above address to\n\
     \fund the pending channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT9\STX\SOH\EOT\DC2\ACK\228\r\EOT\222\r\US\n\
     \\r\n\
     \\ENQ\EOT9\STX\SOH\ENQ\DC2\EOT\228\r\EOT\t\n\
     \\r\n\
@@ -56989,8 +56905,6 @@ packedFileDescriptor
     \If no base PSBT was specified, this is an otherwise empty PSBT with exactly\n\
     \one output.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT9\STX\STX\EOT\DC2\ACK\236\r\EOT\228\r\GS\n\
     \\r\n\
     \\ENQ\EOT9\STX\STX\ENQ\DC2\EOT\236\r\EOT\t\n\
     \\r\n\
@@ -57006,8 +56920,6 @@ packedFileDescriptor
     \\EOT\EOT:\STX\NUL\DC2\EOT\242\r\EOT\GS\SUB` A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ funding transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\NUL\EOT\DC2\ACK\242\r\EOT\239\r\FS\n\
     \\r\n\
     \\ENQ\EOT:\STX\NUL\ENQ\DC2\EOT\242\r\EOT\n\
     \\n\
@@ -57020,8 +56932,6 @@ packedFileDescriptor
     \The pubkey of the node to open a channel with. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\SOH\EOT\DC2\ACK\248\r\EOT\242\r\GS\n\
     \\r\n\
     \\ENQ\EOT:\STX\SOH\ENQ\DC2\EOT\248\r\EOT\t\n\
     \\r\n\
@@ -57034,8 +56944,6 @@ packedFileDescriptor
     \The hex encoded pubkey of the node to open a channel with. Deprecated now\n\
     \that the REST gateway supports base64 encoding of bytes fields.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\STX\EOT\DC2\ACK\254\r\EOT\248\r\SUB\n\
     \\r\n\
     \\ENQ\EOT:\STX\STX\ENQ\DC2\EOT\254\r\EOT\n\
     \\n\
@@ -57050,8 +56958,6 @@ packedFileDescriptor
     \N\n\
     \\EOT\EOT:\STX\ETX\DC2\EOT\129\SO\EOT#\SUB@ The number of satoshis the wallet should commit to the channel\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\ETX\EOT\DC2\ACK\129\SO\EOT\254\r6\n\
     \\r\n\
     \\ENQ\EOT:\STX\ETX\ENQ\DC2\EOT\129\SO\EOT\t\n\
     \\r\n\
@@ -57063,8 +56969,6 @@ packedFileDescriptor
     \\EOT\EOT:\STX\EOT\DC2\EOT\133\SO\EOT\ETB\SUB\\ The number of satoshis to push to the remote side as part of the initial\n\
     \ commitment state\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\EOT\EOT\DC2\ACK\133\SO\EOT\129\SO#\n\
     \\r\n\
     \\ENQ\EOT:\STX\EOT\ENQ\DC2\EOT\133\SO\EOT\t\n\
     \\r\n\
@@ -57076,8 +56980,6 @@ packedFileDescriptor
     \\EOT\EOT:\STX\ENQ\DC2\EOT\137\SO\EOT\SUB\SUBS The target number of blocks that the funding transaction should be\n\
     \ confirmed by.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\ENQ\EOT\DC2\ACK\137\SO\EOT\133\SO\ETB\n\
     \\r\n\
     \\ENQ\EOT:\STX\ENQ\ENQ\DC2\EOT\137\SO\EOT\t\n\
     \\r\n\
@@ -57090,8 +56992,6 @@ packedFileDescriptor
     \ A manual fee rate set in sat/vbyte that should be used when crafting the\n\
     \ funding transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\ACK\EOT\DC2\ACK\142\SO\EOT\137\SO\SUB\n\
     \\r\n\
     \\ENQ\EOT:\STX\ACK\ENQ\DC2\EOT\142\SO\EOT\t\n\
     \\r\n\
@@ -57107,8 +57007,6 @@ packedFileDescriptor
     \\EOT\EOT:\STX\a\DC2\EOT\146\SO\EOT\NAK\SUBP Whether this channel should be private, not announced to the greater\n\
     \ network.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\a\EOT\DC2\ACK\146\SO\EOT\142\SO/\n\
     \\r\n\
     \\ENQ\EOT:\STX\a\ENQ\DC2\EOT\146\SO\EOT\b\n\
     \\r\n\
@@ -57119,8 +57017,6 @@ packedFileDescriptor
     \\EOT\EOT:\STX\b\DC2\EOT\150\SO\EOT\FS\SUBW The minimum value in millisatoshi we will require for incoming HTLCs on\n\
     \ the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\b\EOT\DC2\ACK\150\SO\EOT\146\SO\NAK\n\
     \\r\n\
     \\ENQ\EOT:\STX\b\ENQ\DC2\EOT\150\SO\EOT\t\n\
     \\r\n\
@@ -57132,8 +57028,6 @@ packedFileDescriptor
     \\EOT\EOT:\STX\t\DC2\EOT\154\SO\EOT!\SUB\138\SOH The delay we require on the remote's commitment transaction. If this is\n\
     \ not set, it will be scaled automatically with the channel size.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\t\EOT\DC2\ACK\154\SO\EOT\150\SO\FS\n\
     \\r\n\
     \\ENQ\EOT:\STX\t\ENQ\DC2\EOT\154\SO\EOT\n\
     \\n\
@@ -57146,9 +57040,6 @@ packedFileDescriptor
     \\DC2\EOT\158\SO\EOT\EM\SUBn The minimum number of confirmations each one of your outputs used for\n\
     \ the funding transaction must satisfy.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\n\
-    \\EOT\DC2\ACK\158\SO\EOT\154\SO!\n\
     \\r\n\
     \\ENQ\EOT:\STX\n\
     \\ENQ\DC2\EOT\158\SO\EOT\t\n\
@@ -57163,8 +57054,6 @@ packedFileDescriptor
     \\EOT\EOT:\STX\v\DC2\EOT\162\SO\EOT \SUBT Whether unconfirmed outputs should be used as inputs for the funding\n\
     \ transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\v\EOT\DC2\ACK\162\SO\EOT\158\SO\EM\n\
     \\r\n\
     \\ENQ\EOT:\STX\v\ENQ\DC2\EOT\162\SO\EOT\b\n\
     \\r\n\
@@ -57182,8 +57071,6 @@ packedFileDescriptor
     \Note: If this value is set on channel creation, you will *not* be able to\n\
     \cooperatively close out to a different address.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\f\EOT\DC2\ACK\174\SO\EOT\162\SO \n\
     \\r\n\
     \\ENQ\EOT:\STX\f\ENQ\DC2\EOT\174\SO\EOT\n\
     \\n\
@@ -57199,8 +57086,6 @@ packedFileDescriptor
     \that is generated by the wallet as normal, or signal that signing will be\n\
     \carried out in an interactive manner (PSBT based).\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\r\EOT\DC2\ACK\183\SO\EOT\174\SO\RS\n\
     \\r\n\
     \\ENQ\EOT:\STX\r\ACK\DC2\EOT\183\SO\EOT\SI\n\
     \\r\n\
@@ -57212,8 +57097,6 @@ packedFileDescriptor
     \The maximum amount of coins in millisatoshi that can be pending within\n\
     \the channel. It only applies to the remote party.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\SO\EOT\DC2\ACK\189\SO\EOT\183\SO\"\n\
     \\r\n\
     \\ENQ\EOT:\STX\SO\ENQ\DC2\EOT\189\SO\EOT\n\
     \\n\
@@ -57226,8 +57109,6 @@ packedFileDescriptor
     \The maximum number of concurrent HTLCs we will allow the remote party to add\n\
     \to the commitment transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\SI\EOT\DC2\ACK\195\SO\EOT\189\SO0\n\
     \\r\n\
     \\ENQ\EOT:\STX\SI\ENQ\DC2\EOT\195\SO\EOT\n\
     \\n\
@@ -57240,8 +57121,6 @@ packedFileDescriptor
     \Max local csv is the maximum csv delay we will allow for our own commitment\n\
     \transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT:\STX\DLE\EOT\DC2\ACK\201\SO\EOT\195\SO!\n\
     \\r\n\
     \\ENQ\EOT:\STX\DLE\ENQ\DC2\EOT\201\SO\EOT\n\
     \\n\
@@ -57296,8 +57175,6 @@ packedFileDescriptor
     \The pending channel ID of the created channel. This value may be used to\n\
     \further the funding flow manually via the FundingStateStep method.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT;\STX\ETX\EOT\DC2\ACK\228\SO\EOT\222\SO\ENQ\n\
     \\r\n\
     \\ENQ\EOT;\STX\ETX\ENQ\DC2\EOT\228\SO\EOT\t\n\
     \\r\n\
@@ -57312,8 +57189,6 @@ packedFileDescriptor
     \3\n\
     \\EOT\EOT<\STX\NUL\DC2\EOT\233\SO\EOT\EM\SUB% The family of key being identified.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT<\STX\NUL\EOT\DC2\ACK\233\SO\EOT\231\SO\DC4\n\
     \\r\n\
     \\ENQ\EOT<\STX\NUL\ENQ\DC2\EOT\233\SO\EOT\t\n\
     \\r\n\
@@ -57324,8 +57199,6 @@ packedFileDescriptor
     \>\n\
     \\EOT\EOT<\STX\SOH\DC2\EOT\236\SO\EOT\CAN\SUB0 The precise index of the key being identified.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT<\STX\SOH\EOT\DC2\ACK\236\SO\EOT\233\SO\EM\n\
     \\r\n\
     \\ENQ\EOT<\STX\SOH\ENQ\DC2\EOT\236\SO\EOT\t\n\
     \\r\n\
@@ -57341,8 +57214,6 @@ packedFileDescriptor
     \\EOT\EOT=\STX\NUL\DC2\EOT\243\SO\EOT\FS\SUB,\n\
     \The raw bytes of the key being identified.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT=\STX\NUL\EOT\DC2\ACK\243\SO\EOT\239\SO\ETB\n\
     \\r\n\
     \\ENQ\EOT=\STX\NUL\ENQ\DC2\EOT\243\SO\EOT\t\n\
     \\r\n\
@@ -57354,8 +57225,6 @@ packedFileDescriptor
     \\EOT\EOT=\STX\SOH\DC2\EOT\248\SO\EOT\ESC\SUB?\n\
     \The key locator that identifies which key to use for signing.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT=\STX\SOH\EOT\DC2\ACK\248\SO\EOT\243\SO\FS\n\
     \\r\n\
     \\ENQ\EOT=\STX\SOH\ACK\DC2\EOT\248\SO\EOT\SO\n\
     \\r\n\
@@ -57371,8 +57240,6 @@ packedFileDescriptor
     \The size of the pre-crafted output to be used as the channel point for this\n\
     \channel funding.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT>\STX\NUL\EOT\DC2\ACK\128\SI\EOT\251\SO\ETB\n\
     \\r\n\
     \\ENQ\EOT>\STX\NUL\ENQ\DC2\EOT\128\SI\EOT\t\n\
     \\r\n\
@@ -57383,8 +57250,6 @@ packedFileDescriptor
     \X\n\
     \\EOT\EOT>\STX\SOH\DC2\EOT\131\SI\EOT \SUBJ The target channel point to refrence in created commitment transactions.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT>\STX\SOH\EOT\DC2\ACK\131\SI\EOT\128\SI\DC2\n\
     \\r\n\
     \\ENQ\EOT>\STX\SOH\ACK\DC2\EOT\131\SI\EOT\DLE\n\
     \\r\n\
@@ -57394,8 +57259,6 @@ packedFileDescriptor
     \H\n\
     \\EOT\EOT>\STX\STX\DC2\EOT\134\SI\EOT \SUB: Our local key to use when creating the multi-sig output.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT>\STX\STX\EOT\DC2\ACK\134\SI\EOT\131\SI \n\
     \\r\n\
     \\ENQ\EOT>\STX\STX\ACK\DC2\EOT\134\SI\EOT\DC1\n\
     \\r\n\
@@ -57405,8 +57268,6 @@ packedFileDescriptor
     \V\n\
     \\EOT\EOT>\STX\ETX\DC2\EOT\137\SI\EOT\EM\SUBH The key of the remote party to use when creating the multi-sig output.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT>\STX\ETX\EOT\DC2\ACK\137\SI\EOT\134\SI \n\
     \\r\n\
     \\ENQ\EOT>\STX\ETX\ENQ\DC2\EOT\137\SI\EOT\t\n\
     \\r\n\
@@ -57421,8 +57282,6 @@ packedFileDescriptor
     \should only be set if the responder is already expecting a specific pending\n\
     \channel ID.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT>\STX\EOT\EOT\DC2\ACK\145\SI\EOT\137\SI\EM\n\
     \\r\n\
     \\ENQ\EOT>\STX\EOT\ENQ\DC2\EOT\145\SI\EOT\t\n\
     \\r\n\
@@ -57438,8 +57297,6 @@ packedFileDescriptor
     \channel. The height can be interpreted in two ways: as a relative height if\n\
     \the value is less than 500,000, or as an absolute height otherwise.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT>\STX\ENQ\EOT\DC2\ACK\154\SI\EOT\145\SI\RS\n\
     \\r\n\
     \\ENQ\EOT>\STX\ENQ\ENQ\DC2\EOT\154\SI\EOT\n\
     \\n\
@@ -57457,8 +57314,6 @@ packedFileDescriptor
     \channel ID to identify the PSBT state machine when interacting with it and\n\
     \on the wire protocol to initiate the funding request.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT?\STX\NUL\EOT\DC2\ACK\163\SI\EOT\157\SI\DC2\n\
     \\r\n\
     \\ENQ\EOT?\STX\NUL\ENQ\DC2\EOT\163\SI\EOT\t\n\
     \\r\n\
@@ -57471,8 +57326,6 @@ packedFileDescriptor
     \An optional base PSBT the new channel output will be added to. If this is\n\
     \non-empty, it must be a binary serialized PSBT.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT?\STX\SOH\EOT\DC2\ACK\169\SI\EOT\163\SI\RS\n\
     \\r\n\
     \\ENQ\EOT?\STX\SOH\ENQ\DC2\EOT\169\SI\EOT\t\n\
     \\r\n\
@@ -57489,8 +57342,6 @@ packedFileDescriptor
     \after the negotiation with the remote peer. In a batch of channel openings\n\
     \this flag should be set to true for every channel but the very last.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT?\STX\STX\EOT\DC2\ACK\179\SI\EOT\169\SI\CAN\n\
     \\r\n\
     \\ENQ\EOT?\STX\STX\ENQ\DC2\EOT\179\SI\EOT\b\n\
     \\r\n\
@@ -57535,8 +57386,6 @@ packedFileDescriptor
     \U\n\
     \\EOT\EOTA\STX\NUL\DC2\EOT\200\SI\EOT\RS\SUBG The pending channel ID of the channel to cancel the funding shim for.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTA\STX\NUL\EOT\DC2\ACK\200\SI\EOT\198\SI\ESC\n\
     \\r\n\
     \\ENQ\EOTA\STX\NUL\ENQ\DC2\EOT\200\SI\EOT\t\n\
     \\r\n\
@@ -57554,8 +57403,6 @@ packedFileDescriptor
     \amount to the PK script returned in the open channel message in a previous\n\
     \step.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTB\STX\NUL\EOT\DC2\ACK\209\SI\EOT\203\SI\ESC\n\
     \\r\n\
     \\ENQ\EOTB\STX\NUL\ENQ\DC2\EOT\209\SI\EOT\t\n\
     \\r\n\
@@ -57566,8 +57413,6 @@ packedFileDescriptor
     \J\n\
     \\EOT\EOTB\STX\SOH\DC2\EOT\212\SI\EOT\RS\SUB< The pending channel ID of the channel to get the PSBT for.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTB\STX\SOH\EOT\DC2\ACK\212\SI\EOT\209\SI\SUB\n\
     \\r\n\
     \\ENQ\EOTB\STX\SOH\ENQ\DC2\EOT\212\SI\EOT\t\n\
     \\r\n\
@@ -57585,8 +57430,6 @@ packedFileDescriptor
     \capacity amount to the PK script returned in the open channel message in a\n\
     \previous step. Cannot be set at the same time as final_raw_tx.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTC\STX\NUL\EOT\DC2\ACK\221\SI\EOT\215\SI\GS\n\
     \\r\n\
     \\ENQ\EOTC\STX\NUL\ENQ\DC2\EOT\221\SI\EOT\t\n\
     \\r\n\
@@ -57597,8 +57440,6 @@ packedFileDescriptor
     \J\n\
     \\EOT\EOTC\STX\SOH\DC2\EOT\224\SI\EOT\RS\SUB< The pending channel ID of the channel to get the PSBT for.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTC\STX\SOH\EOT\DC2\ACK\224\SI\EOT\221\SI\SUB\n\
     \\r\n\
     \\ENQ\EOTC\STX\SOH\ENQ\DC2\EOT\224\SI\EOT\t\n\
     \\r\n\
@@ -57612,8 +57453,6 @@ packedFileDescriptor
     \wire format transaction can also be specified directly. Cannot be set at the\n\
     \same time as signed_psbt.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTC\STX\STX\EOT\DC2\ACK\231\SI\EOT\224\SI\RS\n\
     \\r\n\
     \\ENQ\EOTC\STX\STX\ENQ\DC2\EOT\231\SI\EOT\t\n\
     \\r\n\
@@ -57687,8 +57526,6 @@ packedFileDescriptor
     \G\n\
     \\EOT\EOTF\STX\NUL\DC2\EOT\140\DLE\EOT\SYN\SUB9 The direction within the channel that the htlc was sent\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTF\STX\NUL\EOT\DC2\ACK\140\DLE\EOT\138\DLE\NAK\n\
     \\r\n\
     \\ENQ\EOTF\STX\NUL\ENQ\DC2\EOT\140\DLE\EOT\b\n\
     \\r\n\
@@ -57698,8 +57535,6 @@ packedFileDescriptor
     \+\n\
     \\EOT\EOTF\STX\SOH\DC2\EOT\143\DLE\EOT\NAK\SUB\GS The total value of the htlc\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTF\STX\SOH\EOT\DC2\ACK\143\DLE\EOT\140\DLE\SYN\n\
     \\r\n\
     \\ENQ\EOTF\STX\SOH\ENQ\DC2\EOT\143\DLE\EOT\t\n\
     \\r\n\
@@ -57710,8 +57545,6 @@ packedFileDescriptor
     \F\n\
     \\EOT\EOTF\STX\STX\DC2\EOT\146\DLE\EOT\CAN\SUB8 The final output to be swept back to the user's wallet\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTF\STX\STX\EOT\DC2\ACK\146\DLE\EOT\143\DLE\NAK\n\
     \\r\n\
     \\ENQ\EOTF\STX\STX\ENQ\DC2\EOT\146\DLE\EOT\n\
     \\n\
@@ -57722,8 +57555,6 @@ packedFileDescriptor
     \M\n\
     \\EOT\EOTF\STX\ETX\DC2\EOT\149\DLE\EOT\US\SUB? The next block height at which we can spend the current stage\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTF\STX\ETX\EOT\DC2\ACK\149\DLE\EOT\146\DLE\CAN\n\
     \\r\n\
     \\ENQ\EOTF\STX\ETX\ENQ\DC2\EOT\149\DLE\EOT\n\
     \\n\
@@ -57737,8 +57568,6 @@ packedFileDescriptor
     \Negative values indicate how many blocks have passed since becoming\n\
     \mature.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTF\STX\EOT\EOT\DC2\ACK\156\DLE\EOT\149\DLE\US\n\
     \\r\n\
     \\ENQ\EOTF\STX\EOT\ENQ\DC2\EOT\156\DLE\EOT\t\n\
     \\r\n\
@@ -57749,8 +57578,6 @@ packedFileDescriptor
     \V\n\
     \\EOT\EOTF\STX\ENQ\DC2\EOT\159\DLE\EOT\NAK\SUBH Indicates whether the htlc is in its first or second stage of recovery\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTF\STX\ENQ\EOT\DC2\ACK\159\DLE\EOT\156\DLE\"\n\
     \\r\n\
     \\ENQ\EOTF\STX\ENQ\ENQ\DC2\EOT\159\DLE\EOT\n\
     \\n\
@@ -57772,8 +57599,6 @@ packedFileDescriptor
     \\ENQ\EOTH\ETX\NUL\SOH\DC2\EOT\165\DLE\f\SUB\n\
     \\SO\n\
     \\ACK\EOTH\ETX\NUL\STX\NUL\DC2\EOT\166\DLE\b#\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\NUL\EOT\DC2\ACK\166\DLE\b\165\DLE\FS\n\
     \\SI\n\
     \\a\EOTH\ETX\NUL\STX\NUL\ENQ\DC2\EOT\166\DLE\b\SO\n\
     \\SI\n\
@@ -57782,8 +57607,6 @@ packedFileDescriptor
     \\a\EOTH\ETX\NUL\STX\NUL\ETX\DC2\EOT\166\DLE!\"\n\
     \\SO\n\
     \\ACK\EOTH\ETX\NUL\STX\SOH\DC2\EOT\167\DLE\b!\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\SOH\EOT\DC2\ACK\167\DLE\b\166\DLE#\n\
     \\SI\n\
     \\a\EOTH\ETX\NUL\STX\SOH\ENQ\DC2\EOT\167\DLE\b\SO\n\
     \\SI\n\
@@ -57792,8 +57615,6 @@ packedFileDescriptor
     \\a\EOTH\ETX\NUL\STX\SOH\ETX\DC2\EOT\167\DLE\US \n\
     \\SO\n\
     \\ACK\EOTH\ETX\NUL\STX\STX\DC2\EOT\169\DLE\b\ESC\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\STX\EOT\DC2\ACK\169\DLE\b\167\DLE!\n\
     \\SI\n\
     \\a\EOTH\ETX\NUL\STX\STX\ENQ\DC2\EOT\169\DLE\b\r\n\
     \\SI\n\
@@ -57802,8 +57623,6 @@ packedFileDescriptor
     \\a\EOTH\ETX\NUL\STX\STX\ETX\DC2\EOT\169\DLE\EM\SUB\n\
     \\SO\n\
     \\ACK\EOTH\ETX\NUL\STX\ETX\DC2\EOT\171\DLE\b \n\
-    \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\ETX\EOT\DC2\ACK\171\DLE\b\169\DLE\ESC\n\
     \\SI\n\
     \\a\EOTH\ETX\NUL\STX\ETX\ENQ\DC2\EOT\171\DLE\b\r\n\
     \\SI\n\
@@ -57812,8 +57631,6 @@ packedFileDescriptor
     \\a\EOTH\ETX\NUL\STX\ETX\ETX\DC2\EOT\171\DLE\RS\US\n\
     \\SO\n\
     \\ACK\EOTH\ETX\NUL\STX\EOT\DC2\EOT\172\DLE\b!\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\EOT\EOT\DC2\ACK\172\DLE\b\171\DLE \n\
     \\SI\n\
     \\a\EOTH\ETX\NUL\STX\EOT\ENQ\DC2\EOT\172\DLE\b\r\n\
     \\SI\n\
@@ -57824,8 +57641,6 @@ packedFileDescriptor
     \\ACK\EOTH\ETX\NUL\STX\ENQ\DC2\EOT\176\DLE\b)\SUBH The minimum satoshis this node is required to reserve in its\n\
     \ balance.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\ENQ\EOT\DC2\ACK\176\DLE\b\172\DLE!\n\
     \\SI\n\
     \\a\EOTH\ETX\NUL\STX\ENQ\ENQ\DC2\EOT\176\DLE\b\r\n\
     \\SI\n\
@@ -57837,8 +57652,6 @@ packedFileDescriptor
     \The minimum satoshis the other node is required to reserve in its\n\
     \balance.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\ACK\EOT\DC2\ACK\182\DLE\b\176\DLE)\n\
     \\SI\n\
     \\a\EOTH\ETX\NUL\STX\ACK\ENQ\DC2\EOT\182\DLE\b\r\n\
     \\SI\n\
@@ -57848,8 +57661,6 @@ packedFileDescriptor
     \?\n\
     \\ACK\EOTH\ETX\NUL\STX\a\DC2\EOT\185\DLE\b \SUB/ The party that initiated opening the channel.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\a\EOT\DC2\ACK\185\DLE\b\182\DLE*\n\
     \\SI\n\
     \\a\EOTH\ETX\NUL\STX\a\ACK\DC2\EOT\185\DLE\b\DC1\n\
     \\SI\n\
@@ -57859,8 +57670,6 @@ packedFileDescriptor
     \;\n\
     \\ACK\EOTH\ETX\NUL\STX\b\DC2\EOT\188\DLE\b+\SUB+ The commitment type used by this channel.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\NUL\STX\b\EOT\DC2\ACK\188\DLE\b\185\DLE \n\
     \\SI\n\
     \\a\EOTH\ETX\NUL\STX\b\ACK\DC2\EOT\188\DLE\b\SYN\n\
     \\SI\n\
@@ -57874,8 +57683,6 @@ packedFileDescriptor
     \%\n\
     \\ACK\EOTH\ETX\SOH\STX\NUL\DC2\EOT\193\DLE\b#\SUB\NAK The pending channel\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\SOH\STX\NUL\EOT\DC2\ACK\193\DLE\b\191\DLE \n\
     \\SI\n\
     \\a\EOTH\ETX\SOH\STX\NUL\ACK\DC2\EOT\193\DLE\b\SYN\n\
     \\SI\n\
@@ -57885,8 +57692,6 @@ packedFileDescriptor
     \D\n\
     \\ACK\EOTH\ETX\SOH\STX\SOH\DC2\EOT\196\DLE\b'\SUB4 The height at which this channel will be confirmed\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\SOH\STX\SOH\EOT\DC2\ACK\196\DLE\b\193\DLE#\n\
     \\SI\n\
     \\a\EOTH\ETX\SOH\STX\SOH\ENQ\DC2\EOT\196\DLE\b\SO\n\
     \\SI\n\
@@ -57901,8 +57706,6 @@ packedFileDescriptor
     \each channel state update, including updates that happen after a system\n\
     \restart.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\SOH\STX\STX\EOT\DC2\ACK\205\DLE\b\196\DLE'\n\
     \\SI\n\
     \\a\EOTH\ETX\SOH\STX\STX\ENQ\DC2\EOT\205\DLE\b\r\n\
     \\SI\n\
@@ -57912,8 +57715,6 @@ packedFileDescriptor
     \:\n\
     \\ACK\EOTH\ETX\SOH\STX\ETX\DC2\EOT\208\DLE\b \SUB* The weight of the commitment transaction\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\SOH\STX\ETX\EOT\DC2\ACK\208\DLE\b\205\DLE\GS\n\
     \\SI\n\
     \\a\EOTH\ETX\SOH\STX\ETX\ENQ\DC2\EOT\208\DLE\b\r\n\
     \\SI\n\
@@ -57926,8 +57727,6 @@ packedFileDescriptor
     \pay at all times, for both the funding transaction and commitment\n\
     \transaction. This value can later be updated once the channel is open.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\SOH\STX\EOT\EOT\DC2\ACK\215\DLE\b\208\DLE \n\
     \\SI\n\
     \\a\EOTH\ETX\SOH\STX\EOT\ENQ\DC2\EOT\215\DLE\b\r\n\
     \\SI\n\
@@ -57941,8 +57740,6 @@ packedFileDescriptor
     \G\n\
     \\ACK\EOTH\ETX\STX\STX\NUL\DC2\EOT\220\DLE\b#\SUB7 The pending channel waiting for closing tx to confirm\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\STX\STX\NUL\EOT\DC2\ACK\220\DLE\b\218\DLE!\n\
     \\SI\n\
     \\a\EOTH\ETX\STX\STX\NUL\ACK\DC2\EOT\220\DLE\b\SYN\n\
     \\SI\n\
@@ -57952,8 +57749,6 @@ packedFileDescriptor
     \D\n\
     \\ACK\EOTH\ETX\STX\STX\SOH\DC2\EOT\223\DLE\b \SUB4 The balance in satoshis encumbered in this channel\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\STX\STX\SOH\EOT\DC2\ACK\223\DLE\b\220\DLE#\n\
     \\SI\n\
     \\a\EOTH\ETX\STX\STX\SOH\ENQ\DC2\EOT\223\DLE\b\r\n\
     \\SI\n\
@@ -57965,8 +57760,6 @@ packedFileDescriptor
     \A list of valid commitment transactions. Any of these can confirm at\n\
     \this point.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\STX\STX\STX\EOT\DC2\ACK\229\DLE\b\223\DLE \n\
     \\SI\n\
     \\a\EOTH\ETX\STX\STX\STX\ACK\DC2\EOT\229\DLE\b\DC3\n\
     \\SI\n\
@@ -57980,8 +57773,6 @@ packedFileDescriptor
     \A\n\
     \\ACK\EOTH\ETX\ETX\STX\NUL\DC2\EOT\234\DLE\b\RS\SUB1 Hash of the local version of the commitment tx.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\NUL\EOT\DC2\ACK\234\DLE\b\232\DLE\EM\n\
     \\SI\n\
     \\a\EOTH\ETX\ETX\STX\NUL\ENQ\DC2\EOT\234\DLE\b\SO\n\
     \\SI\n\
@@ -57991,8 +57782,6 @@ packedFileDescriptor
     \B\n\
     \\ACK\EOTH\ETX\ETX\STX\SOH\DC2\EOT\237\DLE\b\US\SUB2 Hash of the remote version of the commitment tx.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\SOH\EOT\DC2\ACK\237\DLE\b\234\DLE\RS\n\
     \\SI\n\
     \\a\EOTH\ETX\ETX\STX\SOH\ENQ\DC2\EOT\237\DLE\b\SO\n\
     \\SI\n\
@@ -58002,8 +57791,6 @@ packedFileDescriptor
     \J\n\
     \\ACK\EOTH\ETX\ETX\STX\STX\DC2\EOT\240\DLE\b'\SUB: Hash of the remote pending version of the commitment tx.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\STX\EOT\DC2\ACK\240\DLE\b\237\DLE\US\n\
     \\SI\n\
     \\a\EOTH\ETX\ETX\STX\STX\ENQ\DC2\EOT\240\DLE\b\SO\n\
     \\SI\n\
@@ -58015,8 +57802,6 @@ packedFileDescriptor
     \The amount in satoshis calculated to be paid in fees for the local\n\
     \commitment.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\ETX\EOT\DC2\ACK\246\DLE\b\240\DLE'\n\
     \\SI\n\
     \\a\EOTH\ETX\ETX\STX\ETX\ENQ\DC2\EOT\246\DLE\b\SO\n\
     \\SI\n\
@@ -58028,8 +57813,6 @@ packedFileDescriptor
     \The amount in satoshis calculated to be paid in fees for the remote\n\
     \commitment.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\EOT\EOT\DC2\ACK\252\DLE\b\246\DLE(\n\
     \\SI\n\
     \\a\EOTH\ETX\ETX\STX\EOT\ENQ\DC2\EOT\252\DLE\b\SO\n\
     \\SI\n\
@@ -58041,8 +57824,6 @@ packedFileDescriptor
     \The amount in satoshis calculated to be paid in fees for the remote\n\
     \pending commitment.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ETX\STX\ENQ\EOT\DC2\ACK\130\DC1\b\252\DLE)\n\
     \\SI\n\
     \\a\EOTH\ETX\ETX\STX\ENQ\ENQ\DC2\EOT\130\DC1\b\SO\n\
     \\SI\n\
@@ -58056,8 +57837,6 @@ packedFileDescriptor
     \2\n\
     \\ACK\EOTH\ETX\EOT\STX\NUL\DC2\EOT\135\DC1\b#\SUB\" The pending channel to be closed\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\EOT\STX\NUL\EOT\DC2\ACK\135\DC1\b\133\DC1\ESC\n\
     \\SI\n\
     \\a\EOTH\ETX\EOT\STX\NUL\ACK\DC2\EOT\135\DC1\b\SYN\n\
     \\SI\n\
@@ -58067,8 +57846,6 @@ packedFileDescriptor
     \?\n\
     \\ACK\EOTH\ETX\EOT\STX\SOH\DC2\EOT\138\DC1\b \SUB/ The transaction id of the closing transaction\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\EOT\STX\SOH\EOT\DC2\ACK\138\DC1\b\135\DC1#\n\
     \\SI\n\
     \\a\EOTH\ETX\EOT\STX\SOH\ENQ\DC2\EOT\138\DC1\b\SO\n\
     \\SI\n\
@@ -58082,8 +57859,6 @@ packedFileDescriptor
     \8\n\
     \\ACK\EOTH\ETX\ENQ\STX\NUL\DC2\EOT\143\DC1\b#\SUB( The pending channel to be force closed\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\NUL\EOT\DC2\ACK\143\DC1\b\141\DC1 \n\
     \\SI\n\
     \\a\EOTH\ETX\ENQ\STX\NUL\ACK\DC2\EOT\143\DC1\b\SYN\n\
     \\SI\n\
@@ -58093,8 +57868,6 @@ packedFileDescriptor
     \?\n\
     \\ACK\EOTH\ETX\ENQ\STX\SOH\DC2\EOT\146\DC1\b \SUB/ The transaction id of the closing transaction\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\SOH\EOT\DC2\ACK\146\DC1\b\143\DC1#\n\
     \\SI\n\
     \\a\EOTH\ETX\ENQ\STX\SOH\ENQ\DC2\EOT\146\DC1\b\SO\n\
     \\SI\n\
@@ -58104,8 +57877,6 @@ packedFileDescriptor
     \L\n\
     \\ACK\EOTH\ETX\ENQ\STX\STX\DC2\EOT\149\DC1\b \SUB< The balance in satoshis encumbered in this pending channel\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\STX\EOT\DC2\ACK\149\DC1\b\146\DC1 \n\
     \\SI\n\
     \\a\EOTH\ETX\ENQ\STX\STX\ENQ\DC2\EOT\149\DC1\b\r\n\
     \\SI\n\
@@ -58115,8 +57886,6 @@ packedFileDescriptor
     \H\n\
     \\ACK\EOTH\ETX\ENQ\STX\ETX\DC2\EOT\152\DC1\b#\SUB8 The height at which funds can be swept into the wallet\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\ETX\EOT\DC2\ACK\152\DC1\b\149\DC1 \n\
     \\SI\n\
     \\a\EOTH\ETX\ENQ\STX\ETX\ENQ\DC2\EOT\152\DC1\b\SO\n\
     \\SI\n\
@@ -58129,8 +57898,6 @@ packedFileDescriptor
     \Negative values indicate how many blocks have passed since becoming\n\
     \mature.\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\EOT\EOT\DC2\ACK\159\DC1\b\152\DC1#\n\
     \\SI\n\
     \\a\EOTH\ETX\ENQ\STX\EOT\ENQ\DC2\EOT\159\DC1\b\r\n\
     \\SI\n\
@@ -58140,8 +57907,6 @@ packedFileDescriptor
     \S\n\
     \\ACK\EOTH\ETX\ENQ\STX\ENQ\DC2\EOT\162\DC1\b$\SUBC The total value of funds successfully recovered from this channel\n\
     \\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\ENQ\EOT\DC2\ACK\162\DC1\b\159\DC1&\n\
     \\SI\n\
     \\a\EOTH\ETX\ENQ\STX\ENQ\ENQ\DC2\EOT\162\DC1\b\r\n\
     \\SI\n\
@@ -58182,8 +57947,6 @@ packedFileDescriptor
     \\t\EOTH\ETX\ENQ\EOT\NUL\STX\STX\STX\DC2\EOT\169\DC1\DC3\DC4\n\
     \\SO\n\
     \\ACK\EOTH\ETX\ENQ\STX\a\DC2\EOT\172\DC1\b\US\n\
-    \\DC1\n\
-    \\a\EOTH\ETX\ENQ\STX\a\EOT\DC2\ACK\172\DC1\b\170\DC1\t\n\
     \\SI\n\
     \\a\EOTH\ETX\ENQ\STX\a\ACK\DC2\EOT\172\DC1\b\DC3\n\
     \\SI\n\
@@ -58193,8 +57956,6 @@ packedFileDescriptor
     \F\n\
     \\EOT\EOTH\STX\NUL\DC2\EOT\176\DC1\EOT\"\SUB8 The balance in satoshis encumbered in pending channels\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTH\STX\NUL\EOT\DC2\ACK\176\DC1\EOT\173\DC1\ENQ\n\
     \\r\n\
     \\ENQ\EOTH\STX\NUL\ENQ\DC2\EOT\176\DC1\EOT\t\n\
     \\r\n\
@@ -58342,8 +58103,6 @@ packedFileDescriptor
     \\a\EOTJ\EOT\NUL\STX\EOT\STX\DC2\EOT\212\DC1\US \n\
     \\f\n\
     \\EOT\EOTJ\STX\ENQ\DC2\EOT\215\DC1\EOT\CAN\n\
-    \\SI\n\
-    \\ENQ\EOTJ\STX\ENQ\EOT\DC2\ACK\215\DC1\EOT\213\DC1\ENQ\n\
     \\r\n\
     \\ENQ\EOTJ\STX\ENQ\ACK\DC2\EOT\215\DC1\EOT\SO\n\
     \\r\n\
@@ -58357,8 +58116,6 @@ packedFileDescriptor
     \O\n\
     \\EOT\EOTK\STX\NUL\DC2\EOT\220\DC1\EOT \SUBA The confirmed balance of the account (with >= 1 confirmations).\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTK\STX\NUL\EOT\DC2\ACK\220\DC1\EOT\218\DC1\RS\n\
     \\r\n\
     \\ENQ\EOTK\STX\NUL\ENQ\DC2\EOT\220\DC1\EOT\t\n\
     \\r\n\
@@ -58369,8 +58126,6 @@ packedFileDescriptor
     \N\n\
     \\EOT\EOTK\STX\SOH\DC2\EOT\223\DC1\EOT\"\SUB@ The unconfirmed balance of the account (with 0 confirmations).\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTK\STX\SOH\EOT\DC2\ACK\223\DC1\EOT\220\DC1 \n\
     \\r\n\
     \\ENQ\EOTK\STX\SOH\ENQ\DC2\EOT\223\DC1\EOT\t\n\
     \\r\n\
@@ -58389,8 +58144,6 @@ packedFileDescriptor
     \)\n\
     \\EOT\EOTM\STX\NUL\DC2\EOT\231\DC1\EOT\FS\SUB\ESC The balance of the wallet\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTM\STX\NUL\EOT\DC2\ACK\231\DC1\EOT\229\DC1\US\n\
     \\r\n\
     \\ENQ\EOTM\STX\NUL\ENQ\DC2\EOT\231\DC1\EOT\t\n\
     \\r\n\
@@ -58401,8 +58154,6 @@ packedFileDescriptor
     \J\n\
     \\EOT\EOTM\STX\SOH\DC2\EOT\234\DC1\EOT \SUB< The confirmed balance of a wallet(with >= 1 confirmations)\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTM\STX\SOH\EOT\DC2\ACK\234\DC1\EOT\231\DC1\FS\n\
     \\r\n\
     \\ENQ\EOTM\STX\SOH\ENQ\DC2\EOT\234\DC1\EOT\t\n\
     \\r\n\
@@ -58413,8 +58164,6 @@ packedFileDescriptor
     \I\n\
     \\EOT\EOTM\STX\STX\DC2\EOT\237\DC1\EOT\"\SUB; The unconfirmed balance of a wallet(with 0 confirmations)\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTM\STX\STX\EOT\DC2\ACK\237\DC1\EOT\234\DC1 \n\
     \\r\n\
     \\ENQ\EOTM\STX\STX\ENQ\DC2\EOT\237\DC1\EOT\t\n\
     \\r\n\
@@ -58425,8 +58174,6 @@ packedFileDescriptor
     \G\n\
     \\EOT\EOTM\STX\ETX\DC2\EOT\240\DC1\EOT:\SUB9 A mapping of each wallet account's name to its balance.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTM\STX\ETX\EOT\DC2\ACK\240\DC1\EOT\237\DC1\"\n\
     \\r\n\
     \\ENQ\EOTM\STX\ETX\ACK\DC2\EOT\240\DC1\EOT%\n\
     \\r\n\
@@ -58440,8 +58187,6 @@ packedFileDescriptor
     \.\n\
     \\EOT\EOTN\STX\NUL\DC2\EOT\245\DC1\EOT\DC3\SUB  Value denominated in satoshis.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTN\STX\NUL\EOT\DC2\ACK\245\DC1\EOT\243\DC1\DLE\n\
     \\r\n\
     \\ENQ\EOTN\STX\NUL\ENQ\DC2\EOT\245\DC1\EOT\n\
     \\n\
@@ -58452,8 +58197,6 @@ packedFileDescriptor
     \4\n\
     \\EOT\EOTN\STX\SOH\DC2\EOT\248\DC1\EOT\DC4\SUB& Value denominated in milli-satoshis.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTN\STX\SOH\EOT\DC2\ACK\248\DC1\EOT\245\DC1\DC3\n\
     \\r\n\
     \\ENQ\EOTN\STX\SOH\ENQ\DC2\EOT\248\DC1\EOT\n\
     \\n\
@@ -58472,8 +58215,6 @@ packedFileDescriptor
     \L\n\
     \\EOT\EOTP\STX\NUL\DC2\EOT\255\DC1\EOT*\SUB> Deprecated. Sum of channels balances denominated in satoshis\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTP\STX\NUL\EOT\DC2\ACK\255\DC1\EOT\253\DC1 \n\
     \\r\n\
     \\ENQ\EOTP\STX\NUL\ENQ\DC2\EOT\255\DC1\EOT\t\n\
     \\r\n\
@@ -58488,8 +58229,6 @@ packedFileDescriptor
     \T\n\
     \\EOT\EOTP\STX\SOH\DC2\EOT\130\DC2\EOT7\SUBF Deprecated. Sum of channels pending balances denominated in satoshis\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTP\STX\SOH\EOT\DC2\ACK\130\DC2\EOT\255\DC1*\n\
     \\r\n\
     \\ENQ\EOTP\STX\SOH\ENQ\DC2\EOT\130\DC2\EOT\t\n\
     \\r\n\
@@ -58504,8 +58243,6 @@ packedFileDescriptor
     \/\n\
     \\EOT\EOTP\STX\STX\DC2\EOT\133\DC2\EOT\GS\SUB! Sum of channels local balances.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTP\STX\STX\EOT\DC2\ACK\133\DC2\EOT\130\DC27\n\
     \\r\n\
     \\ENQ\EOTP\STX\STX\ACK\DC2\EOT\133\DC2\EOT\n\
     \\n\
@@ -58516,8 +58253,6 @@ packedFileDescriptor
     \0\n\
     \\EOT\EOTP\STX\ETX\DC2\EOT\136\DC2\EOT\RS\SUB\" Sum of channels remote balances.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTP\STX\ETX\EOT\DC2\ACK\136\DC2\EOT\133\DC2\GS\n\
     \\r\n\
     \\ENQ\EOTP\STX\ETX\ACK\DC2\EOT\136\DC2\EOT\n\
     \\n\
@@ -58528,8 +58263,6 @@ packedFileDescriptor
     \9\n\
     \\EOT\EOTP\STX\EOT\DC2\EOT\139\DC2\EOT'\SUB+ Sum of channels local unsettled balances.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTP\STX\EOT\EOT\DC2\ACK\139\DC2\EOT\136\DC2\RS\n\
     \\r\n\
     \\ENQ\EOTP\STX\EOT\ACK\DC2\EOT\139\DC2\EOT\n\
     \\n\
@@ -58540,8 +58273,6 @@ packedFileDescriptor
     \:\n\
     \\EOT\EOTP\STX\ENQ\DC2\EOT\142\DC2\EOT(\SUB, Sum of channels remote unsettled balances.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTP\STX\ENQ\EOT\DC2\ACK\142\DC2\EOT\139\DC2'\n\
     \\r\n\
     \\ENQ\EOTP\STX\ENQ\ACK\DC2\EOT\142\DC2\EOT\n\
     \\n\
@@ -58552,8 +58283,6 @@ packedFileDescriptor
     \7\n\
     \\EOT\EOTP\STX\ACK\DC2\EOT\145\DC2\EOT*\SUB) Sum of channels pending local balances.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTP\STX\ACK\EOT\DC2\ACK\145\DC2\EOT\142\DC2(\n\
     \\r\n\
     \\ENQ\EOTP\STX\ACK\ACK\DC2\EOT\145\DC2\EOT\n\
     \\n\
@@ -58564,8 +58293,6 @@ packedFileDescriptor
     \8\n\
     \\EOT\EOTP\STX\a\DC2\EOT\148\DC2\EOT+\SUB* Sum of channels pending remote balances.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTP\STX\a\EOT\DC2\ACK\148\DC2\EOT\145\DC2*\n\
     \\r\n\
     \\ENQ\EOTP\STX\a\ACK\DC2\EOT\148\DC2\EOT\n\
     \\n\
@@ -58580,8 +58307,6 @@ packedFileDescriptor
     \N\n\
     \\EOT\EOTQ\STX\NUL\DC2\EOT\153\DC2\EOT\ETB\SUB@ The 33-byte hex-encoded public key for the payment destination\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\NUL\EOT\DC2\ACK\153\DC2\EOT\151\DC2\FS\n\
     \\r\n\
     \\ENQ\EOTQ\STX\NUL\ENQ\DC2\EOT\153\DC2\EOT\n\
     \\n\
@@ -58595,8 +58320,6 @@ packedFileDescriptor
     \\n\
     \The fields amt and amt_msat are mutually exclusive.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\SOH\EOT\DC2\ACK\160\DC2\EOT\153\DC2\ETB\n\
     \\r\n\
     \\ENQ\EOTQ\STX\SOH\ENQ\DC2\EOT\160\DC2\EOT\t\n\
     \\r\n\
@@ -58610,8 +58333,6 @@ packedFileDescriptor
     \\n\
     \The fields amt and amt_msat are mutually exclusive.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\STX\EOT\DC2\ACK\167\DC2\EOT\160\DC2\DC2\n\
     \\r\n\
     \\ENQ\EOTQ\STX\STX\ENQ\DC2\EOT\167\DC2\EOT\t\n\
     \\r\n\
@@ -58635,8 +58356,6 @@ packedFileDescriptor
     \padding of a few blocks needs to be added manually or otherwise failures may\n\
     \happen when a block comes in while the payment is in flight.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\ETX\EOT\DC2\ACK\178\DC2\EOT\169\DC2\SI\n\
     \\r\n\
     \\ENQ\EOTQ\STX\ETX\ENQ\DC2\EOT\178\DC2\EOT\t\n\
     \\r\n\
@@ -58651,8 +58370,6 @@ packedFileDescriptor
     \sent, or as a fixed amount of the maximum fee the user is willing the pay to\n\
     \send the payment.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\EOT\EOT\DC2\ACK\186\DC2\EOT\178\DC2\US\n\
     \\r\n\
     \\ENQ\EOTQ\STX\EOT\ACK\DC2\EOT\186\DC2\EOT\f\n\
     \\r\n\
@@ -58693,8 +58410,6 @@ packedFileDescriptor
     \The source node where the request route should originated from. If empty,\n\
     \self is assumed.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\a\EOT\DC2\ACK\203\DC2\EOT\197\DC2?\n\
     \\r\n\
     \\ENQ\EOTQ\STX\a\ENQ\DC2\EOT\203\DC2\EOT\n\
     \\n\
@@ -58707,8 +58422,6 @@ packedFileDescriptor
     \If set to true, edge probabilities from mission control will be used to get\n\
     \the optimal route.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\b\EOT\DC2\ACK\209\DC2\EOT\203\DC2\RS\n\
     \\r\n\
     \\ENQ\EOTQ\STX\b\ENQ\DC2\EOT\209\DC2\EOT\b\n\
     \\r\n\
@@ -58734,9 +58447,6 @@ packedFileDescriptor
     \ourselves, this should not exceed lnd's `--max-cltv-expiry` setting. If\n\
     \zero, then the value of `--max-cltv-expiry` is used as the limit.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\n\
-    \\EOT\DC2\ACK\221\DC2\EOT\214\DC2)\n\
     \\r\n\
     \\ENQ\EOTQ\STX\n\
     \\ENQ\DC2\EOT\221\DC2\EOT\n\
@@ -58756,8 +58466,6 @@ packedFileDescriptor
     \Record types are required to be in the custom range >= 65536. When using\n\
     \REST, the values must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\v\EOT\DC2\ACK\231\DC2\EOT\221\DC2\ESC\n\
     \\r\n\
     \\ENQ\EOTQ\STX\v\ACK\DC2\EOT\231\DC2\EOT\SYN\n\
     \\r\n\
@@ -58769,8 +58477,6 @@ packedFileDescriptor
     \The channel id of the channel that must be taken to the first hop. If zero,\n\
     \any channel may be used.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\f\EOT\DC2\ACK\237\DC2\EOT\231\DC20\n\
     \\r\n\
     \\ENQ\EOTQ\STX\f\ENQ\DC2\EOT\237\DC2\EOT\n\
     \\n\
@@ -58786,8 +58492,6 @@ packedFileDescriptor
     \\EOT\EOTQ\STX\r\DC2\EOT\242\DC2\EOT\US\SUBI\n\
     \The pubkey of the last hop of the route. If empty, any hop may be used.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTQ\STX\r\EOT\DC2\ACK\242\DC2\EOT\237\DC26\n\
     \\r\n\
     \\ENQ\EOTQ\STX\r\ENQ\DC2\EOT\242\DC2\EOT\t\n\
     \\r\n\
@@ -58832,8 +58536,6 @@ packedFileDescriptor
     \The sending node of the pair. When using REST, this field must be encoded as\n\
     \base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTR\STX\NUL\EOT\DC2\ACK\136\DC3\EOT\131\DC3\DC2\n\
     \\r\n\
     \\ENQ\EOTR\STX\NUL\ENQ\DC2\EOT\136\DC3\EOT\t\n\
     \\r\n\
@@ -58846,8 +58548,6 @@ packedFileDescriptor
     \The receiving node of the pair. When using REST, this field must be encoded\n\
     \as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTR\STX\SOH\EOT\DC2\ACK\142\DC3\EOT\136\DC3\DC3\n\
     \\r\n\
     \\ENQ\EOTR\STX\SOH\ENQ\DC2\EOT\142\DC3\EOT\t\n\
     \\r\n\
@@ -58862,8 +58562,6 @@ packedFileDescriptor
     \2\n\
     \\EOT\EOTS\STX\NUL\DC2\EOT\147\DC3\EOT/\SUB$ The short channel id of this edge.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTS\STX\NUL\EOT\DC2\ACK\147\DC3\EOT\145\DC3\NAK\n\
     \\r\n\
     \\ENQ\EOTS\STX\NUL\ENQ\DC2\EOT\147\DC3\EOT\n\
     \\n\
@@ -58882,8 +58580,6 @@ packedFileDescriptor
     \pub key to the endpoint with the larger pub key. If direction_reverse is\n\
     \is true, the edge goes the other way.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTS\STX\SOH\EOT\DC2\ACK\155\DC3\EOT\147\DC3/\n\
     \\r\n\
     \\ENQ\EOTS\STX\SOH\ENQ\DC2\EOT\155\DC3\EOT\b\n\
     \\r\n\
@@ -58912,8 +58608,6 @@ packedFileDescriptor
     \The success probability of the returned route based on the current mission\n\
     \control state. [EXPERIMENTAL]\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTT\STX\SOH\EOT\DC2\ACK\169\DC3\EOT\163\DC3\RS\n\
     \\r\n\
     \\ENQ\EOTT\STX\SOH\ENQ\DC2\EOT\169\DC3\EOT\n\
     \\n\
@@ -58931,8 +58625,6 @@ packedFileDescriptor
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\NUL\EOT\DC2\ACK\178\DC3\EOT\172\DC3\r\n\
     \\r\n\
     \\ENQ\EOTU\STX\NUL\ENQ\DC2\EOT\178\DC3\EOT\n\
     \\n\
@@ -58946,8 +58638,6 @@ packedFileDescriptor
     \\ACK\EOTU\STX\NUL\b\ACK\DC2\EOT\178\DC3\CAN*\n\
     \\f\n\
     \\EOT\EOTU\STX\SOH\DC2\EOT\179\DC3\EOT0\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\SOH\EOT\DC2\ACK\179\DC3\EOT\178\DC3,\n\
     \\r\n\
     \\ENQ\EOTU\STX\SOH\ENQ\DC2\EOT\179\DC3\EOT\t\n\
     \\r\n\
@@ -58961,8 +58651,6 @@ packedFileDescriptor
     \\ACK\EOTU\STX\SOH\b\ETX\DC2\EOT\179\DC3\GS.\n\
     \\f\n\
     \\EOT\EOTU\STX\STX\DC2\EOT\180\DC3\EOT1\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\STX\EOT\DC2\ACK\180\DC3\EOT\179\DC30\n\
     \\r\n\
     \\ENQ\EOTU\STX\STX\ENQ\DC2\EOT\180\DC3\EOT\t\n\
     \\r\n\
@@ -58976,8 +58664,6 @@ packedFileDescriptor
     \\ACK\EOTU\STX\STX\b\ETX\DC2\EOT\180\DC3\RS/\n\
     \\f\n\
     \\EOT\EOTU\STX\ETX\DC2\EOT\181\DC3\EOT&\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\ETX\EOT\DC2\ACK\181\DC3\EOT\180\DC31\n\
     \\r\n\
     \\ENQ\EOTU\STX\ETX\ENQ\DC2\EOT\181\DC3\EOT\t\n\
     \\r\n\
@@ -58991,8 +58677,6 @@ packedFileDescriptor
     \\ACK\EOTU\STX\ETX\b\ETX\DC2\EOT\181\DC3\DC3$\n\
     \\f\n\
     \\EOT\EOTU\STX\EOT\DC2\EOT\182\DC3\EOT\SYN\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\EOT\EOT\DC2\ACK\182\DC3\EOT\181\DC3&\n\
     \\r\n\
     \\ENQ\EOTU\STX\EOT\ENQ\DC2\EOT\182\DC3\EOT\n\
     \\n\
@@ -59002,8 +58686,6 @@ packedFileDescriptor
     \\ENQ\EOTU\STX\EOT\ETX\DC2\EOT\182\DC3\DC4\NAK\n\
     \\f\n\
     \\EOT\EOTU\STX\ENQ\DC2\EOT\183\DC3\EOT\"\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\ENQ\EOT\DC2\ACK\183\DC3\EOT\182\DC3\SYN\n\
     \\r\n\
     \\ENQ\EOTU\STX\ENQ\ENQ\DC2\EOT\183\DC3\EOT\t\n\
     \\r\n\
@@ -59013,8 +58695,6 @@ packedFileDescriptor
     \\ENQ\EOTU\STX\ENQ\ETX\DC2\EOT\183\DC3 !\n\
     \\f\n\
     \\EOT\EOTU\STX\ACK\DC2\EOT\184\DC3\EOT\ETB\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\ACK\EOT\DC2\ACK\184\DC3\EOT\183\DC3\"\n\
     \\r\n\
     \\ENQ\EOTU\STX\ACK\ENQ\DC2\EOT\184\DC3\EOT\t\n\
     \\r\n\
@@ -59027,8 +58707,6 @@ packedFileDescriptor
     \An optional public key of the hop. If the public key is given, the payment\n\
     \can be executed without relying on a copy of the channel graph.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\a\EOT\DC2\ACK\190\DC3\EOT\184\DC3\ETB\n\
     \\r\n\
     \\ENQ\EOTU\STX\a\ENQ\DC2\EOT\190\DC3\EOT\n\
     \\n\
@@ -59042,8 +58720,6 @@ packedFileDescriptor
     \TLV format. Note that if any custom tlv_records below are specified, then\n\
     \this field MUST be set to true for them to be encoded properly.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\b\EOT\DC2\ACK\197\DC3\EOT\190\DC3\ETB\n\
     \\r\n\
     \\ENQ\EOTU\STX\b\ENQ\DC2\EOT\197\DC3\EOT\b\n\
     \\r\n\
@@ -59057,8 +58733,6 @@ packedFileDescriptor
     \hop payload of all non-zero payments in the HTLC set. If empty, a regular\n\
     \single-shot payment is or was attempted.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\t\EOT\DC2\ACK\205\DC3\EOT\197\DC3\EM\n\
     \\r\n\
     \\ENQ\EOTU\STX\t\ACK\DC2\EOT\205\DC3\EOT\r\n\
     \\r\n\
@@ -59075,9 +58749,6 @@ packedFileDescriptor
     \child hashes and preimages according to BOLT XX. Must be used in conjunction\n\
     \with mpp_record.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\n\
-    \\EOT\DC2\ACK\215\DC3\EOT\205\DC3\RS\n\
     \\r\n\
     \\ENQ\EOTU\STX\n\
     \\ACK\DC2\EOT\215\DC3\EOT\r\n\
@@ -59093,8 +58764,6 @@ packedFileDescriptor
     \of the SendToRoute call as it allows callers to specify arbitrary K-V pairs\n\
     \to drop off at each hop within the onion.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTU\STX\v\EOT\DC2\ACK\222\DC3\EOT\215\DC3\RS\n\
     \\r\n\
     \\ENQ\EOTU\STX\v\ACK\DC2\EOT\222\DC3\EOT\SYN\n\
     \\r\n\
@@ -59112,8 +58781,6 @@ packedFileDescriptor
     \subpayments, and match the payment_addr provided in the receiver's invoice.\n\
     \The same payment_addr must be used on all subpayments.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTV\STX\NUL\EOT\DC2\ACK\232\DC3\EOT\225\DC3\DC3\n\
     \\r\n\
     \\ENQ\EOTV\STX\NUL\ENQ\DC2\EOT\232\DC3\EOT\t\n\
     \\r\n\
@@ -59128,8 +58795,6 @@ packedFileDescriptor
     \and payment_hash sum exactly to total_amt_msat. The same\n\
     \total_amt_msat must be used on all subpayments.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTV\STX\SOH\EOT\DC2\ACK\240\DC3\EOT\232\DC3\FS\n\
     \\r\n\
     \\ENQ\EOTV\STX\SOH\ENQ\DC2\EOT\240\DC3\EOT\t\n\
     \\r\n\
@@ -59143,8 +58808,6 @@ packedFileDescriptor
     \\ETX\EOTW\SOH\DC2\EOT\243\DC3\b\DC1\n\
     \\f\n\
     \\EOT\EOTW\STX\NUL\DC2\EOT\244\DC3\EOT\EM\n\
-    \\SI\n\
-    \\ENQ\EOTW\STX\NUL\EOT\DC2\ACK\244\DC3\EOT\243\DC3\DC3\n\
     \\r\n\
     \\ENQ\EOTW\STX\NUL\ENQ\DC2\EOT\244\DC3\EOT\t\n\
     \\r\n\
@@ -59154,8 +58817,6 @@ packedFileDescriptor
     \\ENQ\EOTW\STX\NUL\ETX\DC2\EOT\244\DC3\ETB\CAN\n\
     \\f\n\
     \\EOT\EOTW\STX\SOH\DC2\EOT\246\DC3\EOT\NAK\n\
-    \\SI\n\
-    \\ENQ\EOTW\STX\SOH\EOT\DC2\ACK\246\DC3\EOT\244\DC3\EM\n\
     \\r\n\
     \\ENQ\EOTW\STX\SOH\ENQ\DC2\EOT\246\DC3\EOT\t\n\
     \\r\n\
@@ -59165,8 +58826,6 @@ packedFileDescriptor
     \\ENQ\EOTW\STX\SOH\ETX\DC2\EOT\246\DC3\DC3\DC4\n\
     \\f\n\
     \\EOT\EOTW\STX\STX\DC2\EOT\248\DC3\EOT\ESC\n\
-    \\SI\n\
-    \\ENQ\EOTW\STX\STX\EOT\DC2\ACK\248\DC3\EOT\246\DC3\NAK\n\
     \\r\n\
     \\ENQ\EOTW\STX\STX\ENQ\DC2\EOT\248\DC3\EOT\n\
     \\n\
@@ -59191,8 +58850,6 @@ packedFileDescriptor
     \will decrement the time-lock as advertised, leaving enough time for all\n\
     \hops to wait for or present the payment preimage to complete the payment.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTX\STX\NUL\EOT\DC2\ACK\137\DC4\EOT\130\DC4\SI\n\
     \\r\n\
     \\ENQ\EOTX\STX\NUL\ENQ\DC2\EOT\137\DC4\EOT\n\
     \\n\
@@ -59206,8 +58863,6 @@ packedFileDescriptor
     \of a one-hop payment, this value will be zero as we don't need to pay a fee\n\
     \to ourselves.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTX\STX\SOH\EOT\DC2\ACK\144\DC4\EOT\137\DC4\US\n\
     \\r\n\
     \\ENQ\EOTX\STX\SOH\ENQ\DC2\EOT\144\DC4\EOT\t\n\
     \\r\n\
@@ -59227,8 +58882,6 @@ packedFileDescriptor
     \satoshis, otherwise the route will fail at an intermediate node due to an\n\
     \insufficient amount of fees.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTX\STX\STX\EOT\DC2\ACK\153\DC4\EOT\144\DC4-\n\
     \\r\n\
     \\ENQ\EOTX\STX\STX\ENQ\DC2\EOT\153\DC4\EOT\t\n\
     \\r\n\
@@ -59256,8 +58909,6 @@ packedFileDescriptor
     \\EOT\EOTX\STX\EOT\DC2\EOT\163\DC4\EOT\RS\SUB\"\n\
     \The total fees in millisatoshis.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTX\STX\EOT\EOT\DC2\ACK\163\DC4\EOT\158\DC4\SUB\n\
     \\r\n\
     \\ENQ\EOTX\STX\EOT\ENQ\DC2\EOT\163\DC4\EOT\t\n\
     \\r\n\
@@ -59269,8 +58920,6 @@ packedFileDescriptor
     \\EOT\EOTX\STX\ENQ\DC2\EOT\168\DC4\EOT\GS\SUB$\n\
     \The total amount in millisatoshis.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTX\STX\ENQ\EOT\DC2\ACK\168\DC4\EOT\163\DC4\RS\n\
     \\r\n\
     \\ENQ\EOTX\STX\ENQ\ENQ\DC2\EOT\168\DC4\EOT\t\n\
     \\r\n\
@@ -59285,8 +58934,6 @@ packedFileDescriptor
     \L\n\
     \\EOT\EOTY\STX\NUL\DC2\EOT\173\DC4\EOT\ETB\SUB> The 33-byte hex-encoded compressed public of the target node\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTY\STX\NUL\EOT\DC2\ACK\173\DC4\EOT\171\DC4\EM\n\
     \\r\n\
     \\ENQ\EOTY\STX\NUL\ENQ\DC2\EOT\173\DC4\EOT\n\
     \\n\
@@ -59297,8 +58944,6 @@ packedFileDescriptor
     \R\n\
     \\EOT\EOTY\STX\SOH\DC2\EOT\176\DC4\EOT\RS\SUBD If true, will include all known channels associated with the node.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTY\STX\SOH\EOT\DC2\ACK\176\DC4\EOT\173\DC4\ETB\n\
     \\r\n\
     \\ENQ\EOTY\STX\SOH\ENQ\DC2\EOT\176\DC4\EOT\b\n\
     \\r\n\
@@ -59316,8 +58961,6 @@ packedFileDescriptor
     \the graph is directed, a node will also have an incoming edge attached to\n\
     \it for each outgoing edge.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTZ\STX\NUL\EOT\DC2\ACK\186\DC4\EOT\179\DC4\DC2\n\
     \\r\n\
     \\ENQ\EOTZ\STX\NUL\ACK\DC2\EOT\186\DC4\EOT\DC1\n\
     \\r\n\
@@ -59327,8 +58970,6 @@ packedFileDescriptor
     \:\n\
     \\EOT\EOTZ\STX\SOH\DC2\EOT\189\DC4\EOT\FS\SUB, The total number of channels for the node.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTZ\STX\SOH\EOT\DC2\ACK\189\DC4\EOT\186\DC4\ESC\n\
     \\r\n\
     \\ENQ\EOTZ\STX\SOH\ENQ\DC2\EOT\189\DC4\EOT\n\
     \\n\
@@ -59339,8 +58980,6 @@ packedFileDescriptor
     \W\n\
     \\EOT\EOTZ\STX\STX\DC2\EOT\192\DC4\EOT\GS\SUBI The sum of all channels capacity for the node, denominated in satoshis.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTZ\STX\STX\EOT\DC2\ACK\192\DC4\EOT\189\DC4\FS\n\
     \\r\n\
     \\ENQ\EOTZ\STX\STX\ENQ\DC2\EOT\192\DC4\EOT\t\n\
     \\r\n\
@@ -59370,8 +59009,6 @@ packedFileDescriptor
     \\ETX\EOT[\SOH\DC2\EOT\204\DC4\b\NAK\n\
     \\f\n\
     \\EOT\EOT[\STX\NUL\DC2\EOT\205\DC4\EOT\ESC\n\
-    \\SI\n\
-    \\ENQ\EOT[\STX\NUL\EOT\DC2\ACK\205\DC4\EOT\204\DC4\ETB\n\
     \\r\n\
     \\ENQ\EOT[\STX\NUL\ENQ\DC2\EOT\205\DC4\EOT\n\
     \\n\
@@ -59381,8 +59018,6 @@ packedFileDescriptor
     \\ENQ\EOT[\STX\NUL\ETX\DC2\EOT\205\DC4\EM\SUB\n\
     \\f\n\
     \\EOT\EOT[\STX\SOH\DC2\EOT\206\DC4\EOT\ETB\n\
-    \\SI\n\
-    \\ENQ\EOT[\STX\SOH\EOT\DC2\ACK\206\DC4\EOT\205\DC4\ESC\n\
     \\r\n\
     \\ENQ\EOT[\STX\SOH\ENQ\DC2\EOT\206\DC4\EOT\n\
     \\n\
@@ -59392,8 +59027,6 @@ packedFileDescriptor
     \\ENQ\EOT[\STX\SOH\ETX\DC2\EOT\206\DC4\NAK\SYN\n\
     \\f\n\
     \\EOT\EOT[\STX\STX\DC2\EOT\207\DC4\EOT\NAK\n\
-    \\SI\n\
-    \\ENQ\EOT[\STX\STX\EOT\DC2\ACK\207\DC4\EOT\206\DC4\ETB\n\
     \\r\n\
     \\ENQ\EOT[\STX\STX\ENQ\DC2\EOT\207\DC4\EOT\n\
     \\n\
@@ -59413,8 +59046,6 @@ packedFileDescriptor
     \\ENQ\EOT[\STX\ETX\ETX\DC2\EOT\208\DC4%&\n\
     \\f\n\
     \\EOT\EOT[\STX\EOT\DC2\EOT\209\DC4\EOT\NAK\n\
-    \\SI\n\
-    \\ENQ\EOT[\STX\EOT\EOT\DC2\ACK\209\DC4\EOT\208\DC4'\n\
     \\r\n\
     \\ENQ\EOT[\STX\EOT\ENQ\DC2\EOT\209\DC4\EOT\n\
     \\n\
@@ -59424,8 +59055,6 @@ packedFileDescriptor
     \\ENQ\EOT[\STX\EOT\ETX\DC2\EOT\209\DC4\DC3\DC4\n\
     \\f\n\
     \\EOT\EOT[\STX\ENQ\DC2\EOT\210\DC4\EOT&\n\
-    \\SI\n\
-    \\ENQ\EOT[\STX\ENQ\EOT\DC2\ACK\210\DC4\EOT\209\DC4\NAK\n\
     \\r\n\
     \\ENQ\EOT[\STX\ENQ\ACK\DC2\EOT\210\DC4\EOT\CAN\n\
     \\r\n\
@@ -59438,8 +59067,6 @@ packedFileDescriptor
     \\ETX\EOT\\\SOH\DC2\EOT\213\DC4\b\DC3\n\
     \\f\n\
     \\EOT\EOT\\\STX\NUL\DC2\EOT\214\DC4\EOT\ETB\n\
-    \\SI\n\
-    \\ENQ\EOT\\\STX\NUL\EOT\DC2\ACK\214\DC4\EOT\213\DC4\NAK\n\
     \\r\n\
     \\ENQ\EOT\\\STX\NUL\ENQ\DC2\EOT\214\DC4\EOT\n\
     \\n\
@@ -59449,8 +59076,6 @@ packedFileDescriptor
     \\ENQ\EOT\\\STX\NUL\ETX\DC2\EOT\214\DC4\NAK\SYN\n\
     \\f\n\
     \\EOT\EOT\\\STX\SOH\DC2\EOT\215\DC4\EOT\DC4\n\
-    \\SI\n\
-    \\ENQ\EOT\\\STX\SOH\EOT\DC2\ACK\215\DC4\EOT\214\DC4\ETB\n\
     \\r\n\
     \\ENQ\EOT\\\STX\SOH\ENQ\DC2\EOT\215\DC4\EOT\n\
     \\n\
@@ -59464,8 +59089,6 @@ packedFileDescriptor
     \\ETX\EOT]\SOH\DC2\EOT\218\DC4\b\NAK\n\
     \\f\n\
     \\EOT\EOT]\STX\NUL\DC2\EOT\219\DC4\EOT\US\n\
-    \\SI\n\
-    \\ENQ\EOT]\STX\NUL\EOT\DC2\ACK\219\DC4\EOT\218\DC4\ETB\n\
     \\r\n\
     \\ENQ\EOT]\STX\NUL\ENQ\DC2\EOT\219\DC4\EOT\n\
     \\n\
@@ -59475,8 +59098,6 @@ packedFileDescriptor
     \\ENQ\EOT]\STX\NUL\ETX\DC2\EOT\219\DC4\GS\RS\n\
     \\f\n\
     \\EOT\EOT]\STX\SOH\DC2\EOT\220\DC4\EOT\ETB\n\
-    \\SI\n\
-    \\ENQ\EOT]\STX\SOH\EOT\DC2\ACK\220\DC4\EOT\219\DC4\US\n\
     \\r\n\
     \\ENQ\EOT]\STX\SOH\ENQ\DC2\EOT\220\DC4\EOT\t\n\
     \\r\n\
@@ -59486,8 +59107,6 @@ packedFileDescriptor
     \\ENQ\EOT]\STX\SOH\ETX\DC2\EOT\220\DC4\NAK\SYN\n\
     \\f\n\
     \\EOT\EOT]\STX\STX\DC2\EOT\221\DC4\EOT\FS\n\
-    \\SI\n\
-    \\ENQ\EOT]\STX\STX\EOT\DC2\ACK\221\DC4\EOT\220\DC4\ETB\n\
     \\r\n\
     \\ENQ\EOT]\STX\STX\ENQ\DC2\EOT\221\DC4\EOT\t\n\
     \\r\n\
@@ -59497,8 +59116,6 @@ packedFileDescriptor
     \\ENQ\EOT]\STX\STX\ETX\DC2\EOT\221\DC4\SUB\ESC\n\
     \\f\n\
     \\EOT\EOT]\STX\ETX\DC2\EOT\222\DC4\EOT\"\n\
-    \\SI\n\
-    \\ENQ\EOT]\STX\ETX\EOT\DC2\ACK\222\DC4\EOT\221\DC4\FS\n\
     \\r\n\
     \\ENQ\EOT]\STX\ETX\ENQ\DC2\EOT\222\DC4\EOT\t\n\
     \\r\n\
@@ -59508,8 +59125,6 @@ packedFileDescriptor
     \\ENQ\EOT]\STX\ETX\ETX\DC2\EOT\222\DC4 !\n\
     \\f\n\
     \\EOT\EOT]\STX\EOT\DC2\EOT\223\DC4\EOT\SYN\n\
-    \\SI\n\
-    \\ENQ\EOT]\STX\EOT\EOT\DC2\ACK\223\DC4\EOT\222\DC4\"\n\
     \\r\n\
     \\ENQ\EOT]\STX\EOT\ENQ\DC2\EOT\223\DC4\EOT\b\n\
     \\r\n\
@@ -59518,8 +59133,6 @@ packedFileDescriptor
     \\ENQ\EOT]\STX\EOT\ETX\DC2\EOT\223\DC4\DC4\NAK\n\
     \\f\n\
     \\EOT\EOT]\STX\ENQ\DC2\EOT\224\DC4\EOT\GS\n\
-    \\SI\n\
-    \\ENQ\EOT]\STX\ENQ\EOT\DC2\ACK\224\DC4\EOT\223\DC4\SYN\n\
     \\r\n\
     \\ENQ\EOT]\STX\ENQ\ENQ\DC2\EOT\224\DC4\EOT\n\
     \\n\
@@ -59529,8 +59142,6 @@ packedFileDescriptor
     \\ENQ\EOT]\STX\ENQ\ETX\DC2\EOT\224\DC4\ESC\FS\n\
     \\f\n\
     \\EOT\EOT]\STX\ACK\DC2\EOT\225\DC4\EOT\ESC\n\
-    \\SI\n\
-    \\ENQ\EOT]\STX\ACK\EOT\DC2\ACK\225\DC4\EOT\224\DC4\GS\n\
     \\r\n\
     \\ENQ\EOT]\STX\ACK\ENQ\DC2\EOT\225\DC4\EOT\n\
     \\n\
@@ -59554,8 +59165,6 @@ packedFileDescriptor
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT^\STX\NUL\EOT\DC2\ACK\241\DC4\EOT\235\DC4\NAK\n\
     \\r\n\
     \\ENQ\EOT^\STX\NUL\ENQ\DC2\EOT\241\DC4\EOT\n\
     \\n\
@@ -59569,8 +59178,6 @@ packedFileDescriptor
     \\ACK\EOT^\STX\NUL\b\ACK\DC2\EOT\241\DC4\ESC-\n\
     \\f\n\
     \\EOT\EOT^\STX\SOH\DC2\EOT\242\DC4\EOT\SUB\n\
-    \\SI\n\
-    \\ENQ\EOT^\STX\SOH\EOT\DC2\ACK\242\DC4\EOT\241\DC4/\n\
     \\r\n\
     \\ENQ\EOT^\STX\SOH\ENQ\DC2\EOT\242\DC4\EOT\n\
     \\n\
@@ -59580,8 +59187,6 @@ packedFileDescriptor
     \\ENQ\EOT^\STX\SOH\ETX\DC2\EOT\242\DC4\CAN\EM\n\
     \\f\n\
     \\EOT\EOT^\STX\STX\DC2\EOT\244\DC4\EOT/\n\
-    \\SI\n\
-    \\ENQ\EOT^\STX\STX\EOT\DC2\ACK\244\DC4\EOT\242\DC4\SUB\n\
     \\r\n\
     \\ENQ\EOT^\STX\STX\ENQ\DC2\EOT\244\DC4\EOT\n\
     \\n\
@@ -59595,8 +59200,6 @@ packedFileDescriptor
     \\ACK\EOT^\STX\STX\b\ETX\DC2\EOT\244\DC4\FS-\n\
     \\f\n\
     \\EOT\EOT^\STX\ETX\DC2\EOT\246\DC4\EOT\EM\n\
-    \\SI\n\
-    \\ENQ\EOT^\STX\ETX\EOT\DC2\ACK\246\DC4\EOT\244\DC4/\n\
     \\r\n\
     \\ENQ\EOT^\STX\ETX\ENQ\DC2\EOT\246\DC4\EOT\n\
     \\n\
@@ -59606,8 +59209,6 @@ packedFileDescriptor
     \\ENQ\EOT^\STX\ETX\ETX\DC2\EOT\246\DC4\ETB\CAN\n\
     \\f\n\
     \\EOT\EOT^\STX\EOT\DC2\EOT\247\DC4\EOT\EM\n\
-    \\SI\n\
-    \\ENQ\EOT^\STX\EOT\EOT\DC2\ACK\247\DC4\EOT\246\DC4\EM\n\
     \\r\n\
     \\ENQ\EOT^\STX\EOT\ENQ\DC2\EOT\247\DC4\EOT\n\
     \\n\
@@ -59617,8 +59218,6 @@ packedFileDescriptor
     \\ENQ\EOT^\STX\EOT\ETX\DC2\EOT\247\DC4\ETB\CAN\n\
     \\f\n\
     \\EOT\EOT^\STX\ENQ\DC2\EOT\249\DC4\EOT\ETB\n\
-    \\SI\n\
-    \\ENQ\EOT^\STX\ENQ\EOT\DC2\ACK\249\DC4\EOT\247\DC4\EM\n\
     \\r\n\
     \\ENQ\EOT^\STX\ENQ\ENQ\DC2\EOT\249\DC4\EOT\t\n\
     \\r\n\
@@ -59628,8 +59227,6 @@ packedFileDescriptor
     \\ENQ\EOT^\STX\ENQ\ETX\DC2\EOT\249\DC4\NAK\SYN\n\
     \\f\n\
     \\EOT\EOT^\STX\ACK\DC2\EOT\251\DC4\EOT#\n\
-    \\SI\n\
-    \\ENQ\EOT^\STX\ACK\EOT\DC2\ACK\251\DC4\EOT\249\DC4\ETB\n\
     \\r\n\
     \\ENQ\EOT^\STX\ACK\ACK\DC2\EOT\251\DC4\EOT\DC1\n\
     \\r\n\
@@ -59638,8 +59235,6 @@ packedFileDescriptor
     \\ENQ\EOT^\STX\ACK\ETX\DC2\EOT\251\DC4!\"\n\
     \\f\n\
     \\EOT\EOT^\STX\a\DC2\EOT\252\DC4\EOT#\n\
-    \\SI\n\
-    \\ENQ\EOT^\STX\a\EOT\DC2\ACK\252\DC4\EOT\251\DC4#\n\
     \\r\n\
     \\ENQ\EOT^\STX\a\ACK\DC2\EOT\252\DC4\EOT\DC1\n\
     \\r\n\
@@ -59656,8 +59251,6 @@ packedFileDescriptor
     \unannounced channels are included. Unannounced channels are both private\n\
     \channels, and public channels that are not yet announced to the network.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT_\STX\NUL\EOT\DC2\ACK\133\NAK\EOT\255\DC4\GS\n\
     \\r\n\
     \\ENQ\EOT_\STX\NUL\ENQ\DC2\EOT\133\NAK\EOT\b\n\
     \\r\n\
@@ -59734,8 +59327,6 @@ packedFileDescriptor
     \Map of node pubkey to betweenness centrality of the node. Normalized\n\
     \values are in the [0,1] closed interval.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTb\STX\NUL\EOT\DC2\ACK\163\NAK\EOT\155\NAK\GS\n\
     \\r\n\
     \\ENQ\EOTb\STX\NUL\ACK\DC2\EOT\163\NAK\EOT\FS\n\
     \\r\n\
@@ -59749,8 +59340,6 @@ packedFileDescriptor
     \&\n\
     \\EOT\EOTc\STX\NUL\DC2\EOT\168\NAK\EOT\NAK\SUB\CAN Arbitrary float value.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTc\STX\NUL\EOT\DC2\ACK\168\NAK\EOT\166\NAK\NAK\n\
     \\r\n\
     \\ENQ\EOTc\STX\NUL\ENQ\DC2\EOT\168\NAK\EOT\n\
     \\n\
@@ -59761,8 +59350,6 @@ packedFileDescriptor
     \8\n\
     \\EOT\EOTc\STX\SOH\DC2\EOT\171\NAK\EOT \SUB* The value normalized to [0,1] or [-1,1].\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTc\STX\SOH\EOT\DC2\ACK\171\NAK\EOT\168\NAK\NAK\n\
     \\r\n\
     \\ENQ\EOTc\STX\SOH\ENQ\DC2\EOT\171\NAK\EOT\n\
     \\n\
@@ -59780,8 +59367,6 @@ packedFileDescriptor
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTd\STX\NUL\EOT\DC2\ACK\180\NAK\EOT\174\NAK\EM\n\
     \\r\n\
     \\ENQ\EOTd\STX\NUL\ENQ\DC2\EOT\180\NAK\EOT\n\
     \\n\
@@ -59803,8 +59388,6 @@ packedFileDescriptor
     \\ETX\EOTf\SOH\DC2\EOT\185\NAK\b\DC3\n\
     \\f\n\
     \\EOT\EOTf\STX\NUL\DC2\EOT\186\NAK\EOT\RS\n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\NUL\EOT\DC2\ACK\186\NAK\EOT\185\NAK\NAK\n\
     \\r\n\
     \\ENQ\EOTf\STX\NUL\ENQ\DC2\EOT\186\NAK\EOT\n\
     \\n\
@@ -59814,8 +59397,6 @@ packedFileDescriptor
     \\ENQ\EOTf\STX\NUL\ETX\DC2\EOT\186\NAK\FS\GS\n\
     \\f\n\
     \\EOT\EOTf\STX\SOH\DC2\EOT\187\NAK\EOT\RS\n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\SOH\EOT\DC2\ACK\187\NAK\EOT\186\NAK\RS\n\
     \\r\n\
     \\ENQ\EOTf\STX\SOH\ENQ\DC2\EOT\187\NAK\EOT\n\
     \\n\
@@ -59825,8 +59406,6 @@ packedFileDescriptor
     \\ENQ\EOTf\STX\SOH\ETX\DC2\EOT\187\NAK\FS\GS\n\
     \\f\n\
     \\EOT\EOTf\STX\STX\DC2\EOT\188\NAK\EOT\RS\n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\STX\EOT\DC2\ACK\188\NAK\EOT\187\NAK\RS\n\
     \\r\n\
     \\ENQ\EOTf\STX\STX\ENQ\DC2\EOT\188\NAK\EOT\n\
     \\n\
@@ -59836,8 +59415,6 @@ packedFileDescriptor
     \\ENQ\EOTf\STX\STX\ETX\DC2\EOT\188\NAK\FS\GS\n\
     \\f\n\
     \\EOT\EOTf\STX\ETX\DC2\EOT\190\NAK\EOT\EM\n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\ETX\EOT\DC2\ACK\190\NAK\EOT\188\NAK\RS\n\
     \\r\n\
     \\ENQ\EOTf\STX\ETX\ENQ\DC2\EOT\190\NAK\EOT\n\
     \\n\
@@ -59847,8 +59424,6 @@ packedFileDescriptor
     \\ENQ\EOTf\STX\ETX\ETX\DC2\EOT\190\NAK\ETB\CAN\n\
     \\f\n\
     \\EOT\EOTf\STX\EOT\DC2\EOT\191\NAK\EOT\FS\n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\EOT\EOT\DC2\ACK\191\NAK\EOT\190\NAK\EM\n\
     \\r\n\
     \\ENQ\EOTf\STX\EOT\ENQ\DC2\EOT\191\NAK\EOT\n\
     \\n\
@@ -59858,8 +59433,6 @@ packedFileDescriptor
     \\ENQ\EOTf\STX\EOT\ETX\DC2\EOT\191\NAK\SUB\ESC\n\
     \\f\n\
     \\EOT\EOTf\STX\ENQ\DC2\EOT\193\NAK\EOT%\n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\ENQ\EOT\DC2\ACK\193\NAK\EOT\191\NAK\FS\n\
     \\r\n\
     \\ENQ\EOTf\STX\ENQ\ENQ\DC2\EOT\193\NAK\EOT\t\n\
     \\r\n\
@@ -59869,8 +59442,6 @@ packedFileDescriptor
     \\ENQ\EOTf\STX\ENQ\ETX\DC2\EOT\193\NAK#$\n\
     \\f\n\
     \\EOT\EOTf\STX\ACK\DC2\EOT\195\NAK\EOT \n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\ACK\EOT\DC2\ACK\195\NAK\EOT\193\NAK%\n\
     \\r\n\
     \\ENQ\EOTf\STX\ACK\ENQ\DC2\EOT\195\NAK\EOT\n\
     \\n\
@@ -59880,8 +59451,6 @@ packedFileDescriptor
     \\ENQ\EOTf\STX\ACK\ETX\DC2\EOT\195\NAK\RS\US\n\
     \\f\n\
     \\EOT\EOTf\STX\a\DC2\EOT\196\NAK\EOT\US\n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\a\EOT\DC2\ACK\196\NAK\EOT\195\NAK \n\
     \\r\n\
     \\ENQ\EOTf\STX\a\ENQ\DC2\EOT\196\NAK\EOT\t\n\
     \\r\n\
@@ -59891,8 +59460,6 @@ packedFileDescriptor
     \\ENQ\EOTf\STX\a\ETX\DC2\EOT\196\NAK\GS\RS\n\
     \\f\n\
     \\EOT\EOTf\STX\b\DC2\EOT\197\NAK\EOT\US\n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\b\EOT\DC2\ACK\197\NAK\EOT\196\NAK\US\n\
     \\r\n\
     \\ENQ\EOTf\STX\b\ENQ\DC2\EOT\197\NAK\EOT\t\n\
     \\r\n\
@@ -59902,8 +59469,6 @@ packedFileDescriptor
     \\ENQ\EOTf\STX\b\ETX\DC2\EOT\197\NAK\GS\RS\n\
     \\f\n\
     \\EOT\EOTf\STX\t\DC2\EOT\198\NAK\EOT'\n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\t\EOT\DC2\ACK\198\NAK\EOT\197\NAK\US\n\
     \\r\n\
     \\ENQ\EOTf\STX\t\ENQ\DC2\EOT\198\NAK\EOT\t\n\
     \\r\n\
@@ -59915,9 +59480,6 @@ packedFileDescriptor
     \\EOT\EOTf\STX\n\
     \\DC2\EOT\201\NAK\EOT!\SUB( The number of edges marked as zombies.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTf\STX\n\
-    \\EOT\DC2\ACK\201\NAK\EOT\198\NAK'\n\
     \\r\n\
     \\ENQ\EOTf\STX\n\
     \\ENQ\DC2\EOT\201\NAK\EOT\n\
@@ -59996,8 +59558,6 @@ packedFileDescriptor
     \\ACK\EOTk\STX\NUL\b\ETX\DC2\EOT\223\NAK#4\n\
     \\f\n\
     \\EOT\EOTk\STX\SOH\DC2\EOT\225\NAK\EOT\FS\n\
-    \\SI\n\
-    \\ENQ\EOTk\STX\SOH\EOT\DC2\ACK\225\NAK\EOT\223\NAK6\n\
     \\r\n\
     \\ENQ\EOTk\STX\SOH\ENQ\DC2\EOT\225\NAK\EOT\n\
     \\n\
@@ -60009,8 +59569,6 @@ packedFileDescriptor
     \\EOT\EOTk\STX\STX\DC2\EOT\230\NAK\EOT2\SUB\ESC\n\
     \Deprecated, use features.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTk\STX\STX\EOT\DC2\ACK\230\NAK\EOT\225\NAK\FS\n\
     \\r\n\
     \\ENQ\EOTk\STX\STX\ENQ\DC2\EOT\230\NAK\EOT\t\n\
     \\r\n\
@@ -60024,8 +59582,6 @@ packedFileDescriptor
     \\ACK\EOTk\STX\STX\b\ETX\DC2\EOT\230\NAK\US0\n\
     \\f\n\
     \\EOT\EOTk\STX\ETX\DC2\EOT\232\NAK\EOT\NAK\n\
-    \\SI\n\
-    \\ENQ\EOTk\STX\ETX\EOT\DC2\ACK\232\NAK\EOT\230\NAK2\n\
     \\r\n\
     \\ENQ\EOTk\STX\ETX\ENQ\DC2\EOT\232\NAK\EOT\n\
     \\n\
@@ -60035,8 +59591,6 @@ packedFileDescriptor
     \\ENQ\EOTk\STX\ETX\ETX\DC2\EOT\232\NAK\DC3\DC4\n\
     \\f\n\
     \\EOT\EOTk\STX\EOT\DC2\EOT\233\NAK\EOT\NAK\n\
-    \\SI\n\
-    \\ENQ\EOTk\STX\EOT\EOT\DC2\ACK\233\NAK\EOT\232\NAK\NAK\n\
     \\r\n\
     \\ENQ\EOTk\STX\EOT\ENQ\DC2\EOT\233\NAK\EOT\n\
     \\n\
@@ -60059,8 +59613,6 @@ packedFileDescriptor
     \Features that the node has advertised in the init message, node\n\
     \announcements and invoices.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTk\STX\ACK\EOT\DC2\ACK\240\NAK\EOT\234\NAK,\n\
     \\r\n\
     \\ENQ\EOTk\STX\ACK\ACK\DC2\EOT\240\NAK\EOT\CAN\n\
     \\r\n\
@@ -60077,8 +59629,6 @@ packedFileDescriptor
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTl\STX\NUL\EOT\DC2\ACK\248\NAK\EOT\242\NAK\ESC\n\
     \\r\n\
     \\ENQ\EOTl\STX\NUL\ENQ\DC2\EOT\248\NAK\EOT\n\
     \\n\
@@ -60092,8 +59642,6 @@ packedFileDescriptor
     \\ACK\EOTl\STX\NUL\b\ACK\DC2\EOT\248\NAK\CAN*\n\
     \\f\n\
     \\EOT\EOTl\STX\SOH\DC2\EOT\250\NAK\EOT \n\
-    \\SI\n\
-    \\ENQ\EOTl\STX\SOH\EOT\DC2\ACK\250\NAK\EOT\248\NAK,\n\
     \\r\n\
     \\ENQ\EOTl\STX\SOH\ACK\DC2\EOT\250\NAK\EOT\DLE\n\
     \\r\n\
@@ -60102,8 +59650,6 @@ packedFileDescriptor
     \\ENQ\EOTl\STX\SOH\ETX\DC2\EOT\250\NAK\RS\US\n\
     \\f\n\
     \\EOT\EOTl\STX\STX\DC2\EOT\252\NAK\EOT\ETB\n\
-    \\SI\n\
-    \\ENQ\EOTl\STX\STX\EOT\DC2\ACK\252\NAK\EOT\250\NAK \n\
     \\r\n\
     \\ENQ\EOTl\STX\STX\ENQ\DC2\EOT\252\NAK\EOT\t\n\
     \\r\n\
@@ -60113,8 +59659,6 @@ packedFileDescriptor
     \\ENQ\EOTl\STX\STX\ETX\DC2\EOT\252\NAK\NAK\SYN\n\
     \\f\n\
     \\EOT\EOTl\STX\ETX\DC2\EOT\254\NAK\EOT%\n\
-    \\SI\n\
-    \\ENQ\EOTl\STX\ETX\EOT\DC2\ACK\254\NAK\EOT\252\NAK\ETB\n\
     \\r\n\
     \\ENQ\EOTl\STX\ETX\ACK\DC2\EOT\254\NAK\EOT\DC1\n\
     \\r\n\
@@ -60123,8 +59667,6 @@ packedFileDescriptor
     \\ENQ\EOTl\STX\ETX\ETX\DC2\EOT\254\NAK#$\n\
     \\f\n\
     \\EOT\EOTl\STX\EOT\DC2\EOT\128\SYN\EOT \n\
-    \\SI\n\
-    \\ENQ\EOTl\STX\EOT\EOT\DC2\ACK\128\SYN\EOT\254\NAK%\n\
     \\r\n\
     \\ENQ\EOTl\STX\EOT\ENQ\DC2\EOT\128\SYN\EOT\n\
     \\n\
@@ -60134,8 +59676,6 @@ packedFileDescriptor
     \\ENQ\EOTl\STX\EOT\ETX\DC2\EOT\128\SYN\RS\US\n\
     \\f\n\
     \\EOT\EOTl\STX\ENQ\DC2\EOT\129\SYN\EOT\US\n\
-    \\SI\n\
-    \\ENQ\EOTl\STX\ENQ\EOT\DC2\ACK\129\SYN\EOT\128\SYN \n\
     \\r\n\
     \\ENQ\EOTl\STX\ENQ\ENQ\DC2\EOT\129\SYN\EOT\n\
     \\n\
@@ -60153,8 +59693,6 @@ packedFileDescriptor
     \height, the next 3 the index within the block, and the last 2 bytes are the\n\
     \output index for the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTm\STX\NUL\EOT\DC2\ACK\137\SYN\EOT\131\SYN\GS\n\
     \\r\n\
     \\ENQ\EOTm\STX\NUL\ENQ\DC2\EOT\137\SYN\EOT\n\
     \\n\
@@ -60168,8 +59706,6 @@ packedFileDescriptor
     \\ACK\EOTm\STX\NUL\b\ACK\DC2\EOT\137\SYN\CAN*\n\
     \\f\n\
     \\EOT\EOTm\STX\SOH\DC2\EOT\138\SYN\EOT\ETB\n\
-    \\SI\n\
-    \\ENQ\EOTm\STX\SOH\EOT\DC2\ACK\138\SYN\EOT\137\SYN,\n\
     \\r\n\
     \\ENQ\EOTm\STX\SOH\ENQ\DC2\EOT\138\SYN\EOT\t\n\
     \\r\n\
@@ -60179,8 +59715,6 @@ packedFileDescriptor
     \\ENQ\EOTm\STX\SOH\ETX\DC2\EOT\138\SYN\NAK\SYN\n\
     \\f\n\
     \\EOT\EOTm\STX\STX\DC2\EOT\139\SYN\EOT\GS\n\
-    \\SI\n\
-    \\ENQ\EOTm\STX\STX\EOT\DC2\ACK\139\SYN\EOT\138\SYN\ETB\n\
     \\r\n\
     \\ENQ\EOTm\STX\STX\ENQ\DC2\EOT\139\SYN\EOT\n\
     \\n\
@@ -60190,8 +59724,6 @@ packedFileDescriptor
     \\ENQ\EOTm\STX\STX\ETX\DC2\EOT\139\SYN\ESC\FS\n\
     \\f\n\
     \\EOT\EOTm\STX\ETX\DC2\EOT\140\SYN\EOT \n\
-    \\SI\n\
-    \\ENQ\EOTm\STX\ETX\EOT\DC2\ACK\140\SYN\EOT\139\SYN\GS\n\
     \\r\n\
     \\ENQ\EOTm\STX\ETX\ACK\DC2\EOT\140\SYN\EOT\DLE\n\
     \\r\n\
@@ -60205,8 +59737,6 @@ packedFileDescriptor
     \G\n\
     \\EOT\EOTn\STX\NUL\DC2\EOT\145\SYN\EOT\ETB\SUB9 The public key of the node at the start of the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTn\STX\NUL\EOT\DC2\ACK\145\SYN\EOT\143\SYN\DC1\n\
     \\r\n\
     \\ENQ\EOTn\STX\NUL\ENQ\DC2\EOT\145\SYN\EOT\n\
     \\n\
@@ -60217,8 +59747,6 @@ packedFileDescriptor
     \5\n\
     \\EOT\EOTn\STX\SOH\DC2\EOT\148\SYN\EOT,\SUB' The unique identifier of the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTn\STX\SOH\EOT\DC2\ACK\148\SYN\EOT\145\SYN\ETB\n\
     \\r\n\
     \\ENQ\EOTn\STX\SOH\ENQ\DC2\EOT\148\SYN\EOT\n\
     \\n\
@@ -60233,8 +59761,6 @@ packedFileDescriptor
     \I\n\
     \\EOT\EOTn\STX\STX\DC2\EOT\151\SYN\EOT\GS\SUB; The base fee of the channel denominated in millisatoshis.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTn\STX\STX\EOT\DC2\ACK\151\SYN\EOT\148\SYN,\n\
     \\r\n\
     \\ENQ\EOTn\STX\STX\ENQ\DC2\EOT\151\SYN\EOT\n\
     \\n\
@@ -60247,8 +59773,6 @@ packedFileDescriptor
     \The fee rate of the channel for sending one satoshi across it denominated in\n\
     \millionths of a satoshi.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTn\STX\ETX\EOT\DC2\ACK\157\SYN\EOT\151\SYN\GS\n\
     \\r\n\
     \\ENQ\EOTn\STX\ETX\ENQ\DC2\EOT\157\SYN\EOT\n\
     \\n\
@@ -60259,8 +59783,6 @@ packedFileDescriptor
     \3\n\
     \\EOT\EOTn\STX\EOT\DC2\EOT\160\SYN\EOT!\SUB% The time-lock delta of the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTn\STX\EOT\EOT\DC2\ACK\160\SYN\EOT\157\SYN+\n\
     \\r\n\
     \\ENQ\EOTn\STX\EOT\ENQ\DC2\EOT\160\SYN\EOT\n\
     \\n\
@@ -60296,8 +59818,6 @@ packedFileDescriptor
     \field of the encoded payment request if the description_hash field is not\n\
     \being used.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\NUL\EOT\DC2\ACK\178\SYN\EOT\171\SYN\DC1\n\
     \\r\n\
     \\ENQ\EOTp\STX\NUL\ENQ\DC2\EOT\178\SYN\EOT\n\
     \\n\
@@ -60319,8 +59839,6 @@ packedFileDescriptor
     \HTLC payable to this preimage. When using REST, this field must be encoded\n\
     \as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\SOH\EOT\DC2\ACK\187\SYN\EOT\180\SYN\SI\n\
     \\r\n\
     \\ENQ\EOTp\STX\SOH\ENQ\DC2\EOT\187\SYN\EOT\t\n\
     \\r\n\
@@ -60333,8 +59851,6 @@ packedFileDescriptor
     \The hash of the preimage. When using REST, this field must be encoded as\n\
     \base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\STX\EOT\DC2\ACK\193\SYN\EOT\187\SYN\EM\n\
     \\r\n\
     \\ENQ\EOTp\STX\STX\ENQ\DC2\EOT\193\SYN\EOT\t\n\
     \\r\n\
@@ -60348,8 +59864,6 @@ packedFileDescriptor
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\ETX\EOT\DC2\ACK\200\SYN\EOT\193\SYN\NAK\n\
     \\r\n\
     \\ENQ\EOTp\STX\ETX\ENQ\DC2\EOT\200\SYN\EOT\t\n\
     \\r\n\
@@ -60363,8 +59877,6 @@ packedFileDescriptor
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\EOT\EOT\DC2\ACK\207\SYN\EOT\200\SYN\DC4\n\
     \\r\n\
     \\ENQ\EOTp\STX\EOT\ENQ\DC2\EOT\207\SYN\EOT\t\n\
     \\r\n\
@@ -60375,8 +59887,6 @@ packedFileDescriptor
     \7\n\
     \\EOT\EOTp\STX\ENQ\DC2\EOT\210\SYN\EOT)\SUB) Whether this invoice has been fulfilled\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\ENQ\EOT\DC2\ACK\210\SYN\EOT\207\SYN\SUB\n\
     \\r\n\
     \\ENQ\EOTp\STX\ENQ\ENQ\DC2\EOT\210\SYN\EOT\b\n\
     \\r\n\
@@ -60390,8 +59900,6 @@ packedFileDescriptor
     \-\n\
     \\EOT\EOTp\STX\ACK\DC2\EOT\213\SYN\EOT\FS\SUB\US When this invoice was created\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\ACK\EOT\DC2\ACK\213\SYN\EOT\210\SYN)\n\
     \\r\n\
     \\ENQ\EOTp\STX\ACK\ENQ\DC2\EOT\213\SYN\EOT\t\n\
     \\r\n\
@@ -60402,8 +59910,6 @@ packedFileDescriptor
     \-\n\
     \\EOT\EOTp\STX\a\DC2\EOT\216\SYN\EOT\SUB\SUB\US When this invoice was settled\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\a\EOT\DC2\ACK\216\SYN\EOT\213\SYN\FS\n\
     \\r\n\
     \\ENQ\EOTp\STX\a\ENQ\DC2\EOT\216\SYN\EOT\t\n\
     \\r\n\
@@ -60417,8 +59923,6 @@ packedFileDescriptor
     \details of the invoice, the sender has all the data necessary to send a\n\
     \payment to the recipient.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\b\EOT\DC2\ACK\223\SYN\EOT\216\SYN\SUB\n\
     \\r\n\
     \\ENQ\EOTp\STX\b\ENQ\DC2\EOT\223\SYN\EOT\n\
     \\n\
@@ -60433,8 +59937,6 @@ packedFileDescriptor
     \of an encoded payment request. When using REST, this field must be encoded\n\
     \as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\t\EOT\DC2\ACK\231\SYN\EOT\223\SYN\US\n\
     \\r\n\
     \\ENQ\EOTp\STX\t\ENQ\DC2\EOT\231\SYN\EOT\t\n\
     \\r\n\
@@ -60446,9 +59948,6 @@ packedFileDescriptor
     \\EOT\EOTp\STX\n\
     \\DC2\EOT\234\SYN\EOT\SYN\SUBC Payment request expiry time in seconds. Default is 3600 (1 hour).\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\n\
-    \\EOT\DC2\ACK\234\SYN\EOT\231\SYN \n\
     \\r\n\
     \\ENQ\EOTp\STX\n\
     \\ENQ\DC2\EOT\234\SYN\EOT\t\n\
@@ -60462,8 +59961,6 @@ packedFileDescriptor
     \*\n\
     \\EOT\EOTp\STX\v\DC2\EOT\237\SYN\EOT\RS\SUB\FS Fallback on-chain address.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\v\EOT\DC2\ACK\237\SYN\EOT\234\SYN\SYN\n\
     \\r\n\
     \\ENQ\EOTp\STX\v\ENQ\DC2\EOT\237\SYN\EOT\n\
     \\n\
@@ -60474,8 +59971,6 @@ packedFileDescriptor
     \U\n\
     \\EOT\EOTp\STX\f\DC2\EOT\240\SYN\EOT\FS\SUBG Delta to use for the time-lock of the CLTV extended to the final hop.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\f\EOT\DC2\ACK\240\SYN\EOT\237\SYN\RS\n\
     \\r\n\
     \\ENQ\EOTp\STX\f\ENQ\DC2\EOT\240\SYN\EOT\n\
     \\n\
@@ -60499,8 +59994,6 @@ packedFileDescriptor
     \W\n\
     \\EOT\EOTp\STX\SO\DC2\EOT\249\SYN\EOT\SYN\SUBI Whether this invoice should include routing hints for private channels.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\SO\EOT\DC2\ACK\249\SYN\EOT\246\SYN(\n\
     \\r\n\
     \\ENQ\EOTp\STX\SO\ENQ\DC2\EOT\249\SYN\EOT\b\n\
     \\r\n\
@@ -60514,8 +60007,6 @@ packedFileDescriptor
     \SubscribeInvoices call can use this to instantly get notified of all added\n\
     \invoices with an add_index greater than this one.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\SI\EOT\DC2\ACK\129\ETB\EOT\249\SYN\SYN\n\
     \\r\n\
     \\ENQ\EOTp\STX\SI\ENQ\DC2\EOT\129\ETB\EOT\n\
     \\n\
@@ -60530,8 +60021,6 @@ packedFileDescriptor
     \SubscribeInvoices call can use this to instantly get notified of all\n\
     \settled invoices with an settle_index greater than this one.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\DLE\EOT\DC2\ACK\137\ETB\EOT\129\ETB\SUB\n\
     \\r\n\
     \\ENQ\EOTp\STX\DLE\ENQ\DC2\EOT\137\ETB\EOT\n\
     \\n\
@@ -60542,8 +60031,6 @@ packedFileDescriptor
     \>\n\
     \\EOT\EOTp\STX\DC1\DC2\EOT\140\ETB\EOT,\SUB0 Deprecated, use amt_paid_sat or amt_paid_msat.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\DC1\EOT\DC2\ACK\140\ETB\EOT\137\ETB\GS\n\
     \\r\n\
     \\ENQ\EOTp\STX\DC1\ENQ\DC2\EOT\140\ETB\EOT\t\n\
     \\r\n\
@@ -60564,8 +60051,6 @@ packedFileDescriptor
     \MORE that was specified in the original invoice. So we'll record that here\n\
     \as well.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\DC2\EOT\DC2\ACK\150\ETB\EOT\140\ETB,\n\
     \\r\n\
     \\ENQ\EOTp\STX\DC2\ENQ\DC2\EOT\150\ETB\EOT\t\n\
     \\r\n\
@@ -60582,8 +60067,6 @@ packedFileDescriptor
     \paid MORE that was specified in the original invoice. So we'll record that\n\
     \here as well.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\DC3\EOT\DC2\ACK\160\ETB\EOT\150\ETB\FS\n\
     \\r\n\
     \\ENQ\EOTp\STX\DC3\ENQ\DC2\EOT\160\ETB\EOT\t\n\
     \\r\n\
@@ -60623,8 +60106,6 @@ packedFileDescriptor
     \\EOT\EOTp\STX\DC4\DC2\EOT\172\ETB\EOT\FS\SUB\RS\n\
     \The state the invoice is in.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\DC4\EOT\DC2\ACK\172\ETB\EOT\167\ETB\ENQ\n\
     \\r\n\
     \\ENQ\EOTp\STX\DC4\ACK\DC2\EOT\172\ETB\EOT\DLE\n\
     \\r\n\
@@ -60645,8 +60126,6 @@ packedFileDescriptor
     \;\n\
     \\EOT\EOTp\STX\SYN\DC2\EOT\178\ETB\EOT'\SUB- List of features advertised on the invoice.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\SYN\EOT\DC2\ACK\178\ETB\EOT\175\ETB$\n\
     \\r\n\
     \\ENQ\EOTp\STX\SYN\ACK\DC2\EOT\178\ETB\EOT\CAN\n\
     \\r\n\
@@ -60658,8 +60137,6 @@ packedFileDescriptor
     \Indicates if this invoice was a spontaneous payment that arrived via keysend\n\
     \[EXPERIMENTAL].\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\ETB\EOT\DC2\ACK\184\ETB\EOT\178\ETB'\n\
     \\r\n\
     \\ENQ\EOTp\STX\ETB\ENQ\DC2\EOT\184\ETB\EOT\b\n\
     \\r\n\
@@ -60672,8 +60149,6 @@ packedFileDescriptor
     \payments, and also for newer invoies that always require the MPP paylaod\n\
     \for added end-to-end security.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\CAN\EOT\DC2\ACK\191\ETB\EOT\184\ETB\EM\n\
     \\r\n\
     \\ENQ\EOTp\STX\CAN\ENQ\DC2\EOT\191\ETB\EOT\t\n\
     \\r\n\
@@ -60685,8 +60160,6 @@ packedFileDescriptor
     \\EOT\EOTp\STX\EM\DC2\EOT\196\ETB\EOT\NAK\SUB0\n\
     \Signals whether or not this is an AMP invoice.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTp\STX\EM\EOT\DC2\ACK\196\ETB\EOT\191\ETB\FS\n\
     \\r\n\
     \\ENQ\EOTp\STX\EM\ENQ\DC2\EOT\196\ETB\EOT\b\n\
     \\r\n\
@@ -60723,8 +60196,6 @@ packedFileDescriptor
     \B\n\
     \\EOT\EOTq\STX\NUL\DC2\EOT\208\ETB\EOT,\SUB4 Short channel id over which the htlc was received.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\NUL\EOT\DC2\ACK\208\ETB\EOT\206\ETB\NAK\n\
     \\r\n\
     \\ENQ\EOTq\STX\NUL\ENQ\DC2\EOT\208\ETB\EOT\n\
     \\n\
@@ -60739,8 +60210,6 @@ packedFileDescriptor
     \:\n\
     \\EOT\EOTq\STX\SOH\DC2\EOT\211\ETB\EOT\SUB\SUB, Index identifying the htlc on the channel.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\SOH\EOT\DC2\ACK\211\ETB\EOT\208\ETB,\n\
     \\r\n\
     \\ENQ\EOTq\STX\SOH\ENQ\DC2\EOT\211\ETB\EOT\n\
     \\n\
@@ -60751,8 +60220,6 @@ packedFileDescriptor
     \/\n\
     \\EOT\EOTq\STX\STX\DC2\EOT\214\ETB\EOT\CAN\SUB! The amount of the htlc in msat.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\STX\EOT\DC2\ACK\214\ETB\EOT\211\ETB\SUB\n\
     \\r\n\
     \\ENQ\EOTq\STX\STX\ENQ\DC2\EOT\214\ETB\EOT\n\
     \\n\
@@ -60763,8 +60230,6 @@ packedFileDescriptor
     \=\n\
     \\EOT\EOTq\STX\ETX\DC2\EOT\217\ETB\EOT\FS\SUB/ Block height at which this htlc was accepted.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\ETX\EOT\DC2\ACK\217\ETB\EOT\214\ETB\CAN\n\
     \\r\n\
     \\ENQ\EOTq\STX\ETX\ENQ\DC2\EOT\217\ETB\EOT\t\n\
     \\r\n\
@@ -60775,8 +60240,6 @@ packedFileDescriptor
     \5\n\
     \\EOT\EOTq\STX\EOT\DC2\EOT\220\ETB\EOT\SUB\SUB' Time at which this htlc was accepted.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\EOT\EOT\DC2\ACK\220\ETB\EOT\217\ETB\FS\n\
     \\r\n\
     \\ENQ\EOTq\STX\EOT\ENQ\DC2\EOT\220\ETB\EOT\t\n\
     \\r\n\
@@ -60787,8 +60250,6 @@ packedFileDescriptor
     \@\n\
     \\EOT\EOTq\STX\ENQ\DC2\EOT\223\ETB\EOT\ESC\SUB2 Time at which this htlc was settled or canceled.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\ENQ\EOT\DC2\ACK\223\ETB\EOT\220\ETB\SUB\n\
     \\r\n\
     \\ENQ\EOTq\STX\ENQ\ENQ\DC2\EOT\223\ETB\EOT\t\n\
     \\r\n\
@@ -60799,8 +60260,6 @@ packedFileDescriptor
     \8\n\
     \\EOT\EOTq\STX\ACK\DC2\EOT\226\ETB\EOT\FS\SUB* Block height at which this htlc expires.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\ACK\EOT\DC2\ACK\226\ETB\EOT\223\ETB\ESC\n\
     \\r\n\
     \\ENQ\EOTq\STX\ACK\ENQ\DC2\EOT\226\ETB\EOT\t\n\
     \\r\n\
@@ -60811,8 +60270,6 @@ packedFileDescriptor
     \-\n\
     \\EOT\EOTq\STX\a\DC2\EOT\229\ETB\EOT\US\SUB\US Current state the htlc is in.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\a\EOT\DC2\ACK\229\ETB\EOT\226\ETB\FS\n\
     \\r\n\
     \\ENQ\EOTq\STX\a\ACK\DC2\EOT\229\ETB\EOT\DC4\n\
     \\r\n\
@@ -60822,8 +60279,6 @@ packedFileDescriptor
     \#\n\
     \\EOT\EOTq\STX\b\DC2\EOT\232\ETB\EOT*\SUB\NAK Custom tlv records.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\b\EOT\DC2\ACK\232\ETB\EOT\229\ETB\US\n\
     \\r\n\
     \\ENQ\EOTq\STX\b\ACK\DC2\EOT\232\ETB\EOT\SYN\n\
     \\r\n\
@@ -60833,8 +60288,6 @@ packedFileDescriptor
     \<\n\
     \\EOT\EOTq\STX\t\DC2\EOT\235\ETB\EOT#\SUB. The total amount of the mpp payment in msat.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\t\EOT\DC2\ACK\235\ETB\EOT\232\ETB*\n\
     \\r\n\
     \\ENQ\EOTq\STX\t\ENQ\DC2\EOT\235\ETB\EOT\n\
     \\n\
@@ -60846,9 +60299,6 @@ packedFileDescriptor
     \\EOT\EOTq\STX\n\
     \\DC2\EOT\238\ETB\EOT\DC1\SUBG Details relevant to AMP HTLCs, only populated if this is an AMP HTLC.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTq\STX\n\
-    \\EOT\DC2\ACK\238\ETB\EOT\235\ETB#\n\
     \\r\n\
     \\ENQ\EOTq\STX\n\
     \\ACK\DC2\EOT\238\ETB\EOT\a\n\
@@ -60867,8 +60317,6 @@ packedFileDescriptor
     \\EOT\EOTr\STX\NUL\DC2\EOT\245\ETB\EOT\EM\SUBe An n-of-n secret share of the root seed from which child payment hashes\n\
     \ and preimages are derived.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTr\STX\NUL\EOT\DC2\ACK\245\ETB\EOT\242\ETB\r\n\
     \\r\n\
     \\ENQ\EOTr\STX\NUL\ENQ\DC2\EOT\245\ETB\EOT\t\n\
     \\r\n\
@@ -60879,8 +60327,6 @@ packedFileDescriptor
     \I\n\
     \\EOT\EOTr\STX\SOH\DC2\EOT\248\ETB\EOT\NAK\SUB; An identifier for the HTLC set that this HTLC belongs to.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTr\STX\SOH\EOT\DC2\ACK\248\ETB\EOT\245\ETB\EM\n\
     \\r\n\
     \\ENQ\EOTr\STX\SOH\ENQ\DC2\EOT\248\ETB\EOT\t\n\
     \\r\n\
@@ -60892,8 +60338,6 @@ packedFileDescriptor
     \\EOT\EOTr\STX\STX\DC2\EOT\252\ETB\EOT\ESC\SUBW A nonce used to randomize the child preimage and child hash from a given\n\
     \ root_share.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTr\STX\STX\EOT\DC2\ACK\252\ETB\EOT\248\ETB\NAK\n\
     \\r\n\
     \\ENQ\EOTr\STX\STX\ENQ\DC2\EOT\252\ETB\EOT\n\
     \\n\
@@ -60904,8 +60348,6 @@ packedFileDescriptor
     \1\n\
     \\EOT\EOTr\STX\ETX\DC2\EOT\255\ETB\EOT\DC3\SUB# The payment hash of the AMP HTLC.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTr\STX\ETX\EOT\DC2\ACK\255\ETB\EOT\252\ETB\ESC\n\
     \\r\n\
     \\ENQ\EOTr\STX\ETX\ENQ\DC2\EOT\255\ETB\EOT\t\n\
     \\r\n\
@@ -60918,8 +60360,6 @@ packedFileDescriptor
     \ populated if the invoice is in InvoiceState_ACCEPTED or\n\
     \ InvoiceState_SETTLED.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTr\STX\EOT\EOT\DC2\ACK\132\CAN\EOT\255\ETB\DC3\n\
     \\r\n\
     \\ENQ\EOTr\STX\EOT\ENQ\DC2\EOT\132\CAN\EOT\t\n\
     \\r\n\
@@ -60933,8 +60373,6 @@ packedFileDescriptor
     \\ETX\EOTs\SOH\DC2\EOT\135\CAN\b\SUB\n\
     \\f\n\
     \\EOT\EOTs\STX\NUL\DC2\EOT\136\CAN\EOT\NAK\n\
-    \\SI\n\
-    \\ENQ\EOTs\STX\NUL\EOT\DC2\ACK\136\CAN\EOT\135\CAN\FS\n\
     \\r\n\
     \\ENQ\EOTs\STX\NUL\ENQ\DC2\EOT\136\CAN\EOT\t\n\
     \\r\n\
@@ -60948,8 +60386,6 @@ packedFileDescriptor
     \details of the invoice, the sender has all the data necessary to send a\n\
     \payment to the recipient.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTs\STX\SOH\EOT\DC2\ACK\143\CAN\EOT\136\CAN\NAK\n\
     \\r\n\
     \\ENQ\EOTs\STX\SOH\ENQ\DC2\EOT\143\CAN\EOT\n\
     \\n\
@@ -60964,8 +60400,6 @@ packedFileDescriptor
     \SubscribeInvoices call can use this to instantly get notified of all added\n\
     \invoices with an add_index greater than this one.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTs\STX\STX\EOT\DC2\ACK\151\CAN\EOT\143\CAN\US\n\
     \\r\n\
     \\ENQ\EOTs\STX\STX\ENQ\DC2\EOT\151\CAN\EOT\n\
     \\n\
@@ -60979,8 +60413,6 @@ packedFileDescriptor
     \in all payments for this invoice as we require it for end to end\n\
     \security.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTs\STX\ETX\EOT\DC2\ACK\158\CAN\EOT\151\CAN\SUB\n\
     \\r\n\
     \\ENQ\EOTs\STX\ETX\ENQ\DC2\EOT\158\CAN\EOT\t\n\
     \\r\n\
@@ -60999,8 +60431,6 @@ packedFileDescriptor
     \Deprecated now that the REST gateway supports base64 encoding of bytes\n\
     \fields.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTt\STX\NUL\EOT\DC2\ACK\167\CAN\EOT\160\CAN\NAK\n\
     \\r\n\
     \\ENQ\EOTt\STX\NUL\ENQ\DC2\EOT\167\CAN\EOT\n\
     \\n\
@@ -61017,8 +60447,6 @@ packedFileDescriptor
     \The payment hash of the invoice to be looked up. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTt\STX\SOH\EOT\DC2\ACK\173\CAN\EOT\167\CAN.\n\
     \\r\n\
     \\ENQ\EOTt\STX\SOH\ENQ\DC2\EOT\173\CAN\EOT\t\n\
     \\r\n\
@@ -61035,8 +60463,6 @@ packedFileDescriptor
     \If set, only invoices that are not settled and not canceled will be returned\n\
     \in the response.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTu\STX\NUL\EOT\DC2\ACK\181\CAN\EOT\176\CAN\FS\n\
     \\r\n\
     \\ENQ\EOTu\STX\NUL\ENQ\DC2\EOT\181\CAN\EOT\b\n\
     \\r\n\
@@ -61048,8 +60474,6 @@ packedFileDescriptor
     \The index of an invoice that will be used as either the start or end of a\n\
     \query to determine which invoices should be returned in the response.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTu\STX\SOH\EOT\DC2\ACK\187\CAN\EOT\181\CAN\SUB\n\
     \\r\n\
     \\ENQ\EOTu\STX\SOH\ENQ\DC2\EOT\187\CAN\EOT\n\
     \\n\
@@ -61060,8 +60484,6 @@ packedFileDescriptor
     \S\n\
     \\EOT\EOTu\STX\STX\DC2\EOT\190\CAN\EOT \SUBE The max number of invoices to return in the response to this query.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTu\STX\STX\EOT\DC2\ACK\190\CAN\EOT\187\CAN\FS\n\
     \\r\n\
     \\ENQ\EOTu\STX\STX\ENQ\DC2\EOT\190\CAN\EOT\n\
     \\n\
@@ -61074,8 +60496,6 @@ packedFileDescriptor
     \If set, the invoices returned will result from seeking backwards from the\n\
     \specified index offset. This can be used to paginate backwards.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTu\STX\ETX\EOT\DC2\ACK\196\CAN\EOT\190\CAN \n\
     \\r\n\
     \\ENQ\EOTu\STX\ETX\ENQ\DC2\EOT\196\CAN\EOT\b\n\
     \\r\n\
@@ -61104,8 +60524,6 @@ packedFileDescriptor
     \The index of the last item in the set of returned invoices. This can be used\n\
     \to seek further, pagination style.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTv\STX\SOH\EOT\DC2\ACK\209\CAN\EOT\203\CAN\"\n\
     \\r\n\
     \\ENQ\EOTv\STX\SOH\ENQ\DC2\EOT\209\CAN\EOT\n\
     \\n\
@@ -61118,8 +60536,6 @@ packedFileDescriptor
     \The index of the last item in the set of returned invoices. This can be used\n\
     \to seek backwards, pagination style.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTv\STX\STX\EOT\DC2\ACK\215\CAN\EOT\209\CAN!\n\
     \\r\n\
     \\ENQ\EOTv\STX\STX\ENQ\DC2\EOT\215\CAN\EOT\n\
     \\n\
@@ -61138,8 +60554,6 @@ packedFileDescriptor
     \value. This allows callers to catch up on any events they missed while they\n\
     \weren't connected to the streaming RPC.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTw\STX\NUL\EOT\DC2\ACK\225\CAN\EOT\218\CAN\GS\n\
     \\r\n\
     \\ENQ\EOTw\STX\NUL\ENQ\DC2\EOT\225\CAN\EOT\n\
     \\n\
@@ -61154,8 +60568,6 @@ packedFileDescriptor
     \this value. This allows callers to catch up on any events they missed while\n\
     \they weren't connected to the streaming RPC.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTw\STX\SOH\EOT\DC2\ACK\233\CAN\EOT\225\CAN\EM\n\
     \\r\n\
     \\ENQ\EOTw\STX\SOH\ENQ\DC2\EOT\233\CAN\EOT\n\
     \\n\
@@ -61224,8 +60636,6 @@ packedFileDescriptor
     \ \n\
     \\EOT\EOTx\STX\NUL\DC2\EOT\144\EM\EOT\FS\SUB\DC2 The payment hash\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\NUL\EOT\DC2\ACK\144\EM\EOT\142\EM\DC1\n\
     \\r\n\
     \\ENQ\EOTx\STX\NUL\ENQ\DC2\EOT\144\EM\EOT\n\
     \\n\
@@ -61236,8 +60646,6 @@ packedFileDescriptor
     \8\n\
     \\EOT\EOTx\STX\SOH\DC2\EOT\147\EM\EOT(\SUB* Deprecated, use value_sat or value_msat.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\SOH\EOT\DC2\ACK\147\EM\EOT\144\EM\FS\n\
     \\r\n\
     \\ENQ\EOTx\STX\SOH\ENQ\DC2\EOT\147\EM\EOT\t\n\
     \\r\n\
@@ -61252,8 +60660,6 @@ packedFileDescriptor
     \0\n\
     \\EOT\EOTx\STX\STX\DC2\EOT\150\EM\EOT0\SUB\" Deprecated, use creation_time_ns\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\STX\EOT\DC2\ACK\150\EM\EOT\147\EM(\n\
     \\r\n\
     \\ENQ\EOTx\STX\STX\ENQ\DC2\EOT\150\EM\EOT\t\n\
     \\r\n\
@@ -61276,8 +60682,6 @@ packedFileDescriptor
     \4\n\
     \\EOT\EOTx\STX\ETX\DC2\EOT\155\EM\EOT&\SUB& Deprecated, use fee_sat or fee_msat.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\ETX\EOT\DC2\ACK\155\EM\EOT\152\EM\SI\n\
     \\r\n\
     \\ENQ\EOTx\STX\ETX\ENQ\DC2\EOT\155\EM\EOT\t\n\
     \\r\n\
@@ -61292,8 +60696,6 @@ packedFileDescriptor
     \$\n\
     \\EOT\EOTx\STX\EOT\DC2\EOT\158\EM\EOT \SUB\SYN The payment preimage\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\EOT\EOT\DC2\ACK\158\EM\EOT\155\EM&\n\
     \\r\n\
     \\ENQ\EOTx\STX\EOT\ENQ\DC2\EOT\158\EM\EOT\n\
     \\n\
@@ -61304,8 +60706,6 @@ packedFileDescriptor
     \4\n\
     \\EOT\EOTx\STX\ENQ\DC2\EOT\161\EM\EOT\CAN\SUB& The value of the payment in satoshis\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\ENQ\EOT\DC2\ACK\161\EM\EOT\158\EM \n\
     \\r\n\
     \\ENQ\EOTx\STX\ENQ\ENQ\DC2\EOT\161\EM\EOT\t\n\
     \\r\n\
@@ -61316,8 +60716,6 @@ packedFileDescriptor
     \:\n\
     \\EOT\EOTx\STX\ACK\DC2\EOT\164\EM\EOT\EM\SUB, The value of the payment in milli-satoshis\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\ACK\EOT\DC2\ACK\164\EM\EOT\161\EM\CAN\n\
     \\r\n\
     \\ENQ\EOTx\STX\ACK\ENQ\DC2\EOT\164\EM\EOT\t\n\
     \\r\n\
@@ -61328,8 +60726,6 @@ packedFileDescriptor
     \=\n\
     \\EOT\EOTx\STX\a\DC2\EOT\167\EM\EOT\US\SUB/ The optional payment request being fulfilled.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\a\EOT\DC2\ACK\167\EM\EOT\164\EM\EM\n\
     \\r\n\
     \\ENQ\EOTx\STX\a\ENQ\DC2\EOT\167\EM\EOT\n\
     \\n\
@@ -61368,8 +60764,6 @@ packedFileDescriptor
     \*\n\
     \\EOT\EOTx\STX\b\DC2\EOT\177\EM\EOT\RS\SUB\FS The status of the payment.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\b\EOT\DC2\ACK\177\EM\EOT\174\EM\ENQ\n\
     \\r\n\
     \\ENQ\EOTx\STX\b\ACK\DC2\EOT\177\EM\EOT\DC1\n\
     \\r\n\
@@ -61379,8 +60773,6 @@ packedFileDescriptor
     \:\n\
     \\EOT\EOTx\STX\t\DC2\EOT\180\EM\EOT\ETB\SUB,  The fee paid for this payment in satoshis\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\t\EOT\DC2\ACK\180\EM\EOT\177\EM\RS\n\
     \\r\n\
     \\ENQ\EOTx\STX\t\ENQ\DC2\EOT\180\EM\EOT\t\n\
     \\r\n\
@@ -61392,9 +60784,6 @@ packedFileDescriptor
     \\EOT\EOTx\STX\n\
     \\DC2\EOT\183\EM\EOT\CAN\SUB2  The fee paid for this payment in milli-satoshis\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\n\
-    \\EOT\DC2\ACK\183\EM\EOT\180\EM\ETB\n\
     \\r\n\
     \\ENQ\EOTx\STX\n\
     \\ENQ\DC2\EOT\183\EM\EOT\t\n\
@@ -61408,8 +60797,6 @@ packedFileDescriptor
     \N\n\
     \\EOT\EOTx\STX\v\DC2\EOT\186\EM\EOT \SUB@ The time in UNIX nanoseconds at which the payment was created.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\v\EOT\DC2\ACK\186\EM\EOT\183\EM\CAN\n\
     \\r\n\
     \\ENQ\EOTx\STX\v\ENQ\DC2\EOT\186\EM\EOT\t\n\
     \\r\n\
@@ -61434,8 +60821,6 @@ packedFileDescriptor
     \by this index, which may not strictly increment by 1 for payments made in\n\
     \older versions of lnd.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\r\EOT\DC2\ACK\196\EM\EOT\189\EM$\n\
     \\r\n\
     \\ENQ\EOTx\STX\r\ENQ\DC2\EOT\196\EM\EOT\n\
     \\n\
@@ -61445,8 +60830,6 @@ packedFileDescriptor
     \\ENQ\EOTx\STX\r\ETX\DC2\EOT\196\EM\ESC\GS\n\
     \\f\n\
     \\EOT\EOTx\STX\SO\DC2\EOT\198\EM\EOT-\n\
-    \\SI\n\
-    \\ENQ\EOTx\STX\SO\EOT\DC2\ACK\198\EM\EOT\196\EM\RS\n\
     \\r\n\
     \\ENQ\EOTx\STX\SO\ACK\DC2\EOT\198\EM\EOT\CAN\n\
     \\r\n\
@@ -61460,8 +60843,6 @@ packedFileDescriptor
     \<\n\
     \\EOT\EOTy\STX\NUL\DC2\EOT\203\EM\EOT\SUB\SUB. The unique ID that is used for this attempt.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTy\STX\NUL\EOT\DC2\ACK\203\EM\EOT\201\EM\NAK\n\
     \\r\n\
     \\ENQ\EOTy\STX\NUL\ENQ\DC2\EOT\203\EM\EOT\n\
     \\n\
@@ -61494,8 +60875,6 @@ packedFileDescriptor
     \'\n\
     \\EOT\EOTy\STX\SOH\DC2\EOT\212\EM\EOT\SUB\SUB\EM The status of the HTLC.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTy\STX\SOH\EOT\DC2\ACK\212\EM\EOT\209\EM\ENQ\n\
     \\r\n\
     \\ENQ\EOTy\STX\SOH\ACK\DC2\EOT\212\EM\EOT\SO\n\
     \\r\n\
@@ -61505,8 +60884,6 @@ packedFileDescriptor
     \-\n\
     \\EOT\EOTy\STX\STX\DC2\EOT\215\EM\EOT\DC4\SUB\US The route taken by this HTLC.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTy\STX\STX\EOT\DC2\ACK\215\EM\EOT\212\EM\SUB\n\
     \\r\n\
     \\ENQ\EOTy\STX\STX\ACK\DC2\EOT\215\EM\EOT\t\n\
     \\r\n\
@@ -61517,8 +60894,6 @@ packedFileDescriptor
     \I\n\
     \\EOT\EOTy\STX\ETX\DC2\EOT\218\EM\EOT\RS\SUB; The time in UNIX nanoseconds at which this HTLC was sent.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTy\STX\ETX\EOT\DC2\ACK\218\EM\EOT\215\EM\DC4\n\
     \\r\n\
     \\ENQ\EOTy\STX\ETX\ENQ\DC2\EOT\218\EM\EOT\t\n\
     \\r\n\
@@ -61531,8 +60906,6 @@ packedFileDescriptor
     \The time in UNIX nanoseconds at which this HTLC was settled or failed.\n\
     \This value will not be set if the HTLC is still IN_FLIGHT.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTy\STX\EOT\EOT\DC2\ACK\224\EM\EOT\218\EM\RS\n\
     \\r\n\
     \\ENQ\EOTy\STX\EOT\ENQ\DC2\EOT\224\EM\EOT\t\n\
     \\r\n\
@@ -61543,8 +60916,6 @@ packedFileDescriptor
     \+\n\
     \\EOT\EOTy\STX\ENQ\DC2\EOT\227\EM\EOT\CAN\SUB\GS Detailed htlc failure info.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTy\STX\ENQ\EOT\DC2\ACK\227\EM\EOT\224\EM\RS\n\
     \\r\n\
     \\ENQ\EOTy\STX\ENQ\ACK\DC2\EOT\227\EM\EOT\v\n\
     \\r\n\
@@ -61554,8 +60925,6 @@ packedFileDescriptor
     \>\n\
     \\EOT\EOTy\STX\ACK\DC2\EOT\230\EM\EOT\ETB\SUB0 The preimage that was used to settle the HTLC.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTy\STX\ACK\EOT\DC2\ACK\230\EM\EOT\227\EM\CAN\n\
     \\r\n\
     \\ENQ\EOTy\STX\ACK\ENQ\DC2\EOT\230\EM\EOT\t\n\
     \\r\n\
@@ -61574,8 +60943,6 @@ packedFileDescriptor
     \field is set to true. This flag doesn't change the meaning of the indices,\n\
     \which are tied to individual payments.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTz\STX\NUL\EOT\DC2\ACK\240\EM\EOT\233\EM\GS\n\
     \\r\n\
     \\ENQ\EOTz\STX\NUL\ENQ\DC2\EOT\240\EM\EOT\b\n\
     \\r\n\
@@ -61590,8 +60957,6 @@ packedFileDescriptor
     \will start with the oldest payment when paginating forwards, or will end\n\
     \with the most recent payment when paginating backwards.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTz\STX\SOH\EOT\DC2\ACK\249\EM\EOT\240\EM \n\
     \\r\n\
     \\ENQ\EOTz\STX\SOH\ENQ\DC2\EOT\249\EM\EOT\n\
     \\n\
@@ -61602,8 +60967,6 @@ packedFileDescriptor
     \V\n\
     \\EOT\EOTz\STX\STX\DC2\EOT\252\EM\EOT\FS\SUBH The maximal number of payments returned in the response to this query.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTz\STX\STX\EOT\DC2\ACK\252\EM\EOT\249\EM\FS\n\
     \\r\n\
     \\ENQ\EOTz\STX\STX\ENQ\DC2\EOT\252\EM\EOT\n\
     \\n\
@@ -61617,8 +60980,6 @@ packedFileDescriptor
     \specified index offset. This can be used to paginate backwards. The order\n\
     \of the returned payments is always oldest first (ascending index order).\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOTz\STX\ETX\EOT\DC2\ACK\131\SUB\EOT\252\EM\FS\n\
     \\r\n\
     \\ENQ\EOTz\STX\ETX\ENQ\DC2\EOT\131\SUB\EOT\b\n\
     \\r\n\
@@ -61645,8 +61006,6 @@ packedFileDescriptor
     \The index of the first item in the set of returned payments. This can be\n\
     \used as the index_offset to continue seeking backwards in the next request.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT{\STX\SOH\EOT\DC2\ACK\142\SUB\EOT\136\SUB\"\n\
     \\r\n\
     \\ENQ\EOT{\STX\SOH\ENQ\DC2\EOT\142\SUB\EOT\n\
     \\n\
@@ -61659,8 +61018,6 @@ packedFileDescriptor
     \The index of the last item in the set of returned payments. This can be used\n\
     \as the index_offset to continue seeking forwards in the next request.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT{\STX\STX\EOT\DC2\ACK\148\SUB\EOT\142\SUB\"\n\
     \\r\n\
     \\ENQ\EOT{\STX\STX\ENQ\DC2\EOT\148\SUB\EOT\n\
     \\n\
@@ -61675,8 +61032,6 @@ packedFileDescriptor
     \,\n\
     \\EOT\EOT|\STX\NUL\DC2\EOT\153\SUB\EOT\"\SUB\RS Only delete failed payments.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT|\STX\NUL\EOT\DC2\ACK\153\SUB\EOT\151\SUB\"\n\
     \\r\n\
     \\ENQ\EOT|\STX\NUL\ENQ\DC2\EOT\153\SUB\EOT\b\n\
     \\r\n\
@@ -61687,8 +61042,6 @@ packedFileDescriptor
     \\EOT\EOT|\STX\SOH\DC2\EOT\158\SUB\EOT\US\SUBA\n\
     \Only delete failed HTLCs from payments, not the payment itself.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT|\STX\SOH\EOT\DC2\ACK\158\SUB\EOT\153\SUB\"\n\
     \\r\n\
     \\ENQ\EOT|\STX\SOH\ENQ\DC2\EOT\158\SUB\EOT\b\n\
     \\r\n\
@@ -61705,8 +61058,6 @@ packedFileDescriptor
     \\ETX\EOT~\SOH\DC2\EOT\164\SUB\b\GS\n\
     \\f\n\
     \\EOT\EOT~\STX\NUL\DC2\EOT\165\SUB\EOT#\n\
-    \\SI\n\
-    \\ENQ\EOT~\STX\NUL\EOT\DC2\ACK\165\SUB\EOT\164\SUB\US\n\
     \\r\n\
     \\ENQ\EOT~\STX\NUL\ACK\DC2\EOT\165\SUB\EOT\DLE\n\
     \\r\n\
@@ -61715,8 +61066,6 @@ packedFileDescriptor
     \\ENQ\EOT~\STX\NUL\ETX\DC2\EOT\165\SUB!\"\n\
     \\f\n\
     \\EOT\EOT~\STX\SOH\DC2\EOT\167\SUB\EOT'\n\
-    \\SI\n\
-    \\ENQ\EOT~\STX\SOH\EOT\DC2\ACK\167\SUB\EOT\165\SUB#\n\
     \\r\n\
     \\ENQ\EOT~\STX\SOH\ENQ\DC2\EOT\167\SUB\EOT\b\n\
     \\r\n\
@@ -61729,8 +61078,6 @@ packedFileDescriptor
     \confirming the user knows what they are doing and this is a potential foot\n\
     \gun to lose funds if used on active channels.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT~\STX\STX\EOT\DC2\ACK\174\SUB\EOT\167\SUB'\n\
     \\r\n\
     \\ENQ\EOT~\STX\STX\ENQ\DC2\EOT\174\SUB\EOT\b\n\
     \\r\n\
@@ -61747,8 +61094,6 @@ packedFileDescriptor
     \\EOT\EOT\128\SOH\SOH\DC2\EOT\180\SUB\b\EM\n\
     \\r\n\
     \\ENQ\EOT\128\SOH\STX\NUL\DC2\EOT\181\SUB\EOT\DC2\n\
-    \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\NUL\EOT\DC2\ACK\181\SUB\EOT\180\SUB\ESC\n\
     \\SO\n\
     \\ACK\EOT\128\SOH\STX\NUL\ENQ\DC2\EOT\181\SUB\EOT\b\n\
     \\SO\n\
@@ -61757,8 +61102,6 @@ packedFileDescriptor
     \\ACK\EOT\128\SOH\STX\NUL\ETX\DC2\EOT\181\SUB\DLE\DC1\n\
     \\r\n\
     \\ENQ\EOT\128\SOH\STX\SOH\DC2\EOT\182\SUB\EOT\SUB\n\
-    \\DLE\n\
-    \\ACK\EOT\128\SOH\STX\SOH\EOT\DC2\ACK\182\SUB\EOT\181\SUB\DC2\n\
     \\SO\n\
     \\ACK\EOT\128\SOH\STX\SOH\ENQ\DC2\EOT\182\SUB\EOT\n\
     \\n\
@@ -61772,8 +61115,6 @@ packedFileDescriptor
     \\EOT\EOT\129\SOH\SOH\DC2\EOT\184\SUB\b\SUB\n\
     \\r\n\
     \\ENQ\EOT\129\SOH\STX\NUL\DC2\EOT\185\SUB\EOT\ESC\n\
-    \\DLE\n\
-    \\ACK\EOT\129\SOH\STX\NUL\EOT\DC2\ACK\185\SUB\EOT\184\SUB\FS\n\
     \\SO\n\
     \\ACK\EOT\129\SOH\STX\NUL\ENQ\DC2\EOT\185\SUB\EOT\n\
     \\n\
@@ -61788,8 +61129,6 @@ packedFileDescriptor
     \9\n\
     \\ENQ\EOT\130\SOH\STX\NUL\DC2\EOT\190\SUB\EOT\ETB\SUB* The payment request string to be decoded\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\130\SOH\STX\NUL\EOT\DC2\ACK\190\SUB\EOT\188\SUB\SYN\n\
     \\SO\n\
     \\ACK\EOT\130\SOH\STX\NUL\ENQ\DC2\EOT\190\SUB\EOT\n\
     \\n\
@@ -61803,8 +61142,6 @@ packedFileDescriptor
     \\EOT\EOT\131\SOH\SOH\DC2\EOT\192\SUB\b\SO\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\NUL\DC2\EOT\193\SUB\EOT\ESC\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\NUL\EOT\DC2\ACK\193\SUB\EOT\192\SUB\DLE\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\NUL\ENQ\DC2\EOT\193\SUB\EOT\n\
     \\n\
@@ -61814,8 +61151,6 @@ packedFileDescriptor
     \\ACK\EOT\131\SOH\STX\NUL\ETX\DC2\EOT\193\SUB\EM\SUB\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\SOH\DC2\EOT\194\SUB\EOT\FS\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\SOH\EOT\DC2\ACK\194\SUB\EOT\193\SUB\ESC\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\SOH\ENQ\DC2\EOT\194\SUB\EOT\n\
     \\n\
@@ -61825,8 +61160,6 @@ packedFileDescriptor
     \\ACK\EOT\131\SOH\STX\SOH\ETX\DC2\EOT\194\SUB\SUB\ESC\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\STX\DC2\EOT\195\SUB\EOT\ESC\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\STX\EOT\DC2\ACK\195\SUB\EOT\194\SUB\FS\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\STX\ENQ\DC2\EOT\195\SUB\EOT\t\n\
     \\SO\n\
@@ -61836,8 +61169,6 @@ packedFileDescriptor
     \\ACK\EOT\131\SOH\STX\STX\ETX\DC2\EOT\195\SUB\EM\SUB\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\ETX\DC2\EOT\196\SUB\EOT\CAN\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\ETX\EOT\DC2\ACK\196\SUB\EOT\195\SUB\ESC\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\ETX\ENQ\DC2\EOT\196\SUB\EOT\t\n\
     \\SO\n\
@@ -61847,8 +61178,6 @@ packedFileDescriptor
     \\ACK\EOT\131\SOH\STX\ETX\ETX\DC2\EOT\196\SUB\SYN\ETB\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\EOT\DC2\EOT\197\SUB\EOT\NAK\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\EOT\EOT\DC2\ACK\197\SUB\EOT\196\SUB\CAN\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\EOT\ENQ\DC2\EOT\197\SUB\EOT\t\n\
     \\SO\n\
@@ -61858,8 +61187,6 @@ packedFileDescriptor
     \\ACK\EOT\131\SOH\STX\EOT\ETX\DC2\EOT\197\SUB\DC3\DC4\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\ENQ\DC2\EOT\198\SUB\EOT\ESC\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\ENQ\EOT\DC2\ACK\198\SUB\EOT\197\SUB\NAK\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\ENQ\ENQ\DC2\EOT\198\SUB\EOT\n\
     \\n\
@@ -61869,8 +61196,6 @@ packedFileDescriptor
     \\ACK\EOT\131\SOH\STX\ENQ\ETX\DC2\EOT\198\SUB\EM\SUB\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\ACK\DC2\EOT\199\SUB\EOT \n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\ACK\EOT\DC2\ACK\199\SUB\EOT\198\SUB\ESC\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\ACK\ENQ\DC2\EOT\199\SUB\EOT\n\
     \\n\
@@ -61880,8 +61205,6 @@ packedFileDescriptor
     \\ACK\EOT\131\SOH\STX\ACK\ETX\DC2\EOT\199\SUB\RS\US\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\a\DC2\EOT\200\SUB\EOT\GS\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\a\EOT\DC2\ACK\200\SUB\EOT\199\SUB \n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\a\ENQ\DC2\EOT\200\SUB\EOT\n\
     \\n\
@@ -61891,8 +61214,6 @@ packedFileDescriptor
     \\ACK\EOT\131\SOH\STX\a\ETX\DC2\EOT\200\SUB\ESC\FS\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\b\DC2\EOT\201\SUB\EOT\SUB\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\b\EOT\DC2\ACK\201\SUB\EOT\200\SUB\GS\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\b\ENQ\DC2\EOT\201\SUB\EOT\t\n\
     \\SO\n\
@@ -61913,9 +61234,6 @@ packedFileDescriptor
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\n\
     \\DC2\EOT\203\SUB\EOT\FS\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\n\
-    \\EOT\DC2\ACK\203\SUB\EOT\202\SUB(\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\n\
     \\ENQ\DC2\EOT\203\SUB\EOT\t\n\
@@ -61928,8 +61246,6 @@ packedFileDescriptor
     \\ETX\DC2\EOT\203\SUB\EM\ESC\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\v\DC2\EOT\204\SUB\EOT\CAN\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\v\EOT\DC2\ACK\204\SUB\EOT\203\SUB\FS\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\v\ENQ\DC2\EOT\204\SUB\EOT\t\n\
     \\SO\n\
@@ -61939,8 +61255,6 @@ packedFileDescriptor
     \\ACK\EOT\131\SOH\STX\v\ETX\DC2\EOT\204\SUB\NAK\ETB\n\
     \\r\n\
     \\ENQ\EOT\131\SOH\STX\f\DC2\EOT\205\SUB\EOT'\n\
-    \\DLE\n\
-    \\ACK\EOT\131\SOH\STX\f\EOT\DC2\ACK\205\SUB\EOT\204\SUB\CAN\n\
     \\SO\n\
     \\ACK\EOT\131\SOH\STX\f\ACK\DC2\EOT\205\SUB\EOT\CAN\n\
     \\SO\n\
@@ -62110,8 +61424,6 @@ packedFileDescriptor
     \\EOT\EOT\132\SOH\SOH\DC2\EOT\236\SUB\b\SI\n\
     \\r\n\
     \\ENQ\EOT\132\SOH\STX\NUL\DC2\EOT\237\SUB\EOT\DC4\n\
-    \\DLE\n\
-    \\ACK\EOT\132\SOH\STX\NUL\EOT\DC2\ACK\237\SUB\EOT\236\SUB\DC1\n\
     \\SO\n\
     \\ACK\EOT\132\SOH\STX\NUL\ENQ\DC2\EOT\237\SUB\EOT\n\
     \\n\
@@ -62121,8 +61433,6 @@ packedFileDescriptor
     \\ACK\EOT\132\SOH\STX\NUL\ETX\DC2\EOT\237\SUB\DC2\DC3\n\
     \\r\n\
     \\ENQ\EOT\132\SOH\STX\SOH\DC2\EOT\238\SUB\EOT\EM\n\
-    \\DLE\n\
-    \\ACK\EOT\132\SOH\STX\SOH\EOT\DC2\ACK\238\SUB\EOT\237\SUB\DC4\n\
     \\SO\n\
     \\ACK\EOT\132\SOH\STX\SOH\ENQ\DC2\EOT\238\SUB\EOT\b\n\
     \\SO\n\
@@ -62131,8 +61441,6 @@ packedFileDescriptor
     \\ACK\EOT\132\SOH\STX\SOH\ETX\DC2\EOT\238\SUB\ETB\CAN\n\
     \\r\n\
     \\ENQ\EOT\132\SOH\STX\STX\DC2\EOT\239\SUB\EOT\SYN\n\
-    \\DLE\n\
-    \\ACK\EOT\132\SOH\STX\STX\EOT\DC2\ACK\239\SUB\EOT\238\SUB\EM\n\
     \\SO\n\
     \\ACK\EOT\132\SOH\STX\STX\ENQ\DC2\EOT\239\SUB\EOT\b\n\
     \\SO\n\
@@ -62150,8 +61458,6 @@ packedFileDescriptor
     \F\n\
     \\ENQ\EOT\134\SOH\STX\NUL\DC2\EOT\246\SUB\EOT,\SUB7 The short channel id that this fee report belongs to.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\134\SOH\STX\NUL\EOT\DC2\ACK\246\SUB\EOT\244\SUB\SUB\n\
     \\SO\n\
     \\ACK\EOT\134\SOH\STX\NUL\ENQ\DC2\EOT\246\SUB\EOT\n\
     \\n\
@@ -62166,8 +61472,6 @@ packedFileDescriptor
     \=\n\
     \\ENQ\EOT\134\SOH\STX\SOH\DC2\EOT\249\SUB\EOT\GS\SUB. The channel that this fee report belongs to.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\134\SOH\STX\SOH\EOT\DC2\ACK\249\SUB\EOT\246\SUB,\n\
     \\SO\n\
     \\ACK\EOT\134\SOH\STX\SOH\ENQ\DC2\EOT\249\SUB\EOT\n\
     \\n\
@@ -62178,8 +61482,6 @@ packedFileDescriptor
     \V\n\
     \\ENQ\EOT\134\SOH\STX\STX\DC2\EOT\252\SUB\EOT\FS\SUBG The base fee charged regardless of the number of milli-satoshis sent.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\134\SOH\STX\STX\EOT\DC2\ACK\252\SUB\EOT\249\SUB\GS\n\
     \\SO\n\
     \\ACK\EOT\134\SOH\STX\STX\ENQ\DC2\EOT\252\SUB\EOT\t\n\
     \\SO\n\
@@ -62191,8 +61493,6 @@ packedFileDescriptor
     \\ENQ\EOT\134\SOH\STX\ETX\DC2\EOT\128\ESC\EOT\SUB\SUBZ The amount charged per milli-satoshis transferred expressed in\n\
     \ millionths of a satoshi.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\134\SOH\STX\ETX\EOT\DC2\ACK\128\ESC\EOT\252\SUB\FS\n\
     \\SO\n\
     \\ACK\EOT\134\SOH\STX\ETX\ENQ\DC2\EOT\128\ESC\EOT\t\n\
     \\SO\n\
@@ -62204,8 +61504,6 @@ packedFileDescriptor
     \\ENQ\EOT\134\SOH\STX\EOT\DC2\EOT\132\ESC\EOT\CAN\SUBe The effective fee rate in milli-satoshis. Computed by dividing the\n\
     \ fee_per_mil value by 1 million.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\134\SOH\STX\EOT\EOT\DC2\ACK\132\ESC\EOT\128\ESC\SUB\n\
     \\SO\n\
     \\ACK\EOT\134\SOH\STX\EOT\ENQ\DC2\EOT\132\ESC\EOT\n\
     \\n\
@@ -62233,8 +61531,6 @@ packedFileDescriptor
     \\ENQ\EOT\135\SOH\STX\SOH\DC2\EOT\141\ESC\EOT\ESC\SUB_ The total amount of fee revenue (in satoshis) the switch has collected\n\
     \ over the past 24 hrs.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\135\SOH\STX\SOH\EOT\DC2\ACK\141\ESC\EOT\137\ESC/\n\
     \\SO\n\
     \\ACK\EOT\135\SOH\STX\SOH\ENQ\DC2\EOT\141\ESC\EOT\n\
     \\n\
@@ -62246,8 +61542,6 @@ packedFileDescriptor
     \\ENQ\EOT\135\SOH\STX\STX\DC2\EOT\145\ESC\EOT\FS\SUB_ The total amount of fee revenue (in satoshis) the switch has collected\n\
     \ over the past 1 week.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\135\SOH\STX\STX\EOT\DC2\ACK\145\ESC\EOT\141\ESC\ESC\n\
     \\SO\n\
     \\ACK\EOT\135\SOH\STX\STX\ENQ\DC2\EOT\145\ESC\EOT\n\
     \\n\
@@ -62259,8 +61553,6 @@ packedFileDescriptor
     \\ENQ\EOT\135\SOH\STX\ETX\DC2\EOT\149\ESC\EOT\GS\SUB` The total amount of fee revenue (in satoshis) the switch has collected\n\
     \ over the past 1 month.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\135\SOH\STX\ETX\EOT\DC2\ACK\149\ESC\EOT\145\ESC\FS\n\
     \\SO\n\
     \\ACK\EOT\135\SOH\STX\ETX\ENQ\DC2\EOT\149\ESC\EOT\n\
     \\n\
@@ -62298,8 +61590,6 @@ packedFileDescriptor
     \V\n\
     \\ENQ\EOT\136\SOH\STX\STX\DC2\EOT\162\ESC\EOT\FS\SUBG The base fee charged regardless of the number of milli-satoshis sent.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\STX\EOT\DC2\ACK\162\ESC\EOT\159\ESC\ENQ\n\
     \\SO\n\
     \\ACK\EOT\136\SOH\STX\STX\ENQ\DC2\EOT\162\ESC\EOT\t\n\
     \\SO\n\
@@ -62311,8 +61601,6 @@ packedFileDescriptor
     \\ENQ\EOT\136\SOH\STX\ETX\DC2\EOT\166\ESC\EOT\CAN\SUBn The effective fee rate in milli-satoshis. The precision of this value\n\
     \ goes up to 6 decimal places, so 1e-6.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\ETX\EOT\DC2\ACK\166\ESC\EOT\162\ESC\FS\n\
     \\SO\n\
     \\ACK\EOT\136\SOH\STX\ETX\ENQ\DC2\EOT\166\ESC\EOT\n\
     \\n\
@@ -62323,8 +61611,6 @@ packedFileDescriptor
     \R\n\
     \\ENQ\EOT\136\SOH\STX\EOT\DC2\EOT\169\ESC\EOT\US\SUBC The required timelock delta for HTLCs forwarded over the channel.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\EOT\EOT\DC2\ACK\169\ESC\EOT\166\ESC\CAN\n\
     \\SO\n\
     \\ACK\EOT\136\SOH\STX\EOT\ENQ\DC2\EOT\169\ESC\EOT\n\
     \\n\
@@ -62336,8 +61622,6 @@ packedFileDescriptor
     \\ENQ\EOT\136\SOH\STX\ENQ\DC2\EOT\173\ESC\EOT\GS\SUBa If set, the maximum HTLC size in milli-satoshis. If unset, the maximum\n\
     \ HTLC will be unchanged.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\ENQ\EOT\DC2\ACK\173\ESC\EOT\169\ESC\US\n\
     \\SO\n\
     \\ACK\EOT\136\SOH\STX\ENQ\ENQ\DC2\EOT\173\ESC\EOT\n\
     \\n\
@@ -62349,8 +61633,6 @@ packedFileDescriptor
     \\ENQ\EOT\136\SOH\STX\ACK\DC2\EOT\177\ESC\EOT\GS\SUB\\ The minimum HTLC size in milli-satoshis. Only applied if\n\
     \ min_htlc_msat_specified is true.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\ACK\EOT\DC2\ACK\177\ESC\EOT\173\ESC\GS\n\
     \\SO\n\
     \\ACK\EOT\136\SOH\STX\ACK\ENQ\DC2\EOT\177\ESC\EOT\n\
     \\n\
@@ -62361,8 +61643,6 @@ packedFileDescriptor
     \3\n\
     \\ENQ\EOT\136\SOH\STX\a\DC2\EOT\180\ESC\EOT%\SUB$ If true, min_htlc_msat is applied.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\136\SOH\STX\a\EOT\DC2\ACK\180\ESC\EOT\177\ESC\GS\n\
     \\SO\n\
     \\ACK\EOT\136\SOH\STX\a\ENQ\DC2\EOT\180\ESC\EOT\b\n\
     \\SO\n\
@@ -62382,8 +61662,6 @@ packedFileDescriptor
     \ records beyond this point will be included, respecting the end time, and\n\
     \ the index offset.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\138\SOH\STX\NUL\EOT\DC2\ACK\189\ESC\EOT\185\ESC\"\n\
     \\SO\n\
     \\ACK\EOT\138\SOH\STX\NUL\ENQ\DC2\EOT\189\ESC\EOT\n\
     \\n\
@@ -62396,8 +61674,6 @@ packedFileDescriptor
     \ response will carry at most 50k records between the start time and the\n\
     \ end time. The index offset can be used to implement pagination.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\138\SOH\STX\SOH\EOT\DC2\ACK\194\ESC\EOT\189\ESC\SUB\n\
     \\SO\n\
     \\ACK\EOT\138\SOH\STX\SOH\ENQ\DC2\EOT\194\ESC\EOT\n\
     \\n\
@@ -62410,8 +61686,6 @@ packedFileDescriptor
     \ response can only contain 50k records, callers can use this to skip\n\
     \ around within a packed time series.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\138\SOH\STX\STX\EOT\DC2\ACK\199\ESC\EOT\194\ESC\CAN\n\
     \\SO\n\
     \\ACK\EOT\138\SOH\STX\STX\ENQ\DC2\EOT\199\ESC\EOT\n\
     \\n\
@@ -62422,8 +61696,6 @@ packedFileDescriptor
     \R\n\
     \\ENQ\EOT\138\SOH\STX\ETX\DC2\EOT\202\ESC\EOT\RS\SUBC The max number of events to return in the response to this query.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\138\SOH\STX\ETX\EOT\DC2\ACK\202\ESC\EOT\199\ESC\FS\n\
     \\SO\n\
     \\ACK\EOT\138\SOH\STX\ETX\ENQ\DC2\EOT\202\ESC\EOT\n\
     \\n\
@@ -62439,8 +61711,6 @@ packedFileDescriptor
     \\ENQ\EOT\139\SOH\STX\NUL\DC2\EOT\207\ESC\EOT-\SUBi Timestamp is the time (unix epoch offset) that this circuit was\n\
     \ completed. Deprecated by timestamp_ns.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\NUL\EOT\DC2\ACK\207\ESC\EOT\204\ESC\EM\n\
     \\SO\n\
     \\ACK\EOT\139\SOH\STX\NUL\ENQ\DC2\EOT\207\ESC\EOT\n\
     \\n\
@@ -62455,8 +61725,6 @@ packedFileDescriptor
     \X\n\
     \\ENQ\EOT\139\SOH\STX\SOH\DC2\EOT\210\ESC\EOT/\SUBI The incoming channel ID that carried the HTLC that created the circuit.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\SOH\EOT\DC2\ACK\210\ESC\EOT\207\ESC-\n\
     \\SO\n\
     \\ACK\EOT\139\SOH\STX\SOH\ENQ\DC2\EOT\210\ESC\EOT\n\
     \\n\
@@ -62472,8 +61740,6 @@ packedFileDescriptor
     \\ENQ\EOT\139\SOH\STX\STX\DC2\EOT\214\ESC\EOT0\SUBP The outgoing channel ID that carried the preimage that completed the\n\
     \ circuit.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\STX\EOT\DC2\ACK\214\ESC\EOT\210\ESC/\n\
     \\SO\n\
     \\ACK\EOT\139\SOH\STX\STX\ENQ\DC2\EOT\214\ESC\EOT\n\
     \\n\
@@ -62489,8 +61755,6 @@ packedFileDescriptor
     \\ENQ\EOT\139\SOH\STX\ETX\DC2\EOT\218\ESC\EOT\SYN\SUBU The total amount (in satoshis) of the incoming HTLC that created half\n\
     \ the circuit.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\ETX\EOT\DC2\ACK\218\ESC\EOT\214\ESC0\n\
     \\SO\n\
     \\ACK\EOT\139\SOH\STX\ETX\ENQ\DC2\EOT\218\ESC\EOT\n\
     \\n\
@@ -62502,8 +61766,6 @@ packedFileDescriptor
     \\ENQ\EOT\139\SOH\STX\EOT\DC2\EOT\222\ESC\EOT\ETB\SUBc The total amount (in satoshis) of the outgoing HTLC that created the\n\
     \ second half of the circuit.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\EOT\EOT\DC2\ACK\222\ESC\EOT\218\ESC\SYN\n\
     \\SO\n\
     \\ACK\EOT\139\SOH\STX\EOT\ENQ\DC2\EOT\222\ESC\EOT\n\
     \\n\
@@ -62514,8 +61776,6 @@ packedFileDescriptor
     \O\n\
     \\ENQ\EOT\139\SOH\STX\ENQ\DC2\EOT\225\ESC\EOT\DC3\SUB@ The total fee (in satoshis) that this payment circuit carried.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\ENQ\EOT\DC2\ACK\225\ESC\EOT\222\ESC\ETB\n\
     \\SO\n\
     \\ACK\EOT\139\SOH\STX\ENQ\ENQ\DC2\EOT\225\ESC\EOT\n\
     \\n\
@@ -62526,8 +61786,6 @@ packedFileDescriptor
     \U\n\
     \\ENQ\EOT\139\SOH\STX\ACK\DC2\EOT\228\ESC\EOT\CAN\SUBF The total fee (in milli-satoshis) that this payment circuit carried.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\ACK\EOT\DC2\ACK\228\ESC\EOT\225\ESC\DC3\n\
     \\SO\n\
     \\ACK\EOT\139\SOH\STX\ACK\ENQ\DC2\EOT\228\ESC\EOT\n\
     \\n\
@@ -62539,8 +61797,6 @@ packedFileDescriptor
     \\ENQ\EOT\139\SOH\STX\a\DC2\EOT\232\ESC\EOT\ESC\SUB[ The total amount (in milli-satoshis) of the incoming HTLC that created\n\
     \ half the circuit.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\a\EOT\DC2\ACK\232\ESC\EOT\228\ESC\CAN\n\
     \\SO\n\
     \\ACK\EOT\139\SOH\STX\a\ENQ\DC2\EOT\232\ESC\EOT\n\
     \\n\
@@ -62552,8 +61808,6 @@ packedFileDescriptor
     \\ENQ\EOT\139\SOH\STX\b\DC2\EOT\236\ESC\EOT\GS\SUBi The total amount (in milli-satoshis) of the outgoing HTLC that created\n\
     \ the second half of the circuit.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\b\EOT\DC2\ACK\236\ESC\EOT\232\ESC\ESC\n\
     \\SO\n\
     \\ACK\EOT\139\SOH\STX\b\ENQ\DC2\EOT\236\ESC\EOT\n\
     \\n\
@@ -62565,8 +61819,6 @@ packedFileDescriptor
     \\ENQ\EOT\139\SOH\STX\t\DC2\EOT\240\ESC\EOT\GS\SUB_ The number of nanoseconds elapsed since January 1, 1970 UTC when this\n\
     \ circuit was completed.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\139\SOH\STX\t\EOT\DC2\ACK\240\ESC\EOT\236\ESC\GS\n\
     \\SO\n\
     \\ACK\EOT\139\SOH\STX\t\ENQ\DC2\EOT\240\ESC\EOT\n\
     \\n\
@@ -62594,8 +61846,6 @@ packedFileDescriptor
     \\ENQ\EOT\140\SOH\STX\SOH\DC2\EOT\253\ESC\EOT!\SUBv The index of the last time in the set of returned forwarding events. Can\n\
     \ be used to seek further, pagination style.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\140\SOH\STX\SOH\EOT\DC2\ACK\253\ESC\EOT\249\ESC3\n\
     \\SO\n\
     \\ACK\EOT\140\SOH\STX\SOH\ENQ\DC2\EOT\253\ESC\EOT\n\
     \\n\
@@ -62610,8 +61860,6 @@ packedFileDescriptor
     \B\n\
     \\ENQ\EOT\141\SOH\STX\NUL\DC2\EOT\130\FS\EOT \SUB3 The target channel point to obtain a back up for.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\141\SOH\STX\NUL\EOT\DC2\ACK\130\FS\EOT\128\FS$\n\
     \\SO\n\
     \\ACK\EOT\141\SOH\STX\NUL\ACK\DC2\EOT\130\FS\EOT\DLE\n\
     \\SO\n\
@@ -62626,8 +61874,6 @@ packedFileDescriptor
     \\ENQ\EOT\142\SOH\STX\NUL\DC2\EOT\137\FS\EOT \SUB5\n\
     \Identifies the channel that this backup belongs to.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\142\SOH\STX\NUL\EOT\DC2\ACK\137\FS\EOT\133\FS\ETB\n\
     \\SO\n\
     \\ACK\EOT\142\SOH\STX\NUL\ACK\DC2\EOT\137\FS\EOT\DLE\n\
     \\SO\n\
@@ -62641,8 +61887,6 @@ packedFileDescriptor
     \order to trigger the recovery protocol. When using REST, this field must be\n\
     \encoded as base64.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\142\SOH\STX\SOH\EOT\DC2\ACK\145\FS\EOT\137\FS \n\
     \\SO\n\
     \\ACK\EOT\142\SOH\STX\SOH\ENQ\DC2\EOT\145\FS\EOT\t\n\
     \\SO\n\
@@ -62673,8 +61917,6 @@ packedFileDescriptor
     \safely be replaced with any prior/future versions. When using REST, this\n\
     \field must be encoded as base64.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\143\SOH\STX\SOH\EOT\DC2\ACK\160\FS\EOT\152\FS*\n\
     \\SO\n\
     \\ACK\EOT\143\SOH\STX\SOH\ENQ\DC2\EOT\160\FS\EOT\t\n\
     \\SO\n\
@@ -62695,8 +61937,6 @@ packedFileDescriptor
     \The set of new channels that have been added since the last channel backup\n\
     \snapshot was requested.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\145\SOH\STX\NUL\EOT\DC2\ACK\170\FS\EOT\165\FS\FS\n\
     \\SO\n\
     \\ACK\EOT\145\SOH\STX\NUL\ACK\DC2\EOT\170\FS\EOT\DC2\n\
     \\SO\n\
@@ -62708,8 +61948,6 @@ packedFileDescriptor
     \A multi-channel backup that covers all open channels currently known to\n\
     \lnd.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\145\SOH\STX\SOH\EOT\DC2\ACK\176\FS\EOT\170\FS+\n\
     \\SO\n\
     \\ACK\EOT\145\SOH\STX\SOH\ACK\DC2\EOT\176\FS\EOT\DC3\n\
     \\SO\n\
@@ -62781,8 +62019,6 @@ packedFileDescriptor
     \:\n\
     \\ENQ\EOT\151\SOH\STX\NUL\DC2\EOT\211\FS\EOT\SYN\SUB+ The entity a permission grants access to.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\151\SOH\STX\NUL\EOT\DC2\ACK\211\FS\EOT\209\FS\FS\n\
     \\SO\n\
     \\ACK\EOT\151\SOH\STX\NUL\ENQ\DC2\EOT\211\FS\EOT\n\
     \\n\
@@ -62793,8 +62029,6 @@ packedFileDescriptor
     \,\n\
     \\ENQ\EOT\151\SOH\STX\SOH\DC2\EOT\214\FS\EOT\SYN\SUB\GS The action that is granted.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\151\SOH\STX\SOH\EOT\DC2\ACK\214\FS\EOT\211\FS\SYN\n\
     \\SO\n\
     \\ACK\EOT\151\SOH\STX\SOH\ENQ\DC2\EOT\214\FS\EOT\n\
     \\n\
@@ -62820,8 +62054,6 @@ packedFileDescriptor
     \Y\n\
     \\ENQ\EOT\152\SOH\STX\SOH\DC2\EOT\221\FS\EOT\ESC\SUBJ The root key ID used to create the macaroon, must be a positive integer.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\152\SOH\STX\SOH\EOT\DC2\ACK\221\FS\EOT\218\FS0\n\
     \\SO\n\
     \\ACK\EOT\152\SOH\STX\SOH\ENQ\DC2\EOT\221\FS\EOT\n\
     \\n\
@@ -62836,8 +62068,6 @@ packedFileDescriptor
     \G\n\
     \\ENQ\EOT\153\SOH\STX\NUL\DC2\EOT\225\FS\EOT\CAN\SUB8 The hex encoded macaroon, serialized in binary format.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\153\SOH\STX\NUL\EOT\DC2\ACK\225\FS\EOT\223\FS\RS\n\
     \\SO\n\
     \\ACK\EOT\153\SOH\STX\NUL\ENQ\DC2\EOT\225\FS\EOT\n\
     \\n\
@@ -62871,8 +62101,6 @@ packedFileDescriptor
     \/\n\
     \\ENQ\EOT\156\SOH\STX\NUL\DC2\EOT\237\FS\EOT\ESC\SUB  The root key ID to be removed.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\156\SOH\STX\NUL\EOT\DC2\ACK\237\FS\EOT\235\FS!\n\
     \\SO\n\
     \\ACK\EOT\156\SOH\STX\NUL\ENQ\DC2\EOT\237\FS\EOT\n\
     \\n\
@@ -62887,8 +62115,6 @@ packedFileDescriptor
     \E\n\
     \\ENQ\EOT\157\SOH\STX\NUL\DC2\EOT\241\FS\EOT\NAK\SUB6 A boolean indicates that the deletion is successful.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\157\SOH\STX\NUL\EOT\DC2\ACK\241\FS\EOT\239\FS\"\n\
     \\SO\n\
     \\ACK\EOT\157\SOH\STX\NUL\ENQ\DC2\EOT\241\FS\EOT\b\n\
     \\SO\n\
@@ -62923,8 +62149,6 @@ packedFileDescriptor
     \A map between all RPC method URIs and their required macaroon permissions to\n\
     \access them.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\160\SOH\STX\NUL\EOT\DC2\ACK\128\GS\EOT\251\FS!\n\
     \\SO\n\
     \\ACK\EOT\160\SOH\STX\NUL\ACK\DC2\EOT\128\GS\EOT'\n\
     \\SO\n\
@@ -63124,8 +62348,6 @@ packedFileDescriptor
     \>\n\
     \\ENQ\EOT\161\SOH\STX\NUL\DC2\EOT\183\GS\EOT\EM\SUB/ Failure code as defined in the Lightning spec\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\161\SOH\STX\NUL\EOT\DC2\ACK\183\GS\EOT\180\GS\ENQ\n\
     \\SO\n\
     \\ACK\EOT\161\SOH\STX\NUL\ACK\DC2\EOT\183\GS\EOT\SI\n\
     \\SO\n\
@@ -63143,8 +62365,6 @@ packedFileDescriptor
     \4\n\
     \\ENQ\EOT\161\SOH\STX\SOH\DC2\EOT\188\GS\EOT%\SUB% An optional channel update message.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\161\SOH\STX\SOH\EOT\DC2\ACK\188\GS\EOT\185\GS\SI\n\
     \\SO\n\
     \\ACK\EOT\161\SOH\STX\SOH\ACK\DC2\EOT\188\GS\EOT\DC1\n\
     \\SO\n\
@@ -63154,8 +62374,6 @@ packedFileDescriptor
     \5\n\
     \\ENQ\EOT\161\SOH\STX\STX\DC2\EOT\191\GS\EOT\EM\SUB& A failure type-dependent htlc value.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\161\SOH\STX\STX\EOT\DC2\ACK\191\GS\EOT\188\GS%\n\
     \\SO\n\
     \\ACK\EOT\161\SOH\STX\STX\ENQ\DC2\EOT\191\GS\EOT\n\
     \\n\
@@ -63166,8 +62384,6 @@ packedFileDescriptor
     \5\n\
     \\ENQ\EOT\161\SOH\STX\ETX\DC2\EOT\194\GS\EOT\FS\SUB& The sha256 sum of the onion payload.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\161\SOH\STX\ETX\EOT\DC2\ACK\194\GS\EOT\191\GS\EM\n\
     \\SO\n\
     \\ACK\EOT\161\SOH\STX\ETX\ENQ\DC2\EOT\194\GS\EOT\t\n\
     \\SO\n\
@@ -63178,8 +62394,6 @@ packedFileDescriptor
     \<\n\
     \\ENQ\EOT\161\SOH\STX\EOT\DC2\EOT\197\GS\EOT\ESC\SUB- A failure type-dependent cltv expiry value.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\161\SOH\STX\EOT\EOT\DC2\ACK\197\GS\EOT\194\GS\FS\n\
     \\SO\n\
     \\ACK\EOT\161\SOH\STX\EOT\ENQ\DC2\EOT\197\GS\EOT\n\
     \\n\
@@ -63190,8 +62404,6 @@ packedFileDescriptor
     \6\n\
     \\ENQ\EOT\161\SOH\STX\ENQ\DC2\EOT\200\GS\EOT\NAK\SUB' A failure type-dependent flags value.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\161\SOH\STX\ENQ\EOT\DC2\ACK\200\GS\EOT\197\GS\ESC\n\
     \\SO\n\
     \\ACK\EOT\161\SOH\STX\ENQ\ENQ\DC2\EOT\200\GS\EOT\n\
     \\n\
@@ -63204,8 +62416,6 @@ packedFileDescriptor
     \The position in the path of the intermediate or final node that generated\n\
     \the failure message. Position zero is the sender node.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\161\SOH\STX\ACK\EOT\DC2\ACK\206\GS\EOT\200\GS\NAK\n\
     \\SO\n\
     \\ACK\EOT\161\SOH\STX\ACK\ENQ\DC2\EOT\206\GS\EOT\n\
     \\n\
@@ -63216,8 +62426,6 @@ packedFileDescriptor
     \7\n\
     \\ENQ\EOT\161\SOH\STX\a\DC2\EOT\209\GS\EOT\SYN\SUB( A failure type-dependent block height.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\161\SOH\STX\a\EOT\DC2\ACK\209\GS\EOT\206\GS$\n\
     \\SO\n\
     \\ACK\EOT\161\SOH\STX\a\ENQ\DC2\EOT\209\GS\EOT\n\
     \\n\
@@ -63234,8 +62442,6 @@ packedFileDescriptor
     \The signature that validates the announced data and proves the ownership\n\
     \of node id.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\NUL\EOT\DC2\ACK\217\GS\EOT\212\GS\ETB\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\NUL\ENQ\DC2\EOT\217\GS\EOT\t\n\
     \\SO\n\
@@ -63250,8 +62456,6 @@ packedFileDescriptor
     \channel ID, this uniquely identifies the channel globally in a\n\
     \blockchain.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\SOH\EOT\DC2\ACK\225\GS\EOT\217\GS\CAN\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\SOH\ENQ\DC2\EOT\225\GS\EOT\t\n\
     \\SO\n\
@@ -63263,8 +62467,6 @@ packedFileDescriptor
     \\ENQ\EOT\162\SOH\STX\STX\DC2\EOT\230\GS\EOT,\SUB4\n\
     \The unique description of the funding transaction.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\STX\EOT\DC2\ACK\230\GS\EOT\225\GS\EM\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\STX\ENQ\DC2\EOT\230\GS\EOT\n\
     \\n\
@@ -63282,8 +62484,6 @@ packedFileDescriptor
     \We should ignore the message if timestamp is not greater than the\n\
     \last-received.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\ETX\EOT\DC2\ACK\237\GS\EOT\230\GS,\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\ETX\ENQ\DC2\EOT\237\GS\EOT\n\
     \\n\
@@ -63297,8 +62497,6 @@ packedFileDescriptor
     \update. Currently, the least-significant bit must be set to 1 if the\n\
     \optional field MaxHtlc is present.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\EOT\EOT\DC2\ACK\244\GS\EOT\237\GS\EM\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\EOT\ENQ\DC2\EOT\244\GS\EOT\n\
     \\n\
@@ -63314,8 +62512,6 @@ packedFileDescriptor
     \previously sent channel announcement and 1 otherwise. If the second bit\n\
     \is set, then the channel is set to be disabled.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\ENQ\EOT\DC2\ACK\253\GS\EOT\244\GS\RS\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\ENQ\ENQ\DC2\EOT\253\GS\EOT\n\
     \\n\
@@ -63330,8 +62526,6 @@ packedFileDescriptor
     \This value represents the required gap between the time locks of the\n\
     \incoming and outgoing HTLC's set to this node.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\ACK\EOT\DC2\ACK\133\RS\EOT\253\GS\GS\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\ACK\ENQ\DC2\EOT\133\RS\EOT\n\
     \\n\
@@ -63343,8 +62537,6 @@ packedFileDescriptor
     \\ENQ\EOT\162\SOH\STX\a\DC2\EOT\138\RS\EOT!\SUB0\n\
     \The minimum HTLC value which will be accepted.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\a\EOT\DC2\ACK\138\RS\EOT\133\RS\US\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\a\ENQ\DC2\EOT\138\RS\EOT\n\
     \\n\
@@ -63358,8 +62550,6 @@ packedFileDescriptor
     \channel. This value will be tacked onto the required for a payment\n\
     \independent of the size of the payment.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\b\EOT\DC2\ACK\145\RS\EOT\138\RS!\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\b\ENQ\DC2\EOT\145\RS\EOT\n\
     \\n\
@@ -63371,8 +62561,6 @@ packedFileDescriptor
     \\ENQ\EOT\162\SOH\STX\t\DC2\EOT\150\RS\EOT\CAN\SUB?\n\
     \The fee rate that will be charged per millionth of a satoshi.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\t\EOT\DC2\ACK\150\RS\EOT\145\RS\CAN\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\t\ENQ\DC2\EOT\150\RS\EOT\n\
     \\n\
@@ -63385,9 +62573,6 @@ packedFileDescriptor
     \\DC2\EOT\155\RS\EOT\"\SUB0\n\
     \The maximum HTLC value which will be accepted.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\n\
-    \\EOT\DC2\ACK\155\RS\EOT\150\RS\CAN\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\n\
     \\ENQ\DC2\EOT\155\RS\EOT\n\
@@ -63406,8 +62591,6 @@ packedFileDescriptor
     \cover these new fields, and ensure we're able to make upgrades to the\n\
     \network in a forwards compatible manner.\n\
     \\n\
-    \\DLE\n\
-    \\ACK\EOT\162\SOH\STX\v\EOT\DC2\ACK\164\RS\EOT\155\RS\"\n\
     \\SO\n\
     \\ACK\EOT\162\SOH\STX\v\ENQ\DC2\EOT\164\RS\EOT\t\n\
     \\SO\n\
@@ -63421,8 +62604,6 @@ packedFileDescriptor
     \\EOT\EOT\163\SOH\SOH\DC2\EOT\167\RS\b\DC2\n\
     \\r\n\
     \\ENQ\EOT\163\SOH\STX\NUL\DC2\EOT\168\RS\EOT\DC4\n\
-    \\DLE\n\
-    \\ACK\EOT\163\SOH\STX\NUL\EOT\DC2\ACK\168\RS\EOT\167\RS\DC4\n\
     \\SO\n\
     \\ACK\EOT\163\SOH\STX\NUL\ENQ\DC2\EOT\168\RS\EOT\t\n\
     \\SO\n\
@@ -63432,8 +62613,6 @@ packedFileDescriptor
     \\ACK\EOT\163\SOH\STX\NUL\ETX\DC2\EOT\168\RS\DC2\DC3\n\
     \\r\n\
     \\ENQ\EOT\163\SOH\STX\SOH\DC2\EOT\169\RS\EOT\CAN\n\
-    \\DLE\n\
-    \\ACK\EOT\163\SOH\STX\SOH\EOT\DC2\ACK\169\RS\EOT\168\RS\DC4\n\
     \\SO\n\
     \\ACK\EOT\163\SOH\STX\SOH\ENQ\DC2\EOT\169\RS\EOT\t\n\
     \\SO\n\
@@ -63458,8 +62637,6 @@ packedFileDescriptor
     \\n\
     \\r\n\
     \\ENQ\EOT\164\SOH\STX\NUL\DC2\EOT\174\RS\EOT\SYN\n\
-    \\DLE\n\
-    \\ACK\EOT\164\SOH\STX\NUL\EOT\DC2\ACK\174\RS\EOT\173\RS\f\n\
     \\SO\n\
     \\ACK\EOT\164\SOH\STX\NUL\ENQ\DC2\EOT\174\RS\EOT\n\
     \\n\

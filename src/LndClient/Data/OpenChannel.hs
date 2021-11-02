@@ -13,27 +13,27 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data OpenChannelRequest
-  = OpenChannelRequest
-      { nodePubkey :: NodePubKey,
-        localFundingAmount :: MSat,
-        pushSat :: Maybe MSat,
-        targetConf :: Maybe Int32,
-        satPerByte :: Maybe MSat,
-        private :: Maybe Bool,
-        minHtlcMsat :: Maybe MSat,
-        remoteCsvDelay :: Maybe Word32,
-        minConfs :: Maybe Int32,
-        spendUnconfirmed :: Maybe Bool,
-        closeAddress :: Maybe Text
-      }
-  deriving (Eq, Show)
+data OpenChannelRequest = OpenChannelRequest
+  { nodePubkey :: NodePubKey,
+    localFundingAmount :: MSat,
+    pushSat :: Maybe MSat,
+    targetConf :: Maybe Int32,
+    satPerByte :: Maybe MSat,
+    private :: Maybe Bool,
+    minHtlcMsat :: Maybe MSat,
+    remoteCsvDelay :: Maybe Word32,
+    minConfs :: Maybe Int32,
+    spendUnconfirmed :: Maybe Bool,
+    closeAddress :: Maybe Text
+  }
+  deriving (Eq, Show, Generic)
 
-data OpenStatusUpdate
-  = OpenStatusUpdate
-      { pendingChanId :: ByteString,
-        update :: Maybe OpenStatusUpdate'
-      }
+instance Out OpenChannelRequest
+
+data OpenStatusUpdate = OpenStatusUpdate
+  { pendingChanId :: ByteString,
+    update :: Maybe OpenStatusUpdate'
+  }
   deriving (Eq, Show)
 
 data OpenStatusUpdate'
@@ -45,12 +45,11 @@ data OpenStatusUpdate'
 newtype ChannelOpenUpdate = ChannelOpenUpdate ChannelPoint
   deriving (Eq, Show)
 
-data ReadyForPsbtFunding
-  = ReadyForPsbtFunding
-      { fundingAddress :: Text,
-        fundingAmount :: MSat,
-        psbt :: ByteString
-      }
+data ReadyForPsbtFunding = ReadyForPsbtFunding
+  { fundingAddress :: Text,
+    fundingAmount :: MSat,
+    psbt :: ByteString
+  }
   deriving (Eq, Show)
 
 instance FromGrpc OpenStatusUpdate LnGRPC.OpenStatusUpdate where

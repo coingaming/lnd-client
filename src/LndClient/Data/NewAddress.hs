@@ -13,25 +13,29 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data NewAddressRequest
-  = NewAddressRequest
-      { addrType :: AddressType,
-        account :: Maybe String
-      }
-  deriving (Show, Eq)
+data NewAddressRequest = NewAddressRequest
+  { addrType :: AddressType,
+    account :: Maybe String
+  }
+  deriving (Show, Eq, Generic)
+
+instance Out NewAddressRequest
 
 data AddressType
   = WITNESS_PUBKEY_HASH
   | NESTED_PUBKEY_HASH
   | UNUSED_WITNESS_PUBKEY_HASH
   | UNUSED_NESTED_PUBKEY_HASH
-  deriving (Show, Eq)
+  deriving (Show, Eq, Generic)
 
-newtype NewAddressResponse
-  = NewAddressResponse
-      { address :: Text
-      }
-  deriving (Show, Eq)
+instance Out AddressType
+
+newtype NewAddressResponse = NewAddressResponse
+  { address :: Text
+  }
+  deriving (Show, Eq, Generic)
+
+instance Out NewAddressResponse
 
 instance ToGrpc NewAddressRequest LnGRPC.NewAddressRequest where
   toGrpc x =

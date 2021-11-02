@@ -1,4 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module LndClient.Data.Type
   ( LndError (..),
@@ -12,7 +14,9 @@ where
 import Chronos (Timespan)
 import Control.Exception (Exception)
 import LndClient.Import.External
+import qualified LndClient.Orphan
 import Network.HTTP2.Client.Exceptions as E
+import qualified Universum
 
 data LndError
   = ToGrpcError Text
@@ -24,7 +28,13 @@ data LndError
   | LndError Text
   | LndEnvError Text
   | TChanTimeout Text
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance Out E.ClientError where
+  docPrec n x = docPrec n (Universum.show x :: String)
+  doc x = doc (Universum.show x :: String)
+
+instance Out LndError
 
 newtype LoggingStrategy
   = LoggingStrategy
@@ -35,7 +45,9 @@ data LnInitiator
   | LnInitiatorLocal
   | LnInitiatorRemote
   | LnInitiatorBoth
-  deriving (Eq, Ord, Show, Read)
+  deriving (Eq, Ord, Show, Read, Generic)
+
+instance Out LnInitiator
 
 derivePersistField "LnInitiator"
 

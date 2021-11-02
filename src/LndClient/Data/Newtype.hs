@@ -49,33 +49,53 @@ import Prelude (Show)
 
 newtype Vout (a :: TxKind) = Vout Word32
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
+  deriving stock (Generic)
+
+instance Out (Vout a)
 
 newtype TxId (a :: TxKind) = TxId ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
+  deriving stock (Generic)
+
+instance Out (TxId a)
 
 newtype NodePubKey = NodePubKey ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Read, Generic)
+
+instance Out NodePubKey
 
 newtype NodeLocation = NodeLocation Text
-  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Read, Generic)
+
+instance Out NodeLocation
 
 newtype AddIndex = AddIndex Word64
-  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Generic)
+
+instance Out AddIndex
 
 newtype SettleIndex = SettleIndex Word64
-  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Generic)
+
+instance Out SettleIndex
 
 newtype PaymentRequest = PaymentRequest Text
-  deriving (PersistField, PersistFieldSql, Eq, QR.ToText, Show)
+  deriving (PersistField, PersistFieldSql, Eq, QR.ToText, Show, Generic)
+
+instance Out PaymentRequest
 
 newtype RHash = RHash ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Generic)
+
+instance Out RHash
 
 newtype RPreimage = RPreimage ByteString
-  deriving (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving (PersistField, PersistFieldSql, Eq, Ord, Show, Generic)
+
+instance Out RPreimage
 
 newtype MSat = MSat Word64
-  deriving
+  deriving newtype
     ( PersistField,
       PersistFieldSql,
       Eq,
@@ -84,6 +104,11 @@ newtype MSat = MSat Word64
       FromJSON,
       Show
     )
+  deriving stock
+    ( Generic
+    )
+
+instance Out MSat
 
 newtype Sat = Sat Word64
   deriving
@@ -96,7 +121,9 @@ newtype AezeedPassphrase = AezeedPassphrase Text
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, Show)
 
 newtype Seconds = Seconds Word64
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, Show)
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, Show, Generic)
+
+instance Out Seconds
 
 newtype GrpcTimeoutSeconds = GrpcTimeoutSeconds Int
   deriving (Eq, Ord, FromJSON, Show)

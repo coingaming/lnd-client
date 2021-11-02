@@ -10,14 +10,15 @@ import LndClient.Import
 import qualified Proto.InvoiceGrpc as LnGRPC
 import qualified Proto.InvoiceGrpc_Fields as LnGRPC
 
-data AddHodlInvoiceRequest
-  = AddHodlInvoiceRequest
-      { memo :: Maybe Text,
-        hash :: RHash,
-        valueMsat :: MSat,
-        expiry :: Maybe Seconds
-      }
-  deriving (Eq, Show)
+data AddHodlInvoiceRequest = AddHodlInvoiceRequest
+  { memo :: Maybe Text,
+    hash :: RHash,
+    valueMsat :: MSat,
+    expiry :: Maybe Seconds
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out AddHodlInvoiceRequest
 
 instance ToGrpc AddHodlInvoiceRequest LnGRPC.AddHoldInvoiceRequest where
   toGrpc x =

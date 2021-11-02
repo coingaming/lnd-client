@@ -8,15 +8,16 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data PendingOpenChannel
-  = PendingOpenChannel
-      { channel :: PendingChannel,
-        confirmationHeight :: Word32,
-        commitFee :: MSat,
-        commitWeight :: Int64,
-        feePerKw :: MSat
-      }
-  deriving (Eq, Show)
+data PendingOpenChannel = PendingOpenChannel
+  { channel :: PendingChannel,
+    confirmationHeight :: Word32,
+    commitFee :: MSat,
+    commitWeight :: Int64,
+    feePerKw :: MSat
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out PendingOpenChannel
 
 instance
   FromGrpc

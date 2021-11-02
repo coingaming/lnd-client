@@ -11,16 +11,17 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data ClosedChannelsRequest
-  = ClosedChannelsRequest
-      { cooperative :: Bool,
-        localForce :: Bool,
-        remoteForce :: Bool,
-        breach :: Bool,
-        fundingCanceled :: Bool,
-        abandoned :: Bool
-      }
-  deriving (Eq, Ord, Show)
+data ClosedChannelsRequest = ClosedChannelsRequest
+  { cooperative :: Bool,
+    localForce :: Bool,
+    remoteForce :: Bool,
+    breach :: Bool,
+    fundingCanceled :: Bool,
+    abandoned :: Bool
+  }
+  deriving (Eq, Ord, Show, Generic)
+
+instance Out ClosedChannelsRequest
 
 instance ToGrpc ClosedChannelsRequest LnGRPC.ClosedChannelsRequest where
   toGrpc x =

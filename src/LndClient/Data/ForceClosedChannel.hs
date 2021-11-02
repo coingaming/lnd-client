@@ -8,16 +8,17 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data ForceClosedChannel
-  = ForceClosedChannel
-      { channel :: PendingChannel,
-        closingTxid :: TxId 'Closing,
-        limboBalance :: MSat,
-        maturityHeight :: Word32,
-        blocksTilMaturity :: Int32,
-        recoveredBalance :: MSat
-      }
-  deriving (Eq, Show)
+data ForceClosedChannel = ForceClosedChannel
+  { channel :: PendingChannel,
+    closingTxid :: TxId 'Closing,
+    limboBalance :: MSat,
+    maturityHeight :: Word32,
+    blocksTilMaturity :: Int32,
+    recoveredBalance :: MSat
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out ForceClosedChannel
 
 instance
   FromGrpc

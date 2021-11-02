@@ -1,4 +1,9 @@
-module LndClient.Import.External (module Import) where
+module LndClient.Import.External
+  ( module Import,
+    show,
+    showStr,
+  )
+where
 
 import Chronos as Import
   ( SubsecondPrecision (SubsecondPrecisionAuto),
@@ -26,7 +31,13 @@ import Data.ByteString as Import (ByteString)
 import Data.Coerce as Import (coerce)
 import Data.List.Extra as Import (enumerate)
 import Data.Text as Import (Text, pack, unpack)
+--
+-- TODO : use Snoyman bracket
+--
+
+import qualified Data.Text as T
 import Data.Text.Lazy as Import (fromStrict, toStrict)
+import qualified Data.Text.Lazy as TL
 import Data.Word as Import (Word64)
 import Database.Persist.Class as Import (PersistField)
 import Database.Persist.Sql as Import (PersistFieldSql)
@@ -56,10 +67,11 @@ import Katip as Import
     runKatipContextT,
     sl,
   )
-import Universum as Import hiding (Text, catch, finally)
---
--- TODO : use Snoyman bracket
---
+import qualified Text.Pretty.Simple as PrettySimple
+import qualified Text.PrettyPrint.Annotated as Pretty
+import Text.PrettyPrint.GenericPretty as Import (Out (..))
+import qualified Text.PrettyPrint.GenericPretty as PrettyGeneric
+import Universum as Import hiding (Text, catch, finally, show)
 import UnliftIO as Import
   ( Handler (..),
     MonadUnliftIO (..),
@@ -68,3 +80,16 @@ import UnliftIO as Import
     catches,
     finally,
   )
+
+show :: (Out a) => a -> T.Text
+show =
+  TL.toStrict
+    . PrettySimple.pString
+    . PrettyGeneric.prettyStyle
+      Pretty.style
+        { Pretty.mode = Pretty.OneLineMode
+        }
+
+showStr :: (Out a) => a -> String
+showStr =
+  T.unpack . show

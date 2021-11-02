@@ -8,12 +8,13 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data WaitingCloseChannel
-  = WaitingCloseChannel
-      { channel :: PendingChannel,
-        limboBalance :: MSat
-      }
-  deriving (Eq, Show)
+data WaitingCloseChannel = WaitingCloseChannel
+  { channel :: PendingChannel,
+    limboBalance :: MSat
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out WaitingCloseChannel
 
 instance
   FromGrpc

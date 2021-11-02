@@ -8,27 +8,30 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data Invoice
-  = Invoice
-      { rHash :: RHash,
-        amtPaidMsat :: MSat,
-        valueMsat :: MSat,
-        settled :: Bool,
-        settleIndex :: Maybe SettleIndex,
-        memo :: Text,
-        paymentRequest :: PaymentRequest,
-        private :: Bool,
-        addIndex :: AddIndex,
-        state :: InvoiceState
-      }
-  deriving (Eq, Show)
+data Invoice = Invoice
+  { rHash :: RHash,
+    amtPaidMsat :: MSat,
+    valueMsat :: MSat,
+    settled :: Bool,
+    settleIndex :: Maybe SettleIndex,
+    memo :: Text,
+    paymentRequest :: PaymentRequest,
+    private :: Bool,
+    addIndex :: AddIndex,
+    state :: InvoiceState
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out Invoice
 
 data InvoiceState
   = OPEN
   | SETTLED
   | CANCELED
   | ACCEPTED
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance Out InvoiceState
 
 instance FromGrpc Invoice LnGRPC.Invoice where
   fromGrpc x =

@@ -9,13 +9,14 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data GetInfoResponse
-  = GetInfoResponse
-      { identityPubkey :: NodePubKey,
-        syncedToChain :: Bool,
-        syncedToGraph :: Bool
-      }
-  deriving (Eq, Show)
+data GetInfoResponse = GetInfoResponse
+  { identityPubkey :: NodePubKey,
+    syncedToChain :: Bool,
+    syncedToGraph :: Bool
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out GetInfoResponse
 
 instance FromGrpc GetInfoResponse LnGRPC.GetInfoResponse where
   fromGrpc x =

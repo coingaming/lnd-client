@@ -151,7 +151,7 @@ class
     Ord owner,
     Enum owner,
     Bounded owner,
-    Show owner
+    Out owner
   ) =>
   LndTest m owner
   where
@@ -270,7 +270,7 @@ liftLndResult :: MonadIO m => Either LndError a -> m a
 liftLndResult (Right x) =
   pure x
 liftLndResult (Left x) =
-  liftIO $ fail $ "LiftLndResult failed " <> show x
+  liftIO . fail $ "LiftLndResult failed " <> showStr x
 
 syncWallets ::
   forall m owner.

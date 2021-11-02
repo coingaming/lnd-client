@@ -1,5 +1,5 @@
 {- This file was auto-generated from wallet_unlocker_grpc.proto by the proto-lens-protoc program. -}
-{-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, DataKinds, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies#-}
+{-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies, DeriveGeneric#-}
 {-# OPTIONS_GHC -Wno-unused-imports#-}
 {-# OPTIONS_GHC -Wno-duplicate-exports#-}
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
@@ -11,6 +11,9 @@ module Proto.WalletUnlockerGrpc (
     ) where
 import qualified Data.ProtoLens.Runtime.Control.DeepSeq as Control.DeepSeq
 import qualified Data.ProtoLens.Runtime.Data.ProtoLens.Prism as Data.ProtoLens.Prism
+import qualified LndClient.Orphan
+import qualified GHC.Generics
+import qualified Text.PrettyPrint.GenericPretty
 import qualified Data.ProtoLens.Runtime.Prelude as Prelude
 import qualified Data.ProtoLens.Runtime.Data.Int as Data.Int
 import qualified Data.ProtoLens.Runtime.Data.Monoid as Data.Monoid
@@ -47,13 +50,14 @@ data ChangePasswordRequest
                                         _ChangePasswordRequest'statelessInit :: !Prelude.Bool,
                                         _ChangePasswordRequest'newMacaroonRootKey :: !Prelude.Bool,
                                         _ChangePasswordRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChangePasswordRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChangePasswordRequest
 instance Data.ProtoLens.Field.HasField ChangePasswordRequest "currentPassword" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -299,13 +303,14 @@ instance Control.DeepSeq.NFData ChangePasswordRequest where
 data ChangePasswordResponse
   = ChangePasswordResponse'_constructor {_ChangePasswordResponse'adminMacaroon :: !Data.ByteString.ByteString,
                                          _ChangePasswordResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ChangePasswordResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out ChangePasswordResponse
 instance Data.ProtoLens.Field.HasField ChangePasswordResponse "adminMacaroon" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -419,13 +424,14 @@ data GenSeedRequest
   = GenSeedRequest'_constructor {_GenSeedRequest'aezeedPassphrase :: !Data.ByteString.ByteString,
                                  _GenSeedRequest'seedEntropy :: !Data.ByteString.ByteString,
                                  _GenSeedRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GenSeedRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GenSeedRequest
 instance Data.ProtoLens.Field.HasField GenSeedRequest "aezeedPassphrase" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -584,13 +590,14 @@ data GenSeedResponse
   = GenSeedResponse'_constructor {_GenSeedResponse'cipherSeedMnemonic :: !(Data.Vector.Vector Data.Text.Text),
                                   _GenSeedResponse'encipheredSeed :: !Data.ByteString.ByteString,
                                   _GenSeedResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show GenSeedResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out GenSeedResponse
 instance Data.ProtoLens.Field.HasField GenSeedResponse "cipherSeedMnemonic" [Data.Text.Text] where
   fieldOf _
     = (Prelude..)
@@ -787,13 +794,14 @@ data InitWalletRequest
                                     _InitWalletRequest'channelBackups :: !(Prelude.Maybe Proto.LndGrpc.ChanBackupSnapshot),
                                     _InitWalletRequest'statelessInit :: !Prelude.Bool,
                                     _InitWalletRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show InitWalletRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out InitWalletRequest
 instance Data.ProtoLens.Field.HasField InitWalletRequest "walletPassword" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -1170,13 +1178,14 @@ instance Control.DeepSeq.NFData InitWalletRequest where
 data InitWalletResponse
   = InitWalletResponse'_constructor {_InitWalletResponse'adminMacaroon :: !Data.ByteString.ByteString,
                                      _InitWalletResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show InitWalletResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out InitWalletResponse
 instance Data.ProtoLens.Field.HasField InitWalletResponse "adminMacaroon" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -1295,13 +1304,14 @@ data UnlockWalletRequest
                                       _UnlockWalletRequest'channelBackups :: !(Prelude.Maybe Proto.LndGrpc.ChanBackupSnapshot),
                                       _UnlockWalletRequest'statelessInit :: !Prelude.Bool,
                                       _UnlockWalletRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show UnlockWalletRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out UnlockWalletRequest
 instance Data.ProtoLens.Field.HasField UnlockWalletRequest "walletPassword" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -1551,13 +1561,14 @@ instance Control.DeepSeq.NFData UnlockWalletRequest where
       -}
 data UnlockWalletResponse
   = UnlockWalletResponse'_constructor {_UnlockWalletResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show UnlockWalletResponse where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out UnlockWalletResponse
 instance Data.ProtoLens.Message UnlockWalletResponse where
   messageName _ = Data.Text.pack "lnrpc.UnlockWalletResponse"
   packedMessageDescriptor _
@@ -1621,6 +1632,14 @@ instance Data.ProtoLens.Service.Types.Service WalletUnlocker where
                                          "genSeed",
                                          "initWallet",
                                          "unlockWallet"]
+  packedServiceDescriptor _
+    = "\n\
+      \\SOWalletUnlocker\DC28\n\
+      \\aGenSeed\DC2\NAK.lnrpc.GenSeedRequest\SUB\SYN.lnrpc.GenSeedResponse\DC2A\n\
+      \\n\
+      \InitWallet\DC2\CAN.lnrpc.InitWalletRequest\SUB\EM.lnrpc.InitWalletResponse\DC2G\n\
+      \\fUnlockWallet\DC2\SUB.lnrpc.UnlockWalletRequest\SUB\ESC.lnrpc.UnlockWalletResponse\DC2M\n\
+      \\SOChangePassword\DC2\FS.lnrpc.ChangePasswordRequest\SUB\GS.lnrpc.ChangePasswordResponse"
 instance Data.ProtoLens.Service.Types.HasMethodImpl WalletUnlocker "genSeed" where
   type MethodName WalletUnlocker "genSeed" = "GenSeed"
   type MethodInput WalletUnlocker "genSeed" = GenSeedRequest
@@ -1678,7 +1697,7 @@ packedFileDescriptor
     \\n\
     \InitWallet\DC2\CAN.lnrpc.InitWalletRequest\SUB\EM.lnrpc.InitWalletResponse\DC2G\n\
     \\fUnlockWallet\DC2\SUB.lnrpc.UnlockWalletRequest\SUB\ESC.lnrpc.UnlockWalletResponse\DC2M\n\
-    \\SOChangePassword\DC2\FS.lnrpc.ChangePasswordRequest\SUB\GS.lnrpc.ChangePasswordResponseB'Z%github.com/lightningnetwork/lnd/lnrpcJ\232I\n\
+    \\SOChangePassword\DC2\FS.lnrpc.ChangePasswordRequest\SUB\GS.lnrpc.ChangePasswordResponseB'Z%github.com/lightningnetwork/lnd/lnrpcJ\193G\n\
     \\a\DC2\ENQ\STX\NUL\239\SOH\SOH\n\
     \\141\SOH\n\
     \\SOH\f\DC2\ETX\STX\NUL\DC22\130\SOHsource https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/walletunlocker.proto\n\
@@ -1786,8 +1805,6 @@ packedFileDescriptor
     \to encrypt the generated aezeed cipher seed. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\NUL\STX\NUL\EOT\DC2\EOTN\EOTH\CAN\n\
     \\f\n\
     \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETXN\EOT\t\n\
     \\f\n\
@@ -1801,8 +1818,6 @@ packedFileDescriptor
     \specified, then a fresh set of randomness will be used to create the seed.\n\
     \When using REST, this field must be encoded as base64.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\NUL\STX\SOH\EOT\DC2\EOTU\EOTN \n\
     \\f\n\
     \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\ETXU\EOT\t\n\
     \\f\n\
@@ -1837,8 +1852,6 @@ packedFileDescriptor
     \enciphered_seed are the raw aezeed cipher seed bytes. This is the raw\n\
     \cipher text before run through our mnemonic encoding scheme.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\SOH\STX\SOH\EOT\DC2\EOTe\EOT_-\n\
     \\f\n\
     \\ENQ\EOT\SOH\STX\SOH\ENQ\DC2\ETXe\EOT\t\n\
     \\f\n\
@@ -1858,8 +1871,6 @@ packedFileDescriptor
     \password is required to unlock the daemon. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\NUL\EOT\DC2\EOTo\EOTh\ESC\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETXo\EOT\t\n\
     \\f\n\
@@ -1887,8 +1898,6 @@ packedFileDescriptor
     \to encrypt the generated aezeed cipher seed. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\STX\EOT\DC2\EOT}\EOTv-\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETX}\EOT\t\n\
     \\f\n\
@@ -1904,8 +1913,6 @@ packedFileDescriptor
     \window of zero indicates that no addresses should be recovered, such after\n\
     \the first initialization of the wallet.\n\
     \\n\
-    \\SO\n\
-    \\ENQ\EOT\STX\STX\ETX\EOT\DC2\ENQ\134\SOH\EOT} \n\
     \\r\n\
     \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\EOT\134\SOH\EOT\t\n\
     \\r\n\
@@ -1922,8 +1929,6 @@ packedFileDescriptor
     \funds, lnd begin to carry out the data loss recovery protocol in order to\n\
     \recover the funds in each channel from a remote force closed transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\STX\STX\EOT\EOT\DC2\ACK\144\SOH\EOT\134\SOH\RS\n\
     \\r\n\
     \\ENQ\EOT\STX\STX\EOT\ACK\DC2\EOT\144\SOH\EOT\SYN\n\
     \\r\n\
@@ -1937,8 +1942,6 @@ packedFileDescriptor
     \admin macaroon returned in the response MUST be stored by the caller of the\n\
     \RPC as otherwise all access to the daemon will be lost!\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\STX\STX\ENQ\EOT\DC2\ACK\152\SOH\EOT\144\SOH+\n\
     \\r\n\
     \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\EOT\152\SOH\EOT\b\n\
     \\r\n\
@@ -1957,8 +1960,6 @@ packedFileDescriptor
     \caller. Otherwise a copy of this macaroon is also persisted on disk by the\n\
     \daemon, together with other macaroon files.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ETX\STX\NUL\EOT\DC2\ACK\162\SOH\EOT\154\SOH\FS\n\
     \\r\n\
     \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\EOT\162\SOH\EOT\t\n\
     \\r\n\
@@ -1976,8 +1977,6 @@ packedFileDescriptor
     \will be required to decrypt on-disk material that the daemon requires to\n\
     \function properly. When using REST, this field must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EOT\STX\NUL\EOT\DC2\ACK\171\SOH\EOT\165\SOH\GS\n\
     \\r\n\
     \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\171\SOH\EOT\t\n\
     \\r\n\
@@ -1993,8 +1992,6 @@ packedFileDescriptor
     \window of zero indicates that no addresses should be recovered, such after\n\
     \the first initialization of the wallet.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EOT\STX\SOH\EOT\DC2\ACK\180\SOH\EOT\171\SOH\RS\n\
     \\r\n\
     \\ENQ\EOT\EOT\STX\SOH\ENQ\DC2\EOT\180\SOH\EOT\t\n\
     \\r\n\
@@ -2011,8 +2008,6 @@ packedFileDescriptor
     \funds, lnd begin to carry out the data loss recovery protocol in order to\n\
     \recover the funds in each channel from a remote force closed transaction.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EOT\STX\STX\EOT\DC2\ACK\190\SOH\EOT\180\SOH\RS\n\
     \\r\n\
     \\ENQ\EOT\EOT\STX\STX\ACK\DC2\EOT\190\SOH\EOT\SYN\n\
     \\r\n\
@@ -2024,8 +2019,6 @@ packedFileDescriptor
     \stateless_init is an optional argument instructing the daemon NOT to create\n\
     \any *.macaroon files in its file system.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\EOT\STX\ETX\EOT\DC2\ACK\196\SOH\EOT\190\SOH+\n\
     \\r\n\
     \\ENQ\EOT\EOT\STX\ETX\ENQ\DC2\EOT\196\SOH\EOT\b\n\
     \\r\n\
@@ -2045,8 +2038,6 @@ packedFileDescriptor
     \current_password should be the current valid passphrase used to unlock the\n\
     \daemon. When using REST, this field must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\NUL\EOT\DC2\ACK\206\SOH\EOT\201\SOH\US\n\
     \\r\n\
     \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\206\SOH\EOT\t\n\
     \\r\n\
@@ -2059,8 +2050,6 @@ packedFileDescriptor
     \new_password should be the new passphrase that will be needed to unlock the\n\
     \daemon. When using REST, this field must be encoded as base64.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\SOH\EOT\DC2\ACK\212\SOH\EOT\206\SOH\US\n\
     \\r\n\
     \\ENQ\EOT\ACK\STX\SOH\ENQ\DC2\EOT\212\SOH\EOT\t\n\
     \\r\n\
@@ -2075,8 +2064,6 @@ packedFileDescriptor
     \admin macaroon returned in the response MUST be stored by the caller of the\n\
     \RPC as otherwise all access to the daemon will be lost!\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\STX\EOT\DC2\ACK\220\SOH\EOT\212\SOH\ESC\n\
     \\r\n\
     \\ENQ\EOT\ACK\STX\STX\ENQ\DC2\EOT\220\SOH\EOT\b\n\
     \\r\n\
@@ -2089,8 +2076,6 @@ packedFileDescriptor
     \rotate the macaroon root key when set to true. This will invalidate all\n\
     \previously generated macaroons.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\ACK\STX\ETX\EOT\DC2\ACK\227\SOH\EOT\220\SOH\FS\n\
     \\r\n\
     \\ENQ\EOT\ACK\STX\ETX\ENQ\DC2\EOT\227\SOH\EOT\b\n\
     \\r\n\
@@ -2110,8 +2095,6 @@ packedFileDescriptor
     \safely by the caller. Otherwise a copy of this macaroon is also persisted on\n\
     \disk by the daemon, together with other macaroon files.\n\
     \\n\
-    \\SI\n\
-    \\ENQ\EOT\a\STX\NUL\EOT\DC2\ACK\238\SOH\EOT\229\SOH \n\
     \\r\n\
     \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\238\SOH\EOT\t\n\
     \\r\n\

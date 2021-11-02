@@ -13,15 +13,16 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data PendingChannelsResponse
-  = PendingChannelsResponse
-      { totalLimboBalance :: MSat,
-        pendingOpenChannels :: [PendingOpenChannel],
-        pendingClosingChannels :: [ClosedChannel],
-        pendingForceClosingChannels :: [ForceClosedChannel],
-        waitingCloseChannels :: [WaitingCloseChannel]
-      }
-  deriving (Eq, Show)
+data PendingChannelsResponse = PendingChannelsResponse
+  { totalLimboBalance :: MSat,
+    pendingOpenChannels :: [PendingOpenChannel],
+    pendingClosingChannels :: [ClosedChannel],
+    pendingForceClosingChannels :: [ForceClosedChannel],
+    waitingCloseChannels :: [WaitingCloseChannel]
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out PendingChannelsResponse
 
 instance FromGrpc PendingChannelsResponse LnGRPC.PendingChannelsResponse where
   fromGrpc x =

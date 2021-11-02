@@ -1,5 +1,5 @@
 {- This file was auto-generated from invoice_grpc.proto by the proto-lens-protoc program. -}
-{-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, DataKinds, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies#-}
+{-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies, DeriveGeneric#-}
 {-# OPTIONS_GHC -Wno-unused-imports#-}
 {-# OPTIONS_GHC -Wno-duplicate-exports#-}
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
@@ -10,6 +10,9 @@ module Proto.InvoiceGrpc (
     ) where
 import qualified Data.ProtoLens.Runtime.Control.DeepSeq as Control.DeepSeq
 import qualified Data.ProtoLens.Runtime.Data.ProtoLens.Prism as Data.ProtoLens.Prism
+import qualified LndClient.Orphan
+import qualified GHC.Generics
+import qualified Text.PrettyPrint.GenericPretty
 import qualified Data.ProtoLens.Runtime.Prelude as Prelude
 import qualified Data.ProtoLens.Runtime.Data.Int as Data.Int
 import qualified Data.ProtoLens.Runtime.Data.Monoid as Data.Monoid
@@ -59,13 +62,14 @@ data AddHoldInvoiceRequest
                                         _AddHoldInvoiceRequest'routeHints :: !(Data.Vector.Vector Proto.LndGrpc.RouteHint),
                                         _AddHoldInvoiceRequest'private :: !Prelude.Bool,
                                         _AddHoldInvoiceRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show AddHoldInvoiceRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out AddHoldInvoiceRequest
 instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "memo" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -607,13 +611,14 @@ instance Control.DeepSeq.NFData AddHoldInvoiceRequest where
 data AddHoldInvoiceResp
   = AddHoldInvoiceResp'_constructor {_AddHoldInvoiceResp'paymentRequest :: !Data.Text.Text,
                                      _AddHoldInvoiceResp'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show AddHoldInvoiceResp where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out AddHoldInvoiceResp
 instance Data.ProtoLens.Field.HasField AddHoldInvoiceResp "paymentRequest" Data.Text.Text where
   fieldOf _
     = (Prelude..)
@@ -732,13 +737,14 @@ instance Control.DeepSeq.NFData AddHoldInvoiceResp where
 data CancelInvoiceMsg
   = CancelInvoiceMsg'_constructor {_CancelInvoiceMsg'paymentHash :: !Data.ByteString.ByteString,
                                    _CancelInvoiceMsg'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show CancelInvoiceMsg where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out CancelInvoiceMsg
 instance Data.ProtoLens.Field.HasField CancelInvoiceMsg "paymentHash" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -845,13 +851,14 @@ instance Control.DeepSeq.NFData CancelInvoiceMsg where
       -}
 data CancelInvoiceResp
   = CancelInvoiceResp'_constructor {_CancelInvoiceResp'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show CancelInvoiceResp where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out CancelInvoiceResp
 instance Data.ProtoLens.Message CancelInvoiceResp where
   messageName _ = Data.Text.pack "invoicesrpc.CancelInvoiceResp"
   packedMessageDescriptor _
@@ -913,13 +920,14 @@ instance Control.DeepSeq.NFData CancelInvoiceResp where
 data SettleInvoiceMsg
   = SettleInvoiceMsg'_constructor {_SettleInvoiceMsg'preimage :: !Data.ByteString.ByteString,
                                    _SettleInvoiceMsg'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SettleInvoiceMsg where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SettleInvoiceMsg
 instance Data.ProtoLens.Field.HasField SettleInvoiceMsg "preimage" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -1025,13 +1033,14 @@ instance Control.DeepSeq.NFData SettleInvoiceMsg where
       -}
 data SettleInvoiceResp
   = SettleInvoiceResp'_constructor {_SettleInvoiceResp'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SettleInvoiceResp where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SettleInvoiceResp
 instance Data.ProtoLens.Message SettleInvoiceResp where
   messageName _ = Data.Text.pack "invoicesrpc.SettleInvoiceResp"
   packedMessageDescriptor _
@@ -1093,13 +1102,14 @@ instance Control.DeepSeq.NFData SettleInvoiceResp where
 data SubscribeSingleInvoiceRequest
   = SubscribeSingleInvoiceRequest'_constructor {_SubscribeSingleInvoiceRequest'rHash :: !Data.ByteString.ByteString,
                                                 _SubscribeSingleInvoiceRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
-  deriving stock (Prelude.Eq, Prelude.Ord)
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show SubscribeSingleInvoiceRequest where
   showsPrec _ __x __s
     = Prelude.showChar
         '{'
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out SubscribeSingleInvoiceRequest
 instance Data.ProtoLens.Field.HasField SubscribeSingleInvoiceRequest "rHash" Data.ByteString.ByteString where
   fieldOf _
     = (Prelude..)
@@ -1209,6 +1219,13 @@ instance Data.ProtoLens.Service.Types.Service Invoices where
                                    "cancelInvoice",
                                    "settleInvoice",
                                    "subscribeSingleInvoice"]
+  packedServiceDescriptor _
+    = "\n\
+      \\bInvoices\DC2V\n\
+      \\SYNSubscribeSingleInvoice\DC2*.invoicesrpc.SubscribeSingleInvoiceRequest\SUB\SO.lnrpc.Invoice0\SOH\DC2N\n\
+      \\rCancelInvoice\DC2\GS.invoicesrpc.CancelInvoiceMsg\SUB\RS.invoicesrpc.CancelInvoiceResp\DC2U\n\
+      \\SOAddHoldInvoice\DC2\".invoicesrpc.AddHoldInvoiceRequest\SUB\US.invoicesrpc.AddHoldInvoiceResp\DC2N\n\
+      \\rSettleInvoice\DC2\GS.invoicesrpc.SettleInvoiceMsg\SUB\RS.invoicesrpc.SettleInvoiceResp"
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "subscribeSingleInvoice" where
   type MethodName Invoices "subscribeSingleInvoice" = "SubscribeSingleInvoice"
   type MethodInput Invoices "subscribeSingleInvoice" = SubscribeSingleInvoiceRequest
@@ -1262,7 +1279,7 @@ packedFileDescriptor
     \\SYNSubscribeSingleInvoice\DC2*.invoicesrpc.SubscribeSingleInvoiceRequest\SUB\SO.lnrpc.Invoice0\SOH\DC2N\n\
     \\rCancelInvoice\DC2\GS.invoicesrpc.CancelInvoiceMsg\SUB\RS.invoicesrpc.CancelInvoiceResp\DC2U\n\
     \\SOAddHoldInvoice\DC2\".invoicesrpc.AddHoldInvoiceRequest\SUB\US.invoicesrpc.AddHoldInvoiceResp\DC2N\n\
-    \\rSettleInvoice\DC2\GS.invoicesrpc.SettleInvoiceMsg\SUB\RS.invoicesrpc.SettleInvoiceRespB3Z1github.com/lightningnetwork/lnd/lnrpc/invoicesrpcJ\242\FS\n\
+    \\rSettleInvoice\DC2\GS.invoicesrpc.SettleInvoiceMsg\SUB\RS.invoicesrpc.SettleInvoiceRespB3Z1github.com/lightningnetwork/lnd/lnrpc/invoicesrpcJ\175\ESC\n\
     \\ACK\DC2\EOT\STX\NUL{\SOH\n\
     \\147\SOH\n\
     \\SOH\f\DC2\ETX\STX\NUL\DC22\136\SOHsource https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/invoicesrpc/invoices.proto\n\
@@ -1339,8 +1356,6 @@ packedFileDescriptor
     \B\n\
     \\EOT\EOT\NUL\STX\NUL\DC2\ETX+\EOT\ESC\SUB5 Hash corresponding to the (hold) invoice to cancel.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\NUL\STX\NUL\EOT\DC2\EOT+\EOT)\SUB\n\
     \\f\n\
     \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETX+\EOT\t\n\
     \\f\n\
@@ -1367,8 +1382,6 @@ packedFileDescriptor
     \field of the encoded payment request if the description_hash field is not\n\
     \being used.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\NUL\EOT\DC2\EOT7\EOT0\US\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETX7\EOT\n\
     \\n\
@@ -1379,8 +1392,6 @@ packedFileDescriptor
     \'\n\
     \\EOT\EOT\STX\STX\SOH\DC2\ETX:\EOT\DC3\SUB\SUB The hash of the preimage\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\EOT:\EOT7\DC4\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETX:\EOT\t\n\
     \\f\n\
@@ -1394,8 +1405,6 @@ packedFileDescriptor
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\STX\EOT\DC2\EOTA\EOT:\DC3\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETXA\EOT\t\n\
     \\f\n\
@@ -1409,8 +1418,6 @@ packedFileDescriptor
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\ETX\EOT\DC2\EOTH\EOTA\DC4\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\ETXH\EOT\t\n\
     \\f\n\
@@ -1424,8 +1431,6 @@ packedFileDescriptor
     \payment (memo) is too long to naturally fit within the description field\n\
     \of an encoded payment request.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\EOT\EOT\DC2\EOTO\EOTH\SUB\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\EOT\ENQ\DC2\ETXO\EOT\t\n\
     \\f\n\
@@ -1436,8 +1441,6 @@ packedFileDescriptor
     \P\n\
     \\EOT\EOT\STX\STX\ENQ\DC2\ETXR\EOT\NAK\SUBC Payment request expiry time in seconds. Default is 3600 (1 hour).\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\ENQ\EOT\DC2\EOTR\EOTO\US\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\ETXR\EOT\t\n\
     \\f\n\
@@ -1448,8 +1451,6 @@ packedFileDescriptor
     \)\n\
     \\EOT\EOT\STX\STX\ACK\DC2\ETXU\EOT\GS\SUB\FS Fallback on-chain address.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\ACK\EOT\DC2\EOTU\EOTR\NAK\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\ACK\ENQ\DC2\ETXU\EOT\n\
     \\n\
@@ -1460,8 +1461,6 @@ packedFileDescriptor
     \T\n\
     \\EOT\EOT\STX\STX\a\DC2\ETXX\EOT\ESC\SUBG Delta to use for the time-lock of the CLTV extended to the final hop.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\a\EOT\DC2\EOTX\EOTU\GS\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\a\ENQ\DC2\ETXX\EOT\n\
     \\n\
@@ -1485,8 +1484,6 @@ packedFileDescriptor
     \V\n\
     \\EOT\EOT\STX\STX\t\DC2\ETXa\EOT\NAK\SUBI Whether this invoice should include routing hints for private channels.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\STX\STX\t\EOT\DC2\EOTa\EOT^-\n\
     \\f\n\
     \\ENQ\EOT\STX\STX\t\ENQ\DC2\ETXa\EOT\b\n\
     \\f\n\
@@ -1505,8 +1502,6 @@ packedFileDescriptor
     \details of the invoice, the sender has all the data necessary to send a\n\
     \payment to the recipient.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\EOT\DC2\EOTj\EOTd\FS\n\
     \\f\n\
     \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\ETXj\EOT\n\
     \\n\
@@ -1524,8 +1519,6 @@ packedFileDescriptor
     \\EOT\EOT\EOT\STX\NUL\DC2\ETXp\EOT\ETB\SUBR Externally discovered pre-image that should be used to settle the hold\n\
     \ invoice.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\EOT\DC2\EOTp\EOTm\SUB\n\
     \\f\n\
     \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\ETXp\EOT\t\n\
     \\f\n\
@@ -1557,8 +1550,6 @@ packedFileDescriptor
     \H\n\
     \\EOT\EOT\ACK\STX\NUL\DC2\ETXz\EOT\NAK\SUB; Hash corresponding to the (hold) invoice to subscribe to.\n\
     \\n\
-    \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\EOT\DC2\EOTz\EOTw\SI\n\
     \\f\n\
     \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\ETXz\EOT\t\n\
     \\f\n\

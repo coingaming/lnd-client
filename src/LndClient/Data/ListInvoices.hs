@@ -14,22 +14,24 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data ListInvoiceRequest
-  = ListInvoiceRequest
-      { pendingOnly :: Bool,
-        indexOffset :: AddIndex,
-        numMaxInvoices :: Word64,
-        reversed :: Bool
-      }
+data ListInvoiceRequest = ListInvoiceRequest
+  { pendingOnly :: Bool,
+    indexOffset :: AddIndex,
+    numMaxInvoices :: Word64,
+    reversed :: Bool
+  }
   deriving (Generic, Show)
 
-data ListInvoiceResponse
-  = ListInvoiceResponse
-      { invoices :: [Invoice],
-        lastIndexOffset :: AddIndex,
-        firstIndexOffset :: AddIndex
-      }
+instance Out ListInvoiceRequest
+
+data ListInvoiceResponse = ListInvoiceResponse
+  { invoices :: [Invoice],
+    lastIndexOffset :: AddIndex,
+    firstIndexOffset :: AddIndex
+  }
   deriving (Generic, Show)
+
+instance Out ListInvoiceResponse
 
 instance ToGrpc ListInvoiceRequest LnGRPC.ListInvoiceRequest where
   toGrpc x =

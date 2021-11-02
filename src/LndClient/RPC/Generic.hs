@@ -74,7 +74,7 @@ grpcSyncSilent ::
 grpcSyncSilent rpc env req =
   case toGrpc req of
     Right gReq -> join . second fromGrpc <$> runUnary rpc env gReq
-    Left err -> return $ Left err
+    Left err -> pure $ Left err
 
 grpcSyncKatip ::
   ( KatipContext m,
@@ -83,31 +83,32 @@ grpcSyncKatip ::
     HasMethod s rm,
     gA ~ MethodInput s rm,
     gB ~ MethodOutput s rm,
-    Show a,
-    Show b
+    Out a,
+    Out b
   ) =>
   PL.RPC s (rm :: Symbol) ->
   LndEnv ->
   a ->
   m (Either LndError b)
 grpcSyncKatip rpc env req =
-  katipAddContext (sl "RpcName" (T.pack $ symbolVal rpc))
-    $ katipAddContext (sl "RpcRequest" (show req :: Text))
-    $ katipAddLndContext env
-    $ do
-      $(logTM) (newSev env InfoS) "RPC is running"
-      (ts, res) <-
-        liftIO $ stopwatch $
-          grpcSyncSilent rpc env req
-      katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $
-        case res of
-          Left e ->
-            katipAddContext (sl "RpcResponse" (show e :: Text)) $
-              $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
-          Right x ->
-            katipAddContext (sl "RpcResponse" (show x :: Text)) $
-              $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
-      pure res
+  katipAddContext (sl "RpcName" (T.pack $ symbolVal rpc)) $
+    katipAddContext (sl "RpcRequest" (show req :: Text)) $
+      katipAddLndContext env $
+        do
+          $(logTM) (newSev env InfoS) "RPC is running"
+          (ts, res) <-
+            liftIO $
+              stopwatch $
+                grpcSyncSilent rpc env req
+          katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $
+            case res of
+              Left e ->
+                katipAddContext (sl "RpcResponse" (show e :: Text)) $
+                  $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
+              Right x ->
+                katipAddContext (sl "RpcResponse" (show x :: Text)) $
+                  $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
+          pure res
 
 grpcSubscribeSilent ::
   ( MonadUnliftIO m,
@@ -137,7 +138,7 @@ grpcSubscribeKatip ::
     ToGrpc a gA,
     FromGrpc b gB,
     HasMethod s rm,
-    Show a,
+    Out a,
     gA ~ MethodInput s rm,
     gB ~ MethodOutput s rm
   ) =>
@@ -147,22 +148,22 @@ grpcSubscribeKatip ::
   a ->
   m (Either LndError ())
 grpcSubscribeKatip rpc handler env req =
-  katipAddContext (sl "RpcName" (T.pack $ symbolVal rpc))
-    $ katipAddContext (sl "RpcRequest" (show req :: Text))
-    $ katipAddLndContext env
-    $ do
-      $(logTM) (newSev env InfoS) "RPC is running"
-      (ts, res) <-
-        liftIO $ stopwatch $ grpcSubscribeSilent rpc handler env req
-      katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts))
-        $ uncurry katipAddContext
-        $ case res of
-          Left e ->
-            ( sl "RpcResponse" (show e :: Text),
-              $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
-            )
-          Right x ->
-            ( sl "RpcResponse" (show x :: Text),
-              $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
-            )
-      pure res
+  katipAddContext (sl "RpcName" (T.pack $ symbolVal rpc)) $
+    katipAddContext (sl "RpcRequest" (show req :: Text)) $
+      katipAddLndContext env $
+        do
+          $(logTM) (newSev env InfoS) "RPC is running"
+          (ts, res) <-
+            liftIO . stopwatch $ grpcSubscribeSilent rpc handler env req
+          katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $
+            uncurry katipAddContext $
+              case res of
+                Left e ->
+                  ( sl "RpcResponse" (show e :: Text),
+                    $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
+                  )
+                Right x ->
+                  ( sl "RpcResponse" (show x :: Text),
+                    $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
+                  )
+          pure res

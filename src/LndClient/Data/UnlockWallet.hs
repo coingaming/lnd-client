@@ -9,18 +9,21 @@ import qualified Proto.WalletUnlockerGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc_Fields as LnGRPC
 import Prelude (Show (..))
 
-data UnlockWalletRequest
-  = UnlockWalletRequest
-      { walletPassword :: LndWalletPassword,
-        recoveryWindow :: Int32
-        --
-        --  TODO : channel_backups
-        --
-      }
+data UnlockWalletRequest = UnlockWalletRequest
+  { walletPassword :: LndWalletPassword,
+    recoveryWindow :: Int32
+    --
+    --  TODO : channel_backups
+    --
+  }
   deriving (Eq)
 
 instance Show UnlockWalletRequest where
   show = const "SECRET"
+
+instance Out UnlockWalletRequest where
+  docPrec = const $ const "SECRET"
+  doc = const "SECRET"
 
 instance ToGrpc UnlockWalletRequest LnGRPC.UnlockWalletRequest where
   toGrpc x =

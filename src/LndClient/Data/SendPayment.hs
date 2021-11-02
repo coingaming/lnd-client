@@ -11,20 +11,22 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data SendPaymentRequest
-  = SendPaymentRequest
-      { paymentRequest :: PaymentRequest,
-        amt :: MSat
-      }
-  deriving (Eq, Show)
+data SendPaymentRequest = SendPaymentRequest
+  { paymentRequest :: PaymentRequest,
+    amt :: MSat
+  }
+  deriving (Eq, Show, Generic)
 
-data SendPaymentResponse
-  = SendPaymentResponse
-      { paymentError :: Text,
-        paymentPreimage :: RPreimage,
-        paymentHash :: RHash
-      }
-  deriving (Eq, Show)
+instance Out SendPaymentRequest
+
+data SendPaymentResponse = SendPaymentResponse
+  { paymentError :: Text,
+    paymentPreimage :: RPreimage,
+    paymentHash :: RHash
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out SendPaymentResponse
 
 instance ToGrpc SendPaymentRequest LnGRPC.SendRequest where
   toGrpc x =
