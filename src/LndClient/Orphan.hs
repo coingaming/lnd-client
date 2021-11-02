@@ -15,6 +15,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.Vector.Unboxed as Unboxed
 import qualified Network.HTTP2.Client as HTTP2
+import Network.HTTP2.Client.Exceptions as E
 import qualified Text.Pretty.Simple as PrettySimple
 import qualified Text.PrettyPrint as Pretty
 import Text.PrettyPrint.GenericPretty
@@ -98,3 +99,7 @@ instance Out Int32 where
 instance Out Int64 where
   docPrec n = docPrec n . fromIntegral @Int64 @Integer
   doc = doc . fromIntegral @Int64 @Integer
+
+instance Out E.ClientError where
+  docPrec n x = docPrec n (Universum.show x :: String)
+  doc x = doc (Universum.show x :: String)

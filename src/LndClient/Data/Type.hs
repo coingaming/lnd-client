@@ -1,6 +1,4 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -Wno-unused-imports #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module LndClient.Data.Type
   ( LndError (..),
@@ -14,9 +12,8 @@ where
 import Chronos (Timespan)
 import Control.Exception (Exception)
 import LndClient.Import.External
-import qualified LndClient.Orphan
-import Network.HTTP2.Client.Exceptions as E
-import qualified Universum
+import LndClient.Orphan ()
+import qualified Network.HTTP2.Client.Exceptions as E
 
 data LndError
   = ToGrpcError Text
@@ -29,10 +26,6 @@ data LndError
   | LndEnvError Text
   | TChanTimeout Text
   deriving (Eq, Show, Generic)
-
-instance Out E.ClientError where
-  docPrec n x = docPrec n (Universum.show x :: String)
-  doc x = doc (Universum.show x :: String)
 
 instance Out LndError
 

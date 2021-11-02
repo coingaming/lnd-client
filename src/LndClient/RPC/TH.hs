@@ -248,7 +248,7 @@ mkRpc k = do
       LndEnv ->
       OpenChannelRequest ->
       m (Either LndError ChannelPoint)
-    openChannelSync = do
+    openChannelSync =
       $(grpcSync) (RPC :: RPC LnGRPC.Lightning "openChannelSync")
 
     listChannels ::
