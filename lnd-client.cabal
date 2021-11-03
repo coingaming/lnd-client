@@ -64,7 +64,6 @@ library
       LndClient.Import
       LndClient.Import.External
       LndClient.LndTest
-      LndClient.Orphan
       LndClient.QRCode
       LndClient.RPC.Generic
       LndClient.RPC.Katip
@@ -82,6 +81,7 @@ library
       Proto.WalletUnlockerGrpc
       Proto.WalletUnlockerGrpc_Fields
   other-modules:
+      LndClient.Orphan
       Paths_lnd_client
   hs-source-dirs:
       src

@@ -101,7 +101,10 @@ ghc-options:
 - -Wno-safe # Don’t use Safe Haskell warnings
 - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
 
-library: {}
+library:
+  other-modules:
+  - LndClient.Orphan
+  - Paths_lnd_client
 
 tests:
   lnd-client-test:
