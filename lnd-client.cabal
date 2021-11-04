@@ -64,6 +64,7 @@ library
       LndClient.Import
       LndClient.Import.External
       LndClient.LndTest
+      LndClient.Orphan
       LndClient.QRCode
       LndClient.RPC.Generic
       LndClient.RPC.Katip
@@ -81,7 +82,6 @@ library
       Proto.WalletUnlockerGrpc
       Proto.WalletUnlockerGrpc_Fields
   other-modules:
-      LndClient.Orphan
       Paths_lnd_client
   hs-source-dirs:
       src
@@ -114,6 +114,7 @@ library
     , deepseq >=1.4.4.0 && <1.4.5
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
+    , generic-pretty-instances
     , http2 >=2.0.3
     , http2-client
     , http2-client-grpc >=0.8.0.0
@@ -237,6 +238,7 @@ test-suite lnd-client-test
     , deepseq >=1.4.4.0 && <1.4.5
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
+    , generic-pretty-instances
     , hspec ==2.7.1.*
     , http2 >=2.0.3
     , http2-client

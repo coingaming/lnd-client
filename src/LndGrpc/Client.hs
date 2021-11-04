@@ -18,6 +18,7 @@ import Network.GRPC.Client.Helpers
 import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
 import Network.HPACK (HeaderList)
 import Network.HTTP2.Client
+import qualified Prelude
 
 runUnary ::
   ( MonadUnliftIO p,
@@ -41,7 +42,8 @@ runUnary rpc env req = do
     Right (Right (Right (Left e))) ->
       Left $ LndError ("LndGrpc response error, code: " <> show e)
     Right (Right (Left e)) ->
-      Left $ LndError ("LndGrpc, TooMuchConcurrency error: " <> show e)
+      Left . LndError $
+        "LndGrpc TooMuchConcurrency error" <> fromString (Prelude.show e)
     Right (Left e) ->
       Left $ LndGrpcError e
     Left e ->
@@ -73,7 +75,8 @@ runStreamServer rpc env req handler = do
     Right (Right (Right ((), _, _))) ->
       Right defMessage
     Right (Right (Left e)) ->
-      Left $ LndError ("LndGrpc response error: " <> show e)
+      Left . LndError $
+        "LndGrpc response error: " <> fromString (Prelude.show e)
     Right (Left e) ->
       Left $ LndGrpcError e
     Left e ->

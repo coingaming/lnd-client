@@ -15,3 +15,10 @@ source-repository-package
   tag: 7e75e2c95d9bf608965ff8335ee618978181034a
   --sha256: 11k3y5p7m771n48d5qkzm5dj2rzdc0b26ixm35yh71rvrbxszhnf
   subdir: proto-lens-runtime
+
+source-repository-package
+  type: git
+  location: https://github.com/coingaming/dev.git
+  tag: 17c4021e14346e06b8519ab574b862f69f45da8e
+  --sha256: 0z8x8llj2l77kzr7dpjj6jvh8nqb5b9m8fgbbj0lrmmg4jvqky1z
+  subdir: generic-pretty-instances

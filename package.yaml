@@ -28,6 +28,7 @@ dependencies:
 - pretty-simple
 - pretty
 - GenericPretty
+- generic-pretty-instances
 # byte and text
 - bytestring            >= 0.10.8.2 && < 0.10.9
 - base16-bytestring     >= 1.0.1.0 && < 1.0.2
@@ -101,10 +102,7 @@ ghc-options:
 - -Wno-safe # Don’t use Safe Haskell warnings
 - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
 
-library:
-  other-modules:
-  - LndClient.Orphan
-  - Paths_lnd_client
+library: {}
 
 tests:
   lnd-client-test:

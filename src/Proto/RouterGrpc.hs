@@ -35,7 +35,7 @@ module Proto.RouterGrpc (
     ) where
 import qualified Data.ProtoLens.Runtime.Control.DeepSeq as Control.DeepSeq
 import qualified Data.ProtoLens.Runtime.Data.ProtoLens.Prism as Data.ProtoLens.Prism
-import qualified LndClient.Orphan
+import qualified Text.PrettyPrint.GenericPretty.Instance
 import qualified GHC.Generics
 import qualified Text.PrettyPrint.GenericPretty
 import qualified Data.ProtoLens.Runtime.Prelude as Prelude
