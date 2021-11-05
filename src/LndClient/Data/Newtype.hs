@@ -9,9 +9,10 @@ module LndClient.Data.Newtype
     RHash (..),
     RPreimage (..),
     MSat (..),
-    Sat (..),
-    toSat,
-    toMSat,
+    toGrpcSat,
+    toGrpcMSat,
+    fromGrpcSat,
+    fromGrpcMSat,
     CipherSeedMnemonic (..),
     AezeedPassphrase (..),
     Seconds (..),
@@ -110,10 +111,6 @@ newtype MSat = MSat Word64
 
 instance Out MSat
 
-newtype Sat = Sat Word64
-  deriving
-    (Eq, Num, Ord, FromJSON, Show)
-
 newtype CipherSeedMnemonic = CipherSeedMnemonic [Text]
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, Show)
 
@@ -175,36 +172,6 @@ instance ToGrpc AddIndex Word64 where
 
 instance ToGrpc SettleIndex Word64 where
   toGrpc = Right . coerce
-
-instance ToGrpc MSat Int64 where
-  toGrpc x =
-    maybeToRight
-      (ToGrpcError "MSat overflow")
-      $ safeFromIntegral (coerce x :: Word64)
-
-instance FromGrpc MSat Int64 where
-  fromGrpc x =
-    maybeToRight
-      (ToGrpcError "MSat overflow")
-      $ MSat <$> safeFromIntegral x
-
-instance FromGrpc MSat Word64 where
-  fromGrpc x =
-    maybeToRight
-      (ToGrpcError "MSat overflow")
-      $ MSat <$> safeFromIntegral x
-
-instance ToGrpc Sat Int64 where
-  toGrpc x =
-    maybeToRight
-      (ToGrpcError "Sat overflow")
-      $ safeFromIntegral (coerce x :: Word64)
-
-instance FromGrpc Sat Int64 where
-  fromGrpc x =
-    maybeToRight
-      (ToGrpcError "Sat overflow")
-      $ Sat <$> safeFromIntegral x
 
 instance FromGrpc RHash ByteString where
   fromGrpc = Right . RHash
@@ -305,12 +272,28 @@ defaultSyncGrpcTimeout = GrpcTimeoutSeconds 60
 defaultAsyncGrpcTimeout :: GrpcTimeoutSeconds
 defaultAsyncGrpcTimeout = GrpcTimeoutSeconds 3600
 
-toSat :: MSat -> Either LndError Sat
-toSat mSat = do
+toGrpcSat :: (Integral a, Bounded a) => MSat -> Either LndError a
+toGrpcSat mSat = do
   let mVal :: Word64 = coerce mSat
   case divMod mVal 1000 of
-    (val, 0) -> Right $ Sat val
+    (val, 0) -> maybeToRight (ToGrpcError "MSat overflow") $ safeFromIntegral val
     _ -> Left $ ToGrpcError ("Cannot convert " <> show mVal <> " to Sat")
 
-toMSat :: Sat -> MSat
-toMSat sat = MSat $ 1000 * coerce sat
+fromGrpcSat :: (Integral a) => a -> Either LndError MSat
+fromGrpcSat sat =
+  maybeToRight
+    (FromGrpcError ("Cannot convert " <> (show . toInteger) sat <> " to MSat"))
+    $ MSat . (1000 *) <$> safeFromIntegral sat
+
+toGrpcMSat :: (Integral a, Bounded a) => MSat -> Either LndError a
+toGrpcMSat x =
+    maybeToRight
+      (ToGrpcError "MSat overflow")
+      $ safeFromIntegral (coerce x :: Word64)
+
+fromGrpcMSat :: (Integral a) => a -> Either LndError MSat
+fromGrpcMSat x =
+    maybeToRight
+      (FromGrpcError "MSat overflow")
+      $ MSat <$> safeFromIntegral x
+
