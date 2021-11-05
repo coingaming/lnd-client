@@ -272,11 +272,11 @@ defaultSyncGrpcTimeout = GrpcTimeoutSeconds 60
 defaultAsyncGrpcTimeout :: GrpcTimeoutSeconds
 defaultAsyncGrpcTimeout = GrpcTimeoutSeconds 3600
 
-toGrpcSat :: (Integral a) => MSat -> Either LndError a
+toGrpcSat :: (Integral a, Bounded a) => MSat -> Either LndError a
 toGrpcSat mSat = do
   let mVal :: Word64 = coerce mSat
   case divMod mVal 1000 of
-    (val, 0) -> Right $ fromIntegral val
+    (val, 0) -> maybeToRight (ToGrpcError "MSat overflow") $ safeFromIntegral val
     _ -> Left $ ToGrpcError ("Cannot convert " <> show mVal <> " to Sat")
 
 fromGrpcSat :: (Integral a) => a -> Either LndError MSat
@@ -294,6 +294,6 @@ toGrpcMSat x =
 fromGrpcMSat :: (Integral a) => a -> Either LndError MSat
 fromGrpcMSat x =
     maybeToRight
-      (ToGrpcError "MSat overflow")
+      (FromGrpcError "MSat overflow")
       $ MSat <$> safeFromIntegral x
 
