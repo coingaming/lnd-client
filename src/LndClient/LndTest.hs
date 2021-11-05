@@ -250,10 +250,10 @@ mine blocks owner = do
   sev <- getSev owner InfoS
   $(logTM) sev $
     logStr $
-      ("Mining " :: Text)
-        <> show blocks
+      "Mining "
+        <> inspect blocks
         <> " blocks to "
-        <> show owner
+        <> inspect owner
         <> " wallet"
   void . liftIO $
     Btc.generateToAddress
@@ -270,7 +270,7 @@ liftLndResult :: MonadIO m => Either LndError a -> m a
 liftLndResult (Right x) =
   pure x
 liftLndResult (Left x) =
-  liftIO . fail $ "LiftLndResult failed " <> showStr x
+  liftIO . fail $ "LiftLndResult failed " <> inspectStr x
 
 syncWallets ::
   forall m owner.
@@ -311,7 +311,7 @@ syncPendingChannelsFor owner = this 0
     this 30 = do
       let msg =
             "SyncPendingChannelsFor "
-              <> (show owner :: Text)
+              <> inspect owner
               <> " attempt limit exceeded"
       sev <- getSev owner ErrorS
       $(logTM) sev $ logStr msg
@@ -321,7 +321,7 @@ syncPendingChannelsFor owner = this 0
       $(logTM) sev $
         logStr $
           "SyncPendingChannelsFor "
-            <> (show owner :: Text)
+            <> inspect owner
             <> " is running"
       res <- Lnd.pendingChannels =<< getLndEnv owner
       case res of
@@ -383,7 +383,8 @@ cancelAllInvoices =
         }
     this :: Int -> owner -> m ()
     this 30 owner =
-      error $ "CancelAllInvoices attempt limit exceeded for " <> show owner
+      error $
+        "CancelAllInvoices attempt limit exceeded for " <> inspect owner
     this attempt owner = do
       lnd <- getLndEnv owner
       let getInvoices :: m [Invoice] =
@@ -405,7 +406,8 @@ closeAllChannels po = do
   where
     this :: Int -> (owner, owner) -> m ()
     this 30 owners =
-      error $ "CloseAllChannels - limit exceeded for " <> show owners
+      error $
+        "CloseAllChannels - limit exceeded for " <> inspect owners
     this attempt (owner0, owner1) = do
       sev <- getSev owner0 InfoS
       $(logTM) sev "CloseAllChannels - closing channels"
@@ -550,7 +552,7 @@ receiveInvoice rh s q = do
   let mx = snd <$> mx0
   $(logTM) DebugS $
     logStr $
-      "receiveInvoice - " <> (show mx :: Text)
+      "receiveInvoice - " <> inspect mx
   case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
     Just True -> return $ Right ()
     Just False -> receiveInvoice rh s q

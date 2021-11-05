@@ -310,7 +310,7 @@ toSat mSat = do
   let mVal :: Word64 = coerce mSat
   case divMod mVal 1000 of
     (val, 0) -> Right $ Sat val
-    _ -> Left $ ToGrpcError ("Cannot convert " <> show mVal <> " to Sat")
+    _ -> Left $ ToGrpcError ("Cannot convert " <> inspect mVal <> " to Sat")
 
 toMSat :: Sat -> MSat
 toMSat sat = MSat $ 1000 * coerce sat

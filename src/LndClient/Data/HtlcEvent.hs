@@ -7,15 +7,14 @@ import LndClient.Import
 import qualified Proto.RouterGrpc as LnGRPC
 import qualified Proto.RouterGrpc_Fields as LnGRPC
 
-data HtlcEvent
-  = HtlcEvent
-      { incomingChannelId :: Word64,
-        outgoingChannelId :: Word64,
-        incomingHtlcId :: Word64,
-        outgoingHtlcId :: Word64,
-        timestampNs :: Word64,
-        eventType :: EventType
-      }
+data HtlcEvent = HtlcEvent
+  { incomingChannelId :: Word64,
+    outgoingChannelId :: Word64,
+    incomingHtlcId :: Word64,
+    outgoingHtlcId :: Word64,
+    timestampNs :: Word64,
+    eventType :: EventType
+  }
   deriving (Eq)
 
 data EventType
@@ -42,4 +41,7 @@ instance FromGrpc EventType LnGRPC.HtlcEvent'EventType where
       LnGRPC.HtlcEvent'SEND -> Right SEND
       LnGRPC.HtlcEvent'RECEIVE -> Right RECEIVE
       LnGRPC.HtlcEvent'FORWARD -> Right FORWARD
-      LnGRPC.HtlcEvent'EventType'Unrecognized v -> Left $ FromGrpcError ("Cannot parse EventType, value:" <> show v)
+      LnGRPC.HtlcEvent'EventType'Unrecognized v ->
+        Left
+          . FromGrpcError
+          $ "Cannot parse EventType, value:" <> inspect v

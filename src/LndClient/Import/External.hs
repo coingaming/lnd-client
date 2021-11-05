@@ -65,7 +65,7 @@ import Katip as Import
   )
 import Text.PrettyPrint.GenericPretty as Import (Out (..))
 import Text.PrettyPrint.GenericPretty.Instance as Import ()
-import Text.PrettyPrint.GenericPretty.Util as Import (show, showStr)
+import Text.PrettyPrint.GenericPretty.Util as Import (inspect, inspectStr)
 import Universum as Import hiding (Text, catch, finally, show)
 import UnliftIO as Import
   ( Handler (..),

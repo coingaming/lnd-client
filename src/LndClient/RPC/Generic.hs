@@ -92,7 +92,7 @@ grpcSyncKatip ::
   m (Either LndError b)
 grpcSyncKatip rpc env req =
   katipAddContext (sl "RpcName" (T.pack $ symbolVal rpc)) $
-    katipAddContext (sl "RpcRequest" (show req :: Text)) $
+    katipAddContext (sl "RpcRequest" $ inspect req) $
       katipAddLndContext env $
         do
           $(logTM) (newSev env InfoS) "RPC is running"
@@ -103,10 +103,10 @@ grpcSyncKatip rpc env req =
           katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $
             case res of
               Left e ->
-                katipAddContext (sl "RpcResponse" (show e :: Text)) $
+                katipAddContext (sl "RpcResponse" $ inspect e) $
                   $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
               Right x ->
-                katipAddContext (sl "RpcResponse" (show x :: Text)) $
+                katipAddContext (sl "RpcResponse" $ inspect x) $
                   $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
           pure res
 
@@ -149,7 +149,7 @@ grpcSubscribeKatip ::
   m (Either LndError ())
 grpcSubscribeKatip rpc handler env req =
   katipAddContext (sl "RpcName" (T.pack $ symbolVal rpc)) $
-    katipAddContext (sl "RpcRequest" (show req :: Text)) $
+    katipAddContext (sl "RpcRequest" $ inspect req) $
       katipAddLndContext env $
         do
           $(logTM) (newSev env InfoS) "RPC is running"
@@ -159,11 +159,11 @@ grpcSubscribeKatip rpc handler env req =
             uncurry katipAddContext $
               case res of
                 Left e ->
-                  ( sl "RpcResponse" (show e :: Text),
+                  ( sl "RpcResponse" $ inspect e,
                     $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
                   )
                 Right x ->
-                  ( sl "RpcResponse" (show x :: Text),
+                  ( sl "RpcResponse" $ inspect x,
                     $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
                   )
           pure res

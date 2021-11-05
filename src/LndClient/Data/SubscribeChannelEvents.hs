@@ -14,11 +14,10 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data ChannelEventUpdate
-  = ChannelEventUpdate
-      { channelEvent :: UpdateChannel,
-        eventType :: UpdateType
-      }
+data ChannelEventUpdate = ChannelEventUpdate
+  { channelEvent :: UpdateChannel,
+    eventType :: UpdateType
+  }
   deriving (Eq, Ord, Show)
 
 data UpdateChannel
@@ -44,7 +43,10 @@ instance FromGrpc UpdateType LnGRPC.ChannelEventUpdate'UpdateType where
     LnGRPC.ChannelEventUpdate'INACTIVE_CHANNEL -> Right INACTIVE_CHANNEL
     LnGRPC.ChannelEventUpdate'PENDING_OPEN_CHANNEL -> Right PENDING_OPEN_CHANNEL
     LnGRPC.ChannelEventUpdate'CLOSED_CHANNEL -> Right CLOSED_CHANNEL
-    LnGRPC.ChannelEventUpdate'UpdateType'Unrecognized v -> Left $ FromGrpcError ("Cannot parse ChannelUpdateType, value:" <> show v)
+    LnGRPC.ChannelEventUpdate'UpdateType'Unrecognized v ->
+      Left
+        . FromGrpcError
+        $ "Cannot parse ChannelUpdateType, value:" <> inspect v
 
 instance FromGrpc UpdateChannel LnGRPC.ChannelEventUpdate'Channel where
   fromGrpc x = case x of
