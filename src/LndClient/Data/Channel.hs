@@ -40,10 +40,10 @@ instance FromGrpc Channel LnGRPC.Channel where
     Channel
       <$> fromGrpc (x ^. LnGRPC.remotePubkey)
       <*> channelPointParser (x ^. LnGRPC.channelPoint)
-      <*> fromGrpc (x ^. LnGRPC.capacity)
-      <*> fromGrpc (x ^. LnGRPC.localBalance)
-      <*> fromGrpc (x ^. LnGRPC.remoteBalance)
-      <*> fromGrpc (x ^. LnGRPC.commitFee)
+      <*> grpcSatToMSat (x ^. LnGRPC.capacity)
+      <*> grpcSatToMSat (x ^. LnGRPC.localBalance)
+      <*> grpcSatToMSat (x ^. LnGRPC.remoteBalance)
+      <*> grpcSatToMSat (x ^. LnGRPC.commitFee)
       <*> fromGrpc (x ^. LnGRPC.active)
       <*> fromGrpc (x ^. LnGRPC.initiator)
 

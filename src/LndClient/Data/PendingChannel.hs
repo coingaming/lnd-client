@@ -33,22 +33,9 @@ instance
         (x ^. LnGRPC.remoteNodePub)
       <*> channelPointParser
         (x ^. LnGRPC.channelPoint)
-      <*> (toMSat <$> fromGrpc (x ^. LnGRPC.capacity))
-      <*> ( toMSat
-              <$> fromGrpc
-                (x ^. LnGRPC.localBalance)
-          )
-      <*> ( toMSat
-              <$> fromGrpc
-                (x ^. LnGRPC.remoteBalance)
-          )
-      <*> ( toMSat
-              <$> fromGrpc
-                (x ^. LnGRPC.localChanReserveSat)
-          )
-      <*> ( toMSat
-              <$> fromGrpc
-                (x ^. LnGRPC.remoteChanReserveSat)
-          )
-      <*> fromGrpc
-        (x ^. LnGRPC.initiator)
+      <*> grpcSatToMSat (x ^. LnGRPC.capacity)
+      <*> grpcSatToMSat (x ^. LnGRPC.localBalance)
+      <*> grpcSatToMSat (x ^. LnGRPC.remoteBalance)
+      <*> grpcSatToMSat (x ^. LnGRPC.localChanReserveSat)
+      <*> grpcSatToMSat (x ^. LnGRPC.remoteChanReserveSat)
+      <*> fromGrpc (x ^. LnGRPC.initiator)

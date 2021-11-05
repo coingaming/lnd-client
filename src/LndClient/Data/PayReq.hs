@@ -20,5 +20,5 @@ instance FromGrpc PayReq LnGRPC.PayReq where
   fromGrpc x =
     PayReq
       <$> fromGrpc (x ^. LnGRPC.paymentHash)
-      <*> fromGrpc (x ^. LnGRPC.numMsat)
+      <*> fromGrpcToMSat (x ^. LnGRPC.numMsat)
       <*> fromGrpc (x ^. LnGRPC.expiry)

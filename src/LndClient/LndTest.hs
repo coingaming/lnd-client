@@ -489,9 +489,9 @@ setupOneChannel ownerFrom ownerTo = do
         OpenChannel.OpenChannelRequest
           { OpenChannel.nodePubkey = merchantPubKey,
             OpenChannel.localFundingAmount = MSat 200000000,
-            OpenChannel.pushSat = Just $ MSat 10000000,
+            OpenChannel.pushMSat = Just $ MSat 10000000,
             OpenChannel.targetConf = Nothing,
-            OpenChannel.satPerByte = Nothing,
+            OpenChannel.mSatPerByte = Nothing,
             OpenChannel.private = Nothing,
             OpenChannel.minHtlcMsat = Nothing,
             OpenChannel.remoteCsvDelay = Nothing,

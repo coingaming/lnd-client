@@ -87,5 +87,5 @@ instance FromGrpc ChannelCloseSummary LnGRPC.ChannelCloseSummary where
     ChannelCloseSummary
       <$> fromGrpc (x ^. LnGRPC.remotePubkey)
       <*> channelPointParser (x ^. LnGRPC.channelPoint)
-      <*> fromGrpc (x ^. LnGRPC.settledBalance)
+      <*> grpcSatToMSat (x ^. LnGRPC.settledBalance)
       <*> fromGrpc (x ^. LnGRPC.closingTxHash)
