@@ -27,7 +27,7 @@ instance Out PendingChannelsResponse
 instance FromGrpc PendingChannelsResponse LnGRPC.PendingChannelsResponse where
   fromGrpc x =
     PendingChannelsResponse
-      <$> grpcSatToMSat (x ^. LnGRPC.totalLimboBalance)
+      <$> fromGrpcSat (x ^. LnGRPC.totalLimboBalance)
       <*> fromGrpc
         (x ^. LnGRPC.pendingOpenChannels)
       <*> fromGrpc

@@ -29,7 +29,7 @@ instance
               Just this ->
                 fromGrpc this
           )
-      <*> grpcSatToMSat (x ^. LnGRPC.limboBalance)
+      <*> fromGrpcSat (x ^. LnGRPC.limboBalance)
     where
       pendingChannel =
         x ^. LnGRPC.maybe'channel

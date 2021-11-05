@@ -28,7 +28,7 @@ instance FromGrpc Payment LnGRPC.Payment where
     Payment
       <$> fromGrpc (x ^. LnGRPC.paymentHash)
       <*> fromGrpc (x ^. LnGRPC.paymentPreimage)
-      <*> fromGrpcToMSat (x ^. LnGRPC.valueMsat)
+      <*> fromGrpcMSat (x ^. LnGRPC.valueMsat)
       <*> fromGrpc (x ^. LnGRPC.status)
 
 instance FromGrpc PaymentStatus LnGRPC.Payment'PaymentStatus where

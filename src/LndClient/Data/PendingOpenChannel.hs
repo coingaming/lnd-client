@@ -30,6 +30,6 @@ instance
         (x ^. LnGRPC.channel)
       <*> fromGrpc
         (x ^. LnGRPC.confirmationHeight)
-      <*> grpcSatToMSat (x ^. LnGRPC.commitFee)
+      <*> fromGrpcSat (x ^. LnGRPC.commitFee)
       <*> fromGrpc (x ^. LnGRPC.commitWeight)
-      <*> grpcSatToMSat (x ^. LnGRPC.feePerKw)
+      <*> fromGrpcSat (x ^. LnGRPC.feePerKw)

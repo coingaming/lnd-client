@@ -31,7 +31,7 @@ instance Out SendPaymentResponse
 instance ToGrpc SendPaymentRequest LnGRPC.SendRequest where
   toGrpc x =
     msg
-      <$> toGrpcFromMSat (amt x)
+      <$> toGrpcMSat (amt x)
       <*> toGrpc (paymentRequest x)
     where
       msg gAmt gPaymentRequest =

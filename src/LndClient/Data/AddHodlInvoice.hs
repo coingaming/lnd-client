@@ -25,7 +25,7 @@ instance ToGrpc AddHodlInvoiceRequest LnGRPC.AddHoldInvoiceRequest where
     msg
       <$> toGrpc (memo x)
       <*> toGrpc (hash x)
-      <*> toGrpcFromMSat (valueMsat x)
+      <*> toGrpcMSat (valueMsat x)
       <*> toGrpc (expiry x)
     where
       msg gMemo gHash gValue gExp =

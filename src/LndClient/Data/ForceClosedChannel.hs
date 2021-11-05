@@ -34,10 +34,10 @@ instance
                 fromGrpc this
           )
       <*> fromGrpc (x ^. LnGRPC.closingTxid)
-      <*> grpcSatToMSat (x ^. LnGRPC.limboBalance)
+      <*> fromGrpcSat (x ^. LnGRPC.limboBalance)
       <*> fromGrpc (x ^. LnGRPC.maturityHeight)
       <*> fromGrpc (x ^. LnGRPC.blocksTilMaturity)
-      <*> grpcSatToMSat (x ^. LnGRPC.recoveredBalance)
+      <*> fromGrpcSat (x ^. LnGRPC.recoveredBalance)
     where
       pendingChannel =
         x ^. LnGRPC.maybe'channel
