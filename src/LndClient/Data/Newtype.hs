@@ -283,7 +283,7 @@ fromGrpcSat :: (Integral a) => a -> Either LndError MSat
 fromGrpcSat sat =
   maybeToRight
     (FromGrpcError ("Cannot convert " <> (show . toInteger) sat <> " to MSat"))
-    $ MSat <$> safeFromIntegral (1000 * sat)
+    $ MSat . (1000 *) <$> safeFromIntegral sat
 
 toGrpcMSat :: (Integral a, Bounded a) => MSat -> Either LndError a
 toGrpcMSat x =
