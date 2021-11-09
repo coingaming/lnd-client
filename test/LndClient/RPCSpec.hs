@@ -156,9 +156,9 @@ spec = do
               OpenChannelRequest
                 { nodePubkey = bobPubKey,
                   localFundingAmount = MSat 20000000,
-                  pushSat = Just $ MSat 1000000,
+                  pushMSat = Just $ MSat 1000000,
                   targetConf = Nothing,
-                  satPerByte = Nothing,
+                  mSatPerByte = Nothing,
                   private = Nothing,
                   minHtlcMsat = Nothing,
                   remoteCsvDelay = Nothing,
@@ -327,9 +327,9 @@ spec = do
             OpenChannelRequest
               { nodePubkey = bobPubKey,
                 localFundingAmount = MSat 20000000,
-                pushSat = Just $ MSat 1000000,
+                pushMSat = Just $ MSat 1000000,
                 targetConf = Nothing,
-                satPerByte = Nothing,
+                mSatPerByte = Nothing,
                 private = Nothing,
                 minHtlcMsat = Nothing,
                 remoteCsvDelay = Nothing,

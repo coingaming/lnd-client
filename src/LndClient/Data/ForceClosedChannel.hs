@@ -34,18 +34,10 @@ instance
                 fromGrpc this
           )
       <*> fromGrpc (x ^. LnGRPC.closingTxid)
-      <*> ( toMSat
-              <$> fromGrpc
-                (x ^. LnGRPC.limboBalance)
-          )
-      <*> fromGrpc
-        (x ^. LnGRPC.maturityHeight)
-      <*> fromGrpc
-        (x ^. LnGRPC.blocksTilMaturity)
-      <*> ( toMSat
-              <$> fromGrpc
-                (x ^. LnGRPC.recoveredBalance)
-          )
+      <*> fromGrpcSat (x ^. LnGRPC.limboBalance)
+      <*> fromGrpc (x ^. LnGRPC.maturityHeight)
+      <*> fromGrpc (x ^. LnGRPC.blocksTilMaturity)
+      <*> fromGrpcSat (x ^. LnGRPC.recoveredBalance)
     where
       pendingChannel =
         x ^. LnGRPC.maybe'channel

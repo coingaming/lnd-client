@@ -16,9 +16,9 @@ import qualified Proto.LndGrpc_Fields as LnGRPC
 data OpenChannelRequest = OpenChannelRequest
   { nodePubkey :: NodePubKey,
     localFundingAmount :: MSat,
-    pushSat :: Maybe MSat,
+    pushMSat :: Maybe MSat,
     targetConf :: Maybe Int32,
-    satPerByte :: Maybe MSat,
+    mSatPerByte :: Maybe MSat,
     private :: Maybe Bool,
     minHtlcMsat :: Maybe MSat,
     remoteCsvDelay :: Maybe Word32,
@@ -74,19 +74,19 @@ instance FromGrpc ReadyForPsbtFunding LnGRPC.ReadyForPsbtFunding where
   fromGrpc x =
     ReadyForPsbtFunding
       <$> fromGrpc (x ^. LnGRPC.fundingAddress)
-      <*> fromGrpc (x ^. LnGRPC.fundingAmount)
+      <*> fromGrpcSat (x ^. LnGRPC.fundingAmount)
       <*> fromGrpc (x ^. LnGRPC.psbt)
 
 instance ToGrpc OpenChannelRequest LnGRPC.OpenChannelRequest where
   toGrpc x =
     msg
       <$> toGrpc (nodePubkey x)
-      <*> (toGrpc =<< toSat (localFundingAmount x))
-      <*> maybe (Right fieldDefault) (toGrpc <=< toSat) (pushSat x)
+      <*> toGrpcSat (localFundingAmount x)
+      <*> maybe (Right fieldDefault) toGrpcSat (pushMSat x)
       <*> toGrpc (targetConf x)
-      <*> maybe (Right fieldDefault) (toGrpc <=< toSat) (satPerByte x)
+      <*> maybe (Right fieldDefault) toGrpcSat (mSatPerByte x)
       <*> toGrpc (private x)
-      <*> toGrpc (minHtlcMsat x)
+      <*> maybe (Right fieldDefault) toGrpcMSat (minHtlcMsat x)
       <*> toGrpc (remoteCsvDelay x)
       <*> toGrpc (minConfs x)
       <*> toGrpc (spendUnconfirmed x)
