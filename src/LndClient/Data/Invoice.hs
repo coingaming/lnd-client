@@ -37,8 +37,8 @@ instance FromGrpc Invoice LnGRPC.Invoice where
   fromGrpc x =
     Invoice
       <$> fromGrpc (x ^. LnGRPC.rHash)
-      <*> fromGrpc (x ^. LnGRPC.amtPaidMsat)
-      <*> fromGrpc (x ^. LnGRPC.valueMsat)
+      <*> fromGrpcMSat (x ^. LnGRPC.amtPaidMsat)
+      <*> fromGrpcMSat (x ^. LnGRPC.valueMsat)
       <*> fromGrpc (x ^. LnGRPC.settled)
       <*> fromGrpc (x ^. LnGRPC.settleIndex)
       <*> fromGrpc (x ^. LnGRPC.memo)

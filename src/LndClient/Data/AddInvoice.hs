@@ -33,7 +33,7 @@ instance ToGrpc AddInvoiceRequest LnGRPC.Invoice where
   toGrpc x =
     msg
       <$> toGrpc (memo x)
-      <*> toGrpc (valueMsat x)
+      <*> toGrpcMSat (valueMsat x)
       <*> toGrpc (expiry x)
     where
       msg gMemo gValue gExp =
