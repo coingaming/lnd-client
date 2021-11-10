@@ -277,23 +277,22 @@ toGrpcSat mSat = do
   let mVal :: Word64 = coerce mSat
   case divMod mVal 1000 of
     (val, 0) -> maybeToRight (ToGrpcError "MSat overflow") $ safeFromIntegral val
-    _ -> Left $ ToGrpcError ("Cannot convert " <> show mVal <> " to Sat")
+    _ -> Left $ ToGrpcError ("Cannot convert " <> inspect mVal <> " to Sat")
 
 fromGrpcSat :: (Integral a) => a -> Either LndError MSat
 fromGrpcSat sat =
   maybeToRight
-    (FromGrpcError ("Cannot convert " <> (show . toInteger) sat <> " to MSat"))
+    (FromGrpcError ("Cannot convert " <> (inspect . toInteger) sat <> " to MSat"))
     $ MSat . (1000 *) <$> safeFromIntegral sat
 
 toGrpcMSat :: (Integral a, Bounded a) => MSat -> Either LndError a
 toGrpcMSat x =
-    maybeToRight
-      (ToGrpcError "MSat overflow")
-      $ safeFromIntegral (coerce x :: Word64)
+  maybeToRight
+    (ToGrpcError "MSat overflow")
+    $ safeFromIntegral (coerce x :: Word64)
 
 fromGrpcMSat :: (Integral a) => a -> Either LndError MSat
 fromGrpcMSat x =
-    maybeToRight
-      (FromGrpcError "MSat overflow")
-      $ MSat <$> safeFromIntegral x
-
+  maybeToRight
+    (FromGrpcError "MSat overflow")
+    $ MSat <$> safeFromIntegral x

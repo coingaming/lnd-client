@@ -7,13 +7,12 @@ import LndClient.Import
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
 
-data Payment
-  = Payment
-      { paymentHash :: RHash,
-        paymentPreimage :: RPreimage,
-        valueMsat :: MSat,
-        state :: PaymentStatus
-      }
+data Payment = Payment
+  { paymentHash :: RHash,
+    paymentPreimage :: RPreimage,
+    valueMsat :: MSat,
+    state :: PaymentStatus
+  }
   deriving (Eq, Show)
 
 data PaymentStatus
@@ -38,4 +37,7 @@ instance FromGrpc PaymentStatus LnGRPC.Payment'PaymentStatus where
       LnGRPC.Payment'IN_FLIGHT -> Right IN_FLIGHT
       LnGRPC.Payment'SUCCEEDED -> Right SUCCEEDED
       LnGRPC.Payment'FAILED -> Right FAILED
-      LnGRPC.Payment'PaymentStatus'Unrecognized v -> Left $ FromGrpcError ("Cannot parse PaymentStatus, value:" <> show v)
+      LnGRPC.Payment'PaymentStatus'Unrecognized v ->
+        Left
+          . FromGrpcError
+          $ "Cannot parse PaymentStatus, value:" <> inspect v

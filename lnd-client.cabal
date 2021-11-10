@@ -114,6 +114,7 @@ library
     , deepseq >=1.4.4.0 && <1.4.5
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
+    , generic-pretty-instances
     , http2 >=2.0.3
     , http2-client
     , http2-client-grpc >=0.8.0.0
@@ -237,6 +238,7 @@ test-suite lnd-client-test
     , deepseq >=1.4.4.0 && <1.4.5
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
+    , generic-pretty-instances
     , hspec ==2.7.1.*
     , http2 >=2.0.3
     , http2-client
