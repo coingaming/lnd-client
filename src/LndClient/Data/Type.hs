@@ -29,9 +29,10 @@ data LndError
 
 instance Out LndError
 
-newtype LoggingStrategy
-  = LoggingStrategy
-      (Severity -> Maybe Timespan -> Maybe LndError -> Severity)
+data LoggingStrategy = LoggingStrategy
+  { loggingStrategySev :: Severity -> Maybe Timespan -> Maybe LndError -> Severity,
+    loggingStrategyVis :: SecretVision
+  }
 
 data LnInitiator
   = LnInitiatorUnknown
@@ -46,10 +47,16 @@ derivePersistField "LnInitiator"
 
 logDefault :: LoggingStrategy
 logDefault =
-  LoggingStrategy $ \x _ _ -> x
+  LoggingStrategy
+    { loggingStrategySev = \x _ _ -> x,
+      loggingStrategyVis = SecretHidden
+    }
 
 logDebug :: LoggingStrategy
 logDebug =
-  LoggingStrategy $ \_ _ _ -> DebugS
+  LoggingStrategy
+    { loggingStrategySev = \_ _ _ -> DebugS,
+      loggingStrategyVis = SecretHidden
+    }
 
 instance Exception LndError

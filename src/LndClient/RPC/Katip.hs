@@ -67,7 +67,7 @@ waitForGrpc env =
     this (x :: Int) =
       if x > 0
         then do
-          $(logTM) (newSev env InfoS) "Waiting for GRPC..."
+          $(logTM) (newSev env DebugS) "Waiting for GRPC..."
           res <- getInfo $ env {envLndLogStrategy = logDebug}
           if isRight res
             then return $ Right ()
@@ -85,11 +85,11 @@ lazyUnlockWallet ::
   m (Either LndError ())
 lazyUnlockWallet env =
   katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
-    $(logTM) (newSev env InfoS) "RPC is running..."
+    $(logTM) (newSev env DebugS) "RPC is running..."
     unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logDebug})
     if unlocked
       then do
-        $(logTM) (newSev env InfoS) "Wallet is already unlocked, doing nothing"
+        $(logTM) (newSev env DebugS) "Wallet is already unlocked, doing nothing"
         return $ Right ()
       else unlockWallet env
 
@@ -99,13 +99,13 @@ lazyInitWallet ::
   m (Either LndError ())
 lazyInitWallet env =
   katipAddContext (sl "RpcName" LazyInitWallet) $ do
-    $(logTM) (newSev env InfoS) "RPC is running..."
+    $(logTM) (newSev env DebugS) "RPC is running..."
     unlockRes <-
       lazyUnlockWallet $
         env {envLndLogStrategy = logDebug}
     if isRight unlockRes
       then do
-        $(logTM) (newSev env InfoS) "Wallet is already initialized, doing nothing"
+        $(logTM) (newSev env DebugS) "Wallet is already initialized, doing nothing"
         return unlockRes
       else initWallet env
 
@@ -116,7 +116,7 @@ ensureHodlInvoice ::
   m (Either LndError AddInvoiceResponse)
 ensureHodlInvoice env req =
   katipAddContext (sl "RpcName" EnsureHodlInvoice) $ do
-    $(logTM) (newSev env InfoS) "RPC is running..."
+    $(logTM) (newSev env DebugS) "RPC is running..."
     let rh = AddHodlInvoice.hash req
     _ <- addHodlInvoice (env {envLndLogStrategy = logDebug}) req
     res <- lookupInvoice env rh

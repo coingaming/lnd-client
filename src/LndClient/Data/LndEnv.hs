@@ -246,7 +246,7 @@ katipAddLndContext env =
     p = toInteger $ _grpcClientConfigPort $ envLndConfig env
 
 newSeverity :: LndEnv -> Severity -> Maybe Timespan -> Maybe LndError -> Severity
-newSeverity = coerce . envLndLogStrategy
+newSeverity = loggingStrategySev . envLndLogStrategy
 
 newSev :: LndEnv -> Severity -> Severity
 newSev env sev = newSeverity env sev Nothing Nothing
