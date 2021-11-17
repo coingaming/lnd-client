@@ -1,0 +1,159 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeFamilies #-}
+
+module LndClient.Log
+  ( SecretRpc,
+    katipAddLndSecret,
+    katipAddLndPublic,
+    katipAddLndLoc,
+    rpcRunning,
+    rpcFailed,
+    rpcSucceeded,
+    newSeverity,
+    newSev,
+  )
+where
+
+import qualified Data.Set as Set
+import qualified GHC.TypeLits as GHC
+import qualified Katip
+import LndClient.Data.LndEnv
+import LndClient.Data.Type
+import LndClient.Import.External
+import qualified Network.GRPC.Client.Helpers as Grpc
+
+type family SecretRpc (t :: GHC.Symbol) :: GHC.Nat where
+--
+-- Sync
+--
+  SecretRpc "unlockWallet" = 1
+  SecretRpc "initWallet" = 1
+  SecretRpc "newAddress" = 0
+  SecretRpc "addInvoice" = 0
+  SecretRpc "addHoldInvoice" = 0
+  SecretRpc "cancelInvoice" = 0
+  SecretRpc "settleInvoice" = 0
+  SecretRpc "openChannelSync" = 0
+  SecretRpc "listChannels" = 0
+  SecretRpc "listPeers" = 0
+  SecretRpc "connectPeer" = 0
+  SecretRpc "getInfo" = 0
+  SecretRpc "sendPaymentSync" = 0
+  SecretRpc "decodePayReq" = 0
+  SecretRpc "lookupInvoice" = 0
+  SecretRpc "pendingChannels" = 0
+  SecretRpc "closedChannels" = 0
+  SecretRpc "listInvoices" = 0
+--
+-- Sub
+--
+  SecretRpc "trackPaymentV2" = 0
+  SecretRpc "subscribeHtlcEvents" = 0
+  SecretRpc "closeChannel" = 0
+  SecretRpc "openChannel" = 0
+  SecretRpc "subscribeChannelEvents" = 0
+  SecretRpc "subscribeInvoices" = 0
+  SecretRpc "subscribeSingleInvoice" = 0
+
+rpcIsSecret ::
+  forall t.
+  GHC.KnownNat (SecretRpc t) =>
+  Bool
+rpcIsSecret =
+  natVal (Proxy @(SecretRpc t)) > 0
+
+inspectSecret ::
+  forall (rpc :: GHC.Symbol) raw.
+  ( Out raw,
+    KnownNat (SecretRpc rpc)
+  ) =>
+  LndEnv ->
+  raw ->
+  Text
+inspectSecret env =
+  inspect
+    . if rpcIsSecret @rpc
+      then SecretLog (loggingStrategySecret $ envLndLogStrategy env)
+      else PrettyLog
+
+katipAddLndMeta ::
+  (KatipContext m) =>
+  LndEnv ->
+  LoggingMeta ->
+  SimpleLogPayload ->
+  m a ->
+  m a
+katipAddLndMeta env meta slp this =
+  if Set.member meta . loggingStrategyMeta $ envLndLogStrategy env
+    then Katip.katipAddContext slp this
+    else this
+
+katipAddLndSecret ::
+  forall (rpc :: GHC.Symbol) a m b.
+  ( Out a,
+    KatipContext m,
+    KnownNat (SecretRpc rpc)
+  ) =>
+  LndEnv ->
+  LoggingMeta ->
+  a ->
+  m b ->
+  m b
+katipAddLndSecret env meta =
+  katipAddLndMeta env meta
+    . sl (inspect meta)
+    . inspectSecret @rpc env
+
+katipAddLndPublic ::
+  ( Out a,
+    KatipContext m
+  ) =>
+  LndEnv ->
+  LoggingMeta ->
+  a ->
+  m b ->
+  m b
+katipAddLndPublic env meta =
+  katipAddLndMeta env meta
+    . sl (inspect meta)
+    . inspect
+
+katipAddLndLoc ::
+  ( KatipContext m
+  ) =>
+  LndEnv ->
+  m a ->
+  m a
+katipAddLndLoc env =
+  katipAddLndPublic env LndHost (Grpc._grpcClientConfigHost conf)
+    . katipAddLndPublic env LndPort (toInteger $ Grpc._grpcClientConfigPort conf)
+  where
+    conf = envLndConfig env
+
+rpcRunning :: Katip.LogStr
+rpcRunning = "RPC is running..."
+
+rpcFailed :: Katip.LogStr
+rpcFailed = "RPC failed!"
+
+rpcSucceeded :: Katip.LogStr
+rpcSucceeded = "RPC succeeded!"
+
+newSeverity ::
+  LndEnv ->
+  Severity ->
+  Maybe Timespan ->
+  Maybe LndError ->
+  Severity
+newSeverity =
+  loggingStrategySeverity
+    . envLndLogStrategy
+
+newSev ::
+  LndEnv ->
+  Severity ->
+  Severity
+newSev env sev =
+  newSeverity env sev Nothing Nothing

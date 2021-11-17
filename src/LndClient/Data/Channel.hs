@@ -33,7 +33,9 @@ data PendingUpdate (a :: TxKind) = PendingUpdate
   { txid :: TxId a,
     outputIndex :: Vout a
   }
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
+
+instance Out (PendingUpdate a)
 
 instance FromGrpc Channel LnGRPC.Channel where
   fromGrpc x =

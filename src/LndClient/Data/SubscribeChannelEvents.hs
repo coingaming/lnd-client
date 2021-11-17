@@ -18,7 +18,9 @@ data ChannelEventUpdate = ChannelEventUpdate
   { channelEvent :: UpdateChannel,
     eventType :: UpdateType
   }
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
+
+instance Out ChannelEventUpdate
 
 data UpdateChannel
   = ChannelEventUpdateChannelOpenChannel Channel
@@ -26,7 +28,9 @@ data UpdateChannel
   | ChannelEventUpdateChannelActiveChannel ChannelPoint
   | ChannelEventUpdateChannelInactiveChannel ChannelPoint
   | ChannelEventUpdateChannelPendingOpenChannel (PendingUpdate 'Funding)
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
+
+instance Out UpdateChannel
 
 data UpdateType
   = OPEN_CHANNEL
@@ -34,7 +38,9 @@ data UpdateType
   | ACTIVE_CHANNEL
   | INACTIVE_CHANNEL
   | PENDING_OPEN_CHANNEL
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
+
+instance Out UpdateType
 
 instance FromGrpc UpdateType LnGRPC.ChannelEventUpdate'UpdateType where
   fromGrpc x = case x of

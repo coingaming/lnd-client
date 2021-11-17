@@ -8,17 +8,15 @@ module LndClient.Data.LndEnv
     LndWalletPassword (..),
     LndTlsCert,
     LndHexMacaroon (..),
-    LndHost (..),
-    LndPort,
+    LndHost' (..),
+    LndPort',
     LndConfig (..),
     newLndEnv,
     readLndEnv,
     createLndTlsCert,
     unLndTlsCert,
     createLndPort,
-    katipAddLndContext,
-    newSeverity,
-    newSev,
+    enforceDebugSev,
   )
 where
 
@@ -64,11 +62,15 @@ data LndTlsCert = LndTlsCert ByteString SignedCertificate
 newtype LndHexMacaroon = LndHexMacaroon Text
   deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
-newtype LndHost = LndHost Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
+newtype LndHost' = LndHost' Text
+  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString, Generic)
 
-newtype LndPort = LndPort Int
-  deriving (PersistField, PersistFieldSql, Eq)
+instance Out LndHost'
+
+newtype LndPort' = LndPort' Int
+  deriving (PersistField, PersistFieldSql, Eq, Generic)
+
+instance Out LndPort'
 
 data LndConfig = LndConfig
   { lndConfigHost :: HostName,
@@ -82,8 +84,8 @@ data RawConfig = RawConfig
   { rawConfigLndWalletPassword :: LndWalletPassword,
     rawConfigLndTlsCert :: LndTlsCert,
     rawConfigLndHexMacaroon :: LndHexMacaroon,
-    rawConfigLndHost :: LndHost,
-    rawConfigLndPort :: LndPort,
+    rawConfigLndHost :: LndHost',
+    rawConfigLndPort :: LndPort',
     rawConfigLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
     rawConfigLndAezeedPassphrase :: Maybe AezeedPassphrase
   }
@@ -116,7 +118,7 @@ instance FromJSON LndTlsCert where
         fail $
           "Json certificate parsing error: " <> Prelude.show err
 
-instance FromJSON LndPort where
+instance FromJSON LndPort' where
   parseJSON x =
     case x of
       A.Number s -> do
@@ -176,10 +178,10 @@ createLndTlsCert bs = do
 unLndTlsCert :: LndTlsCert -> ByteString
 unLndTlsCert (LndTlsCert bs _) = coerce bs
 
-createLndPort :: Word32 -> Either LndError LndPort
+createLndPort :: Word32 -> Either LndError LndPort'
 createLndPort p = do
   let maybePort :: Maybe Int = U.safeFromIntegral p
-  maybeToRight (LndEnvError "Wrong port") $ LndPort <$> maybePort
+  maybeToRight (LndEnvError "Wrong port") $ LndPort' <$> maybePort
 
 readLndEnv :: IO LndEnv
 readLndEnv =
@@ -207,12 +209,12 @@ newLndEnv ::
   LndWalletPassword ->
   LndTlsCert ->
   LndHexMacaroon ->
-  LndHost ->
-  LndPort ->
+  LndHost' ->
+  LndPort' ->
   Maybe CipherSeedMnemonic ->
   Maybe AezeedPassphrase ->
   LndEnv
-newLndEnv pwd (LndTlsCert _ cert) mac (LndHost host) (LndPort port) seed aezeed =
+newLndEnv pwd (LndTlsCert _ cert) mac (LndHost' host) (LndPort' port) seed aezeed =
   LndEnv
     { envLndWalletPassword = pwd,
       envLndHexMacaroon = mac,
@@ -237,16 +239,12 @@ newLndEnv pwd (LndTlsCert _ cert) mac (LndHost host) (LndPort port) seed aezeed 
     port_ :: PortNumber
     port_ = fromInteger (toInteger port)
 
-katipAddLndContext :: (KatipContext m) => LndEnv -> m a -> m a
-katipAddLndContext env =
-  katipAddContext (sl "LndHost:" h)
-    . katipAddContext (sl "LndPort" p)
-  where
-    h = _grpcClientConfigHost $ envLndConfig env
-    p = toInteger $ _grpcClientConfigPort $ envLndConfig env
-
-newSeverity :: LndEnv -> Severity -> Maybe Timespan -> Maybe LndError -> Severity
-newSeverity = loggingStrategySev . envLndLogStrategy
-
-newSev :: LndEnv -> Severity -> Severity
-newSev env sev = newSeverity env sev Nothing Nothing
+enforceDebugSev :: LndEnv -> LndEnv
+enforceDebugSev env =
+  env
+    { envLndLogStrategy =
+        (envLndLogStrategy env)
+          { loggingStrategySeverity =
+              loggingStrategySeverity logDebug
+          }
+    }

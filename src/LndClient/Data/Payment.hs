@@ -13,14 +13,18 @@ data Payment = Payment
     valueMsat :: MSat,
     state :: PaymentStatus
   }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance Out Payment
 
 data PaymentStatus
   = UNKNOWN
   | IN_FLIGHT
   | SUCCEEDED
   | FAILED
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance Out PaymentStatus
 
 instance FromGrpc Payment LnGRPC.Payment where
   fromGrpc x =
