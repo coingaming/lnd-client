@@ -62,7 +62,12 @@ export LND_CLIENT_ENV_DATA="
                   \"thunder\"
                   ],
     \"lnd_aezeed_passphrase\":\"developer\",
-    \"lnd_sync_grpc_timeout_seconds\":59
+    \"lnd_sync_grpc_timeout_seconds\":59,
+    \"lnd_log_severity\":\"debug\"
 }
 "
+
+# \"lnd_log_meta\":[\"LndHost\"],
+# \"lnd_log_severity\":\"emergency\"
+
 export GODEBUG=x509ignoreCN=0

@@ -85,18 +85,21 @@ newBobEnv x =
 
 withEnv :: AppM IO () -> IO ()
 withEnv action = do
+  bc <- newBtcClient btcEnv
+  aliceLndEnv <- liftIO readLndEnv
   handleScribe <-
     mkHandleScribeWithFormatter
       bracketFormat
       ColorIfTerminal
       stdout
-      (permitItem DebugS)
+      ( permitItem
+          . fromMaybe DebugS
+          $ envLndLogSeverity aliceLndEnv
+      )
       V2
   let newLogEnv =
         registerScribe "stdout" handleScribe defaultScribeSettings
           =<< initLogEnv "LndClient" "test"
-  bc <- newBtcClient btcEnv
-  aliceLndEnv <- liftIO readLndEnv
   bracket newLogEnv rmLogEnv $ \le ->
     runKatipContextT le (mempty :: LogContexts) mempty $ do
       withTestEnv aliceLndEnv (NodeLocation "localhost:9735") $ \alice ->

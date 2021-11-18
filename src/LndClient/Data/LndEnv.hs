@@ -99,7 +99,8 @@ data LndEnv = LndEnv
     envLndAezeedPassphrase :: Maybe AezeedPassphrase,
     envLndSyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
     envLndAsyncGrpcTimeout :: Maybe GrpcTimeoutSeconds,
-    envLndConfig :: GrpcClientConfig
+    envLndConfig :: GrpcClientConfig,
+    envLndLogSeverity :: Maybe Severity
   }
 
 instance ToGrpc LndWalletPassword ByteString where
@@ -156,12 +157,27 @@ instance FromJSON LndEnv where
                 (rawConfigLndPort rc)
                 (rawConfigLndCipherSeedMnemonic rc)
                 (rawConfigLndAezeedPassphrase rc)
+        let logStrategy =
+              envLndLogStrategy res
         withObject
           "LndEnv"
           ( \obj ->
-              (\x y -> res {envLndSyncGrpcTimeout = x, envLndAsyncGrpcTimeout = y})
+              ( \x0 x1 x2 x3 ->
+                  res
+                    { envLndSyncGrpcTimeout = x0,
+                      envLndAsyncGrpcTimeout = x1,
+                      envLndLogSeverity = x2,
+                      envLndLogStrategy =
+                        logStrategy
+                          { loggingStrategyMeta =
+                              fromMaybe (loggingStrategyMeta logStrategy) x3
+                          }
+                    }
+              )
                 <$> obj .:? "lnd_sync_grpc_timeout_seconds"
                 <*> obj .:? "lnd_async_grpc_timeout_seconds"
+                <*> obj .:? "lnd_log_severity"
+                <*> obj .:? "lnd_log_meta"
           )
           arg
 
@@ -232,7 +248,8 @@ newLndEnv pwd (LndTlsCert _ cert) mac (LndHost' host) (LndPort' port) seed aezee
             _grpcClientConfigTLS =
               Just . selfSignedCertificateValidation [cert] $
                 TLS.defaultParamsClient host_ (Universum.show port_)
-          }
+          },
+      envLndLogSeverity = Just DebugS
     }
   where
     host_ = unpack host

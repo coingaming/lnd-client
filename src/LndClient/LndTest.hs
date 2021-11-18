@@ -543,19 +543,19 @@ receiveInvoice ::
   ( MonadUnliftIO m,
     KatipContext m
   ) =>
+  LndEnv ->
   RHash ->
   Invoice.InvoiceState ->
   TChan (a, Invoice) ->
   m (Either LndError ())
-receiveInvoice rh s q = do
+receiveInvoice env rh s q = do
   mx0 <- readTChanTimeout (MicroSecondsDelay 30000000) q
   let mx = snd <$> mx0
-  $(logTM) DebugS $
-    logStr $
-      "receiveInvoice - " <> inspect mx
+  katipAddLndPublic env LndTestReceiveInvoice mx $
+    $(logTM) DebugS rpcSucceeded
   case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
     Just True -> return $ Right ()
-    Just False -> receiveInvoice rh s q
+    Just False -> receiveInvoice env rh s q
     Nothing -> return . Left $ TChanTimeout "receiveInvoice"
 
 liftMaybe :: MonadIO m => String -> Maybe a -> m a

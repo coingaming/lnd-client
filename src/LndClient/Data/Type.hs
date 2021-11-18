@@ -44,9 +44,12 @@ data LoggingMeta
   | LndElapsedSeconds
   | LndElapsedSecondsSub
   | LndMethodCompose
+  | LndTestReceiveInvoice
   deriving (Eq, Ord, Show, Read, Generic, Enum, Bounded)
 
 instance Out LoggingMeta
+
+instance FromJSON LoggingMeta
 
 data LoggingStrategy = LoggingStrategy
   { loggingStrategySeverity ::

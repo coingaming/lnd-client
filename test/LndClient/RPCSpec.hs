@@ -96,6 +96,7 @@ spec = do
       inv <- liftLndResult =<< addInvoice lnd addInvoiceRequest
       res <-
         receiveInvoice
+          lnd
           (AddInvoice.rHash inv)
           Invoice.OPEN
           queue
@@ -108,12 +109,12 @@ spec = do
       inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
       let rh = AddInvoice.rHash inv
       liftLndResult
-        =<< receiveInvoice rh Invoice.OPEN chan
+        =<< receiveInvoice bob rh Invoice.OPEN chan
       alice <- getLndEnv Alice
       let pr = AddInvoice.paymentRequest inv
       let spr = SendPaymentRequest pr $ MSat 1000000
       void $ liftLndResult =<< sendPayment alice spr
-      res <- receiveInvoice rh Invoice.SETTLED chan
+      res <- receiveInvoice bob rh Invoice.SETTLED chan
       liftIO $ res `shouldSatisfy` isRight
   it "addHodlInvoice" $
     withEnv $ do
@@ -140,6 +141,7 @@ spec = do
         inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
         res <-
           receiveInvoice
+            bob
             (AddInvoice.rHash inv)
             Invoice.OPEN
             chan
@@ -219,7 +221,7 @@ spec = do
           =<< addHodlInvoice bob hipr
       watchSingleInvoice Bob rh
       liftLndResult
-        =<< receiveInvoice rh Invoice.OPEN q
+        =<< receiveInvoice bob rh Invoice.OPEN q
       let spr = SendPaymentRequest pr $ MSat 1000000
       alice <- getLndEnv Alice
       withSpawnLink
@@ -231,10 +233,10 @@ spec = do
             -- https://github.com/lightningnetwork/lnd/issues/4544
             --
             liftLndResult
-              =<< receiveInvoice rh Invoice.ACCEPTED qq
+              =<< receiveInvoice bob rh Invoice.ACCEPTED qq
             res <- cancelInvoice bob rh
             liftLndResult
-              =<< receiveInvoice rh Invoice.CANCELED qq
+              =<< receiveInvoice bob rh Invoice.CANCELED qq
             liftIO $ res `shouldSatisfy` isRight
         )
   it "settleInvoice" $
@@ -250,7 +252,7 @@ spec = do
       pr <- liftLndResult =<< addHodlInvoice bob hipr
       watchSingleInvoice Bob rh
       liftLndResult
-        =<< receiveInvoice rh Invoice.OPEN q
+        =<< receiveInvoice bob rh Invoice.OPEN q
       let spr = SendPaymentRequest pr $ MSat 1000000
       alice <- getLndEnv Alice
       withSpawnLink
@@ -262,10 +264,10 @@ spec = do
             -- https://github.com/lightningnetwork/lnd/issues/4544
             --
             liftLndResult
-              =<< receiveInvoice rh Invoice.ACCEPTED qq
+              =<< receiveInvoice bob rh Invoice.ACCEPTED qq
             res <- settleInvoice bob r
             liftLndResult
-              =<< receiveInvoice rh Invoice.SETTLED qq
+              =<< receiveInvoice bob rh Invoice.SETTLED qq
             liftIO $ res `shouldSatisfy` isRight
         )
   it "listInvoices" $
