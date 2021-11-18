@@ -3,6 +3,7 @@
 module LndClient.Data.Type
   ( LndError (..),
     LoggingStrategy (..),
+    LoggingMeta (..),
     LnInitiator (..),
     logDefault,
     logDebug,
@@ -11,6 +12,7 @@ where
 
 import Chronos (Timespan)
 import Control.Exception (Exception)
+import qualified Data.Set as Set
 import LndClient.Import.External
 import LndClient.Orphan ()
 import qualified Network.HTTP2.Client.Exceptions as E
@@ -29,9 +31,35 @@ data LndError
 
 instance Out LndError
 
-newtype LoggingStrategy
-  = LoggingStrategy
-      (Severity -> Maybe Timespan -> Maybe LndError -> Severity)
+data LoggingMeta
+  = LndHost
+  | LndPort
+  | LndMethod
+  | LndRequest
+  | LndRequestGrpc
+  | LndResponse
+  | LndResponseGrpc
+  | LndResponseSub
+  | LndResponseGrpcSub
+  | LndElapsedSeconds
+  | LndElapsedSecondsSub
+  | LndMethodCompose
+  | LndTestReceiveInvoice
+  deriving (Eq, Ord, Show, Read, Generic, Enum, Bounded)
+
+instance Out LoggingMeta
+
+instance FromJSON LoggingMeta
+
+data LoggingStrategy = LoggingStrategy
+  { loggingStrategySeverity ::
+      Severity ->
+      Maybe Timespan ->
+      Maybe LndError ->
+      Severity,
+    loggingStrategySecret :: SecretVision,
+    loggingStrategyMeta :: Set LoggingMeta
+  }
 
 data LnInitiator
   = LnInitiatorUnknown
@@ -46,10 +74,18 @@ derivePersistField "LnInitiator"
 
 logDefault :: LoggingStrategy
 logDefault =
-  LoggingStrategy $ \x _ _ -> x
+  LoggingStrategy
+    { loggingStrategySeverity = \x _ _ -> x,
+      loggingStrategySecret = SecretHidden,
+      loggingStrategyMeta = Set.fromList enumerate
+    }
 
 logDebug :: LoggingStrategy
 logDebug =
-  LoggingStrategy $ \_ _ _ -> DebugS
+  LoggingStrategy
+    { loggingStrategySeverity = \_ _ _ -> DebugS,
+      loggingStrategySecret = SecretHidden,
+      loggingStrategyMeta = Set.fromList enumerate
+    }
 
 instance Exception LndError

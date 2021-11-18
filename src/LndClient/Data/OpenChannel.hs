@@ -34,23 +34,31 @@ data OpenStatusUpdate = OpenStatusUpdate
   { pendingChanId :: ByteString,
     update :: Maybe OpenStatusUpdate'
   }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance Out OpenStatusUpdate
 
 data OpenStatusUpdate'
   = OpenStatusUpdateChanPending (PendingUpdate 'Funding)
   | OpenStatusUpdateChanOpen ChannelOpenUpdate
   | OpenStatusUpdatePsbtFund ReadyForPsbtFunding
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance Out OpenStatusUpdate'
 
 newtype ChannelOpenUpdate = ChannelOpenUpdate ChannelPoint
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance Out ChannelOpenUpdate
 
 data ReadyForPsbtFunding = ReadyForPsbtFunding
   { fundingAddress :: Text,
     fundingAmount :: MSat,
     psbt :: ByteString
   }
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic)
+
+instance Out ReadyForPsbtFunding
 
 instance FromGrpc OpenStatusUpdate LnGRPC.OpenStatusUpdate where
   fromGrpc x =

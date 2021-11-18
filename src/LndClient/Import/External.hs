@@ -48,13 +48,13 @@ import Katip as Import
     LogEnv (..),
     Namespace,
     Severity (..),
+    SimpleLogPayload,
     Verbosity (..),
     bracketFormat,
     closeScribes,
     defaultScribeSettings,
     initLogEnv,
     jsonFormat,
-    katipAddContext,
     logStr,
     logTM,
     mkHandleScribeWithFormatter,
@@ -64,8 +64,13 @@ import Katip as Import
     sl,
   )
 import Text.PrettyPrint.GenericPretty as Import (Out (..))
+import Text.PrettyPrint.GenericPretty.Import as Import
+  ( PrettyLog (..),
+    SecretVision (..),
+    inspect,
+    inspectStr,
+  )
 import Text.PrettyPrint.GenericPretty.Instance as Import ()
-import Text.PrettyPrint.GenericPretty.Util as Import (inspect, inspectStr)
 import Universum as Import hiding (Text, catch, finally, show)
 import UnliftIO as Import
   ( Handler (..),

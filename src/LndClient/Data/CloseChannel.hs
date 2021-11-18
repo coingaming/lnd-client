@@ -31,13 +31,17 @@ data CloseStatusUpdate
   = Pending (PendingUpdate 'Closing)
   | Close ChannelCloseUpdate
   | NothingUpdate
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
+
+instance Out CloseStatusUpdate
 
 data ChannelCloseUpdate = ChannelCloseUpdate
   { closingTxid :: TxId 'Closing,
     success :: Bool
   }
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
+
+instance Out ChannelCloseUpdate
 
 data ChannelCloseSummary = ChannelCloseSummary
   { remotePubkey :: NodePubKey,

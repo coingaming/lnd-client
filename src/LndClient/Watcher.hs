@@ -137,7 +137,7 @@ withWatcher env sub handler action =
       )
       ( do
           atomically $ writeTChan writeKillChan KillSignal
-          run . $(logTM) InfoS $ "Watcher terminated"
+          run . $(logTM) DebugS $ "Watcher terminated"
       )
 
 -- | Compute an action with given subscription watcher
@@ -202,7 +202,7 @@ loop w = do
           else cmd <|> task
     Right x ->
       return x
-  $(logTM) (newSev w InfoS) "Watcher - applying event"
+  $(logTM) (newSev w DebugS) "Watcher - applying event"
   case event of
     EventCmd x -> applyCmd w x
     EventLnd x -> applyLnd w (second Right x)
@@ -228,7 +228,7 @@ applyCmd ::
   m ()
 applyCmd w = \case
   Watch watchPid x -> do
-    $(logTM) (newSev w InfoS) "Watcher - applying Cmd Watch"
+    $(logTM) (newSev w DebugS) "Watcher - applying Cmd Watch"
     if isJust $ Map.lookup x ts
       then loop w
       else do
@@ -247,14 +247,14 @@ applyCmd w = \case
             pure $ TaskPid t
         loop w {watcherStateTasks = Map.insert x t ts}
   UnWatch x -> do
-    $(logTM) (newSev w InfoS) "Watcher - applying Cmd UnWatch"
+    $(logTM) (newSev w DebugS) "Watcher - applying Cmd UnWatch"
     case Map.lookup x ts of
       Nothing -> loop w
       Just t -> do
         liftIO . Async.cancel $ unTaskPid t
         loop w {watcherStateTasks = Map.delete x ts}
   UnWatchAll -> do
-    $(logTM) (newSev w InfoS) "Watcher - applying Cmd UnWatchAll"
+    $(logTM) (newSev w DebugS) "Watcher - applying Cmd UnWatchAll"
     liftIO $ do
       atomically $ writeTChan writeKillChan KillSignal
       mapM_ (Async.cancel . unTaskPid) $ Map.elems ts
@@ -269,7 +269,7 @@ applyLnd ::
   (req, Either LndError res) ->
   m ()
 applyLnd w (x0, x1) = do
-  $(logTM) (newSev w InfoS) "Watcher - applying Lnd"
+  $(logTM) (newSev w DebugS) "Watcher - applying Lnd"
   watcherStateHandler w x0 x1
   loop w
 
@@ -279,7 +279,7 @@ applyTask ::
   (req, Maybe LndError) ->
   m ()
 applyTask w0 (x, res) = do
-  $(logTM) (newSev w0 InfoS) "Watcher - applying Task"
+  $(logTM) (newSev w0 DebugS) "Watcher - applying Task"
   case Map.lookup x ts of
     Nothing -> loop w0
     Just t -> do

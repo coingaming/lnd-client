@@ -15,14 +15,18 @@ data HtlcEvent = HtlcEvent
     timestampNs :: Word64,
     eventType :: EventType
   }
-  deriving (Eq)
+  deriving (Eq, Generic)
+
+instance Out HtlcEvent
 
 data EventType
   = UNKNOWN
   | SEND
   | RECEIVE
   | FORWARD
-  deriving (Eq)
+  deriving (Eq, Generic)
+
+instance Out EventType
 
 instance FromGrpc HtlcEvent LnGRPC.HtlcEvent where
   fromGrpc x =

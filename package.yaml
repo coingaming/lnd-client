@@ -18,13 +18,13 @@ dependencies:
 - base                  >= 4.7 && < 5
 - universum             >= 1.5.0 && < 1.5.1
 # time
-- chronos               >= 1.0.7
+- chronos               >= 1.0.7 && < 1.1
 - unbounded-delays      >= 0.1.1.0 && < 0.1.2
 # storage
 - persistent            >= 2.11.0.2
 - persistent-template   >= 2.9
 # logging
-- katip                 >= 0.8.3.0
+- katip                 >= 0.8.3.0 && < 0.8.5
 - pretty-simple
 - pretty
 - GenericPretty

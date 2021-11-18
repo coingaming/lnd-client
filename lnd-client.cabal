@@ -64,6 +64,7 @@ library
       LndClient.Import
       LndClient.Import.External
       LndClient.LndTest
+      LndClient.Log
       LndClient.Orphan
       LndClient.QRCode
       LndClient.RPC.Generic
@@ -107,7 +108,7 @@ library
     , base16-bytestring >=1.0.1.0 && <1.0.2
     , base64-bytestring >=1.0.0.2 && <1.0.1
     , bytestring >=0.10.8.2 && <0.10.9
-    , chronos >=1.0.7
+    , chronos >=1.0.7 && <1.1
     , containers >=0.6.0.1 && <0.6.1
     , cryptohash-sha256 >=0.11.101.0 && <0.11.102
     , cryptonite >=0.25 && <0.29
@@ -120,7 +121,7 @@ library
     , http2-client-grpc >=0.8.0.0
     , http2-grpc-proto-lens >=0.1.0.0
     , http2-grpc-types >=0.5.0.0
-    , katip >=0.8.3.0
+    , katip >=0.8.3.0 && <0.8.5
     , microlens >=0.4.10
     , network-bitcoin ==1.8.3
     , pem >=0.2.4 && <0.3
@@ -186,6 +187,7 @@ test-suite lnd-client-test
       LndClient.Import
       LndClient.Import.External
       LndClient.LndTest
+      LndClient.Log
       LndClient.Orphan
       LndClient.QRCode
       LndClient.RPC.Generic
@@ -231,7 +233,7 @@ test-suite lnd-client-test
     , base16-bytestring >=1.0.1.0 && <1.0.2
     , base64-bytestring >=1.0.0.2 && <1.0.1
     , bytestring >=0.10.8.2 && <0.10.9
-    , chronos >=1.0.7
+    , chronos >=1.0.7 && <1.1
     , containers >=0.6.0.1 && <0.6.1
     , cryptohash-sha256 >=0.11.101.0 && <0.11.102
     , cryptonite >=0.25 && <0.29
@@ -245,7 +247,7 @@ test-suite lnd-client-test
     , http2-client-grpc >=0.8.0.0
     , http2-grpc-proto-lens >=0.1.0.0
     , http2-grpc-types >=0.5.0.0
-    , katip >=0.8.3.0
+    , katip >=0.8.3.0 && <0.8.5
     , microlens >=0.4.10
     , network-bitcoin ==1.8.3
     , pem >=0.2.4 && <0.3

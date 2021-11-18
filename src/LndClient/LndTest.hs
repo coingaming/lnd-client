@@ -247,7 +247,7 @@ mine :: forall m owner. LndTest m owner => Int -> owner -> m ()
 mine blocks owner = do
   btcAddr <- walletAddress owner
   bc <- getBtcClient owner
-  sev <- getSev owner InfoS
+  sev <- getSev owner DebugS
   $(logTM) sev $
     logStr $
       "Mining "
@@ -285,7 +285,7 @@ syncWallets = const $ this 0
       $(logTM) sev $ logStr msg
       pure . Left $ LndError msg
     this (attempt :: Int) = do
-      sev <- getSev (minBound :: owner) InfoS
+      sev <- getSev (minBound :: owner) DebugS
       $(logTM) sev "SyncWallets is running"
       rs <- mapM (Lnd.getInfo <=< getLndEnv) (enumerate :: [owner])
       if all isInSync rs
@@ -317,7 +317,7 @@ syncPendingChannelsFor owner = this 0
       $(logTM) sev $ logStr msg
       pure . Left $ LndError msg
     this (attempt :: Int) = do
-      sev <- getSev owner InfoS
+      sev <- getSev owner DebugS
       $(logTM) sev $
         logStr $
           "SyncPendingChannelsFor "
@@ -409,7 +409,7 @@ closeAllChannels po = do
       error $
         "CloseAllChannels - limit exceeded for " <> inspect owners
     this attempt (owner0, owner1) = do
-      sev <- getSev owner0 InfoS
+      sev <- getSev owner0 DebugS
       $(logTM) sev "CloseAllChannels - closing channels"
       lnd0 <- getLndEnv owner0
       peerLocation <- getNodeLocation owner1
@@ -483,7 +483,7 @@ setupOneChannel ownerFrom ownerTo = do
   --
   -- Open channel from Customer to Merchant
   --
-  sev <- getSev ownerFrom InfoS
+  sev <- getSev ownerFrom DebugS
   $(logTM) sev "SetupOneChannel - opening channel"
   GetInfoResponse merchantPubKey _ _ <-
     liftLndResult =<< Lnd.getInfo lndTo
@@ -543,19 +543,19 @@ receiveInvoice ::
   ( MonadUnliftIO m,
     KatipContext m
   ) =>
+  LndEnv ->
   RHash ->
   Invoice.InvoiceState ->
   TChan (a, Invoice) ->
   m (Either LndError ())
-receiveInvoice rh s q = do
+receiveInvoice env rh s q = do
   mx0 <- readTChanTimeout (MicroSecondsDelay 30000000) q
   let mx = snd <$> mx0
-  $(logTM) DebugS $
-    logStr $
-      "receiveInvoice - " <> inspect mx
+  katipAddLndPublic env LndTestReceiveInvoice mx $
+    $(logTM) DebugS rpcSucceeded
   case (\x -> Invoice.rHash x == rh && Invoice.state x == s) <$> mx of
     Just True -> return $ Right ()
-    Just False -> receiveInvoice rh s q
+    Just False -> receiveInvoice env rh s q
     Nothing -> return . Left $ TChanTimeout "receiveInvoice"
 
 liftMaybe :: MonadIO m => String -> Maybe a -> m a

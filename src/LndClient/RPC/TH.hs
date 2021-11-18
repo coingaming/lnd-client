@@ -53,11 +53,12 @@ data RpcKind = RpcSilent | RpcKatip
 
 mkRpc :: RpcKind -> Q [Dec]
 mkRpc k = do
+  m <- VarT <$> newName "m"
   [d|
     getInfo ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
-      m (Either LndError GI.GetInfoResponse)
+      $(pure m) (Either LndError GI.GetInfoResponse)
     getInfo env =
       $(grpcRetry) $
         $(grpcSync)
@@ -66,9 +67,9 @@ mkRpc k = do
           (defMessage :: LnGRPC.GetInfoRequest)
 
     initWallet ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     initWallet env = do
       case envLndCipherSeedMnemonic env of
         Nothing -> pure . Left $ LndEnvError "CipherSeed is required for initWallet"
@@ -91,9 +92,9 @@ mkRpc k = do
             else return res
 
     unlockWallet ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     unlockWallet env = do
       res <-
         $(grpcRetry) $
@@ -109,10 +110,10 @@ mkRpc k = do
         else return res
 
     newAddress ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       NewAddressRequest ->
-      m (Either LndError NewAddressResponse)
+      $(pure m) (Either LndError NewAddressResponse)
     newAddress env =
       $(grpcRetry)
         . $(grpcSync)
@@ -120,10 +121,10 @@ mkRpc k = do
           env
 
     addInvoice ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       AddInvoiceRequest ->
-      m (Either LndError AddInvoiceResponse)
+      $(pure m) (Either LndError AddInvoiceResponse)
     addInvoice env =
       $(grpcRetry)
         . $(grpcSync)
@@ -131,10 +132,10 @@ mkRpc k = do
           env
 
     addHodlInvoice ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       AddHodlInvoiceRequest ->
-      m (Either LndError PaymentRequest)
+      $(pure m) (Either LndError PaymentRequest)
     addHodlInvoice env =
       $(grpcRetry)
         . $(grpcSync)
@@ -142,10 +143,10 @@ mkRpc k = do
           env
 
     cancelInvoice ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       RHash ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     cancelInvoice env =
       $(grpcRetry)
         . $(grpcSync)
@@ -153,10 +154,10 @@ mkRpc k = do
           env
 
     settleInvoice ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       RPreimage ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     settleInvoice env =
       $(grpcRetry)
         . $(grpcSync)
@@ -164,22 +165,22 @@ mkRpc k = do
           env
 
     subscribeSingleInvoice ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       (Invoice -> IO ()) ->
       LndEnv ->
       RHash ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     subscribeSingleInvoice =
       $(grpcSubscribe)
         (RPC :: RPC LnGRPC.Invoices "subscribeSingleInvoice")
 
     subscribeSingleInvoiceChan ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       (req -> RHash) ->
       Maybe (TChan (req, Invoice)) ->
       LndEnv ->
       req ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     subscribeSingleInvoiceChan accessor mq env req = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
       subscribeSingleInvoice
@@ -188,21 +189,21 @@ mkRpc k = do
         $ accessor req
 
     subscribeInvoices ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       (Invoice -> IO ()) ->
       LndEnv ->
       SubscribeInvoicesRequest ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     subscribeInvoices =
       $(grpcSubscribe)
         (RPC :: RPC LnGRPC.Lightning "subscribeInvoices")
 
     subscribeInvoicesChan ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       Maybe (TChan (SubscribeInvoicesRequest, Invoice)) ->
       LndEnv ->
       SubscribeInvoicesRequest ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     subscribeInvoicesChan mq env req = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
       subscribeInvoices
@@ -211,10 +212,10 @@ mkRpc k = do
         req
 
     subscribeChannelEvents ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       (ChannelEventUpdate -> IO ()) ->
       LndEnv ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     subscribeChannelEvents handler env =
       $(grpcSubscribe)
         (RPC :: RPC LnGRPC.Lightning "subscribeChannelEvents")
@@ -223,10 +224,10 @@ mkRpc k = do
         (defMessage :: LnGRPC.ChannelEventSubscription)
 
     subscribeChannelEventsChan ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       Maybe (TChan ((), ChannelEventUpdate)) ->
       LndEnv ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     subscribeChannelEventsChan mq env = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mq
       subscribeChannelEvents
@@ -234,28 +235,28 @@ mkRpc k = do
         env
 
     openChannel ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       (OpenStatusUpdate -> IO ()) ->
       LndEnv ->
       OpenChannelRequest ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     openChannel =
       $(grpcSubscribe)
         (RPC :: RPC LnGRPC.Lightning "openChannel")
 
     openChannelSync ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       OpenChannelRequest ->
-      m (Either LndError ChannelPoint)
+      $(pure m) (Either LndError ChannelPoint)
     openChannelSync =
       $(grpcSync) (RPC :: RPC LnGRPC.Lightning "openChannelSync")
 
     listChannels ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       ListChannelsRequest ->
-      m (Either LndError [Channel])
+      $(pure m) (Either LndError [Channel])
     listChannels env =
       $(grpcRetry)
         . $(grpcSync)
@@ -263,10 +264,10 @@ mkRpc k = do
           env
 
     listInvoices ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       ListInvoiceRequest ->
-      m (Either LndError ListInvoiceResponse)
+      $(pure m) (Either LndError ListInvoiceResponse)
     listInvoices env =
       $(grpcRetry)
         . $(grpcSync)
@@ -274,10 +275,10 @@ mkRpc k = do
           env
 
     closedChannels ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       ClosedChannelsRequest ->
-      m (Either LndError [ChannelCloseSummary])
+      $(pure m) (Either LndError [ChannelCloseSummary])
     closedChannels env =
       $(grpcRetry)
         . $(grpcSync)
@@ -285,19 +286,19 @@ mkRpc k = do
           env
 
     closeChannel ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       (CloseStatusUpdate -> IO ()) ->
       LndEnv ->
       CloseChannelRequest ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     closeChannel =
       $(grpcSubscribe)
         (RPC :: RPC LnGRPC.Lightning "closeChannel")
 
     listPeers ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
-      m (Either LndError [Peer])
+      $(pure m) (Either LndError [Peer])
     listPeers env =
       $(grpcRetry) $
         $(grpcSync)
@@ -306,10 +307,10 @@ mkRpc k = do
           (defMessage :: LnGRPC.ListPeersRequest)
 
     connectPeer ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       ConnectPeerRequest ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     connectPeer env =
       $(grpcRetry)
         . $(grpcSync)
@@ -317,10 +318,10 @@ mkRpc k = do
           env
 
     lazyConnectPeer ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       ConnectPeerRequest ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     lazyConnectPeer env cpr = do
       eps <- listPeers env
       case eps of
@@ -334,10 +335,10 @@ mkRpc k = do
         pk = pubkey $ addr cpr
 
     sendPayment ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       SendPaymentRequest ->
-      m (Either LndError SendPaymentResponse)
+      $(pure m) (Either LndError SendPaymentResponse)
     sendPayment env =
       $(grpcRetry)
         . $(grpcSync)
@@ -345,10 +346,10 @@ mkRpc k = do
           env
 
     subscribeHtlcEvents ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       (HtlcEvent -> IO ()) ->
       LndEnv ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     subscribeHtlcEvents handler env =
       $(grpcSubscribe)
         (RPC :: RPC LnGRPC.Router "subscribeHtlcEvents")
@@ -357,10 +358,10 @@ mkRpc k = do
         (defMessage :: LnGRPC.SubscribeHtlcEventsRequest)
 
     decodePayReq ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       PaymentRequest ->
-      m (Either LndError PayReq)
+      $(pure m) (Either LndError PayReq)
     decodePayReq env =
       $(grpcRetry)
         . $(grpcSync)
@@ -368,10 +369,10 @@ mkRpc k = do
           env
 
     lookupInvoice ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
       RHash ->
-      m (Either LndError Invoice)
+      $(pure m) (Either LndError Invoice)
     lookupInvoice env =
       $(grpcRetry)
         . $(grpcSync)
@@ -379,21 +380,21 @@ mkRpc k = do
           env
 
     trackPaymentV2 ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       (Payment -> IO ()) ->
       LndEnv ->
       TrackPaymentRequest ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     trackPaymentV2 =
       $(grpcSubscribe)
         (RPC :: RPC LnGRPC.Router "trackPaymentV2")
 
     trackPaymentV2Chan ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       Maybe (TChan (TrackPaymentRequest, Payment)) ->
       LndEnv ->
       TrackPaymentRequest ->
-      m (Either LndError ())
+      $(pure m) (Either LndError ())
     trackPaymentV2Chan mc env req = do
       q <- fromMaybeM (atomically newBroadcastTChan) $ pure mc
       trackPaymentV2
@@ -402,9 +403,9 @@ mkRpc k = do
         req
 
     pendingChannels ::
-      ($(tcc) m) =>
+      $(tcc m) =>
       LndEnv ->
-      m (Either LndError PendingChannelsResponse)
+      $(pure m) (Either LndError PendingChannelsResponse)
     pendingChannels env =
       $(grpcRetry) $
         $(grpcSync)
@@ -413,9 +414,9 @@ mkRpc k = do
           (defMessage :: LnGRPC.PendingChannelsRequest)
     |]
   where
-    tcc = case k of
-      RpcSilent -> [t|MonadUnliftIO|]
-      RpcKatip -> [t|KatipContext|]
+    tcc m = case k of
+      RpcSilent -> [t|(MonadUnliftIO $(pure m))|]
+      RpcKatip -> [t|(KatipContext $(pure m), MonadUnliftIO $(pure m))|]
     grpcRetry = case k of
       RpcSilent -> [e|retrySilent|]
       RpcKatip -> [e|retryKatip|]

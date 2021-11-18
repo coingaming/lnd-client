@@ -1,3 +1,4 @@
+{-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 -- | List of functions, used to communicate with LND via gRPC.
@@ -58,67 +59,68 @@ import LndClient.Util as Util
 $(mkRpc RpcKatip)
 
 waitForGrpc ::
-  (KatipContext m) =>
+  (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
   m (Either LndError ())
 waitForGrpc env =
-  katipAddContext (sl "RpcName" WaitForGrpc) $ this 30
+  katipAddLndPublic env LndMethodCompose WaitForGrpc $ do
+    $(logTM) (newSev env DebugS) rpcRunning
+    this 30
   where
     this (x :: Int) =
       if x > 0
         then do
-          $(logTM) (newSev env InfoS) "Waiting for GRPC..."
-          res <- getInfo $ env {envLndLogStrategy = logDebug}
+          $(logTM) (newSev env DebugS) "Waiting for GRPC..."
+          res <- getInfo $ enforceDebugSev env
           if isRight res
             then return $ Right ()
             else do
               sleep $ MicroSecondsDelay 1000000
               this $ x - 1
         else do
-          let msg :: Text = "waitForGrpc attempt limit exceeded"
+          let msg :: Text = "WaitForGrpc attempt limit exceeded!"
           $(logTM) (newSev env ErrorS) $ logStr msg
           return . Left $ LndError msg
 
 lazyUnlockWallet ::
-  KatipContext m =>
+  (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
   m (Either LndError ())
 lazyUnlockWallet env =
-  katipAddContext (sl "RpcName" LazyUnlockWallet) $ do
-    $(logTM) (newSev env InfoS) "RPC is running..."
-    unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logDebug})
+  katipAddLndPublic env LndMethodCompose LazyUnlockWallet $ do
+    $(logTM) (newSev env DebugS) rpcRunning
+    unlocked <- isRight <$> getInfo (enforceDebugSev env)
     if unlocked
       then do
-        $(logTM) (newSev env InfoS) "Wallet is already unlocked, doing nothing"
+        $(logTM) (newSev env DebugS) "Wallet is already unlocked, doing nothing!"
         return $ Right ()
       else unlockWallet env
 
 lazyInitWallet ::
-  KatipContext m =>
+  (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
   m (Either LndError ())
 lazyInitWallet env =
-  katipAddContext (sl "RpcName" LazyInitWallet) $ do
-    $(logTM) (newSev env InfoS) "RPC is running..."
+  katipAddLndPublic env LndMethodCompose LazyInitWallet $ do
+    $(logTM) (newSev env DebugS) rpcRunning
     unlockRes <-
-      lazyUnlockWallet $
-        env {envLndLogStrategy = logDebug}
+      lazyUnlockWallet $ enforceDebugSev env
     if isRight unlockRes
       then do
-        $(logTM) (newSev env InfoS) "Wallet is already initialized, doing nothing"
+        $(logTM) (newSev env DebugS) "Wallet is already initialized, doing nothing!"
         return unlockRes
       else initWallet env
 
 ensureHodlInvoice ::
-  KatipContext m =>
+  (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
   AddHodlInvoiceRequest ->
   m (Either LndError AddInvoiceResponse)
 ensureHodlInvoice env req =
-  katipAddContext (sl "RpcName" EnsureHodlInvoice) $ do
-    $(logTM) (newSev env InfoS) "RPC is running..."
+  katipAddLndPublic env LndMethodCompose EnsureHodlInvoice $ do
+    $(logTM) (newSev env DebugS) rpcRunning
     let rh = AddHodlInvoice.hash req
-    _ <- addHodlInvoice (env {envLndLogStrategy = logDebug}) req
+    void $ addHodlInvoice (enforceDebugSev env) req
     res <- lookupInvoice env rh
     return $ case res of
       Left x -> Left x
@@ -136,22 +138,27 @@ closeChannelSync ::
   Maybe ConnectPeerRequest ->
   CloseChannelRequest ->
   m (Either LndError ())
-closeChannelSync env mConn req = do
-  cs0 <- listChannels env (ListChannels.ListChannelsRequest False False False False Nothing)
-  case cs0 of
-    Left err -> pure $ Left err
-    Right x ->
-      case filter (\ch -> channelPoint req == Channel.channelPoint ch) x of
-        [] -> do
-          $(logTM) (newSev env WarningS) "Cannot close channel that is not active"
-          return $ Right ()
-        _ -> do
-          mVar <- newEmptyMVar
-          closeChannelRecursive mVar 10
+closeChannelSync env mConn req =
+  katipAddLndPublic env LndMethodCompose CloseChannelSync $ do
+    $(logTM) (newSev env DebugS) rpcRunning
+    cs0 <-
+      listChannels
+        env
+        $ ListChannels.ListChannelsRequest False False False False Nothing
+    case cs0 of
+      Left err -> pure $ Left err
+      Right x ->
+        case filter (\ch -> channelPoint req == Channel.channelPoint ch) x of
+          [] -> do
+            $(logTM) (newSev env WarningS) "Cannot close channel that is not active!"
+            return $ Right ()
+          _ -> do
+            mVar <- newEmptyMVar
+            closeChannelRecursive mVar 10
   where
     closeChannelRecursive _ (0 :: Int) = do
-      $(logTM) (newSev env ErrorS) "Channel couldn't be closed."
-      return $ Left $ LndError "Cannot close channel"
+      $(logTM) (newSev env ErrorS) "Channel couldn't be closed!"
+      return . Left $ LndError "Channel couldn't be closed!"
     closeChannelRecursive mVar0 n = do
       whenJust mConn $ void . lazyConnectPeer env
       void $
@@ -164,4 +171,4 @@ closeChannelSync env mConn req = do
       upd <- tryTakeMVar mVar0
       case upd of
         Just _ -> return $ Right ()
-        Nothing -> closeChannelRecursive mVar0 (n -1)
+        Nothing -> closeChannelRecursive mVar0 $ n - 1

@@ -1,10 +1,8 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE OverloadedLists #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeApplications #-}
 
 module LndClient.RPC.Generic
   ( grpcSyncSilent,
@@ -16,8 +14,7 @@ module LndClient.RPC.Generic
 where
 
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
-import qualified Data.Text.Lazy as T
-import GHC.TypeLits
+import qualified GHC.TypeLits as GHC
 import LndClient.Import
 import LndGrpc.Client
 import qualified Network.GRPC.HTTP2.ProtoLens as PL
@@ -52,12 +49,16 @@ data RpcName
   | ClosedChannels
   | ListInvoices
   | SubscribeSingleInvoice
+  | CloseChannelSync
   deriving (Generic)
 
 instance ToJSON RpcName
 
+instance Out RpcName
+
 showElapsedSeconds :: Timespan -> Text
-showElapsedSeconds = encodeTimespan SubsecondPrecisionAuto
+showElapsedSeconds =
+  encodeTimespan SubsecondPrecisionAuto
 
 grpcSyncSilent ::
   ( MonadUnliftIO m,
@@ -67,48 +68,62 @@ grpcSyncSilent ::
     gA ~ MethodInput s rm,
     gB ~ MethodOutput s rm
   ) =>
-  PL.RPC s (rm :: Symbol) ->
+  PL.RPC s (rm :: GHC.Symbol) ->
   LndEnv ->
   a ->
   m (Either LndError b)
 grpcSyncSilent rpc env req =
   case toGrpc req of
-    Right gReq -> join . second fromGrpc <$> runUnary rpc env gReq
-    Left err -> pure $ Left err
+    Right gReq ->
+      join
+        . second fromGrpc
+        <$> runUnary rpc env gReq
+    Left e ->
+      pure $ Left e
 
 grpcSyncKatip ::
+  forall m a gA b gB s rm.
   ( KatipContext m,
+    MonadUnliftIO m,
     ToGrpc a gA,
     FromGrpc b gB,
+    KnownNat (SecretRpc rm),
     HasMethod s rm,
     gA ~ MethodInput s rm,
     gB ~ MethodOutput s rm,
     Out a,
-    Out b
+    Out b,
+    Out gA,
+    Out gB
   ) =>
-  PL.RPC s (rm :: Symbol) ->
+  PL.RPC s (rm :: GHC.Symbol) ->
   LndEnv ->
   a ->
   m (Either LndError b)
 grpcSyncKatip rpc env req =
-  katipAddContext (sl "RpcName" (T.pack $ symbolVal rpc)) $
-    katipAddContext (sl "RpcRequest" $ inspect req) $
-      katipAddLndContext env $
-        do
-          $(logTM) (newSev env InfoS) "RPC is running"
-          (ts, res) <-
-            liftIO $
-              stopwatch $
-                grpcSyncSilent rpc env req
-          katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $
-            case res of
+  katipAddLndPublic env LndMethod (GHC.symbolVal rpc) $
+    katipAddLndSecret @rm env LndRequest req $
+      katipAddLndLoc env $ do
+        (ts, gRes) <-
+          withRunInIO $ \run -> stopwatch $
+            case toGrpc req of
+              Right gReq -> run $
+                katipAddLndSecret @rm env LndRequestGrpc gReq $ do
+                  $(logTM) (newSev env DebugS) rpcRunning
+                  runUnary rpc env gReq
               Left e ->
-                katipAddContext (sl "RpcResponse" $ inspect e) $
-                  $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
+                pure $ Left e
+        katipAddLndSecret @rm env LndResponseGrpc gRes $
+          katipAddLndPublic env LndElapsedSeconds (showElapsedSeconds ts) $
+            case gRes >>= fromGrpc of
+              Left e ->
+                katipAddLndPublic env LndResponse e $ do
+                  $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) rpcFailed
+                  pure $ Left e
               Right x ->
-                katipAddContext (sl "RpcResponse" $ inspect x) $
-                  $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
-          pure res
+                katipAddLndSecret @rm env LndResponse x $ do
+                  $(logTM) (newSeverity env DebugS (Just ts) Nothing) rpcSucceeded
+                  pure $ Right x
 
 grpcSubscribeSilent ::
   ( MonadUnliftIO m,
@@ -118,15 +133,18 @@ grpcSubscribeSilent ::
     gA ~ MethodInput s rm,
     gB ~ MethodOutput s rm
   ) =>
-  PL.RPC s (rm :: Symbol) ->
+  PL.RPC s (rm :: GHC.Symbol) ->
   (b -> IO ()) ->
   LndEnv ->
   a ->
   m (Either LndError ())
 grpcSubscribeSilent rpc handler env req =
   case toGrpc req of
-    Right grpcReq -> second (const ()) <$> runStreamServer rpc env grpcReq gHandler
-    Left err -> return $ Left err
+    Right grpcReq ->
+      second (const ())
+        <$> runStreamServer rpc env grpcReq gHandler
+    Left e ->
+      return $ Left e
   where
     gHandler _ x =
       case fromGrpc x of
@@ -134,36 +152,59 @@ grpcSubscribeSilent rpc handler env req =
         Left _ -> return ()
 
 grpcSubscribeKatip ::
+  forall m a gA b gB s rm.
   ( KatipContext m,
+    MonadUnliftIO m,
     ToGrpc a gA,
     FromGrpc b gB,
+    KnownNat (SecretRpc rm),
     HasMethod s rm,
     Out a,
+    Out b,
+    Out gA,
+    Out gB,
     gA ~ MethodInput s rm,
     gB ~ MethodOutput s rm
   ) =>
-  PL.RPC s (rm :: Symbol) ->
+  PL.RPC s (rm :: GHC.Symbol) ->
   (b -> IO ()) ->
   LndEnv ->
   a ->
   m (Either LndError ())
 grpcSubscribeKatip rpc handler env req =
-  katipAddContext (sl "RpcName" (T.pack $ symbolVal rpc)) $
-    katipAddContext (sl "RpcRequest" $ inspect req) $
-      katipAddLndContext env $
-        do
-          $(logTM) (newSev env InfoS) "RPC is running"
-          (ts, res) <-
-            liftIO . stopwatch $ grpcSubscribeSilent rpc handler env req
-          katipAddContext (sl "ElapsedSeconds" (showElapsedSeconds ts)) $
-            uncurry katipAddContext $
-              case res of
-                Left e ->
-                  ( sl "RpcResponse" $ inspect e,
-                    $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) "RPC failed"
-                  )
-                Right x ->
-                  ( sl "RpcResponse" $ inspect x,
-                    $(logTM) (newSeverity env InfoS (Just ts) Nothing) "RPC succeded"
-                  )
-          pure res
+  katipAddLndPublic env LndMethod (GHC.symbolVal rpc) $
+    katipAddLndSecret @rm env LndRequest req $
+      katipAddLndLoc env $ do
+        (ts, gRes) <-
+          withRunInIO $ \run -> stopwatch $
+            case toGrpc req of
+              Right gReq -> run $
+                katipAddLndSecret @rm env LndRequestGrpc gReq $ do
+                  $(logTM) (newSev env DebugS) rpcRunning
+                  runStreamServer rpc env gReq $ \_ gRes -> liftIO . run $ gHandler gRes
+              Left e ->
+                pure $ Left e
+        katipAddLndSecret @rm env LndResponseGrpc gRes $
+          katipAddLndPublic env LndElapsedSeconds (showElapsedSeconds ts) $
+            case gRes of
+              Left e -> do
+                katipAddLndPublic env LndResponse e $
+                  $(logTM) (newSeverity env ErrorS (Just ts) (Just e)) rpcFailed
+                pure $ Left e
+              Right x -> do
+                katipAddLndSecret @rm env LndResponse x $
+                  $(logTM) (newSeverity env DebugS (Just ts) Nothing) rpcSucceeded
+                pure $ Right ()
+  where
+    gHandler gRes =
+      katipAddLndSecret @rm env LndResponseGrpcSub gRes $
+        case fromGrpc gRes of
+          Left e ->
+            katipAddLndPublic env LndResponseSub e $
+              $(logTM) (newSeverity env ErrorS Nothing (Just e)) rpcFailed
+          Right x ->
+            katipAddLndSecret @rm env LndResponseSub x $ do
+              $(logTM) (newSev env DebugS) rpcRunning
+              (ts, ()) <- liftIO . stopwatch $ handler x
+              katipAddLndPublic env LndElapsedSecondsSub (showElapsedSeconds ts) $
+                $(logTM) (newSeverity env DebugS (Just ts) Nothing) rpcSucceeded

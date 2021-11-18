@@ -64,7 +64,7 @@ waitForGrpc env = this 30
     this (x :: Int) =
       if x > 0
         then do
-          res <- getInfo $ env {envLndLogStrategy = logDebug}
+          res <- getInfo env
           if isRight res
             then return $ Right ()
             else do
@@ -79,7 +79,7 @@ lazyUnlockWallet ::
   LndEnv ->
   m (Either LndError ())
 lazyUnlockWallet env = do
-  unlocked <- isRight <$> getInfo (env {envLndLogStrategy = logDebug})
+  unlocked <- isRight <$> getInfo env
   if unlocked
     then return $ Right ()
     else unlockWallet env
@@ -89,7 +89,7 @@ lazyInitWallet ::
   LndEnv ->
   m (Either LndError ())
 lazyInitWallet env = do
-  unlockRes <- lazyUnlockWallet $ env {envLndLogStrategy = logDebug}
+  unlockRes <- lazyUnlockWallet env
   if isRight unlockRes
     then return unlockRes
     else initWallet env
