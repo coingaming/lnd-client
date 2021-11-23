@@ -1,0 +1,3 @@
+tests: True
+coverage: True
+library-coverage: True

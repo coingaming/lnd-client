@@ -8,7 +8,9 @@ in pkgs.haskell-nix.project {
     src = ./.;
   };
   compiler-nix-name = "ghc865";
+  configureArgs = "--enable-coverage --hpc-options='--exclude=Proto.InvoiceGrpc --exclude=Proto.InvoiceGrpc_Fields --exclude=Proto.LndGrpc --exclude=Proto.LndGrpc_Fields --exclude=Proto.RouterGrpc --exclude=Proto.RouterGrpc_Fields --exclude=Proto.WalletUnlockerGrpc --exclude=Proto.WalletUnlockerGrpc_Fields'";
   modules = [{
+    packages.lnd-client.components.library.doCoverage = true;
     packages.lnd-client.components.tests.lnd-client-test.preCheck = ''
       ./script/unstack.sh prepare
       . ./script/export-test-envs.sh
