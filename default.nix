@@ -8,9 +8,15 @@ in pkgs.haskell-nix.project {
     src = ./.;
   };
   compiler-nix-name = "ghc865";
-  configureArgs = "--hpc-options='--exclude=Proto.InvoiceGrpc --exclude=Proto.InvoiceGrpc_Fields --exclude=Proto.LndGrpc --exclude=Proto.LndGrpc_Fields --exclude=Proto.RouterGrpc --exclude=Proto.RouterGrpc_Fields --exclude=Proto.WalletUnlockerGrpc --exclude=Proto.WalletUnlockerGrpc_Fields'";
+#configureArgs = "--hpc-options='--exclude=Proto.InvoiceGrpc --exclude=Proto.InvoiceGrpc_Fields --exclude=Proto.LndGrpc --exclude=Proto.LndGrpc_Fields --exclude=Proto.RouterGrpc --exclude=Proto.RouterGrpc_Fields --exclude=Proto.WalletUnlockerGrpc --exclude=Proto.WalletUnlockerGrpc_Fields'";
   modules = [{
     packages.lnd-client.components.library.doCoverage = true;
+    packages.lnd-client.components.library.configureFlags = [
+      "--hpc-option=--exclude=Proto.InvoiceGrpc"
+    ];
+    packages.lnd-client.components.library.testFlags = [
+      "--hpc-option=--exclude=Proto.InvoiceGrpc"
+    ];
 #    packages.lnd-client.components.library.appendConfigureFlag = "--hpc-options='--exclude=Proto.InvoiceGrpc --exclude=Proto.InvoiceGrpc_Fields --exclude=Proto.LndGrpc --exclude=Proto.LndGrpc_Fields --exclude=Proto.RouterGrpc --exclude=Proto.RouterGrpc_Fields --exclude=Proto.WalletUnlockerGrpc --exclude=Proto.WalletUnlockerGrpc_Fields'";
 
     packages.lnd-client.components.tests.lnd-client-test.preCheck = ''

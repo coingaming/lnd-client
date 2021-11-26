@@ -26,7 +26,6 @@ jobs:
     - *release
     - store_artifacts:
           path: /result-2/share/hpc/vanilla/html/all
-          destination: hpc_index.html
 
 workflows:
   version: 2
