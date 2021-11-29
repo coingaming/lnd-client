@@ -25,7 +25,7 @@ jobs:
     - setup_remote_docker
     - *release
     - store_artifacts:
-          path: /result-2/share/hpc/vanilla/html/all
+        path: /result-2/
 
 workflows:
   version: 2
