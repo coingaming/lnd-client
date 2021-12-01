@@ -9,7 +9,7 @@ in pkgs.haskell-nix.project {
   };
   compiler-nix-name = "ghc865";
   modules = [{
-    packages.lnd-client.components.library.doCoverage = false;
+    packages.lnd-client.components.library.doCoverage = true;
     packages.lnd-client.components.tests.lnd-client-test.preCheck = ''
       ./script/unstack.sh prepare
       . ./script/export-test-envs.sh
