@@ -78,8 +78,6 @@ library
       LndClient.Util
       LndClient.Watcher
       LndGrpc.Client
-  other-modules:
-      Paths_lnd_client
       Proto.InvoiceGrpc
       Proto.InvoiceGrpc_Fields
       Proto.LndGrpc
@@ -88,6 +86,8 @@ library
       Proto.RouterGrpc_Fields
       Proto.WalletUnlockerGrpc
       Proto.WalletUnlockerGrpc_Fields
+  other-modules:
+      Paths_lnd_client
   hs-source-dirs:
       src
   default-extensions:

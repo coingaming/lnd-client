@@ -33,6 +33,7 @@ import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
+import LndClient.Data.PendingChannels as PendingChannels
 import qualified LndClient.Data.TrackPayment as TrackPayment
 import LndClient.Import
 import LndClient.LndTest
@@ -313,13 +314,8 @@ spec = do
       cp <- setupOneChannel Alice Bob
       closeAllChannels proxyOwner
       lnd <- getLndEnv Bob
-      res <- closedChannels lnd ClosedChannels.defReq
-      liftIO $
-        res
-          `shouldSatisfy` ( \case
-                              Left {} -> False
-                              Right xs -> any ((cp ==) . CloseChannel.chPoint) xs
-                          )
+      res <- liftLndResult =<< closedChannels lnd ClosedChannels.defReq
+      liftIO $ res `shouldSatisfy` any ((cp ==) . CloseChannel.chPoint)
   it "subscriptionCanBeCancelled" $
     withEnv $ do
       bob <- getLndEnv Bob
@@ -369,6 +365,14 @@ spec = do
           TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
         res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
         liftIO $ res `shouldSatisfy` isJust
+  it "setupChannelAndForceClose" $
+    withEnv $ do
+      --cp <- setupOneChannel Alice Bob
+      res <- pendingChannels =<< getLndEnv Bob
+      let pc = case res of
+                 Left {} -> fail "Pending channels fail"
+                 Right (PendingChannelsResponse _ _ _ x _) -> x
+      liftIO $ pc `shouldSatisfy` null
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing

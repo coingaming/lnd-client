@@ -24,8 +24,6 @@ jobs:
     - checkout
     - setup_remote_docker
     - *release
-    - store_artifacts:
-        path: /result-2/
 
 workflows:
   version: 2
