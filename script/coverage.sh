@@ -8,7 +8,7 @@ echo "Test coverage is: $cov%"
 if [[ $cov -lt 80 ]]
 then
   echo "Coverage is too low, failing..."
-  exit 0
+  exit 1
 fi
 echo "Coverage is good."
 echo "==============================/Coverage================================="
