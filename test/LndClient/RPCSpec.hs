@@ -33,7 +33,6 @@ import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
-import LndClient.Data.PendingChannels as PendingChannels
 import qualified LndClient.Data.TrackPayment as TrackPayment
 import LndClient.Import
 import LndClient.LndTest
@@ -365,51 +364,10 @@ spec = do
           TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
         res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
         liftIO $ res `shouldSatisfy` isJust
-  focus $ it "setupChannelAndForceClose" $
+  it "waitForGrpc" $
     withEnv $ do
-      print ("Start Test +++++++++++++++++++++++++++++" :: Text)
---      lndBob <- getLndEnv Bob
-      lndAlice <- getLndEnv Alice
-      cp <- setupOneChannel Alice Bob
-
---      GetInfoResponse merchantPubKey _ _ <-
---        liftLndResult =<< getInfo lndBob
---      let openChannelRequest =
---            OpenChannelRequest
---              { nodePubkey = merchantPubKey,
---                localFundingAmount = MSat 200000000,
---                pushMSat = Just $ MSat 10000000,
---                targetConf = Nothing,
---                mSatPerByte = Nothing,
---                private = Nothing,
---                minHtlcMsat = Nothing,
---                remoteCsvDelay = Nothing,
---                minConfs = Nothing,
---                spendUnconfirmed = Nothing,
---                closeAddress = Nothing
---              }
---      cp <-
---        liftLndResult
---          =<< openChannelSync lndAlice openChannelRequest
-
-      _ <-
-        spawnLink
-          (closeChannel
-            (const $ return ())
-            lndAlice
-            (CloseChannelRequest cp True Nothing Nothing Nothing))
-
-      sleep $ MicroSecondsDelay 100000
-      res <- pendingChannels =<< getLndEnv Bob
-      print ("++++++++++++++++++++" :: Text)
-      print res
-      print ("++++++++++++++++++++" :: Text)
-      let pc = case res of
-                 Left {} -> fail "Pending channels fail"
-                 Right (PendingChannelsResponse _ _ _ x _) -> x
-      print ("++++++++++++++++++++" :: Text)
-      print pc
-      liftIO $ pc `shouldSatisfy` null
+      res <- waitForGrpc =<< getLndEnv Alice
+      liftIO $ res `shouldSatisfy` isRight
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
