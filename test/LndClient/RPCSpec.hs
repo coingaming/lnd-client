@@ -29,6 +29,7 @@ import LndClient.Data.ListInvoices as ListInvoices
   )
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
+import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
@@ -368,6 +369,35 @@ spec = do
     withEnv $ do
       res <- waitForGrpc =<< getLndEnv Alice
       liftIO $ res `shouldSatisfy` isRight
+  it "setupChannelAndClose" $
+    withEnv $ do
+      lndAlice <- getLndEnv Alice
+      lndBob <- getLndEnv Bob
+      GetInfoResponse merchantPubKey _ _ <-
+        liftLndResult =<< getInfo lndBob
+      let openChannelRequest =
+            OpenChannelRequest
+              { nodePubkey = merchantPubKey,
+                localFundingAmount = MSat 200000000,
+                pushMSat = Just $ MSat 10000000,
+                targetConf = Nothing,
+                mSatPerByte = Nothing,
+                private = Nothing,
+                minHtlcMsat = Nothing,
+                remoteCsvDelay = Nothing,
+                minConfs = Nothing,
+                spendUnconfirmed = Nothing,
+                closeAddress = Nothing
+              }
+      _ <-
+        liftLndResult
+          =<< openChannelSync lndAlice openChannelRequest
+      sleep $ MicroSecondsDelay 100000
+      res <- pendingChannels =<< getLndEnv Alice
+      let pc = case res of
+            Left {} -> fail "Pending channels fail"
+            Right (PendingChannelsResponse _ x _ _ _) -> x
+      liftIO $ pc `shouldNotSatisfy` null
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
