@@ -365,13 +365,50 @@ spec = do
           TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
         res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
         liftIO $ res `shouldSatisfy` isJust
-  it "setupChannelAndForceClose" $
+  focus $ it "setupChannelAndForceClose" $
     withEnv $ do
-      --cp <- setupOneChannel Alice Bob
+      print ("Start Test +++++++++++++++++++++++++++++" :: Text)
+--      lndBob <- getLndEnv Bob
+      lndAlice <- getLndEnv Alice
+      cp <- setupOneChannel Alice Bob
+
+--      GetInfoResponse merchantPubKey _ _ <-
+--        liftLndResult =<< getInfo lndBob
+--      let openChannelRequest =
+--            OpenChannelRequest
+--              { nodePubkey = merchantPubKey,
+--                localFundingAmount = MSat 200000000,
+--                pushMSat = Just $ MSat 10000000,
+--                targetConf = Nothing,
+--                mSatPerByte = Nothing,
+--                private = Nothing,
+--                minHtlcMsat = Nothing,
+--                remoteCsvDelay = Nothing,
+--                minConfs = Nothing,
+--                spendUnconfirmed = Nothing,
+--                closeAddress = Nothing
+--              }
+--      cp <-
+--        liftLndResult
+--          =<< openChannelSync lndAlice openChannelRequest
+
+      _ <-
+        spawnLink
+          (closeChannel
+            (const $ return ())
+            lndAlice
+            (CloseChannelRequest cp True Nothing Nothing Nothing))
+
+      sleep $ MicroSecondsDelay 100000
       res <- pendingChannels =<< getLndEnv Bob
+      print ("++++++++++++++++++++" :: Text)
+      print res
+      print ("++++++++++++++++++++" :: Text)
       let pc = case res of
                  Left {} -> fail "Pending channels fail"
                  Right (PendingChannelsResponse _ _ _ x _) -> x
+      print ("++++++++++++++++++++" :: Text)
+      print pc
       liftIO $ pc `shouldSatisfy` null
   where
     subscribeInvoicesRequest =

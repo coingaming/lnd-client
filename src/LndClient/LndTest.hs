@@ -308,7 +308,7 @@ syncPendingChannelsFor ::
   m (Either LndError ())
 syncPendingChannelsFor owner = this 0
   where
-    this 30 = do
+    this 10000 = do
       let msg =
             "SyncPendingChannelsFor "
               <> inspect owner
@@ -332,7 +332,7 @@ syncPendingChannelsFor owner = this 0
             && null x2
             && null x3
             then pure $ Right ()
-            else mine1 (Proxy :: Proxy owner) >> this (attempt + 1)
+            else mine 1 owner >> this (attempt + 1)
 
 receiveClosedChannels ::
   forall m owner.
