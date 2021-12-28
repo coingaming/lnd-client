@@ -47,7 +47,7 @@ import Data.ProtoLens.Message
 import LndClient.Data.AddHodlInvoice as AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice (AddInvoiceResponse (..))
 import qualified LndClient.Data.Channel as Channel
-import LndClient.Data.CloseChannel as CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
+import LndClient.Data.CloseChannel as CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..), ChannelCloseUpdate (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as ListChannels (ListChannelsRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..))
@@ -137,7 +137,7 @@ closeChannelSync ::
   LndEnv ->
   Maybe ConnectPeerRequest ->
   CloseChannelRequest ->
-  m (Either LndError CloseStatusUpdate)
+  m (Either LndError ChannelCloseUpdate)
 closeChannelSync env mConn req =
   katipAddLndPublic env LndMethodCompose CloseChannelSync $ do
     $(logTM) (newSev env DebugS) rpcRunning
@@ -151,7 +151,7 @@ closeChannelSync env mConn req =
         case filter (\ch -> channelPoint req == Channel.channelPoint ch) x of
           [] -> do
             $(logTM) (newSev env WarningS) "Cannot close channel that is not active!"
-            return $ Right NothingUpdate
+            return $ Left $ LndError "Trying to close not active channel"
           _ -> do
             mVar <- newEmptyMVar
             closeChannelRecursive mVar 10
@@ -170,5 +170,5 @@ closeChannelSync env mConn req =
       sleep $ MicroSecondsDelay 1000000
       upd <- tryTakeMVar mVar0
       case upd of
-        Just res -> return $ Right res
-        Nothing -> closeChannelRecursive mVar0 $ n - 1
+        Just (Close closeUpd) -> return $ Right closeUpd
+        _ -> closeChannelRecursive mVar0 $ n - 1
