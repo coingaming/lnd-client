@@ -45,7 +45,10 @@ import Data.ProtoLens.Message
 import LndClient.Data.AddHodlInvoice as AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice (AddInvoiceResponse (..))
 import qualified LndClient.Data.Channel as Channel
-import LndClient.Data.CloseChannel as CloseChannel (CloseChannelRequest (..))
+import LndClient.Data.CloseChannel as CloseChannel
+  ( CloseChannelRequest (..),
+    CloseStatusUpdate (..),
+  )
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as ListChannels (ListChannelsRequest (..))
 import LndClient.Data.Peer (ConnectPeerRequest (..))
@@ -118,14 +121,14 @@ closeChannelSync ::
   LndEnv ->
   ConnectPeerRequest ->
   CloseChannelRequest ->
-  m (Either LndError ())
+  m (Either LndError CloseStatusUpdate)
 closeChannelSync env conn req = do
   cs0 <- listChannels env (ListChannels.ListChannelsRequest False False False False Nothing)
   case cs0 of
     Left err -> pure $ Left err
     Right x ->
       case filter (\ch -> channelPoint req == Channel.channelPoint ch) x of
-        [] -> return $ Right ()
+        [] -> return $ Right NothingUpdate
         _ -> do
           mVar <- newEmptyMVar
           closeChannelRecursive mVar 10
@@ -142,5 +145,5 @@ closeChannelSync env conn req = do
       sleep $ MicroSecondsDelay 1000000
       upd <- tryTakeMVar mVar0
       case upd of
-        Just _ -> return $ Right ()
+        Just res -> return $ Right res
         Nothing -> closeChannelRecursive mVar0 (n -1)
