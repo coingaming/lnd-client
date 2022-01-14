@@ -3,12 +3,14 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module LndClient.RPC.Generic
   ( grpcSyncSilent,
     grpcSyncKatip,
     grpcSubscribeSilent,
     grpcSubscribeKatip,
+    grpcBiDiSubscribeSilent,
     RpcName (..),
   )
 where
@@ -17,6 +19,7 @@ import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
 import qualified GHC.TypeLits as GHC
 import LndClient.Import
 import LndGrpc.Client
+import Network.GRPC.Client (IncomingEvent (..), OutgoingEvent (..), CompressMode (Uncompressed))
 import qualified Network.GRPC.HTTP2.ProtoLens as PL
 
 data RpcName
@@ -208,3 +211,36 @@ grpcSubscribeKatip rpc handler env req =
               (ts, ()) <- liftIO . stopwatch $ handler x
               katipAddLndPublic env LndElapsedSecondsSub (showElapsedSeconds ts) $
                 $(logTM) (newSeverity env DebugS (Just ts) Nothing) rpcSucceeded
+
+grpcBiDiSubscribeSilent ::
+  ( MonadUnliftIO m,
+    ToGrpc a gA,
+    FromGrpc b gB,
+    HasMethod s rm,
+    gA ~ MethodInput s rm,
+    gB ~ MethodOutput s rm
+  ) =>
+  PL.RPC s (rm :: GHC.Symbol) ->
+  LndEnv ->
+  (Either LndError b -> ()) ->
+  a ->
+  m (Either LndError ())
+grpcBiDiSubscribeSilent rpc env handlerIn handlerOut =
+  runBiDiStreamServer rpc env gHandlerIn gHandlerOut
+  where
+    --handlerIn :: IncomingEvent gB () -> ExceptT ClientError IO ()
+    gHandlerIn (RecvMessage mes) = (pure . handlerIn . fromGrpc) mes
+    gHandlerIn (Invalid e) = (pure . handlerIn . Left . LndGrpcException . pack . displayException) e
+    gHandlerIn _ = pure ()
+    --gHandlerOut :: ExceptT ClientError IO ((), OutgoingEvent gA ())
+    gHandlerOut = do
+      case toGrpc handlerOut of
+        Right gA -> pure ((), SendMessage Uncompressed gA)
+        Left _ -> pure ((), Finalize)
+    --gHandler :: () -> ClientIO ((), BiDiStep gA gB ())
+    --gHandler :: () -> ExceptT ClientError IO ((), BiDiStep gA gB ())
+    --gHandler () = ExceptT $ pure $ Right ((), SendInput Uncompressed req)
+
+--      case fromGrpc x of
+--        Right b -> liftIO $ handler b
+--        Left _ -> return ()

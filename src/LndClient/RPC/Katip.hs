@@ -40,6 +40,7 @@ module LndClient.RPC.Katip
     listInvoices,
     subscribeSingleInvoice,
     subscribeSingleInvoiceChan,
+    htlcInterceptor
   )
 where
 

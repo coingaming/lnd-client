@@ -17,6 +17,7 @@ import LndClient.Data.CloseChannel
     CloseChannelRequest (..),
     CloseStatusUpdate (..),
   )
+import LndClient.Data.HtlcInterceptor
 import LndClient.Data.ClosedChannels (ClosedChannelsRequest (..))
 import qualified LndClient.Data.GetInfo as GI
 import LndClient.Data.HtlcEvent (HtlcEvent (..))
@@ -412,6 +413,19 @@ mkRpc k = do
           (RPC :: RPC LnGRPC.Lightning "pendingChannels")
           env
           (defMessage :: LnGRPC.PendingChannelsRequest)
+
+    htlcInterceptor ::
+      $(tcc m) =>
+      (Either LndError ForwardHtlcInterceptRequest -> ()) ->
+      ForwardHtlcInterceptResponse ->
+      LndEnv ->
+      $(pure m) (Either LndError ())
+    htlcInterceptor handlerIn handlerOut env =
+      $(grpcBiDiSubscribe)
+        (RPC :: RPC LnGRPC.Router "htlcInterceptor")
+        env
+        handlerIn
+        handlerOut
     |]
   where
     tcc m = case k of
@@ -426,3 +440,6 @@ mkRpc k = do
     grpcSubscribe = case k of
       RpcSilent -> [e|grpcSubscribeSilent|]
       RpcKatip -> [e|grpcSubscribeKatip|]
+    grpcBiDiSubscribe = case k of
+      RpcSilent -> [e|grpcBiDiSubscribeSilent|]
+      RpcKatip -> [e|grpcBiDiSubscribeSilent|]
