@@ -2,4 +2,4 @@
 
 . ./script/export-test-envs.sh
 
-lncli-customer "$@"
+lncli-bob "$@"

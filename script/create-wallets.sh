@@ -35,5 +35,6 @@ expect <<- EOF
 EOF
 }
 
-create_wallet "./script/lncli-merchant.sh"
-create_wallet "./script/lncli-customer.sh"
+create_wallet "./script/lncli-alice.sh"
+create_wallet "./script/lncli-bob.sh"
+create_wallet "./script/lncli-nick.sh"

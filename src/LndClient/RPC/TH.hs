@@ -416,8 +416,8 @@ mkRpc k = do
 
     htlcInterceptor ::
       $(tcc m) =>
-      (Either LndError ForwardHtlcInterceptRequest -> ()) ->
-      ForwardHtlcInterceptResponse ->
+      (Either LndError ForwardHtlcInterceptRequest -> $(pure m) ()) ->
+      $(pure m) ForwardHtlcInterceptResponse ->
       LndEnv ->
       $(pure m) (Either LndError ())
     htlcInterceptor handlerIn handlerOut env =

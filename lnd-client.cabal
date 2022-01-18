@@ -207,6 +207,7 @@ test-suite lnd-client-test
       Proto.RouterGrpc_Fields
       Proto.WalletUnlockerGrpc
       Proto.WalletUnlockerGrpc_Fields
+      LndClient.HtlcInterceptorSpec
       LndClient.RPCSpec
       LndClient.TestApp
       Paths_lnd_client

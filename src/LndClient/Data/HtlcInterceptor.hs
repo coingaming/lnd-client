@@ -20,7 +20,7 @@ data ForwardHtlcInterceptRequest = ForwardHtlcInterceptRequest
     incomingAmountMsat :: MSat,
     paymentHash :: ByteString
   }
-  deriving (Eq, Generic)
+  deriving (Eq, Generic, Show)
 
 instance FromGrpc ForwardHtlcInterceptRequest LnGRPC.ForwardHtlcInterceptRequest where
   fromGrpc x =
@@ -34,7 +34,7 @@ data ForwardHtlcInterceptResponse = ForwardHtlcInterceptResponse
     action :: ResolveHoldForwardAction,
     preimage :: ByteString
   }
-  deriving (Eq, Generic)
+  deriving (Eq, Generic, Show)
 
 instance ToGrpc ForwardHtlcInterceptResponse LnGRPC.ForwardHtlcInterceptResponse where
   toGrpc x =
@@ -53,7 +53,7 @@ data CircuitKey = CircuitKey
   { chanId :: Word64,
     htlcId :: Word64
   }
-  deriving (Eq, Generic)
+  deriving (Eq, Generic, Show)
 
 instance FromGrpc CircuitKey LnGRPC.CircuitKey where
   fromGrpc x =

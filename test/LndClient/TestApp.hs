@@ -24,13 +24,14 @@ import Network.GRPC.Client.Helpers (GrpcClientConfig (..))
 data Env = Env
   { envAlice :: TestEnv,
     envBob :: TestEnv,
+    envNick :: TestEnv,
     envBtc :: BTC.Client,
     envKatipNS :: Namespace,
     envKatipCTX :: LogContexts,
     envKatipLE :: LogEnv
   }
 
-data Owner = Alice | Bob
+data Owner = Alice | Bob | Nick
   deriving
     ( Eq,
       Ord,
@@ -51,6 +52,44 @@ newBobEnv x =
     { envLndConfig =
         (envLndConfig x)
           { _grpcClientConfigPort = 11009
+          },
+      envLndCipherSeedMnemonic =
+        Just $
+          CipherSeedMnemonic
+            [ "absent",
+              "betray",
+              "direct",
+              "scheme",
+              "sunset",
+              "mechanic",
+              "exhaust",
+              "suggest",
+              "boy",
+              "arena",
+              "sketch",
+              "bone",
+              "news",
+              "south",
+              "way",
+              "survey",
+              "clip",
+              "dutch",
+              "depart",
+              "green",
+              "furnace",
+              "wire",
+              "wave",
+              "fall"
+            ],
+      envLndAezeedPassphrase = Nothing
+    }
+
+newNickEnv :: LndEnv -> LndEnv
+newNickEnv x =
+  x
+    { envLndConfig =
+        (envLndConfig x)
+          { _grpcClientConfigPort = 12009
           },
       envLndCipherSeedMnemonic =
         Just $
@@ -104,19 +143,21 @@ withEnv action = do
     runKatipContextT le (mempty :: LogContexts) mempty $ do
       withTestEnv aliceLndEnv (NodeLocation "localhost:9735") $ \alice ->
         withTestEnv (newBobEnv aliceLndEnv) (NodeLocation "localhost:9734") $ \bob ->
-          liftIO $
-            runApp
-              Env
-                { envAlice = alice,
-                  envBob = bob,
-                  envBtc = bc,
-                  envKatipLE = le,
-                  envKatipCTX = mempty,
-                  envKatipNS = mempty
-                }
-              $ do
-                setupZeroChannels proxyOwner
-                action
+          withTestEnv (newNickEnv aliceLndEnv) (NodeLocation "localhost:9733") $ \nick ->
+            liftIO $
+              runApp
+                Env
+                  { envAlice = alice,
+                    envBob = bob,
+                    envNick = nick,
+                    envBtc = bc,
+                    envKatipLE = le,
+                    envKatipCTX = mempty,
+                    envKatipNS = mempty
+                  }
+                $ do
+                  setupZeroChannels proxyOwner
+                  action
   where
     rmLogEnv :: LogEnv -> IO ()
     rmLogEnv =
@@ -153,6 +194,7 @@ instance (MonadUnliftIO m) => LndTest (AppM m) Owner where
   getTestEnv = \case
     Alice -> asks envAlice
     Bob -> asks envBob
+    Nick -> asks envNick
 
 runApp :: Env -> AppM m a -> m a
 runApp env app = runReaderT (unAppM app) env
