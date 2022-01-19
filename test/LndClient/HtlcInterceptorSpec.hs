@@ -36,7 +36,7 @@ spec = do
         void $ setupOneChannel Alice Bob
         void $ setupOneChannel Bob Nick
 
-        --Payment will go from Alice to Nick through Bob, which will intercept it
+        ---Payment will go from Alice to Nick through Bob, which will intercept it
         alice <- getLndEnv Alice
         bob <- getLndEnv Bob
         nick <- getLndEnv Nick
