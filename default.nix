@@ -9,6 +9,7 @@ in pkgs.haskell-nix.project {
   };
   compiler-nix-name = "ghc865";
   modules = [{
+    packages.lnd-client.components.library.doCoverage = true;
     packages.lnd-client.components.tests.lnd-client-test.preCheck = ''
       ./script/unstack.sh prepare
       . ./script/export-test-envs.sh
@@ -23,6 +24,7 @@ in pkgs.haskell-nix.project {
     ];
     packages.lnd-client.components.tests.lnd-client-test.postCheck = ''
       ./script/unstack.sh clean
+      ./script/coverage.sh
     '';
   }];
 }
