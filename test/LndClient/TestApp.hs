@@ -141,9 +141,9 @@ withEnv action = do
           =<< initLogEnv "LndClient" "test"
   bracket newLogEnv rmLogEnv $ \le ->
     runKatipContextT le (mempty :: LogContexts) mempty $ do
-      withTestEnv aliceLndEnv (NodeLocation "localhost:9735") $ \alice ->
-        withTestEnv (newBobEnv aliceLndEnv) (NodeLocation "localhost:9734") $ \bob ->
-          withTestEnv (newNickEnv aliceLndEnv) (NodeLocation "localhost:9733") $ \nick ->
+      withTestEnv aliceLndEnv (NodeLocation "127.0.0.1:9735") $ \alice ->
+        withTestEnv (newBobEnv aliceLndEnv) (NodeLocation "127.0.0.1:9734") $ \bob ->
+          withTestEnv (newNickEnv aliceLndEnv) (NodeLocation "127.0.0.1:9736") $ \nick ->
             liftIO $
               runApp
                 Env
