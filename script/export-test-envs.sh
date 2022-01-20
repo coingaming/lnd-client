@@ -16,10 +16,14 @@ alias bitcoin-cli="bitcoin-cli -datadir=$BTCD_DIR"
 # lnd
 #
 
-export LND_MERCHANT_DIR="$THIS_DIR/.lnd-merchant"
-alias lncli-merchant="lncli -n regtest --lnddir=$LND_MERCHANT_DIR --rpcserver=127.0.0.1:10009"
-export LND_CUSTOMER_DIR="$THIS_DIR/.lnd-customer"
-alias lncli-customer="lncli -n regtest --lnddir=$LND_CUSTOMER_DIR --rpcserver=127.0.0.1:11009"
+export LND_ALICE_DIR="$THIS_DIR/.lnd-alice"
+alias lncli-alice="lncli -n regtest --lnddir=$LND_ALICE_DIR --rpcserver=127.0.0.1:10009"
+
+export LND_BOB_DIR="$THIS_DIR/.lnd-bob"
+alias lncli-bob="lncli -n regtest --lnddir=$LND_BOB_DIR --rpcserver=127.0.0.1:11009"
+
+export LND_NICK_DIR="$THIS_DIR/.lnd-nick"
+alias lncli-nick="lncli -n regtest --lnddir=$LND_NICK_DIR --rpcserver=127.0.0.1:12009"
 
 #
 # lnd-client

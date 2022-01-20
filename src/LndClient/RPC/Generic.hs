@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 
@@ -9,6 +10,7 @@ module LndClient.RPC.Generic
     grpcSyncKatip,
     grpcSubscribeSilent,
     grpcSubscribeKatip,
+    grpcBiDiSubscribeSilent,
     RpcName (..),
   )
 where
@@ -17,6 +19,7 @@ import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
 import qualified GHC.TypeLits as GHC
 import LndClient.Import
 import LndGrpc.Client
+import Network.GRPC.Client (CompressMode (Uncompressed), IncomingEvent (..), OutgoingEvent (..))
 import qualified Network.GRPC.HTTP2.ProtoLens as PL
 
 data RpcName
@@ -208,3 +211,33 @@ grpcSubscribeKatip rpc handler env req =
               (ts, ()) <- liftIO . stopwatch $ handler x
               katipAddLndPublic env LndElapsedSecondsSub (showElapsedSeconds ts) $
                 $(logTM) (newSeverity env DebugS (Just ts) Nothing) rpcSucceeded
+
+grpcBiDiSubscribeSilent ::
+  ( MonadUnliftIO m,
+    ToGrpc a gA,
+    FromGrpc b gB,
+    HasMethod s rm,
+    gA ~ MethodInput s rm,
+    gB ~ MethodOutput s rm
+  ) =>
+  PL.RPC s (rm :: GHC.Symbol) ->
+  LndEnv ->
+  (Either LndError b -> m ()) ->
+  m a ->
+  m (Either LndError ())
+grpcBiDiSubscribeSilent rpc env handlerIn handlerOut = do
+  withRunInIO $ \run -> do
+    xOut <- toGrpc <$> run handlerOut
+    runBiDiStreamServer
+      rpc
+      env
+      (ExceptT . (Right <$>) . run . gHandlerIn)
+      (gHandlerOut xOut)
+  where
+    gHandlerIn (RecvMessage mes) = (handlerIn . fromGrpc) mes
+    gHandlerIn (Invalid e) = (handlerIn . Left . LndGrpcException . pack . displayException) e
+    gHandlerIn _ = pure ()
+    gHandlerOut x = case x of
+      Right gA -> pure ((), SendMessage Uncompressed gA)
+      Left _ -> pure ((), Finalize)
+

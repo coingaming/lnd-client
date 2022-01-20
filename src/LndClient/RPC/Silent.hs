@@ -38,6 +38,7 @@ module LndClient.RPC.Silent
     listInvoices,
     subscribeSingleInvoice,
     subscribeSingleInvoiceChan,
+    htlcInterceptor,
   )
 where
 

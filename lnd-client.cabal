@@ -43,6 +43,7 @@ library
       LndClient.Data.ForceClosedChannel
       LndClient.Data.GetInfo
       LndClient.Data.HtlcEvent
+      LndClient.Data.HtlcInterceptor
       LndClient.Data.InitWallet
       LndClient.Data.Invoice
       LndClient.Data.Kind

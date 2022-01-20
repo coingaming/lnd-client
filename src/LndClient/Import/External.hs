@@ -17,6 +17,7 @@ import Control.Concurrent.STM.TChan as Import
   ( TChan,
     dupTChan,
     newBroadcastTChan,
+    newBroadcastTChanIO,
     readTChan,
     writeTChan,
   )
