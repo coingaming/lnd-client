@@ -26,7 +26,7 @@ import Universum
 spec :: Spec
 spec = do
 -- TODO This test is not working properly, needs to be fixed
-  it "HtlcInterceptor test" $
+  focus $ it "HtlcInterceptor test" $
     withEnv $ do
       tChan <- atomically newBroadcastTChan
       _rChan <- atomically $ dupTChan tChan
