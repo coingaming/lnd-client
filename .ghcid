@@ -2,4 +2,5 @@
 --restart=package.yaml
 --restart=cabal.project
 --restart=script/export-test-envs.sh
---command="((kill -0 `cat ./.bitcoin/regtest/bitcoind.pid` && kill -0 `cat ./.lnd-alice/lnd.pid` && kill -0 `cat ./.lnd-bob/lnd.pid` && kill -0 `cat ./.lnd-nick/lnd.pid`) || ((./script/cleanup-test-env.sh || true) && (setsid ./script/prepare-test-env.sh & wait))) && . ./script/export-test-envs.sh && hpack && cabal new-repl test:lnd-client-test --repl-options=-fobject-code --repl-options=-fno-break-on-exception --repl-options=-fno-break-on-error --repl-options=-v1 --repl-options=-ferror-spans --repl-options=-j"
+--restart=.ghcid
+--command="((kill -0 `cat ./.bitcoin/regtest/bitcoind.pid` && kill -0 `cat ./.lnd-alice/lnd.pid` && kill -0 `cat ./.lnd-bob/lnd.pid` && kill -0 `cat ./.lnd-nick/lnd.pid`) || ((./script/cleanup-test-env.sh || true) && (setsid ./script/prepare-test-env.sh & wait))) && . ./script/export-test-envs.sh && hpack && cabal new-repl test:lnd-client-test --repl-options=-fobject-code --repl-options=-fno-break-on-exception --repl-options=-fno-break-on-error --repl-options=-v1 --repl-options=-ferror-spans --repl-options=-j -fghcid"
