@@ -1,5 +1,3 @@
-//source https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/routerrpc/router.proto
-
 syntax = "proto3";
 
 import "lnd_grpc.proto";

@@ -80,3 +80,8 @@ import UnliftIO as Import
     catches,
     finally,
   )
+import Data.Type.Equality as Import
+  ( TestEquality (..),
+    (:~:) (..),
+    type (==),
+  )

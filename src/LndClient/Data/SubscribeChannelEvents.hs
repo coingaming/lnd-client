@@ -28,6 +28,7 @@ data UpdateChannel
   | ChannelEventUpdateChannelActiveChannel ChannelPoint
   | ChannelEventUpdateChannelInactiveChannel ChannelPoint
   | ChannelEventUpdateChannelPendingOpenChannel (PendingUpdate 'Funding)
+  | ChannelEventUpdateChannelFullyResolved ChannelPoint
   deriving (Eq, Ord, Show, Generic)
 
 instance Out UpdateChannel
@@ -38,6 +39,7 @@ data UpdateType
   | ACTIVE_CHANNEL
   | INACTIVE_CHANNEL
   | PENDING_OPEN_CHANNEL
+  | FULLY_RESOLVED_CHANNEL
   deriving (Eq, Ord, Show, Generic)
 
 instance Out UpdateType
@@ -49,6 +51,7 @@ instance FromGrpc UpdateType LnGRPC.ChannelEventUpdate'UpdateType where
     LnGRPC.ChannelEventUpdate'INACTIVE_CHANNEL -> Right INACTIVE_CHANNEL
     LnGRPC.ChannelEventUpdate'PENDING_OPEN_CHANNEL -> Right PENDING_OPEN_CHANNEL
     LnGRPC.ChannelEventUpdate'CLOSED_CHANNEL -> Right CLOSED_CHANNEL
+    LnGRPC.ChannelEventUpdate'FULLY_RESOLVED_CHANNEL -> Right FULLY_RESOLVED_CHANNEL
     LnGRPC.ChannelEventUpdate'UpdateType'Unrecognized v ->
       Left
         . FromGrpcError
@@ -61,6 +64,7 @@ instance FromGrpc UpdateChannel LnGRPC.ChannelEventUpdate'Channel where
     LnGRPC.ChannelEventUpdate'InactiveChannel cp -> ChannelEventUpdateChannelActiveChannel <$> fromGrpc cp
     LnGRPC.ChannelEventUpdate'PendingOpenChannel pa -> ChannelEventUpdateChannelPendingOpenChannel <$> fromGrpc pa
     LnGRPC.ChannelEventUpdate'ClosedChannel cc -> ChannelEventUpdateChannelClosedChannel <$> fromGrpc cc
+    LnGRPC.ChannelEventUpdate'FullyResolvedChannel cc -> ChannelEventUpdateChannelFullyResolved <$> fromGrpc cc
 
 instance FromGrpc ChannelEventUpdate LnGRPC.ChannelEventUpdate where
   fromGrpc x =

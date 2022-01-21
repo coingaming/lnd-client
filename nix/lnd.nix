@@ -2,16 +2,16 @@
 let
   callPackage = pkgs.callPackage;
   lndnix = "${pkgs.path}/pkgs/applications/blockchains/lnd.nix";
-  version = "0.13.1-beta.rc2";
+  version = "0.14.0-beta";
   src = pkgs.fetchFromGitHub {
     owner = "lightningnetwork";
     repo = "lnd";
     rev = "v${version}";
-    sha256 = "0rwsq1q2fb5g9fzn7i63k611pliz9csc4py9fbmnyd830d3k1bjj";
+    sha256 = "0pf84l46cfhbmbzjdkpmqp494wqix8715zawm537mm94k3q25bis";
   };
 in (callPackage lndnix {
       buildGoModule = args : pkgs.buildGoModule (args // {
-        vendorSha256 = "1ihxl6014hxs0my0wn012vlxs0y5gfhr0z9irwii0pa3zwaarjca";
+        vendorSha256 = "1481zscd9lrnzxsaxkpaaa8fjazmfynhim13f8lj2yd9d21j5d31";
         inherit src version;
       });
     })

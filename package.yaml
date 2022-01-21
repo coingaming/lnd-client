@@ -15,7 +15,7 @@ extra-source-files:
 
 dependencies:
 # foundation
-- base                  >= 4.7 && < 5
+- base                  #>= 4.7 && < 5
 - universum             >= 1.5.0 && < 1.5.1
 # time
 - chronos               >= 1.0.7 && < 1.1
@@ -87,7 +87,7 @@ default-extensions:
 - KindSignatures
 - StrictData
 - DeriveGeneric
-
+- TypeOperators
 ghc-options:
 # For details on warnings: https://downloads.haskell.org/~ghc/master/users-guide/using-warnings.html
 # Enable all warnings with -Weverything, then disable the ones we don’t care about

@@ -55,11 +55,13 @@ library
       LndClient.Data.PendingChannels
       LndClient.Data.PendingOpenChannel
       LndClient.Data.SendPayment
+      LndClient.Data.SignMessage
       LndClient.Data.SubscribeChannelEvents
       LndClient.Data.SubscribeInvoices
       LndClient.Data.TrackPayment
       LndClient.Data.Type
       LndClient.Data.UnlockWallet
+      LndClient.Data.VerifyMessage
       LndClient.Data.WaitingCloseChannel
       LndClient.Import
       LndClient.Import.External
@@ -80,6 +82,8 @@ library
       Proto.LndGrpc_Fields
       Proto.RouterGrpc
       Proto.RouterGrpc_Fields
+      Proto.SignerGrpc
+      Proto.SignerGrpc_Fields
       Proto.WalletUnlockerGrpc
       Proto.WalletUnlockerGrpc_Fields
   other-modules:
@@ -96,6 +100,7 @@ library
       KindSignatures
       StrictData
       DeriveGeneric
+      TypeOperators
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures
   build-depends:
       GenericPretty
@@ -104,7 +109,7 @@ library
     , asn1-encoding >=0.9.6 && <0.10
     , asn1-types ==0.3.*
     , async ==2.2.2.*
-    , base >=4.7 && <5
+    , base
     , base16-bytestring >=1.0.1.0 && <1.0.2
     , base64-bytestring >=1.0.0.2 && <1.0.1
     , bytestring >=0.10.8.2 && <0.10.9
@@ -178,11 +183,13 @@ test-suite lnd-client-test
       LndClient.Data.PendingChannels
       LndClient.Data.PendingOpenChannel
       LndClient.Data.SendPayment
+      LndClient.Data.SignMessage
       LndClient.Data.SubscribeChannelEvents
       LndClient.Data.SubscribeInvoices
       LndClient.Data.TrackPayment
       LndClient.Data.Type
       LndClient.Data.UnlockWallet
+      LndClient.Data.VerifyMessage
       LndClient.Data.WaitingCloseChannel
       LndClient.Import
       LndClient.Import.External
@@ -203,6 +210,8 @@ test-suite lnd-client-test
       Proto.LndGrpc_Fields
       Proto.RouterGrpc
       Proto.RouterGrpc_Fields
+      Proto.SignerGrpc
+      Proto.SignerGrpc_Fields
       Proto.WalletUnlockerGrpc
       Proto.WalletUnlockerGrpc_Fields
       LndClient.RPCSpec
@@ -221,6 +230,7 @@ test-suite lnd-client-test
       KindSignatures
       StrictData
       DeriveGeneric
+      TypeOperators
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       GenericPretty
@@ -229,7 +239,7 @@ test-suite lnd-client-test
     , asn1-encoding >=0.9.6 && <0.10
     , asn1-types ==0.3.*
     , async ==2.2.2.*
-    , base >=4.7 && <5
+    , base
     , base16-bytestring >=1.0.1.0 && <1.0.2
     , base64-bytestring >=1.0.0.2 && <1.0.1
     , bytestring >=0.10.8.2 && <0.10.9

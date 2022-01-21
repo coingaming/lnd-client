@@ -28,6 +28,17 @@ import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Gener
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
 import qualified Proto.LndGrpc
+account ::
+  forall f s a.
+  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "account" a) =>
+  Lens.Family2.LensLike' f s a
+account = Data.ProtoLens.Field.field @"account"
+accounts ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "accounts" a) =>
+  Lens.Family2.LensLike' f s a
+accounts = Data.ProtoLens.Field.field @"accounts"
 adminMacaroon ::
   forall f s a.
   (Prelude.Functor f,
@@ -53,6 +64,12 @@ cipherSeedMnemonic ::
   Lens.Family2.LensLike' f s a
 cipherSeedMnemonic
   = Data.ProtoLens.Field.field @"cipherSeedMnemonic"
+coinType ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "coinType" a) =>
+  Lens.Family2.LensLike' f s a
+coinType = Data.ProtoLens.Field.field @"coinType"
 currentPassword ::
   forall f s a.
   (Prelude.Functor f,
@@ -65,6 +82,33 @@ encipheredSeed ::
    Data.ProtoLens.Field.HasField s "encipheredSeed" a) =>
   Lens.Family2.LensLike' f s a
 encipheredSeed = Data.ProtoLens.Field.field @"encipheredSeed"
+extendedMasterKey ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "extendedMasterKey" a) =>
+  Lens.Family2.LensLike' f s a
+extendedMasterKey = Data.ProtoLens.Field.field @"extendedMasterKey"
+extendedMasterKeyBirthdayTimestamp ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "extendedMasterKeyBirthdayTimestamp" a) =>
+  Lens.Family2.LensLike' f s a
+extendedMasterKeyBirthdayTimestamp
+  = Data.ProtoLens.Field.field @"extendedMasterKeyBirthdayTimestamp"
+masterKeyBirthdayTimestamp ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "masterKeyBirthdayTimestamp" a) =>
+  Lens.Family2.LensLike' f s a
+masterKeyBirthdayTimestamp
+  = Data.ProtoLens.Field.field @"masterKeyBirthdayTimestamp"
+masterKeyFingerprint ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "masterKeyFingerprint" a) =>
+  Lens.Family2.LensLike' f s a
+masterKeyFingerprint
+  = Data.ProtoLens.Field.field @"masterKeyFingerprint"
 maybe'channelBackups ::
   forall f s a.
   (Prelude.Functor f,
@@ -72,6 +116,12 @@ maybe'channelBackups ::
   Lens.Family2.LensLike' f s a
 maybe'channelBackups
   = Data.ProtoLens.Field.field @"maybe'channelBackups"
+maybe'watchOnly ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "maybe'watchOnly" a) =>
+  Lens.Family2.LensLike' f s a
+maybe'watchOnly = Data.ProtoLens.Field.field @"maybe'watchOnly"
 newMacaroonRootKey ::
   forall f s a.
   (Prelude.Functor f,
@@ -85,6 +135,11 @@ newPassword ::
    Data.ProtoLens.Field.HasField s "newPassword" a) =>
   Lens.Family2.LensLike' f s a
 newPassword = Data.ProtoLens.Field.field @"newPassword"
+purpose ::
+  forall f s a.
+  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "purpose" a) =>
+  Lens.Family2.LensLike' f s a
+purpose = Data.ProtoLens.Field.field @"purpose"
 recoveryWindow ::
   forall f s a.
   (Prelude.Functor f,
@@ -103,6 +158,12 @@ statelessInit ::
    Data.ProtoLens.Field.HasField s "statelessInit" a) =>
   Lens.Family2.LensLike' f s a
 statelessInit = Data.ProtoLens.Field.field @"statelessInit"
+vec'accounts ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "vec'accounts" a) =>
+  Lens.Family2.LensLike' f s a
+vec'accounts = Data.ProtoLens.Field.field @"vec'accounts"
 vec'cipherSeedMnemonic ::
   forall f s a.
   (Prelude.Functor f,
@@ -116,3 +177,14 @@ walletPassword ::
    Data.ProtoLens.Field.HasField s "walletPassword" a) =>
   Lens.Family2.LensLike' f s a
 walletPassword = Data.ProtoLens.Field.field @"walletPassword"
+watchOnly ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "watchOnly" a) =>
+  Lens.Family2.LensLike' f s a
+watchOnly = Data.ProtoLens.Field.field @"watchOnly"
+xpub ::
+  forall f s a.
+  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "xpub" a) =>
+  Lens.Family2.LensLike' f s a
+xpub = Data.ProtoLens.Field.field @"xpub"

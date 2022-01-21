@@ -30,10 +30,12 @@ import LndClient.Data.ListInvoices as ListInvoices
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
+import LndClient.Data.SignMessage
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
 import qualified LndClient.Data.TrackPayment as TrackPayment
+import LndClient.Data.VerifyMessage
 import LndClient.Import
 import LndClient.LndTest
 import LndClient.QRCode
@@ -369,6 +371,15 @@ spec = do
           TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
         res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
         liftIO $ res `shouldSatisfy` isJust
+  focus $
+    it "signVerify" $
+      withEnv $ do
+        void $ setupOneChannel Alice Bob
+        alice <- getLndEnv Alice
+        bob <- getLndEnv Bob
+        SignMessageResponse sig <- liftLndResult =<< signMessage alice (SignMessageRequest "test" False)
+        VerifyMessageResponse res _pubKey <- liftLndResult =<< verifyMessage bob (VerifyMessageRequest "test" sig)
+        liftIO $ res `shouldBe` True
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
