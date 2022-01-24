@@ -29,6 +29,7 @@ import LndClient.Data.ListInvoices as ListInvoices
   )
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
+import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SignMessage
 import LndClient.Data.SubscribeInvoices
@@ -315,13 +316,8 @@ spec = do
       cp <- setupOneChannel Alice Bob
       closeAllChannels proxyOwner
       lnd <- getLndEnv Bob
-      res <- closedChannels lnd ClosedChannels.defReq
-      liftIO $
-        res
-          `shouldSatisfy` ( \case
-                              Left {} -> False
-                              Right xs -> any ((cp ==) . CloseChannel.chPoint) xs
-                          )
+      res <- liftLndResult =<< closedChannels lnd ClosedChannels.defReq
+      liftIO $ res `shouldSatisfy` any ((cp ==) . CloseChannel.chPoint)
   it "subscriptionCanBeCancelled" $
     withEnv $ do
       bob <- getLndEnv Bob
@@ -371,7 +367,21 @@ spec = do
           Watcher.watch w $
             TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
           res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
-          liftIO $ res `shouldSatisfy` isJust
+          liftIO $ res `shouldSatisfy` isJust      
+      inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
+      let req =
+            SendPaymentRequest
+              (AddInvoice.paymentRequest inv)
+              $ AddInvoice.valueMsat addInvoiceRequest
+      --
+      -- spawn payment watcher and settle invoice
+      --
+      Watcher.withWatcher alice trackPaymentV2Chan (\_ _ _ -> pure ()) $ \w -> do
+        void $ liftLndResult =<< sendPayment alice req
+        chan <- Watcher.dupLndTChan w
+        Watcher.watch w $
+          TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
+        res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
   it "signVerify" $
     withEnv $ do
       void $ setupOneChannel Alice Bob
@@ -380,6 +390,40 @@ spec = do
       SignMessageResponse sig <- liftLndResult =<< signMessage alice (SignMessageRequest "test" False)
       VerifyMessageResponse res _pubKey <- liftLndResult =<< verifyMessage bob (VerifyMessageRequest "test" sig)
       liftIO $ res `shouldBe` True
+        liftIO $ res `shouldSatisfy` isJust
+  it "waitForGrpc" $
+    withEnv $ do
+      res <- waitForGrpc =<< getLndEnv Alice
+      liftIO $ res `shouldSatisfy` isRight
+  it "setupChannelAndClose" $
+    withEnv $ do
+      lndAlice <- getLndEnv Alice
+      lndBob <- getLndEnv Bob
+      GetInfoResponse merchantPubKey _ _ <-
+        liftLndResult =<< getInfo lndBob
+      let openChannelRequest =
+            OpenChannelRequest
+              { nodePubkey = merchantPubKey,
+                localFundingAmount = MSat 200000000,
+                pushMSat = Just $ MSat 10000000,
+                targetConf = Nothing,
+                mSatPerByte = Nothing,
+                private = Nothing,
+                minHtlcMsat = Nothing,
+                remoteCsvDelay = Nothing,
+                minConfs = Nothing,
+                spendUnconfirmed = Nothing,
+                closeAddress = Nothing
+              }
+      _ <-
+        liftLndResult
+          =<< openChannelSync lndAlice openChannelRequest
+      sleep $ MicroSecondsDelay 100000
+      res <- pendingChannels =<< getLndEnv Alice
+      let pc = case res of
+            Left {} -> fail "Pending channels fail"
+            Right (PendingChannelsResponse _ x _ _ _) -> x
+      liftIO $ pc `shouldNotSatisfy` null
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing

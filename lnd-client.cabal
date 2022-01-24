@@ -25,6 +25,10 @@ source-repository head
   type: git
   location: https://github.com/coingaming/lnd-client
 
+flag ghcid
+  manual: True
+  default: False
+
 library
   exposed-modules:
       LndClient
@@ -153,68 +157,10 @@ test-suite lnd-client-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      LndClient
-      LndClient.Class
-      LndClient.Data.AddHodlInvoice
-      LndClient.Data.AddInvoice
-      LndClient.Data.Channel
-      LndClient.Data.ChannelPoint
-      LndClient.Data.CloseChannel
-      LndClient.Data.ClosedChannel
-      LndClient.Data.ClosedChannels
-      LndClient.Data.ForceClosedChannel
-      LndClient.Data.GetInfo
-      LndClient.Data.HtlcEvent
-      LndClient.Data.InitWallet
-      LndClient.Data.Invoice
-      LndClient.Data.Kind
-      LndClient.Data.ListChannels
-      LndClient.Data.ListInvoices
-      LndClient.Data.LndEnv
-      LndClient.Data.NewAddress
-      LndClient.Data.Newtype
-      LndClient.Data.OpenChannel
-      LndClient.Data.Payment
-      LndClient.Data.PayReq
-      LndClient.Data.Peer
-      LndClient.Data.PendingChannel
-      LndClient.Data.PendingChannels
-      LndClient.Data.PendingOpenChannel
-      LndClient.Data.SendPayment
-      LndClient.Data.SignMessage
-      LndClient.Data.SubscribeChannelEvents
-      LndClient.Data.SubscribeInvoices
-      LndClient.Data.TrackPayment
-      LndClient.Data.Type
-      LndClient.Data.UnlockWallet
-      LndClient.Data.VerifyMessage
-      LndClient.Data.WaitingCloseChannel
-      LndClient.Import
-      LndClient.Import.External
-      LndClient.LndTest
-      LndClient.Log
-      LndClient.Orphan
-      LndClient.QRCode
-      LndClient.RPC.Generic
-      LndClient.RPC.Katip
-      LndClient.RPC.Silent
-      LndClient.RPC.TH
-      LndClient.Util
-      LndClient.Watcher
-      LndGrpc.Client
-      Proto.InvoiceGrpc
-      Proto.InvoiceGrpc_Fields
-      Proto.LndGrpc
-      Proto.LndGrpc_Fields
-      Proto.RouterGrpc
-      Proto.RouterGrpc_Fields
-      Proto.WalletUnlockerGrpc
-      Proto.WalletUnlockerGrpc_Fields
       LndClient.RPCSpec
       LndClient.TestApp
       Paths_lnd_client
   hs-source-dirs:
-      src
       test
   default-extensions:
       NoImplicitPrelude
@@ -276,4 +222,66 @@ test-suite lnd-client-test
     , vector
     , x509 ==1.7.5.*
     , x509-store
+  if flag(ghcid)
+    other-modules:
+        LndClient
+        LndClient.Class
+        LndClient.Data.AddHodlInvoice
+        LndClient.Data.AddInvoice
+        LndClient.Data.Channel
+        LndClient.Data.ChannelPoint
+        LndClient.Data.CloseChannel
+        LndClient.Data.ClosedChannel
+        LndClient.Data.ClosedChannels
+        LndClient.Data.ForceClosedChannel
+        LndClient.Data.GetInfo
+        LndClient.Data.HtlcEvent
+        LndClient.Data.InitWallet
+        LndClient.Data.Invoice
+        LndClient.Data.Kind
+        LndClient.Data.ListChannels
+        LndClient.Data.ListInvoices
+        LndClient.Data.LndEnv
+        LndClient.Data.NewAddress
+        LndClient.Data.Newtype
+        LndClient.Data.OpenChannel
+        LndClient.Data.Payment
+        LndClient.Data.PayReq
+        LndClient.Data.Peer
+        LndClient.Data.PendingChannel
+        LndClient.Data.PendingChannels
+        LndClient.Data.PendingOpenChannel
+        LndClient.Data.SendPayment
+        LndClient.Data.SubscribeChannelEvents
+        LndClient.Data.SubscribeInvoices
+        LndClient.Data.TrackPayment
+        LndClient.Data.Type
+        LndClient.Data.UnlockWallet
+        LndClient.Data.WaitingCloseChannel
+        LndClient.Import
+        LndClient.Import.External
+        LndClient.LndTest
+        LndClient.Log
+        LndClient.Orphan
+        LndClient.QRCode
+        LndClient.RPC.Generic
+        LndClient.RPC.Katip
+        LndClient.RPC.Silent
+        LndClient.RPC.TH
+        LndClient.Util
+        LndClient.Watcher
+        LndGrpc.Client
+        Proto.InvoiceGrpc
+        Proto.InvoiceGrpc_Fields
+        Proto.LndGrpc
+        Proto.LndGrpc_Fields
+        Proto.RouterGrpc
+        Proto.RouterGrpc_Fields
+        Proto.WalletUnlockerGrpc
+        Proto.WalletUnlockerGrpc_Fields
+    hs-source-dirs:
+        src
+  else
+    build-depends:
+        lnd-client
   default-language: Haskell2010

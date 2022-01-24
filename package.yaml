@@ -28,7 +28,6 @@ dependencies:
 - pretty-simple
 - pretty
 - GenericPretty
-- generic-pretty-instances
 # byte and text
 - bytestring            >= 0.10.8.2 && < 0.10.9
 - base16-bytestring     >= 1.0.1.0 && < 1.0.2
@@ -64,7 +63,6 @@ dependencies:
 - vector
 # protobuf
 - microlens             >= 0.4.10
-- proto-lens            >= 0.7.0
 - proto-lens-runtime    >= 0.7.0
 # proto-lens-grpc
 - http2-grpc-proto-lens >= 0.1.0.0
@@ -73,9 +71,9 @@ dependencies:
 - http2-grpc-types      >= 0.5.0.0
 - http2                 >= 2.0.3
 - tls
+- generic-pretty-instances
+- proto-lens            >= 0.7.0
 
-source-dirs:
-- src
 
 default-extensions:
 - NoImplicitPrelude
@@ -102,7 +100,14 @@ ghc-options:
 - -Wno-safe # Don’t use Safe Haskell warnings
 - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
 
-library: {}
+flags:
+  ghcid:
+    manual: true
+    default: false
+
+library:
+  source-dirs:
+  - src
 
 tests:
   lnd-client-test:
@@ -115,3 +120,11 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - hspec >= 2.7.1 && < 2.7.2
+    when:
+      - condition: flag(ghcid)
+        then:
+          source-dirs:
+          - src
+        else:
+          dependencies:
+          - lnd-client
