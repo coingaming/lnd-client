@@ -82,8 +82,6 @@ library
       Proto.LndGrpc_Fields
       Proto.RouterGrpc
       Proto.RouterGrpc_Fields
-      Proto.SignerGrpc
-      Proto.SignerGrpc_Fields
       Proto.WalletUnlockerGrpc
       Proto.WalletUnlockerGrpc_Fields
   other-modules:
@@ -210,8 +208,6 @@ test-suite lnd-client-test
       Proto.LndGrpc_Fields
       Proto.RouterGrpc
       Proto.RouterGrpc_Fields
-      Proto.SignerGrpc
-      Proto.SignerGrpc_Fields
       Proto.WalletUnlockerGrpc
       Proto.WalletUnlockerGrpc_Fields
       LndClient.RPCSpec

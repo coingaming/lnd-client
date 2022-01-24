@@ -349,37 +349,37 @@ spec = do
         res <- Async.race (sleep $ MicroSecondsDelay 100000) $ Async.cancel a
         res `shouldSatisfy` isRight
   it "trackPaymentV2" $
-    withEnv $ do
-      void $ setupOneChannel Alice Bob
-      --
-      -- prepare invoice and subscription
-      --
-      alice <- getLndEnv Alice
-      bob <- getLndEnv Bob
-      inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
-      let req =
-            SendPaymentRequest
-              (AddInvoice.paymentRequest inv)
-              $ AddInvoice.valueMsat addInvoiceRequest
-      --
-      -- spawn payment watcher and settle invoice
-      --
-      Watcher.withWatcher alice trackPaymentV2Chan (\_ _ _ -> pure ()) $ \w -> do
-        void $ liftLndResult =<< sendPayment alice req
-        chan <- Watcher.dupLndTChan w
-        Watcher.watch w $
-          TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
-        res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
-        liftIO $ res `shouldSatisfy` isJust
-  focus $
-    it "signVerify" $
-      withEnv $ do
+    withEnv $
+      do
         void $ setupOneChannel Alice Bob
+        --
+        -- prepare invoice and subscription
+        --
         alice <- getLndEnv Alice
         bob <- getLndEnv Bob
-        SignMessageResponse sig <- liftLndResult =<< signMessage alice (SignMessageRequest "test" False)
-        VerifyMessageResponse res _pubKey <- liftLndResult =<< verifyMessage bob (VerifyMessageRequest "test" sig)
-        liftIO $ res `shouldBe` True
+        inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
+        let req =
+              SendPaymentRequest
+                (AddInvoice.paymentRequest inv)
+                $ AddInvoice.valueMsat addInvoiceRequest
+        --
+        -- spawn payment watcher and settle invoice
+        --
+        Watcher.withWatcher alice trackPaymentV2Chan (\_ _ _ -> pure ()) $ \w -> do
+          void $ liftLndResult =<< sendPayment alice req
+          chan <- Watcher.dupLndTChan w
+          Watcher.watch w $
+            TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
+          res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
+          liftIO $ res `shouldSatisfy` isJust
+  it "signVerify" $
+    withEnv $ do
+      void $ setupOneChannel Alice Bob
+      alice <- getLndEnv Alice
+      bob <- getLndEnv Bob
+      SignMessageResponse sig <- liftLndResult =<< signMessage alice (SignMessageRequest "test" False)
+      VerifyMessageResponse res _pubKey <- liftLndResult =<< verifyMessage bob (VerifyMessageRequest "test" sig)
+      liftIO $ res `shouldBe` True
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
