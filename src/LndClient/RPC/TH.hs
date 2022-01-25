@@ -49,6 +49,7 @@ import qualified LndClient.Data.VerifyMessage as VM
   ( VerifyMessageRequest (..),
     VerifyMessageResponse (..),
   )
+import qualified LndClient.Data.SignMessage2 as SM2
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
@@ -56,6 +57,7 @@ import qualified Proto.InvoiceGrpc as LnGRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.RouterGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc as LnGRPC
+import qualified Proto.SignerGrpc as LnGRPC
 
 data RpcKind = RpcSilent | RpcKatip
 
@@ -432,6 +434,17 @@ mkRpc k = do
           (RPC :: RPC LnGRPC.Lightning "signMessage")
           env
 
+    signMessage2 ::
+      $(tcc m) =>
+      LndEnv ->
+      SM2.SignMessageRequest ->
+      $(pure m) (Either LndError SM2.SignMessageResponse)
+    signMessage2 env =
+      $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.Signer "signMessage")
+          env
+
     verifyMessage ::
       $(tcc m) =>
       LndEnv ->
@@ -440,7 +453,7 @@ mkRpc k = do
     verifyMessage env =
       $(grpcRetry)
         . $(grpcSync)
-          (RPC :: RPC LnGRPC.Lightning "verifyMessage")
+          (RPC :: RPC LnGRPC.Signer "verifyMessage")
           env
     |]
   where

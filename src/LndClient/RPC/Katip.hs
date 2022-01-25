@@ -41,6 +41,7 @@ module LndClient.RPC.Katip
     subscribeSingleInvoice,
     subscribeSingleInvoiceChan,
     signMessage,
+    signMessage2,
     verifyMessage,
   )
 where

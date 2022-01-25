@@ -9,38 +9,37 @@ where
 
 import Data.ProtoLens.Message
 import LndClient.Import
-import qualified Proto.LndGrpc as LnGRPC
-import qualified Proto.LndGrpc_Fields as LnGRPC
+import qualified Proto.SignerGrpc as LnGRPC
+import qualified Proto.SignerGrpc_Fields as LnGRPC
 
 data VerifyMessageRequest = VerifyMessageRequest
   { message :: ByteString,
-    signature :: Text
+    signature :: ByteString,
+    pubkey :: ByteString
   }
   deriving (Eq, Show, Generic)
 
 instance Out VerifyMessageRequest
 
-data VerifyMessageResponse = VerifyMessageResponse
-  { valid :: Bool,
-    pubkey :: Text
-  }
+newtype VerifyMessageResponse = VerifyMessageResponse Bool
   deriving (Eq, Show, Generic)
 
 instance Out VerifyMessageResponse
 
-instance ToGrpc VerifyMessageRequest LnGRPC.VerifyMessageRequest where
+instance ToGrpc VerifyMessageRequest LnGRPC.VerifyMessageReq where
   toGrpc x =
     msg
       <$> toGrpc (message x)
       <*> toGrpc (signature x)
+      <*> toGrpc (pubkey x)
     where
-      msg gMsg gSignature =
+      msg gMsg gSignature gPubKey=
         defMessage
           & LnGRPC.msg .~ gMsg
           & LnGRPC.signature .~ gSignature
+          & LnGRPC.pubkey .~ gPubKey
 
-instance FromGrpc VerifyMessageResponse LnGRPC.VerifyMessageResponse where
+instance FromGrpc VerifyMessageResponse LnGRPC.VerifyMessageResp where
   fromGrpc x =
     VerifyMessageResponse
       <$> fromGrpc (x ^. LnGRPC.valid)
-      <*> fromGrpc (x ^. LnGRPC.pubkey)

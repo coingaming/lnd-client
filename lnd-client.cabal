@@ -60,6 +60,7 @@ library
       LndClient.Data.PendingOpenChannel
       LndClient.Data.SendPayment
       LndClient.Data.SignMessage
+      LndClient.Data.SignMessage2
       LndClient.Data.SubscribeChannelEvents
       LndClient.Data.SubscribeInvoices
       LndClient.Data.TrackPayment
@@ -86,6 +87,8 @@ library
       Proto.LndGrpc_Fields
       Proto.RouterGrpc
       Proto.RouterGrpc_Fields
+      Proto.SignerGrpc
+      Proto.SignerGrpc_Fields
       Proto.WalletUnlockerGrpc
       Proto.WalletUnlockerGrpc_Fields
   other-modules:
@@ -113,6 +116,8 @@ library
     , async ==2.2.2.*
     , base
     , base16-bytestring >=1.0.1.0 && <1.0.2
+    , base32 >=0.2.1.0
+    , base32-z-bytestring >=1.0.0.0
     , base64-bytestring >=1.0.0.2 && <1.0.1
     , bytestring >=0.10.8.2 && <0.10.9
     , chronos >=1.0.7 && <1.1
@@ -183,6 +188,8 @@ test-suite lnd-client-test
     , async ==2.2.2.*
     , base
     , base16-bytestring >=1.0.1.0 && <1.0.2
+    , base32 >=0.2.1.0
+    , base32-z-bytestring >=1.0.0.0
     , base64-bytestring >=1.0.0.2 && <1.0.1
     , bytestring >=0.10.8.2 && <0.10.9
     , chronos >=1.0.7 && <1.1
@@ -252,11 +259,14 @@ test-suite lnd-client-test
         LndClient.Data.PendingChannels
         LndClient.Data.PendingOpenChannel
         LndClient.Data.SendPayment
+        LndClient.Data.SignMessage
+        LndClient.Data.SignMessage2
         LndClient.Data.SubscribeChannelEvents
         LndClient.Data.SubscribeInvoices
         LndClient.Data.TrackPayment
         LndClient.Data.Type
         LndClient.Data.UnlockWallet
+        LndClient.Data.VerifyMessage
         LndClient.Data.WaitingCloseChannel
         LndClient.Import
         LndClient.Import.External
@@ -277,6 +287,8 @@ test-suite lnd-client-test
         Proto.LndGrpc_Fields
         Proto.RouterGrpc
         Proto.RouterGrpc_Fields
+        Proto.SignerGrpc
+        Proto.SignerGrpc_Fields
         Proto.WalletUnlockerGrpc
         Proto.WalletUnlockerGrpc_Fields
     hs-source-dirs:
