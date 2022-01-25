@@ -4,38 +4,63 @@
 module LndClient.Data.SignMessage
   ( SignMessageRequest (..),
     SignMessageResponse (..),
+    KeyLocator (..)
   )
 where
 
 import Data.ProtoLens.Message
 import LndClient.Import
-import qualified Proto.LndGrpc as LnGRPC
-import qualified Proto.LndGrpc_Fields as LnGRPC
+import qualified Proto.SignerGrpc as LnGRPC
+import qualified Proto.SignerGrpc_Fields as LnGRPC
 
 data SignMessageRequest = SignMessageRequest
   { message :: ByteString,
-    singleHash :: Bool
+    keyLoc :: KeyLocator,
+    doubleHash :: Bool,
+    compactSig :: Bool
   }
   deriving (Eq, Show, Generic)
 
 instance Out SignMessageRequest
 
-newtype SignMessageResponse = SignMessageResponse Text
+newtype SignMessageResponse = SignMessageResponse ByteString
   deriving (Eq, Show, Generic)
 
 instance Out SignMessageResponse
 
-instance ToGrpc SignMessageRequest LnGRPC.SignMessageRequest where
+instance ToGrpc SignMessageRequest LnGRPC.SignMessageReq where
   toGrpc x =
     msg
       <$> toGrpc (message x)
-      <*> toGrpc (singleHash x)
+      <*> toGrpc (keyLoc x)
+      <*> toGrpc (doubleHash x)
+      <*> toGrpc (compactSig x)
     where
-      msg gMsg gSingleHash =
+      msg gMsg gKeyLoc gDoubleHash gCompactSig =
         defMessage
           & LnGRPC.msg .~ gMsg
-          & LnGRPC.singleHash .~ gSingleHash
+          & LnGRPC.keyLoc .~ gKeyLoc
+          & LnGRPC.doubleHash .~ gDoubleHash
+          & LnGRPC.compactSig .~ gCompactSig
 
-instance FromGrpc SignMessageResponse LnGRPC.SignMessageResponse where
+instance FromGrpc SignMessageResponse LnGRPC.SignMessageResp where
   fromGrpc x = SignMessageResponse <$> fromGrpc (x ^. LnGRPC.signature)
 
+data KeyLocator = KeyLocator
+  { keyFamily :: Int32,
+    keyIndex :: Int32
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out KeyLocator
+
+instance ToGrpc KeyLocator LnGRPC.KeyLocator where
+  toGrpc x =
+    msg
+      <$> toGrpc (keyFamily x)
+      <*> toGrpc (keyIndex x)
+    where
+      msg gKeyFamily gKeyIndex =
+        defMessage
+          & LnGRPC.keyFamily .~ gKeyFamily
+          & LnGRPC.keyIndex .~ gKeyIndex

@@ -49,7 +49,6 @@ import qualified LndClient.Data.VerifyMessage as VM
   ( VerifyMessageRequest (..),
     VerifyMessageResponse (..),
   )
-import qualified LndClient.Data.SignMessage2 as SM2
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
@@ -429,17 +428,6 @@ mkRpc k = do
       SignMessageRequest ->
       $(pure m) (Either LndError SignMessageResponse)
     signMessage env =
-      $(grpcRetry)
-        . $(grpcSync)
-          (RPC :: RPC LnGRPC.Lightning "signMessage")
-          env
-
-    signMessage2 ::
-      $(tcc m) =>
-      LndEnv ->
-      SM2.SignMessageRequest ->
-      $(pure m) (Either LndError SM2.SignMessageResponse)
-    signMessage2 env =
       $(grpcRetry)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Signer "signMessage")

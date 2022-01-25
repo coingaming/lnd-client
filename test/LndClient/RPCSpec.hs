@@ -11,8 +11,6 @@ module LndClient.RPCSpec
 where
 
 import qualified Control.Concurrent.Async as Async
-import qualified Data.ByteString.Base32.Z as Z
---import Data.Text.Encoding.Base32
 import LndClient.Data.AddHodlInvoice as HodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
@@ -34,7 +32,6 @@ import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SignMessage
-import qualified LndClient.Data.SignMessage2 as SM2
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
@@ -47,7 +44,6 @@ import LndClient.RPC.Katip
 import LndClient.TestApp
 import qualified LndClient.Watcher as Watcher
 import Test.Hspec
-import qualified Data.ByteString as BS
 
 spec :: Spec
 spec = do
@@ -372,34 +368,13 @@ spec = do
             TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
           res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
           liftIO $ res `shouldSatisfy` isJust
-  focus $ it "signVerify" $
-    withEnv $ do
-      void $ setupOneChannel Alice Bob
-      alice <- getLndEnv Alice
-      bob <- getLndEnv Bob
-      SignMessageResponse sig <- liftLndResult =<< signMessage alice (SignMessageRequest "test" False)
-      SM2.SignMessageResponse sig2 <- liftLndResult =<< signMessage2 alice (SM2.SignMessageRequest "test" (SM2.KeyLocator 0 0) False False)
-      GetInfoResponse pubKey _ _ <- liftLndResult =<< getInfo alice
-      --liftIO $ (Z.decode $ encodeUtf8 sig) `shouldBe`(Right "aaa")
-      case Z.decode $ encodeUtf8 sig of
-        Right sigDecoded -> do
-          print (BS.unpack sig2)
-          print (BS.length sig2)
-          print (BS.unpack sigDecoded)
-          print (BS.length sigDecoded)
-
---         liftIO $ sigDecoded `shouldBe` sig2
-          VerifyMessageResponse res <- liftLndResult =<< verifyMessage bob (VerifyMessageRequest "test" sigDecoded (coerce pubKey))
-          liftIO $ res `shouldBe` True
-        Left _ -> liftIO $ True `shouldBe` False
-  it "signVerify2" $
+  it "signVerify" $
     withEnv $ do
       alice <- getLndEnv Alice
       bob <- getLndEnv Bob
-      SM2.SignMessageResponse sig <- liftLndResult =<< signMessage2 alice (SM2.SignMessageRequest "test" (SM2.KeyLocator 0 0) False False)
+      SignMessageResponse sig <- liftLndResult =<< signMessage alice (SignMessageRequest "test" (KeyLocator 6 0) False False)
       GetInfoResponse pubKey _ _ <- liftLndResult =<< getInfo alice
       VerifyMessageResponse res <- liftLndResult =<< verifyMessage bob (VerifyMessageRequest "test" sig (coerce pubKey))
-      --liftIO $ sig `shouldBe` "ddd"
       liftIO $ res `shouldBe` True
   it "waitForGrpc" $
     withEnv $ do
@@ -443,9 +418,3 @@ spec = do
           valueMsat = MSat 1000000,
           expiry = Just $ Seconds 1000
         }
-
-
-
---1fffb80f02436c8468c6f741a8371f3c8230fe5385300deac5af1414b7c84167eb155621386adc8e3a5cc1a3149283946bd3e78a69906f395bcf58da3e0173513a
---
---3045022100bf943eb1b606d57f7712f830afc0a5a47843e535893c8796f8e372d2f8afcd1c02203a4630a146464d521608fc4a9e0488d5c6a616571552fe187bd76c1c252eaa1e
