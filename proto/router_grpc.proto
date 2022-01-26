@@ -1,5 +1,3 @@
-//source https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/routerrpc/router.proto
-
 syntax = "proto3";
 
 import "lnd_grpc.proto";
@@ -362,6 +360,11 @@ message QueryMissionControlResponse {
 message XImportMissionControlRequest {
     // Node pair-level mission control state to be imported.
     repeated PairHistory pairs = 1;
+
+    // Whether to force override MC pair history. Note that even with force
+    // override the failure pair is imported before the success pair and both
+    // still clamp existing failure/success amounts.
+    bool force = 2;
 }
 
 message XImportMissionControlResponse {

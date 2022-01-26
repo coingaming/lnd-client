@@ -35,12 +35,20 @@ import LndClient.Data.Peer
   )
 import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
+import LndClient.Data.SignMessage
+  ( SignMessageRequest (..),
+    SignMessageResponse (..),
+  )
 import LndClient.Data.SubscribeChannelEvents (ChannelEventUpdate (..))
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
 import LndClient.Data.TrackPayment (TrackPaymentRequest (..))
 import qualified LndClient.Data.UnlockWallet as UW
+import qualified LndClient.Data.VerifyMessage as VM
+  ( VerifyMessageRequest (..),
+    VerifyMessageResponse (..),
+  )
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
@@ -48,6 +56,7 @@ import qualified Proto.InvoiceGrpc as LnGRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.RouterGrpc as LnGRPC
 import qualified Proto.WalletUnlockerGrpc as LnGRPC
+import qualified Proto.SignerGrpc as LnGRPC
 
 data RpcKind = RpcSilent | RpcKatip
 
@@ -412,6 +421,28 @@ mkRpc k = do
           (RPC :: RPC LnGRPC.Lightning "pendingChannels")
           env
           (defMessage :: LnGRPC.PendingChannelsRequest)
+
+    signMessage ::
+      $(tcc m) =>
+      LndEnv ->
+      SignMessageRequest ->
+      $(pure m) (Either LndError SignMessageResponse)
+    signMessage env =
+      $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.Signer "signMessage")
+          env
+
+    verifyMessage ::
+      $(tcc m) =>
+      LndEnv ->
+      VM.VerifyMessageRequest ->
+      $(pure m) (Either LndError VM.VerifyMessageResponse)
+    verifyMessage env =
+      $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.Signer "verifyMessage")
+          env
     |]
   where
     tcc m = case k of
