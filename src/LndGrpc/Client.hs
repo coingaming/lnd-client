@@ -11,8 +11,11 @@ where
 import Control.Exception (BlockedIndefinitelyOnMVar (..))
 import Data.ProtoLens.Message
 import Data.ProtoLens.Service.Types (HasMethod, HasMethodImpl (..))
+import Data.Text
+import GHC.IO.Exception (IOException)
 import GHC.TypeLits (Symbol)
 import LndClient.Data.LndEnv
+import LndClient.Data.Type (LndError (LndWalletNotExists))
 import LndClient.Import
 import Network.GRPC.Client.Helpers
 import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
@@ -32,11 +35,14 @@ runUnary ::
   p (Either LndError res)
 runUnary rpc env req = do
   res <-
-    liftIO (Right <$> this)
-      `catch` (\(e :: BlockedIndefinitelyOnMVar) -> pure $ Left e)
+    catchExceptions $ liftIO (Right <$> this)
   pure $ case res of
     Right (Right (Right (Right (_, _, Right x)))) ->
       Right x
+    Right (Right (Right (Right (_, _, Left "wallet not created, create one to enable full RPC access")))) ->
+      Left LndWalletNotExists
+    Right (Right (Right (Right (_, _, Left "wallet locked, unlock it to enable full RPC access")))) ->
+      Left LndWalletLocked
     Right (Right (Right (Right (_, _, Left e)))) ->
       Left $ LndError $ pack e
     Right (Right (Right (Left e))) ->
@@ -47,7 +53,7 @@ runUnary rpc env req = do
     Right (Left e) ->
       Left $ LndGrpcError e
     Left e ->
-      Left . LndGrpcException $ inspect e
+      Left e
   where
     this =
       runClientIO $
@@ -69,8 +75,7 @@ runStreamServer ::
   p (Either LndError res)
 runStreamServer rpc env req handler = do
   res <-
-    liftIO (Right <$> this)
-      `catch` (\(e :: BlockedIndefinitelyOnMVar) -> pure $ Left e)
+    catchExceptions $ liftIO (Right <$> this)
   pure $ case res of
     Right (Right (Right ((), _, _))) ->
       Right defMessage
@@ -80,7 +85,7 @@ runStreamServer rpc env req handler = do
     Right (Left e) ->
       Left $ LndGrpcError e
     Left e ->
-      Left . LndGrpcException $ inspect e
+      Left e
   where
     this =
       runClientIO $
@@ -88,3 +93,14 @@ runStreamServer rpc env req handler = do
           (setupGrpcClient $ envLndConfig env)
           close
           (\grpc -> rawStreamServer rpc grpc () req $ const handler)
+
+catchExceptions :: MonadUnliftIO m => m (Either LndError a) -> m (Either LndError a)
+catchExceptions x =
+  x
+    `catches` [ Handler (\(e :: BlockedIndefinitelyOnMVar) -> pure (Left $ LndGrpcException $ inspect e)),
+                Handler
+                  ( \(ex :: IOException) -> case stripPrefix ("Network.Socket.connect" :: Text) (pack $ Prelude.show ex) of
+                      Just mes -> pure $ Left $ NetworkException mes
+                      Nothing -> pure $ Left $ LndIOException ex
+                  )
+              ]
