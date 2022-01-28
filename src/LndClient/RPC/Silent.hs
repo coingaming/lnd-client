@@ -38,6 +38,8 @@ module LndClient.RPC.Silent
     listInvoices,
     subscribeSingleInvoice,
     subscribeSingleInvoiceChan,
+    signMessage,
+    verifyMessage,
   )
 where
 

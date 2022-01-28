@@ -163,6 +163,11 @@ finalCltvDelta ::
    Data.ProtoLens.Field.HasField s "finalCltvDelta" a) =>
   Lens.Family2.LensLike' f s a
 finalCltvDelta = Data.ProtoLens.Field.field @"finalCltvDelta"
+force ::
+  forall f s a.
+  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "force" a) =>
+  Lens.Family2.LensLike' f s a
+force = Data.ProtoLens.Field.field @"force"
 forwardEvent ::
   forall f s a.
   (Prelude.Functor f,

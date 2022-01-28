@@ -28,6 +28,12 @@ import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Gener
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
 import qualified Proto.LndGrpc
+addIndex ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "addIndex" a) =>
+  Lens.Family2.LensLike' f s a
+addIndex = Data.ProtoLens.Field.field @"addIndex"
 cltvExpiry ::
   forall f s a.
   (Prelude.Functor f,
@@ -56,11 +62,47 @@ hash ::
   (Prelude.Functor f, Data.ProtoLens.Field.HasField s "hash" a) =>
   Lens.Family2.LensLike' f s a
 hash = Data.ProtoLens.Field.field @"hash"
+lookupModifier ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "lookupModifier" a) =>
+  Lens.Family2.LensLike' f s a
+lookupModifier = Data.ProtoLens.Field.field @"lookupModifier"
+maybe'invoiceRef ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "maybe'invoiceRef" a) =>
+  Lens.Family2.LensLike' f s a
+maybe'invoiceRef = Data.ProtoLens.Field.field @"maybe'invoiceRef"
+maybe'paymentAddr ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "maybe'paymentAddr" a) =>
+  Lens.Family2.LensLike' f s a
+maybe'paymentAddr = Data.ProtoLens.Field.field @"maybe'paymentAddr"
+maybe'paymentHash ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "maybe'paymentHash" a) =>
+  Lens.Family2.LensLike' f s a
+maybe'paymentHash = Data.ProtoLens.Field.field @"maybe'paymentHash"
+maybe'setId ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "maybe'setId" a) =>
+  Lens.Family2.LensLike' f s a
+maybe'setId = Data.ProtoLens.Field.field @"maybe'setId"
 memo ::
   forall f s a.
   (Prelude.Functor f, Data.ProtoLens.Field.HasField s "memo" a) =>
   Lens.Family2.LensLike' f s a
 memo = Data.ProtoLens.Field.field @"memo"
+paymentAddr ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "paymentAddr" a) =>
+  Lens.Family2.LensLike' f s a
+paymentAddr = Data.ProtoLens.Field.field @"paymentAddr"
 paymentHash ::
   forall f s a.
   (Prelude.Functor f,
@@ -95,6 +137,11 @@ routeHints ::
    Data.ProtoLens.Field.HasField s "routeHints" a) =>
   Lens.Family2.LensLike' f s a
 routeHints = Data.ProtoLens.Field.field @"routeHints"
+setId ::
+  forall f s a.
+  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "setId" a) =>
+  Lens.Family2.LensLike' f s a
+setId = Data.ProtoLens.Field.field @"setId"
 value ::
   forall f s a.
   (Prelude.Functor f, Data.ProtoLens.Field.HasField s "value" a) =>

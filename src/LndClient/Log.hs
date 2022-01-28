@@ -46,6 +46,8 @@ type family SecretRpc (t :: GHC.Symbol) :: GHC.Nat where
   SecretRpc "pendingChannels" = 0
   SecretRpc "closedChannels" = 0
   SecretRpc "listInvoices" = 0
+  SecretRpc "signMessage" = 0
+  SecretRpc "verifyMessage" = 0
 --
 -- Sub
 --

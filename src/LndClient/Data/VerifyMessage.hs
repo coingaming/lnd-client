@@ -1,0 +1,45 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+
+module LndClient.Data.VerifyMessage
+  ( VerifyMessageRequest (..),
+    VerifyMessageResponse (..),
+  )
+where
+
+import Data.ProtoLens.Message
+import LndClient.Import
+import qualified Proto.SignerGrpc as LnGRPC
+import qualified Proto.SignerGrpc_Fields as LnGRPC
+
+data VerifyMessageRequest = VerifyMessageRequest
+  { message :: ByteString,
+    signature :: ByteString,
+    pubkey :: ByteString
+  }
+  deriving (Eq, Show, Generic)
+
+instance Out VerifyMessageRequest
+
+newtype VerifyMessageResponse = VerifyMessageResponse Bool
+  deriving (Eq, Show, Generic)
+
+instance Out VerifyMessageResponse
+
+instance ToGrpc VerifyMessageRequest LnGRPC.VerifyMessageReq where
+  toGrpc x =
+    msg
+      <$> toGrpc (message x)
+      <*> toGrpc (signature x)
+      <*> toGrpc (pubkey x)
+    where
+      msg gMsg gSignature gPubKey=
+        defMessage
+          & LnGRPC.msg .~ gMsg
+          & LnGRPC.signature .~ gSignature
+          & LnGRPC.pubkey .~ gPubKey
+
+instance FromGrpc VerifyMessageResponse LnGRPC.VerifyMessageResp where
+  fromGrpc x =
+    VerifyMessageResponse
+      <$> fromGrpc (x ^. LnGRPC.valid)

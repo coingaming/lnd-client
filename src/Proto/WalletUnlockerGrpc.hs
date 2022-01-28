@@ -7,7 +7,7 @@ module Proto.WalletUnlockerGrpc (
         WalletUnlocker(..), ChangePasswordRequest(),
         ChangePasswordResponse(), GenSeedRequest(), GenSeedResponse(),
         InitWalletRequest(), InitWalletResponse(), UnlockWalletRequest(),
-        UnlockWalletResponse()
+        UnlockWalletResponse(), WatchOnly(), WatchOnlyAccount()
     ) where
 import qualified Data.ProtoLens.Runtime.Control.DeepSeq as Control.DeepSeq
 import qualified Data.ProtoLens.Runtime.Data.ProtoLens.Prism as Data.ProtoLens.Prism
@@ -785,7 +785,11 @@ instance Control.DeepSeq.NFData GenSeedResponse where
          * 'Proto.WalletUnlockerGrpc_Fields.recoveryWindow' @:: Lens' InitWalletRequest Data.Int.Int32@
          * 'Proto.WalletUnlockerGrpc_Fields.channelBackups' @:: Lens' InitWalletRequest Proto.LndGrpc.ChanBackupSnapshot@
          * 'Proto.WalletUnlockerGrpc_Fields.maybe'channelBackups' @:: Lens' InitWalletRequest (Prelude.Maybe Proto.LndGrpc.ChanBackupSnapshot)@
-         * 'Proto.WalletUnlockerGrpc_Fields.statelessInit' @:: Lens' InitWalletRequest Prelude.Bool@ -}
+         * 'Proto.WalletUnlockerGrpc_Fields.statelessInit' @:: Lens' InitWalletRequest Prelude.Bool@
+         * 'Proto.WalletUnlockerGrpc_Fields.extendedMasterKey' @:: Lens' InitWalletRequest Data.Text.Text@
+         * 'Proto.WalletUnlockerGrpc_Fields.extendedMasterKeyBirthdayTimestamp' @:: Lens' InitWalletRequest Data.Word.Word64@
+         * 'Proto.WalletUnlockerGrpc_Fields.watchOnly' @:: Lens' InitWalletRequest WatchOnly@
+         * 'Proto.WalletUnlockerGrpc_Fields.maybe'watchOnly' @:: Lens' InitWalletRequest (Prelude.Maybe WatchOnly)@ -}
 data InitWalletRequest
   = InitWalletRequest'_constructor {_InitWalletRequest'walletPassword :: !Data.ByteString.ByteString,
                                     _InitWalletRequest'cipherSeedMnemonic :: !(Data.Vector.Vector Data.Text.Text),
@@ -793,6 +797,9 @@ data InitWalletRequest
                                     _InitWalletRequest'recoveryWindow :: !Data.Int.Int32,
                                     _InitWalletRequest'channelBackups :: !(Prelude.Maybe Proto.LndGrpc.ChanBackupSnapshot),
                                     _InitWalletRequest'statelessInit :: !Prelude.Bool,
+                                    _InitWalletRequest'extendedMasterKey :: !Data.Text.Text,
+                                    _InitWalletRequest'extendedMasterKeyBirthdayTimestamp :: !Data.Word.Word64,
+                                    _InitWalletRequest'watchOnly :: !(Prelude.Maybe WatchOnly),
                                     _InitWalletRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show InitWalletRequest where
@@ -860,6 +867,36 @@ instance Data.ProtoLens.Field.HasField InitWalletRequest "statelessInit" Prelude
            _InitWalletRequest'statelessInit
            (\ x__ y__ -> x__ {_InitWalletRequest'statelessInit = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField InitWalletRequest "extendedMasterKey" Data.Text.Text where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _InitWalletRequest'extendedMasterKey
+           (\ x__ y__ -> x__ {_InitWalletRequest'extendedMasterKey = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField InitWalletRequest "extendedMasterKeyBirthdayTimestamp" Data.Word.Word64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _InitWalletRequest'extendedMasterKeyBirthdayTimestamp
+           (\ x__ y__
+              -> x__
+                   {_InitWalletRequest'extendedMasterKeyBirthdayTimestamp = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField InitWalletRequest "watchOnly" WatchOnly where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _InitWalletRequest'watchOnly
+           (\ x__ y__ -> x__ {_InitWalletRequest'watchOnly = y__}))
+        (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
+instance Data.ProtoLens.Field.HasField InitWalletRequest "maybe'watchOnly" (Prelude.Maybe WatchOnly) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _InitWalletRequest'watchOnly
+           (\ x__ y__ -> x__ {_InitWalletRequest'watchOnly = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message InitWalletRequest where
   messageName _ = Data.Text.pack "lnrpc.InitWalletRequest"
   packedMessageDescriptor _
@@ -870,7 +907,11 @@ instance Data.ProtoLens.Message InitWalletRequest where
       \\DC1aezeed_passphrase\CAN\ETX \SOH(\fR\DLEaezeedPassphrase\DC2'\n\
       \\SIrecovery_window\CAN\EOT \SOH(\ENQR\SOrecoveryWindow\DC2B\n\
       \\SIchannel_backups\CAN\ENQ \SOH(\v2\EM.lnrpc.ChanBackupSnapshotR\SOchannelBackups\DC2%\n\
-      \\SOstateless_init\CAN\ACK \SOH(\bR\rstatelessInit"
+      \\SOstateless_init\CAN\ACK \SOH(\bR\rstatelessInit\DC2.\n\
+      \\DC3extended_master_key\CAN\a \SOH(\tR\DC1extendedMasterKey\DC2R\n\
+      \&extended_master_key_birthday_timestamp\CAN\b \SOH(\EOTR\"extendedMasterKeyBirthdayTimestamp\DC2/\n\
+      \\n\
+      \watch_only\CAN\t \SOH(\v2\DLE.lnrpc.WatchOnlyR\twatchOnly"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -927,6 +968,33 @@ instance Data.ProtoLens.Message InitWalletRequest where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"statelessInit")) ::
               Data.ProtoLens.FieldDescriptor InitWalletRequest
+        extendedMasterKey__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "extended_master_key"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.StringField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Text.Text)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"extendedMasterKey")) ::
+              Data.ProtoLens.FieldDescriptor InitWalletRequest
+        extendedMasterKeyBirthdayTimestamp__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "extended_master_key_birthday_timestamp"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field
+                    @"extendedMasterKeyBirthdayTimestamp")) ::
+              Data.ProtoLens.FieldDescriptor InitWalletRequest
+        watchOnly__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "watch_only"
+              (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
+                 Data.ProtoLens.FieldTypeDescriptor WatchOnly)
+              (Data.ProtoLens.OptionalField
+                 (Data.ProtoLens.Field.field @"maybe'watchOnly")) ::
+              Data.ProtoLens.FieldDescriptor InitWalletRequest
       in
         Data.Map.fromList
           [(Data.ProtoLens.Tag 1, walletPassword__field_descriptor),
@@ -934,7 +1002,11 @@ instance Data.ProtoLens.Message InitWalletRequest where
            (Data.ProtoLens.Tag 3, aezeedPassphrase__field_descriptor),
            (Data.ProtoLens.Tag 4, recoveryWindow__field_descriptor),
            (Data.ProtoLens.Tag 5, channelBackups__field_descriptor),
-           (Data.ProtoLens.Tag 6, statelessInit__field_descriptor)]
+           (Data.ProtoLens.Tag 6, statelessInit__field_descriptor),
+           (Data.ProtoLens.Tag 7, extendedMasterKey__field_descriptor),
+           (Data.ProtoLens.Tag 8, 
+            extendedMasterKeyBirthdayTimestamp__field_descriptor),
+           (Data.ProtoLens.Tag 9, watchOnly__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _InitWalletRequest'_unknownFields
@@ -947,6 +1019,9 @@ instance Data.ProtoLens.Message InitWalletRequest where
          _InitWalletRequest'recoveryWindow = Data.ProtoLens.fieldDefault,
          _InitWalletRequest'channelBackups = Prelude.Nothing,
          _InitWalletRequest'statelessInit = Data.ProtoLens.fieldDefault,
+         _InitWalletRequest'extendedMasterKey = Data.ProtoLens.fieldDefault,
+         _InitWalletRequest'extendedMasterKeyBirthdayTimestamp = Data.ProtoLens.fieldDefault,
+         _InitWalletRequest'watchOnly = Prelude.Nothing,
          _InitWalletRequest'_unknownFields = []}
   parseMessage
     = let
@@ -1043,6 +1118,41 @@ instance Data.ProtoLens.Message InitWalletRequest where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"statelessInit") y x)
+                                  mutable'cipherSeedMnemonic
+                        58
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                                       Data.ProtoLens.Encoding.Bytes.getBytes
+                                                         (Prelude.fromIntegral len)
+                                           Data.ProtoLens.Encoding.Bytes.runEither
+                                             (case Data.Text.Encoding.decodeUtf8' value of
+                                                (Prelude.Left err)
+                                                  -> Prelude.Left (Prelude.show err)
+                                                (Prelude.Right r) -> Prelude.Right r))
+                                       "extended_master_key"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field @"extendedMasterKey") y x)
+                                  mutable'cipherSeedMnemonic
+                        64
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       Data.ProtoLens.Encoding.Bytes.getVarInt
+                                       "extended_master_key_birthday_timestamp"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field
+                                        @"extendedMasterKeyBirthdayTimestamp")
+                                     y
+                                     x)
+                                  mutable'cipherSeedMnemonic
+                        74
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.isolate
+                                             (Prelude.fromIntegral len) Data.ProtoLens.parseMessage)
+                                       "watch_only"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"watchOnly") y x)
                                   mutable'cipherSeedMnemonic
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
@@ -1153,8 +1263,61 @@ instance Data.ProtoLens.Message InitWalletRequest where
                                         Data.ProtoLens.Encoding.Bytes.putVarInt
                                         (\ b -> if b then 1 else 0)
                                         _v))
-                            (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                               (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))))
+                            ((Data.Monoid.<>)
+                               (let
+                                  _v
+                                    = Lens.Family2.view
+                                        (Data.ProtoLens.Field.field @"extendedMasterKey") _x
+                                in
+                                  if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                                      Data.Monoid.mempty
+                                  else
+                                      (Data.Monoid.<>)
+                                        (Data.ProtoLens.Encoding.Bytes.putVarInt 58)
+                                        ((Prelude..)
+                                           (\ bs
+                                              -> (Data.Monoid.<>)
+                                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                      (Prelude.fromIntegral
+                                                         (Data.ByteString.length bs)))
+                                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                           Data.Text.Encoding.encodeUtf8
+                                           _v))
+                               ((Data.Monoid.<>)
+                                  (let
+                                     _v
+                                       = Lens.Family2.view
+                                           (Data.ProtoLens.Field.field
+                                              @"extendedMasterKeyBirthdayTimestamp")
+                                           _x
+                                   in
+                                     if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                                         Data.Monoid.mempty
+                                     else
+                                         (Data.Monoid.<>)
+                                           (Data.ProtoLens.Encoding.Bytes.putVarInt 64)
+                                           (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
+                                  ((Data.Monoid.<>)
+                                     (case
+                                          Lens.Family2.view
+                                            (Data.ProtoLens.Field.field @"maybe'watchOnly") _x
+                                      of
+                                        Prelude.Nothing -> Data.Monoid.mempty
+                                        (Prelude.Just _v)
+                                          -> (Data.Monoid.<>)
+                                               (Data.ProtoLens.Encoding.Bytes.putVarInt 74)
+                                               ((Prelude..)
+                                                  (\ bs
+                                                     -> (Data.Monoid.<>)
+                                                          (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                                             (Prelude.fromIntegral
+                                                                (Data.ByteString.length bs)))
+                                                          (Data.ProtoLens.Encoding.Bytes.putBytes
+                                                             bs))
+                                                  Data.ProtoLens.encodeMessage
+                                                  _v))
+                                     (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                                        (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))))))
 instance Control.DeepSeq.NFData InitWalletRequest where
   rnf
     = \ x__
@@ -1171,7 +1334,13 @@ instance Control.DeepSeq.NFData InitWalletRequest where
                          (Control.DeepSeq.deepseq
                             (_InitWalletRequest'channelBackups x__)
                             (Control.DeepSeq.deepseq
-                               (_InitWalletRequest'statelessInit x__) ()))))))
+                               (_InitWalletRequest'statelessInit x__)
+                               (Control.DeepSeq.deepseq
+                                  (_InitWalletRequest'extendedMasterKey x__)
+                                  (Control.DeepSeq.deepseq
+                                     (_InitWalletRequest'extendedMasterKeyBirthdayTimestamp x__)
+                                     (Control.DeepSeq.deepseq
+                                        (_InitWalletRequest'watchOnly x__) ())))))))))
 {- | Fields :
      
          * 'Proto.WalletUnlockerGrpc_Fields.adminMacaroon' @:: Lens' InitWalletResponse Data.ByteString.ByteString@ -}
@@ -1624,6 +1793,475 @@ instance Control.DeepSeq.NFData UnlockWalletResponse where
     = \ x__
         -> Control.DeepSeq.deepseq
              (_UnlockWalletResponse'_unknownFields x__) ()
+{- | Fields :
+     
+         * 'Proto.WalletUnlockerGrpc_Fields.masterKeyBirthdayTimestamp' @:: Lens' WatchOnly Data.Word.Word64@
+         * 'Proto.WalletUnlockerGrpc_Fields.masterKeyFingerprint' @:: Lens' WatchOnly Data.ByteString.ByteString@
+         * 'Proto.WalletUnlockerGrpc_Fields.accounts' @:: Lens' WatchOnly [WatchOnlyAccount]@
+         * 'Proto.WalletUnlockerGrpc_Fields.vec'accounts' @:: Lens' WatchOnly (Data.Vector.Vector WatchOnlyAccount)@ -}
+data WatchOnly
+  = WatchOnly'_constructor {_WatchOnly'masterKeyBirthdayTimestamp :: !Data.Word.Word64,
+                            _WatchOnly'masterKeyFingerprint :: !Data.ByteString.ByteString,
+                            _WatchOnly'accounts :: !(Data.Vector.Vector WatchOnlyAccount),
+                            _WatchOnly'_unknownFields :: !Data.ProtoLens.FieldSet}
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
+instance Prelude.Show WatchOnly where
+  showsPrec _ __x __s
+    = Prelude.showChar
+        '{'
+        (Prelude.showString
+           (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out WatchOnly
+instance Data.ProtoLens.Field.HasField WatchOnly "masterKeyBirthdayTimestamp" Data.Word.Word64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WatchOnly'masterKeyBirthdayTimestamp
+           (\ x__ y__ -> x__ {_WatchOnly'masterKeyBirthdayTimestamp = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField WatchOnly "masterKeyFingerprint" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WatchOnly'masterKeyFingerprint
+           (\ x__ y__ -> x__ {_WatchOnly'masterKeyFingerprint = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField WatchOnly "accounts" [WatchOnlyAccount] where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WatchOnly'accounts (\ x__ y__ -> x__ {_WatchOnly'accounts = y__}))
+        (Lens.Family2.Unchecked.lens
+           Data.Vector.Generic.toList
+           (\ _ y__ -> Data.Vector.Generic.fromList y__))
+instance Data.ProtoLens.Field.HasField WatchOnly "vec'accounts" (Data.Vector.Vector WatchOnlyAccount) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WatchOnly'accounts (\ x__ y__ -> x__ {_WatchOnly'accounts = y__}))
+        Prelude.id
+instance Data.ProtoLens.Message WatchOnly where
+  messageName _ = Data.Text.pack "lnrpc.WatchOnly"
+  packedMessageDescriptor _
+    = "\n\
+      \\tWatchOnly\DC2A\n\
+      \\GSmaster_key_birthday_timestamp\CAN\SOH \SOH(\EOTR\SUBmasterKeyBirthdayTimestamp\DC24\n\
+      \\SYNmaster_key_fingerprint\CAN\STX \SOH(\fR\DC4masterKeyFingerprint\DC23\n\
+      \\baccounts\CAN\ETX \ETX(\v2\ETB.lnrpc.WatchOnlyAccountR\baccounts"
+  packedFileDescriptor _ = packedFileDescriptor
+  fieldsByTag
+    = let
+        masterKeyBirthdayTimestamp__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "master_key_birthday_timestamp"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"masterKeyBirthdayTimestamp")) ::
+              Data.ProtoLens.FieldDescriptor WatchOnly
+        masterKeyFingerprint__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "master_key_fingerprint"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"masterKeyFingerprint")) ::
+              Data.ProtoLens.FieldDescriptor WatchOnly
+        accounts__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "accounts"
+              (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
+                 Data.ProtoLens.FieldTypeDescriptor WatchOnlyAccount)
+              (Data.ProtoLens.RepeatedField
+                 Data.ProtoLens.Unpacked
+                 (Data.ProtoLens.Field.field @"accounts")) ::
+              Data.ProtoLens.FieldDescriptor WatchOnly
+      in
+        Data.Map.fromList
+          [(Data.ProtoLens.Tag 1, 
+            masterKeyBirthdayTimestamp__field_descriptor),
+           (Data.ProtoLens.Tag 2, masterKeyFingerprint__field_descriptor),
+           (Data.ProtoLens.Tag 3, accounts__field_descriptor)]
+  unknownFields
+    = Lens.Family2.Unchecked.lens
+        _WatchOnly'_unknownFields
+        (\ x__ y__ -> x__ {_WatchOnly'_unknownFields = y__})
+  defMessage
+    = WatchOnly'_constructor
+        {_WatchOnly'masterKeyBirthdayTimestamp = Data.ProtoLens.fieldDefault,
+         _WatchOnly'masterKeyFingerprint = Data.ProtoLens.fieldDefault,
+         _WatchOnly'accounts = Data.Vector.Generic.empty,
+         _WatchOnly'_unknownFields = []}
+  parseMessage
+    = let
+        loop ::
+          WatchOnly
+          -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld WatchOnlyAccount
+             -> Data.ProtoLens.Encoding.Bytes.Parser WatchOnly
+        loop x mutable'accounts
+          = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
+               if end then
+                   do frozen'accounts <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
+                                           (Data.ProtoLens.Encoding.Growing.unsafeFreeze
+                                              mutable'accounts)
+                      (let missing = []
+                       in
+                         if Prelude.null missing then
+                             Prelude.return ()
+                         else
+                             Prelude.fail
+                               ((Prelude.++)
+                                  "Missing required fields: "
+                                  (Prelude.show (missing :: [Prelude.String]))))
+                      Prelude.return
+                        (Lens.Family2.over
+                           Data.ProtoLens.unknownFields
+                           (\ !t -> Prelude.reverse t)
+                           (Lens.Family2.set
+                              (Data.ProtoLens.Field.field @"vec'accounts") frozen'accounts x))
+               else
+                   do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                      case tag of
+                        8 -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       Data.ProtoLens.Encoding.Bytes.getVarInt
+                                       "master_key_birthday_timestamp"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field @"masterKeyBirthdayTimestamp") y x)
+                                  mutable'accounts
+                        18
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "master_key_fingerprint"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field @"masterKeyFingerprint") y x)
+                                  mutable'accounts
+                        26
+                          -> do !y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                        (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                            Data.ProtoLens.Encoding.Bytes.isolate
+                                              (Prelude.fromIntegral len)
+                                              Data.ProtoLens.parseMessage)
+                                        "accounts"
+                                v <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
+                                       (Data.ProtoLens.Encoding.Growing.append mutable'accounts y)
+                                loop x v
+                        wire
+                          -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
+                                        wire
+                                loop
+                                  (Lens.Family2.over
+                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
+                                  mutable'accounts
+      in
+        (Data.ProtoLens.Encoding.Bytes.<?>)
+          (do mutable'accounts <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
+                                    Data.ProtoLens.Encoding.Growing.new
+              loop Data.ProtoLens.defMessage mutable'accounts)
+          "WatchOnly"
+  buildMessage
+    = \ _x
+        -> (Data.Monoid.<>)
+             (let
+                _v
+                  = Lens.Family2.view
+                      (Data.ProtoLens.Field.field @"masterKeyBirthdayTimestamp") _x
+              in
+                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                    Data.Monoid.mempty
+                else
+                    (Data.Monoid.<>)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
+             ((Data.Monoid.<>)
+                (let
+                   _v
+                     = Lens.Family2.view
+                         (Data.ProtoLens.Field.field @"masterKeyFingerprint") _x
+                 in
+                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                       Data.Monoid.mempty
+                   else
+                       (Data.Monoid.<>)
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
+                         ((\ bs
+                             -> (Data.Monoid.<>)
+                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                            _v))
+                ((Data.Monoid.<>)
+                   (Data.ProtoLens.Encoding.Bytes.foldMapBuilder
+                      (\ _v
+                         -> (Data.Monoid.<>)
+                              (Data.ProtoLens.Encoding.Bytes.putVarInt 26)
+                              ((Prelude..)
+                                 (\ bs
+                                    -> (Data.Monoid.<>)
+                                         (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                            (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                         (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                 Data.ProtoLens.encodeMessage
+                                 _v))
+                      (Lens.Family2.view
+                         (Data.ProtoLens.Field.field @"vec'accounts") _x))
+                   (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                      (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
+instance Control.DeepSeq.NFData WatchOnly where
+  rnf
+    = \ x__
+        -> Control.DeepSeq.deepseq
+             (_WatchOnly'_unknownFields x__)
+             (Control.DeepSeq.deepseq
+                (_WatchOnly'masterKeyBirthdayTimestamp x__)
+                (Control.DeepSeq.deepseq
+                   (_WatchOnly'masterKeyFingerprint x__)
+                   (Control.DeepSeq.deepseq (_WatchOnly'accounts x__) ())))
+{- | Fields :
+     
+         * 'Proto.WalletUnlockerGrpc_Fields.purpose' @:: Lens' WatchOnlyAccount Data.Word.Word32@
+         * 'Proto.WalletUnlockerGrpc_Fields.coinType' @:: Lens' WatchOnlyAccount Data.Word.Word32@
+         * 'Proto.WalletUnlockerGrpc_Fields.account' @:: Lens' WatchOnlyAccount Data.Word.Word32@
+         * 'Proto.WalletUnlockerGrpc_Fields.xpub' @:: Lens' WatchOnlyAccount Data.Text.Text@ -}
+data WatchOnlyAccount
+  = WatchOnlyAccount'_constructor {_WatchOnlyAccount'purpose :: !Data.Word.Word32,
+                                   _WatchOnlyAccount'coinType :: !Data.Word.Word32,
+                                   _WatchOnlyAccount'account :: !Data.Word.Word32,
+                                   _WatchOnlyAccount'xpub :: !Data.Text.Text,
+                                   _WatchOnlyAccount'_unknownFields :: !Data.ProtoLens.FieldSet}
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
+instance Prelude.Show WatchOnlyAccount where
+  showsPrec _ __x __s
+    = Prelude.showChar
+        '{'
+        (Prelude.showString
+           (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out WatchOnlyAccount
+instance Data.ProtoLens.Field.HasField WatchOnlyAccount "purpose" Data.Word.Word32 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WatchOnlyAccount'purpose
+           (\ x__ y__ -> x__ {_WatchOnlyAccount'purpose = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField WatchOnlyAccount "coinType" Data.Word.Word32 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WatchOnlyAccount'coinType
+           (\ x__ y__ -> x__ {_WatchOnlyAccount'coinType = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField WatchOnlyAccount "account" Data.Word.Word32 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WatchOnlyAccount'account
+           (\ x__ y__ -> x__ {_WatchOnlyAccount'account = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField WatchOnlyAccount "xpub" Data.Text.Text where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _WatchOnlyAccount'xpub
+           (\ x__ y__ -> x__ {_WatchOnlyAccount'xpub = y__}))
+        Prelude.id
+instance Data.ProtoLens.Message WatchOnlyAccount where
+  messageName _ = Data.Text.pack "lnrpc.WatchOnlyAccount"
+  packedMessageDescriptor _
+    = "\n\
+      \\DLEWatchOnlyAccount\DC2\CAN\n\
+      \\apurpose\CAN\SOH \SOH(\rR\apurpose\DC2\ESC\n\
+      \\tcoin_type\CAN\STX \SOH(\rR\bcoinType\DC2\CAN\n\
+      \\aaccount\CAN\ETX \SOH(\rR\aaccount\DC2\DC2\n\
+      \\EOTxpub\CAN\EOT \SOH(\tR\EOTxpub"
+  packedFileDescriptor _ = packedFileDescriptor
+  fieldsByTag
+    = let
+        purpose__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "purpose"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt32Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word32)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"purpose")) ::
+              Data.ProtoLens.FieldDescriptor WatchOnlyAccount
+        coinType__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "coin_type"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt32Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word32)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"coinType")) ::
+              Data.ProtoLens.FieldDescriptor WatchOnlyAccount
+        account__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "account"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt32Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word32)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"account")) ::
+              Data.ProtoLens.FieldDescriptor WatchOnlyAccount
+        xpub__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "xpub"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.StringField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Text.Text)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional (Data.ProtoLens.Field.field @"xpub")) ::
+              Data.ProtoLens.FieldDescriptor WatchOnlyAccount
+      in
+        Data.Map.fromList
+          [(Data.ProtoLens.Tag 1, purpose__field_descriptor),
+           (Data.ProtoLens.Tag 2, coinType__field_descriptor),
+           (Data.ProtoLens.Tag 3, account__field_descriptor),
+           (Data.ProtoLens.Tag 4, xpub__field_descriptor)]
+  unknownFields
+    = Lens.Family2.Unchecked.lens
+        _WatchOnlyAccount'_unknownFields
+        (\ x__ y__ -> x__ {_WatchOnlyAccount'_unknownFields = y__})
+  defMessage
+    = WatchOnlyAccount'_constructor
+        {_WatchOnlyAccount'purpose = Data.ProtoLens.fieldDefault,
+         _WatchOnlyAccount'coinType = Data.ProtoLens.fieldDefault,
+         _WatchOnlyAccount'account = Data.ProtoLens.fieldDefault,
+         _WatchOnlyAccount'xpub = Data.ProtoLens.fieldDefault,
+         _WatchOnlyAccount'_unknownFields = []}
+  parseMessage
+    = let
+        loop ::
+          WatchOnlyAccount
+          -> Data.ProtoLens.Encoding.Bytes.Parser WatchOnlyAccount
+        loop x
+          = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
+               if end then
+                   do (let missing = []
+                       in
+                         if Prelude.null missing then
+                             Prelude.return ()
+                         else
+                             Prelude.fail
+                               ((Prelude.++)
+                                  "Missing required fields: "
+                                  (Prelude.show (missing :: [Prelude.String]))))
+                      Prelude.return
+                        (Lens.Family2.over
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t) x)
+               else
+                   do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                      case tag of
+                        8 -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          Prelude.fromIntegral
+                                          Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "purpose"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"purpose") y x)
+                        16
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          Prelude.fromIntegral
+                                          Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "coin_type"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"coinType") y x)
+                        24
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          Prelude.fromIntegral
+                                          Data.ProtoLens.Encoding.Bytes.getVarInt)
+                                       "account"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"account") y x)
+                        34
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                                       Data.ProtoLens.Encoding.Bytes.getBytes
+                                                         (Prelude.fromIntegral len)
+                                           Data.ProtoLens.Encoding.Bytes.runEither
+                                             (case Data.Text.Encoding.decodeUtf8' value of
+                                                (Prelude.Left err)
+                                                  -> Prelude.Left (Prelude.show err)
+                                                (Prelude.Right r) -> Prelude.Right r))
+                                       "xpub"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"xpub") y x)
+                        wire
+                          -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
+                                        wire
+                                loop
+                                  (Lens.Family2.over
+                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
+      in
+        (Data.ProtoLens.Encoding.Bytes.<?>)
+          (do loop Data.ProtoLens.defMessage) "WatchOnlyAccount"
+  buildMessage
+    = \ _x
+        -> (Data.Monoid.<>)
+             (let
+                _v = Lens.Family2.view (Data.ProtoLens.Field.field @"purpose") _x
+              in
+                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                    Data.Monoid.mempty
+                else
+                    (Data.Monoid.<>)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
+                      ((Prelude..)
+                         Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+             ((Data.Monoid.<>)
+                (let
+                   _v = Lens.Family2.view (Data.ProtoLens.Field.field @"coinType") _x
+                 in
+                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                       Data.Monoid.mempty
+                   else
+                       (Data.Monoid.<>)
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
+                         ((Prelude..)
+                            Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+                ((Data.Monoid.<>)
+                   (let
+                      _v = Lens.Family2.view (Data.ProtoLens.Field.field @"account") _x
+                    in
+                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                          Data.Monoid.mempty
+                      else
+                          (Data.Monoid.<>)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
+                            ((Prelude..)
+                               Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral _v))
+                   ((Data.Monoid.<>)
+                      (let _v = Lens.Family2.view (Data.ProtoLens.Field.field @"xpub") _x
+                       in
+                         if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                             Data.Monoid.mempty
+                         else
+                             (Data.Monoid.<>)
+                               (Data.ProtoLens.Encoding.Bytes.putVarInt 34)
+                               ((Prelude..)
+                                  (\ bs
+                                     -> (Data.Monoid.<>)
+                                          (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                             (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                          (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                                  Data.Text.Encoding.encodeUtf8
+                                  _v))
+                      (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                         (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))
+instance Control.DeepSeq.NFData WatchOnlyAccount where
+  rnf
+    = \ x__
+        -> Control.DeepSeq.deepseq
+             (_WatchOnlyAccount'_unknownFields x__)
+             (Control.DeepSeq.deepseq
+                (_WatchOnlyAccount'purpose x__)
+                (Control.DeepSeq.deepseq
+                   (_WatchOnlyAccount'coinType x__)
+                   (Control.DeepSeq.deepseq
+                      (_WatchOnlyAccount'account x__)
+                      (Control.DeepSeq.deepseq (_WatchOnlyAccount'xpub x__) ()))))
 data WalletUnlocker = WalletUnlocker {}
 instance Data.ProtoLens.Service.Types.Service WalletUnlocker where
   type ServiceName WalletUnlocker = "WalletUnlocker"
@@ -1669,16 +2307,29 @@ packedFileDescriptor
     \\fseed_entropy\CAN\STX \SOH(\fR\vseedEntropy\"l\n\
     \\SIGenSeedResponse\DC20\n\
     \\DC4cipher_seed_mnemonic\CAN\SOH \ETX(\tR\DC2cipherSeedMnemonic\DC2'\n\
-    \\SIenciphered_seed\CAN\STX \SOH(\fR\SOencipheredSeed\"\175\STX\n\
+    \\SIenciphered_seed\CAN\STX \SOH(\fR\SOencipheredSeed\"\228\ETX\n\
     \\DC1InitWalletRequest\DC2'\n\
     \\SIwallet_password\CAN\SOH \SOH(\fR\SOwalletPassword\DC20\n\
     \\DC4cipher_seed_mnemonic\CAN\STX \ETX(\tR\DC2cipherSeedMnemonic\DC2+\n\
     \\DC1aezeed_passphrase\CAN\ETX \SOH(\fR\DLEaezeedPassphrase\DC2'\n\
     \\SIrecovery_window\CAN\EOT \SOH(\ENQR\SOrecoveryWindow\DC2B\n\
     \\SIchannel_backups\CAN\ENQ \SOH(\v2\EM.lnrpc.ChanBackupSnapshotR\SOchannelBackups\DC2%\n\
-    \\SOstateless_init\CAN\ACK \SOH(\bR\rstatelessInit\";\n\
+    \\SOstateless_init\CAN\ACK \SOH(\bR\rstatelessInit\DC2.\n\
+    \\DC3extended_master_key\CAN\a \SOH(\tR\DC1extendedMasterKey\DC2R\n\
+    \&extended_master_key_birthday_timestamp\CAN\b \SOH(\EOTR\"extendedMasterKeyBirthdayTimestamp\DC2/\n\
+    \\n\
+    \watch_only\CAN\t \SOH(\v2\DLE.lnrpc.WatchOnlyR\twatchOnly\";\n\
     \\DC2InitWalletResponse\DC2%\n\
-    \\SOadmin_macaroon\CAN\SOH \SOH(\fR\radminMacaroon\"\210\SOH\n\
+    \\SOadmin_macaroon\CAN\SOH \SOH(\fR\radminMacaroon\"\185\SOH\n\
+    \\tWatchOnly\DC2A\n\
+    \\GSmaster_key_birthday_timestamp\CAN\SOH \SOH(\EOTR\SUBmasterKeyBirthdayTimestamp\DC24\n\
+    \\SYNmaster_key_fingerprint\CAN\STX \SOH(\fR\DC4masterKeyFingerprint\DC23\n\
+    \\baccounts\CAN\ETX \ETX(\v2\ETB.lnrpc.WatchOnlyAccountR\baccounts\"w\n\
+    \\DLEWatchOnlyAccount\DC2\CAN\n\
+    \\apurpose\CAN\SOH \SOH(\rR\apurpose\DC2\ESC\n\
+    \\tcoin_type\CAN\STX \SOH(\rR\bcoinType\DC2\CAN\n\
+    \\aaccount\CAN\ETX \SOH(\rR\aaccount\DC2\DC2\n\
+    \\EOTxpub\CAN\EOT \SOH(\tR\EOTxpub\"\210\SOH\n\
     \\DC3UnlockWalletRequest\DC2'\n\
     \\SIwallet_password\CAN\SOH \SOH(\fR\SOwalletPassword\DC2'\n\
     \\SIrecovery_window\CAN\STX \SOH(\ENQR\SOrecoveryWindow\DC2B\n\
@@ -1697,21 +2348,20 @@ packedFileDescriptor
     \\n\
     \InitWallet\DC2\CAN.lnrpc.InitWalletRequest\SUB\EM.lnrpc.InitWalletResponse\DC2G\n\
     \\fUnlockWallet\DC2\SUB.lnrpc.UnlockWalletRequest\SUB\ESC.lnrpc.UnlockWalletResponse\DC2M\n\
-    \\SOChangePassword\DC2\FS.lnrpc.ChangePasswordRequest\SUB\GS.lnrpc.ChangePasswordResponseB'Z%github.com/lightningnetwork/lnd/lnrpcJ\193G\n\
-    \\a\DC2\ENQ\STX\NUL\239\SOH\SOH\n\
-    \\141\SOH\n\
-    \\SOH\f\DC2\ETX\STX\NUL\DC22\130\SOHsource https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/walletunlocker.proto\n\
-    \\n\
-    \\t\n\
-    \\STX\ETX\NUL\DC2\ETX\EOT\NUL\CAN\n\
+    \\SOChangePassword\DC2\FS.lnrpc.ChangePasswordRequest\SUB\GS.lnrpc.ChangePasswordResponseB'Z%github.com/lightningnetwork/lnd/lnrpcJ\153e\n\
+    \\a\DC2\ENQ\NUL\NUL\202\STX\SOH\n\
     \\b\n\
-    \\SOH\STX\DC2\ETX\ACK\NUL\SO\n\
-    \\b\n\
-    \\SOH\b\DC2\ETX\b\NUL<\n\
+    \\SOH\f\DC2\ETX\NUL\NUL\DC2\n\
     \\t\n\
-    \\STX\b\v\DC2\ETX\b\NUL<\n\
+    \\STX\ETX\NUL\DC2\ETX\STX\NUL\CAN\n\
+    \\b\n\
+    \\SOH\STX\DC2\ETX\EOT\NUL\SO\n\
+    \\b\n\
+    \\SOH\b\DC2\ETX\ACK\NUL<\n\
+    \\t\n\
+    \\STX\b\v\DC2\ETX\ACK\NUL<\n\
     \\187\ACK\n\
-    \\STX\ACK\NUL\DC2\EOT\RS\NULF\SOH\SUB\136\SOH WalletUnlocker is a service that is used to set up a wallet password for\n\
+    \\STX\ACK\NUL\DC2\EOT\FS\NULD\SOH\SUB\136\SOH WalletUnlocker is a service that is used to set up a wallet password for\n\
     \ lnd at first startup, and unlock a previously set up wallet.\n\
     \2\163\ENQ\n\
     \ Comments in this file will be directly parsed into the API\n\
@@ -1732,9 +2382,9 @@ packedFileDescriptor
     \\n\
     \\n\
     \\n\
-    \\ETX\ACK\NUL\SOH\DC2\ETX\RS\b\SYN\n\
+    \\ETX\ACK\NUL\SOH\DC2\ETX\FS\b\SYN\n\
     \\200\ETX\n\
-    \\EOT\ACK\NUL\STX\NUL\DC2\ETX)\EOT;\SUB\186\ETX\n\
+    \\EOT\ACK\NUL\STX\NUL\DC2\ETX'\EOT;\SUB\186\ETX\n\
     \GenSeed is the first method that should be used to instantiate a new lnd\n\
     \instance. This method allows a caller to generate a new aezeed cipher seed\n\
     \given an optional passphrase. If provided, the passphrase will be necessary\n\
@@ -1745,13 +2395,13 @@ packedFileDescriptor
     \wallet.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX)\b\SI\n\
+    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX'\b\SI\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX)\DC1\US\n\
+    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX'\DC1\US\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX)*9\n\
+    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX'*9\n\
     \\133\ENQ\n\
-    \\EOT\ACK\NUL\STX\SOH\DC2\ETX9\EOTD\SUB\247\EOT\n\
+    \\EOT\ACK\NUL\STX\SOH\DC2\ETX7\EOTD\SUB\247\EOT\n\
     \InitWallet is used when lnd is starting up for the first time to fully\n\
     \initialize the daemon and its internal wallet. At the very least a wallet\n\
     \password must be provided. This will be used to encrypt sensitive material\n\
@@ -1766,73 +2416,73 @@ packedFileDescriptor
     \the seed can be fed into this RPC in order to commit the new wallet.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX9\b\DC2\n\
+    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX7\b\DC2\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX9\DC4%\n\
+    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX7\DC4%\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX90B\n\
+    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX70B\n\
     \z\n\
-    \\EOT\ACK\NUL\STX\STX\DC2\ETX?\EOTJ\SUBm lncli: `unlock`\n\
+    \\EOT\ACK\NUL\STX\STX\DC2\ETX=\EOTJ\SUBm lncli: `unlock`\n\
     \UnlockWallet is used at startup of lnd to provide a password to unlock\n\
     \the wallet database.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX?\b\DC4\n\
+    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX=\b\DC4\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX?\SYN)\n\
+    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX=\SYN)\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX?4H\n\
+    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX=4H\n\
     \\166\SOH\n\
-    \\EOT\ACK\NUL\STX\ETX\DC2\ETXE\EOTP\SUB\152\SOH lncli: `changepassword`\n\
+    \\EOT\ACK\NUL\STX\ETX\DC2\ETXC\EOTP\SUB\152\SOH lncli: `changepassword`\n\
     \ChangePassword changes the password of the encrypted wallet. This will\n\
     \automatically unlock the wallet database if successful.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETXE\b\SYN\n\
+    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETXC\b\SYN\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETXE\CAN-\n\
+    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETXC\CAN-\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETXE8N\n\
+    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETXC8N\n\
     \\n\
     \\n\
-    \\STX\EOT\NUL\DC2\EOTH\NULV\SOH\n\
+    \\STX\EOT\NUL\DC2\EOTF\NULT\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\NUL\SOH\DC2\ETXH\b\SYN\n\
+    \\ETX\EOT\NUL\SOH\DC2\ETXF\b\SYN\n\
     \\191\SOH\n\
-    \\EOT\EOT\NUL\STX\NUL\DC2\ETXN\EOT \SUB\177\SOH\n\
+    \\EOT\EOT\NUL\STX\NUL\DC2\ETXL\EOT \SUB\177\SOH\n\
     \aezeed_passphrase is an optional user provided passphrase that will be used\n\
     \to encrypt the generated aezeed cipher seed. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETXN\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETXL\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\ETXN\n\
+    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\ETXL\n\
     \\ESC\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\ETXN\RS\US\n\
+    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\ETXL\RS\US\n\
     \\211\SOH\n\
-    \\EOT\EOT\NUL\STX\SOH\DC2\ETXU\EOT\ESC\SUB\197\SOH\n\
+    \\EOT\EOT\NUL\STX\SOH\DC2\ETXS\EOT\ESC\SUB\197\SOH\n\
     \seed_entropy is an optional 16-bytes generated via CSPRNG. If not\n\
     \specified, then a fresh set of randomness will be used to create the seed.\n\
     \When using REST, this field must be encoded as base64.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\ETXU\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\ETXS\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\SOH\SOH\DC2\ETXU\n\
+    \\ENQ\EOT\NUL\STX\SOH\SOH\DC2\ETXS\n\
     \\SYN\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\SOH\ETX\DC2\ETXU\EM\SUB\n\
+    \\ENQ\EOT\NUL\STX\SOH\ETX\DC2\ETXS\EM\SUB\n\
     \\n\
     \\n\
-    \\STX\EOT\SOH\DC2\EOTW\NULf\SOH\n\
+    \\STX\EOT\SOH\DC2\EOTU\NULd\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\SOH\SOH\DC2\ETXW\b\ETB\n\
+    \\ETX\EOT\SOH\SOH\DC2\ETXU\b\ETB\n\
     \\194\STX\n\
-    \\EOT\EOT\SOH\STX\NUL\DC2\ETX_\EOT-\SUB\180\STX\n\
+    \\EOT\EOT\SOH\STX\NUL\DC2\ETX]\EOT-\SUB\180\STX\n\
     \cipher_seed_mnemonic is a 24-word mnemonic that encodes a prior aezeed\n\
     \cipher seed obtained by the user. This field is optional, as if not\n\
     \provided, then the daemon will generate a new cipher seed for the user.\n\
@@ -1840,73 +2490,73 @@ packedFileDescriptor
     \to this cipher seed.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\NUL\EOT\DC2\ETX_\EOT\f\n\
+    \\ENQ\EOT\SOH\STX\NUL\EOT\DC2\ETX]\EOT\f\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\NUL\ENQ\DC2\ETX_\r\DC3\n\
+    \\ENQ\EOT\SOH\STX\NUL\ENQ\DC2\ETX]\r\DC3\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\NUL\SOH\DC2\ETX_\DC4(\n\
+    \\ENQ\EOT\SOH\STX\NUL\SOH\DC2\ETX]\DC4(\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\NUL\ETX\DC2\ETX_+,\n\
+    \\ENQ\EOT\SOH\STX\NUL\ETX\DC2\ETX]+,\n\
     \\146\SOH\n\
-    \\EOT\EOT\SOH\STX\SOH\DC2\ETXe\EOT\RS\SUB\132\SOH\n\
+    \\EOT\EOT\SOH\STX\SOH\DC2\ETXc\EOT\RS\SUB\132\SOH\n\
     \enciphered_seed are the raw aezeed cipher seed bytes. This is the raw\n\
     \cipher text before run through our mnemonic encoding scheme.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\SOH\ENQ\DC2\ETXe\EOT\t\n\
+    \\ENQ\EOT\SOH\STX\SOH\ENQ\DC2\ETXc\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\SOH\SOH\DC2\ETXe\n\
+    \\ENQ\EOT\SOH\STX\SOH\SOH\DC2\ETXc\n\
     \\EM\n\
     \\f\n\
-    \\ENQ\EOT\SOH\STX\SOH\ETX\DC2\ETXe\FS\GS\n\
+    \\ENQ\EOT\SOH\STX\SOH\ETX\DC2\ETXc\FS\GS\n\
     \\v\n\
-    \\STX\EOT\STX\DC2\ENQh\NUL\153\SOH\SOH\n\
+    \\STX\EOT\STX\DC2\ENQf\NUL\187\SOH\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\STX\SOH\DC2\ETXh\b\EM\n\
+    \\ETX\EOT\STX\SOH\DC2\ETXf\b\EM\n\
     \\252\SOH\n\
-    \\EOT\EOT\STX\STX\NUL\DC2\ETXo\EOT\RS\SUB\238\SOH\n\
+    \\EOT\EOT\STX\STX\NUL\DC2\ETXm\EOT\RS\SUB\238\SOH\n\
     \wallet_password is the passphrase that should be used to encrypt the\n\
     \wallet. This MUST be at least 8 chars in length. After creation, this\n\
     \password is required to unlock the daemon. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETXo\EOT\t\n\
+    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETXm\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\ETXo\n\
+    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\ETXm\n\
     \\EM\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\ETXo\FS\GS\n\
+    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\ETXm\FS\GS\n\
     \\196\SOH\n\
-    \\EOT\EOT\STX\STX\SOH\DC2\ETXv\EOT-\SUB\182\SOH\n\
+    \\EOT\EOT\STX\STX\SOH\DC2\ETXt\EOT-\SUB\182\SOH\n\
     \cipher_seed_mnemonic is a 24-word mnemonic that encodes a prior aezeed\n\
     \cipher seed obtained by the user. This may have been generated by the\n\
     \GenSeed method, or be an existing seed.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\ETXv\EOT\f\n\
+    \\ENQ\EOT\STX\STX\SOH\EOT\DC2\ETXt\EOT\f\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETXv\r\DC3\n\
+    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETXt\r\DC3\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\ETXv\DC4(\n\
+    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\ETXt\DC4(\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\ETXv+,\n\
+    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\ETXt+,\n\
     \\191\SOH\n\
-    \\EOT\EOT\STX\STX\STX\DC2\ETX}\EOT \SUB\177\SOH\n\
+    \\EOT\EOT\STX\STX\STX\DC2\ETX{\EOT \SUB\177\SOH\n\
     \aezeed_passphrase is an optional user provided passphrase that will be used\n\
     \to encrypt the generated aezeed cipher seed. When using REST, this field\n\
     \must be encoded as base64.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETX}\EOT\t\n\
+    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETX{\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\SOH\DC2\ETX}\n\
+    \\ENQ\EOT\STX\STX\STX\SOH\DC2\ETX{\n\
     \\ESC\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\ETX\DC2\ETX}\RS\US\n\
+    \\ENQ\EOT\STX\STX\STX\ETX\DC2\ETX{\RS\US\n\
     \\212\STX\n\
-    \\EOT\EOT\STX\STX\ETX\DC2\EOT\134\SOH\EOT\RS\SUB\197\STX\n\
+    \\EOT\EOT\STX\STX\ETX\DC2\EOT\132\SOH\EOT\RS\SUB\197\STX\n\
     \recovery_window is an optional argument specifying the address lookahead\n\
     \when restoring a wallet seed. The recovery window applies to each\n\
     \individual branch of the BIP44 derivation paths. Supplying a recovery\n\
@@ -1914,14 +2564,14 @@ packedFileDescriptor
     \the first initialization of the wallet.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\EOT\134\SOH\EOT\t\n\
+    \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\EOT\132\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ETX\SOH\DC2\EOT\134\SOH\n\
+    \\ENQ\EOT\STX\STX\ETX\SOH\DC2\EOT\132\SOH\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ETX\ETX\DC2\EOT\134\SOH\FS\GS\n\
+    \\ENQ\EOT\STX\STX\ETX\ETX\DC2\EOT\132\SOH\FS\GS\n\
     \\203\ETX\n\
-    \\EOT\EOT\STX\STX\EOT\DC2\EOT\144\SOH\EOT+\SUB\188\ETX\n\
+    \\EOT\EOT\STX\STX\EOT\DC2\EOT\142\SOH\EOT+\SUB\188\ETX\n\
     \channel_backups is an optional argument that allows clients to recover the\n\
     \settled funds within a set of channels. This should be populated if the\n\
     \user was unable to close out all channels and sweep funds before partial or\n\
@@ -1930,30 +2580,83 @@ packedFileDescriptor
     \recover the funds in each channel from a remote force closed transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\EOT\ACK\DC2\EOT\144\SOH\EOT\SYN\n\
+    \\ENQ\EOT\STX\STX\EOT\ACK\DC2\EOT\142\SOH\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\EOT\SOH\DC2\EOT\144\SOH\ETB&\n\
+    \\ENQ\EOT\STX\STX\EOT\SOH\DC2\EOT\142\SOH\ETB&\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\EOT\ETX\DC2\EOT\144\SOH)*\n\
+    \\ENQ\EOT\STX\STX\EOT\ETX\DC2\EOT\142\SOH)*\n\
     \\171\STX\n\
-    \\EOT\EOT\STX\STX\ENQ\DC2\EOT\152\SOH\EOT\FS\SUB\156\STX\n\
+    \\EOT\EOT\STX\STX\ENQ\DC2\EOT\150\SOH\EOT\FS\SUB\156\STX\n\
     \stateless_init is an optional argument instructing the daemon NOT to create\n\
     \any *.macaroon files in its filesystem. If this parameter is set, then the\n\
     \admin macaroon returned in the response MUST be stored by the caller of the\n\
     \RPC as otherwise all access to the daemon will be lost!\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\EOT\152\SOH\EOT\b\n\
+    \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\EOT\150\SOH\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ENQ\SOH\DC2\EOT\152\SOH\t\ETB\n\
+    \\ENQ\EOT\STX\STX\ENQ\SOH\DC2\EOT\150\SOH\t\ETB\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\ENQ\ETX\DC2\EOT\152\SOH\SUB\ESC\n\
+    \\ENQ\EOT\STX\STX\ENQ\ETX\DC2\EOT\150\SOH\SUB\ESC\n\
+    \\191\ACK\n\
+    \\EOT\EOT\STX\STX\ACK\DC2\EOT\166\SOH\EOT#\SUB\176\ACK\n\
+    \extended_master_key is an alternative to specifying cipher_seed_mnemonic and\n\
+    \aezeed_passphrase. Instead of deriving the master root key from the entropy\n\
+    \of an aezeed cipher seed, the given extended master root key is used\n\
+    \directly as the wallet's master key. This allows users to import/use a\n\
+    \master key from another wallet. When doing so, lnd still uses its default\n\
+    \SegWit only (BIP49/84) derivation paths and funds from custom/non-default\n\
+    \derivation paths will not automatically appear in the on-chain wallet. Using\n\
+    \an 'xprv' instead of an aezeed also has the disadvantage that the wallet's\n\
+    \birthday is not known as that is an information that's only encoded in the\n\
+    \aezeed, not the xprv. Therefore a birthday needs to be specified in\n\
+    \extended_master_key_birthday_timestamp or a \"safe\" default value will be\n\
+    \used.\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\STX\STX\ACK\ENQ\DC2\EOT\166\SOH\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\STX\STX\ACK\SOH\DC2\EOT\166\SOH\v\RS\n\
+    \\r\n\
+    \\ENQ\EOT\STX\STX\ACK\ETX\DC2\EOT\166\SOH!\"\n\
+    \\216\ETX\n\
+    \\EOT\EOT\STX\STX\a\DC2\EOT\177\SOH\EOT6\SUB\201\ETX\n\
+    \extended_master_key_birthday_timestamp is the optional unix timestamp in\n\
+    \seconds to use as the wallet's birthday when using an extended master key\n\
+    \to restore the wallet. lnd will only start scanning for funds in blocks that\n\
+    \are after the birthday which can speed up the process significantly. If the\n\
+    \birthday is not known, this should be left at its default value of 0 in\n\
+    \which case lnd will start scanning from the first SegWit block (481824 on\n\
+    \mainnet).\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\STX\STX\a\ENQ\DC2\EOT\177\SOH\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\STX\STX\a\SOH\DC2\EOT\177\SOH\v1\n\
+    \\r\n\
+    \\ENQ\EOT\STX\STX\a\ETX\DC2\EOT\177\SOH45\n\
+    \\243\STX\n\
+    \\EOT\EOT\STX\STX\b\DC2\EOT\186\SOH\EOT\GS\SUB\228\STX\n\
+    \watch_only is the third option of initializing a wallet: by importing\n\
+    \account xpubs only and therefore creating a watch-only wallet that does not\n\
+    \contain any private keys. That means the wallet won't be able to sign for\n\
+    \any of the keys and _needs_ to be run with a remote signer that has the\n\
+    \corresponding private keys and can serve signing RPC requests.\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\STX\STX\b\ACK\DC2\EOT\186\SOH\EOT\r\n\
+    \\r\n\
+    \\ENQ\EOT\STX\STX\b\SOH\DC2\EOT\186\SOH\SO\CAN\n\
+    \\r\n\
+    \\ENQ\EOT\STX\STX\b\ETX\DC2\EOT\186\SOH\ESC\FS\n\
     \\f\n\
-    \\STX\EOT\ETX\DC2\ACK\154\SOH\NUL\163\SOH\SOH\n\
+    \\STX\EOT\ETX\DC2\ACK\188\SOH\NUL\197\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\ETX\SOH\DC2\EOT\154\SOH\b\SUB\n\
+    \\ETX\EOT\ETX\SOH\DC2\EOT\188\SOH\b\SUB\n\
     \\229\STX\n\
-    \\EOT\EOT\ETX\STX\NUL\DC2\EOT\162\SOH\EOT\GS\SUB\214\STX\n\
+    \\EOT\EOT\ETX\STX\NUL\DC2\EOT\196\SOH\EOT\GS\SUB\214\STX\n\
     \The binary serialized admin macaroon that can be used to access the daemon\n\
     \after creating the wallet. If the stateless_init parameter was set to true,\n\
     \this is the ONLY copy of the macaroon and MUST be stored safely by the\n\
@@ -1961,31 +2664,135 @@ packedFileDescriptor
     \daemon, together with other macaroon files.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\EOT\162\SOH\EOT\t\n\
+    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\EOT\196\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\EOT\162\SOH\n\
+    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\EOT\196\SOH\n\
     \\CAN\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\EOT\162\SOH\ESC\FS\n\
+    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\EOT\196\SOH\ESC\FS\n\
     \\f\n\
-    \\STX\EOT\EOT\DC2\ACK\165\SOH\NUL\197\SOH\SOH\n\
+    \\STX\EOT\EOT\DC2\ACK\199\SOH\NUL\225\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\EOT\SOH\DC2\EOT\165\SOH\b\ESC\n\
+    \\ETX\EOT\EOT\SOH\DC2\EOT\199\SOH\b\DC1\n\
+    \\240\STX\n\
+    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\207\SOH\EOT-\SUB\225\STX\n\
+    \The unix timestamp in seconds of when the master key was created. lnd will\n\
+    \only start scanning for funds in blocks that are after the birthday which\n\
+    \can speed up the process significantly. If the birthday is not known, this\n\
+    \should be left at its default value of 0 in which case lnd will start\n\
+    \scanning from the first SegWit block (481824 on mainnet).\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\207\SOH\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\207\SOH\v(\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\207\SOH+,\n\
+    \\146\STX\n\
+    \\EOT\EOT\EOT\STX\SOH\DC2\EOT\215\SOH\EOT%\SUB\131\STX\n\
+    \The fingerprint of the root key (also known as the key with derivation path\n\
+    \m/) from which the account public keys were derived from. This may be\n\
+    \required by some hardware wallets for proper identification and signing. The\n\
+    \bytes must be in big-endian order.\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\SOH\ENQ\DC2\EOT\215\SOH\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\SOH\SOH\DC2\EOT\215\SOH\n\
+    \ \n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\SOH\ETX\DC2\EOT\215\SOH#$\n\
+    \\246\STX\n\
+    \\EOT\EOT\EOT\STX\STX\DC2\EOT\224\SOH\EOT+\SUB\231\STX\n\
+    \The list of accounts to import. There _must_ be an account for all of lnd's\n\
+    \main key scopes: BIP49/BIP84 (m/49'/0'/0', m/84'/0'/0', note that the\n\
+    \coin type is always 0, even for testnet/regtest) and lnd's internal key\n\
+    \scope (m/1017'/<coin_type>'/<account>'), where account is the key family as\n\
+    \defined in `keychain/derivation.go` (currently indices 0 to 9).\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\STX\EOT\DC2\EOT\224\SOH\EOT\f\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\STX\ACK\DC2\EOT\224\SOH\r\GS\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\STX\SOH\DC2\EOT\224\SOH\RS&\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\STX\ETX\DC2\EOT\224\SOH)*\n\
+    \\f\n\
+    \\STX\EOT\ENQ\DC2\ACK\227\SOH\NUL\254\SOH\SOH\n\
+    \\v\n\
+    \\ETX\EOT\ENQ\SOH\DC2\EOT\227\SOH\b\CAN\n\
+    \b\n\
+    \\EOT\EOT\ENQ\STX\NUL\DC2\EOT\232\SOH\EOT\ETB\SUBT\n\
+    \Purpose is the first number in the derivation path, must be either 49, 84\n\
+    \or 1017.\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\NUL\ENQ\DC2\EOT\232\SOH\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\NUL\SOH\DC2\EOT\232\SOH\v\DC2\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\NUL\ETX\DC2\EOT\232\SOH\NAK\SYN\n\
+    \\183\SOH\n\
+    \\EOT\EOT\ENQ\STX\SOH\DC2\EOT\239\SOH\EOT\EM\SUB\168\SOH\n\
+    \Coin type is the second number in the derivation path, this is _always_ 0\n\
+    \for purposes 49 and 84. It only needs to be set to 1 for purpose 1017 on\n\
+    \testnet or regtest.\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\SOH\ENQ\DC2\EOT\239\SOH\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\SOH\SOH\DC2\EOT\239\SOH\v\DC4\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\SOH\ETX\DC2\EOT\239\SOH\ETB\CAN\n\
+    \\215\STX\n\
+    \\EOT\EOT\ENQ\STX\STX\DC2\EOT\248\SOH\EOT\ETB\SUB\200\STX\n\
+    \Account is the third number in the derivation path. For purposes 49 and 84\n\
+    \at least the default account (index 0) needs to be created but optional\n\
+    \additional accounts are allowed. For purpose 1017 there needs to be exactly\n\
+    \one account for each of the key families defined in `keychain/derivation.go`\n\
+    \(currently indices 0 to 9)\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\STX\ENQ\DC2\EOT\248\SOH\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\STX\SOH\DC2\EOT\248\SOH\v\DC2\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\STX\ETX\DC2\EOT\248\SOH\NAK\SYN\n\
+    \I\n\
+    \\EOT\EOT\ENQ\STX\ETX\DC2\EOT\253\SOH\EOT\DC4\SUB;\n\
+    \The extended public key at depth 3 for the given account.\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\ETX\ENQ\DC2\EOT\253\SOH\EOT\n\
+    \\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\ETX\SOH\DC2\EOT\253\SOH\v\SI\n\
+    \\r\n\
+    \\ENQ\EOT\ENQ\STX\ETX\ETX\DC2\EOT\253\SOH\DC2\DC3\n\
+    \\f\n\
+    \\STX\EOT\ACK\DC2\ACK\128\STX\NUL\160\STX\SOH\n\
+    \\v\n\
+    \\ETX\EOT\ACK\SOH\DC2\EOT\128\STX\b\ESC\n\
     \\239\SOH\n\
-    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\171\SOH\EOT\RS\SUB\224\SOH\n\
+    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\134\STX\EOT\RS\SUB\224\SOH\n\
     \wallet_password should be the current valid passphrase for the daemon. This\n\
     \will be required to decrypt on-disk material that the daemon requires to\n\
     \function properly. When using REST, this field must be encoded as base64.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\171\SOH\EOT\t\n\
+    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\134\STX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\171\SOH\n\
+    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\134\STX\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\171\SOH\FS\GS\n\
+    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\134\STX\FS\GS\n\
     \\212\STX\n\
-    \\EOT\EOT\EOT\STX\SOH\DC2\EOT\180\SOH\EOT\RS\SUB\197\STX\n\
+    \\EOT\EOT\ACK\STX\SOH\DC2\EOT\143\STX\EOT\RS\SUB\197\STX\n\
     \recovery_window is an optional argument specifying the address lookahead\n\
     \when restoring a wallet seed. The recovery window applies to each\n\
     \individual branch of the BIP44 derivation paths. Supplying a recovery\n\
@@ -1993,14 +2800,14 @@ packedFileDescriptor
     \the first initialization of the wallet.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\ENQ\DC2\EOT\180\SOH\EOT\t\n\
+    \\ENQ\EOT\ACK\STX\SOH\ENQ\DC2\EOT\143\STX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\SOH\DC2\EOT\180\SOH\n\
+    \\ENQ\EOT\ACK\STX\SOH\SOH\DC2\EOT\143\STX\n\
     \\EM\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\ETX\DC2\EOT\180\SOH\FS\GS\n\
+    \\ENQ\EOT\ACK\STX\SOH\ETX\DC2\EOT\143\STX\FS\GS\n\
     \\203\ETX\n\
-    \\EOT\EOT\EOT\STX\STX\DC2\EOT\190\SOH\EOT+\SUB\188\ETX\n\
+    \\EOT\EOT\ACK\STX\STX\DC2\EOT\153\STX\EOT+\SUB\188\ETX\n\
     \channel_backups is an optional argument that allows clients to recover the\n\
     \settled funds within a set of channels. This should be populated if the\n\
     \user was unable to close out all channels and sweep funds before partial or\n\
@@ -2009,85 +2816,85 @@ packedFileDescriptor
     \recover the funds in each channel from a remote force closed transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\STX\ACK\DC2\EOT\190\SOH\EOT\SYN\n\
+    \\ENQ\EOT\ACK\STX\STX\ACK\DC2\EOT\153\STX\EOT\SYN\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\STX\SOH\DC2\EOT\190\SOH\ETB&\n\
+    \\ENQ\EOT\ACK\STX\STX\SOH\DC2\EOT\153\STX\ETB&\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\STX\ETX\DC2\EOT\190\SOH)*\n\
+    \\ENQ\EOT\ACK\STX\STX\ETX\DC2\EOT\153\STX)*\n\
     \\132\SOH\n\
-    \\EOT\EOT\EOT\STX\ETX\DC2\EOT\196\SOH\EOT\FS\SUBv\n\
+    \\EOT\EOT\ACK\STX\ETX\DC2\EOT\159\STX\EOT\FS\SUBv\n\
     \stateless_init is an optional argument instructing the daemon NOT to create\n\
     \any *.macaroon files in its file system.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\ETX\ENQ\DC2\EOT\196\SOH\EOT\b\n\
+    \\ENQ\EOT\ACK\STX\ETX\ENQ\DC2\EOT\159\STX\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\ETX\SOH\DC2\EOT\196\SOH\t\ETB\n\
+    \\ENQ\EOT\ACK\STX\ETX\SOH\DC2\EOT\159\STX\t\ETB\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\ETX\ETX\DC2\EOT\196\SOH\SUB\ESC\n\
+    \\ENQ\EOT\ACK\STX\ETX\ETX\DC2\EOT\159\STX\SUB\ESC\n\
     \\f\n\
-    \\STX\EOT\ENQ\DC2\ACK\198\SOH\NUL\199\SOH\SOH\n\
+    \\STX\EOT\a\DC2\ACK\161\STX\NUL\162\STX\SOH\n\
     \\v\n\
-    \\ETX\EOT\ENQ\SOH\DC2\EOT\198\SOH\b\FS\n\
+    \\ETX\EOT\a\SOH\DC2\EOT\161\STX\b\FS\n\
     \\f\n\
-    \\STX\EOT\ACK\DC2\ACK\201\SOH\NUL\228\SOH\SOH\n\
+    \\STX\EOT\b\DC2\ACK\164\STX\NUL\191\STX\SOH\n\
     \\v\n\
-    \\ETX\EOT\ACK\SOH\DC2\EOT\201\SOH\b\GS\n\
+    \\ETX\EOT\b\SOH\DC2\EOT\164\STX\b\GS\n\
     \\154\SOH\n\
-    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\206\SOH\EOT\US\SUB\139\SOH\n\
+    \\EOT\EOT\b\STX\NUL\DC2\EOT\169\STX\EOT\US\SUB\139\SOH\n\
     \current_password should be the current valid passphrase used to unlock the\n\
     \daemon. When using REST, this field must be encoded as base64.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\206\SOH\EOT\t\n\
+    \\ENQ\EOT\b\STX\NUL\ENQ\DC2\EOT\169\STX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\206\SOH\n\
+    \\ENQ\EOT\b\STX\NUL\SOH\DC2\EOT\169\STX\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\206\SOH\GS\RS\n\
+    \\ENQ\EOT\b\STX\NUL\ETX\DC2\EOT\169\STX\GS\RS\n\
     \\155\SOH\n\
-    \\EOT\EOT\ACK\STX\SOH\DC2\EOT\212\SOH\EOT\ESC\SUB\140\SOH\n\
+    \\EOT\EOT\b\STX\SOH\DC2\EOT\175\STX\EOT\ESC\SUB\140\SOH\n\
     \new_password should be the new passphrase that will be needed to unlock the\n\
     \daemon. When using REST, this field must be encoded as base64.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\ENQ\DC2\EOT\212\SOH\EOT\t\n\
+    \\ENQ\EOT\b\STX\SOH\ENQ\DC2\EOT\175\STX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\SOH\DC2\EOT\212\SOH\n\
+    \\ENQ\EOT\b\STX\SOH\SOH\DC2\EOT\175\STX\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\ETX\DC2\EOT\212\SOH\EM\SUB\n\
+    \\ENQ\EOT\b\STX\SOH\ETX\DC2\EOT\175\STX\EM\SUB\n\
     \\171\STX\n\
-    \\EOT\EOT\ACK\STX\STX\DC2\EOT\220\SOH\EOT\FS\SUB\156\STX\n\
+    \\EOT\EOT\b\STX\STX\DC2\EOT\183\STX\EOT\FS\SUB\156\STX\n\
     \stateless_init is an optional argument instructing the daemon NOT to create\n\
     \any *.macaroon files in its filesystem. If this parameter is set, then the\n\
     \admin macaroon returned in the response MUST be stored by the caller of the\n\
     \RPC as otherwise all access to the daemon will be lost!\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\STX\ENQ\DC2\EOT\220\SOH\EOT\b\n\
+    \\ENQ\EOT\b\STX\STX\ENQ\DC2\EOT\183\STX\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\STX\SOH\DC2\EOT\220\SOH\t\ETB\n\
+    \\ENQ\EOT\b\STX\STX\SOH\DC2\EOT\183\STX\t\ETB\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\STX\ETX\DC2\EOT\220\SOH\SUB\ESC\n\
+    \\ENQ\EOT\b\STX\STX\ETX\DC2\EOT\183\STX\SUB\ESC\n\
     \\192\SOH\n\
-    \\EOT\EOT\ACK\STX\ETX\DC2\EOT\227\SOH\EOT#\SUB\177\SOH\n\
+    \\EOT\EOT\b\STX\ETX\DC2\EOT\190\STX\EOT#\SUB\177\SOH\n\
     \new_macaroon_root_key is an optional argument instructing the daemon to\n\
     \rotate the macaroon root key when set to true. This will invalidate all\n\
     \previously generated macaroons.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\ETX\ENQ\DC2\EOT\227\SOH\EOT\b\n\
+    \\ENQ\EOT\b\STX\ETX\ENQ\DC2\EOT\190\STX\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\ETX\SOH\DC2\EOT\227\SOH\t\RS\n\
+    \\ENQ\EOT\b\STX\ETX\SOH\DC2\EOT\190\STX\t\RS\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\ETX\ETX\DC2\EOT\227\SOH!\"\n\
+    \\ENQ\EOT\b\STX\ETX\ETX\DC2\EOT\190\STX!\"\n\
     \\f\n\
-    \\STX\EOT\a\DC2\ACK\229\SOH\NUL\239\SOH\SOH\n\
+    \\STX\EOT\t\DC2\ACK\192\STX\NUL\202\STX\SOH\n\
     \\v\n\
-    \\ETX\EOT\a\SOH\DC2\EOT\229\SOH\b\RS\n\
+    \\ETX\EOT\t\SOH\DC2\EOT\192\STX\b\RS\n\
     \\183\ETX\n\
-    \\EOT\EOT\a\STX\NUL\DC2\EOT\238\SOH\EOT\GS\SUB\168\ETX\n\
+    \\EOT\EOT\t\STX\NUL\DC2\EOT\201\STX\EOT\GS\SUB\168\ETX\n\
     \The binary serialized admin macaroon that can be used to access the daemon\n\
     \after rotating the macaroon root key. If both the stateless_init and\n\
     \new_macaroon_root_key parameter were set to true, this is the ONLY copy of\n\
@@ -2096,9 +2903,9 @@ packedFileDescriptor
     \disk by the daemon, together with other macaroon files.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\238\SOH\EOT\t\n\
+    \\ENQ\EOT\t\STX\NUL\ENQ\DC2\EOT\201\STX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\SOH\DC2\EOT\238\SOH\n\
+    \\ENQ\EOT\t\STX\NUL\SOH\DC2\EOT\201\STX\n\
     \\CAN\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\ETX\DC2\EOT\238\SOH\ESC\FSb\ACKproto3"
+    \\ENQ\EOT\t\STX\NUL\ETX\DC2\EOT\201\STX\ESC\FSb\ACKproto3"

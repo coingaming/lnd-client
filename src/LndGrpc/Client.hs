@@ -40,6 +40,8 @@ runUnary rpc env req = do
       Right x
     Right (Right (Right (Right (_, _, Left "wallet not created, create one to enable full RPC access")))) ->
       Left $ LndLockedError "wallet not created"
+    Right (Right (Right (Right (_, _, Left "wallet locked, unlock it to enable full RPC access")))) ->
+      Left $ LndLockedError "wallet locked"
     Right (Right (Right (Right (_, _, Left e)))) ->
       Left $ LndError $ pack e
     Right (Right (Right (Left e))) ->

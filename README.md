@@ -41,6 +41,6 @@ export NIX_WITH_SHELL_HOOK="true"
 
 ## gRPC schema upgrade
 
-- We are using lnd version 0.13.1-beta.rc2
-- Download fresh grpc files to proto directory
-- Run `./script/generate-protoc.sh`
+- We are using lnd version 0.14.1-beta
+- Run `./script/update-protobuf.sh` (This will download latest proto files from github, so make sure that lnd version is consistent with latest protobufs)
+- Run `./script/generate-protoc.sh` (This will generate haskell types and instances for downloaded protos)

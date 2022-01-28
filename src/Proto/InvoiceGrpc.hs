@@ -5,7 +5,11 @@
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
 module Proto.InvoiceGrpc (
         Invoices(..), AddHoldInvoiceRequest(), AddHoldInvoiceResp(),
-        CancelInvoiceMsg(), CancelInvoiceResp(), SettleInvoiceMsg(),
+        CancelInvoiceMsg(), CancelInvoiceResp(), LookupInvoiceMsg(),
+        LookupInvoiceMsg'InvoiceRef(..), _LookupInvoiceMsg'PaymentHash,
+        _LookupInvoiceMsg'PaymentAddr, _LookupInvoiceMsg'SetId,
+        LookupModifier(..), LookupModifier(),
+        LookupModifier'UnrecognizedValue, SettleInvoiceMsg(),
         SettleInvoiceResp(), SubscribeSingleInvoiceRequest()
     ) where
 import qualified Data.ProtoLens.Runtime.Control.DeepSeq as Control.DeepSeq
@@ -607,9 +611,13 @@ instance Control.DeepSeq.NFData AddHoldInvoiceRequest where
                                            (_AddHoldInvoiceRequest'private x__) ()))))))))))
 {- | Fields :
      
-         * 'Proto.InvoiceGrpc_Fields.paymentRequest' @:: Lens' AddHoldInvoiceResp Data.Text.Text@ -}
+         * 'Proto.InvoiceGrpc_Fields.paymentRequest' @:: Lens' AddHoldInvoiceResp Data.Text.Text@
+         * 'Proto.InvoiceGrpc_Fields.addIndex' @:: Lens' AddHoldInvoiceResp Data.Word.Word64@
+         * 'Proto.InvoiceGrpc_Fields.paymentAddr' @:: Lens' AddHoldInvoiceResp Data.ByteString.ByteString@ -}
 data AddHoldInvoiceResp
   = AddHoldInvoiceResp'_constructor {_AddHoldInvoiceResp'paymentRequest :: !Data.Text.Text,
+                                     _AddHoldInvoiceResp'addIndex :: !Data.Word.Word64,
+                                     _AddHoldInvoiceResp'paymentAddr :: !Data.ByteString.ByteString,
                                      _AddHoldInvoiceResp'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show AddHoldInvoiceResp where
@@ -626,12 +634,28 @@ instance Data.ProtoLens.Field.HasField AddHoldInvoiceResp "paymentRequest" Data.
            _AddHoldInvoiceResp'paymentRequest
            (\ x__ y__ -> x__ {_AddHoldInvoiceResp'paymentRequest = y__}))
         Prelude.id
+instance Data.ProtoLens.Field.HasField AddHoldInvoiceResp "addIndex" Data.Word.Word64 where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AddHoldInvoiceResp'addIndex
+           (\ x__ y__ -> x__ {_AddHoldInvoiceResp'addIndex = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField AddHoldInvoiceResp "paymentAddr" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _AddHoldInvoiceResp'paymentAddr
+           (\ x__ y__ -> x__ {_AddHoldInvoiceResp'paymentAddr = y__}))
+        Prelude.id
 instance Data.ProtoLens.Message AddHoldInvoiceResp where
   messageName _ = Data.Text.pack "invoicesrpc.AddHoldInvoiceResp"
   packedMessageDescriptor _
     = "\n\
       \\DC2AddHoldInvoiceResp\DC2'\n\
-      \\SIpayment_request\CAN\SOH \SOH(\tR\SOpaymentRequest"
+      \\SIpayment_request\CAN\SOH \SOH(\tR\SOpaymentRequest\DC2\ESC\n\
+      \\tadd_index\CAN\STX \SOH(\EOTR\baddIndex\DC2!\n\
+      \\fpayment_addr\CAN\ETX \SOH(\fR\vpaymentAddr"
   packedFileDescriptor _ = packedFileDescriptor
   fieldsByTag
     = let
@@ -644,9 +668,29 @@ instance Data.ProtoLens.Message AddHoldInvoiceResp where
                  Data.ProtoLens.Optional
                  (Data.ProtoLens.Field.field @"paymentRequest")) ::
               Data.ProtoLens.FieldDescriptor AddHoldInvoiceResp
+        addIndex__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "add_index"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.UInt64Field ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.Word.Word64)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"addIndex")) ::
+              Data.ProtoLens.FieldDescriptor AddHoldInvoiceResp
+        paymentAddr__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "payment_addr"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"paymentAddr")) ::
+              Data.ProtoLens.FieldDescriptor AddHoldInvoiceResp
       in
         Data.Map.fromList
-          [(Data.ProtoLens.Tag 1, paymentRequest__field_descriptor)]
+          [(Data.ProtoLens.Tag 1, paymentRequest__field_descriptor),
+           (Data.ProtoLens.Tag 2, addIndex__field_descriptor),
+           (Data.ProtoLens.Tag 3, paymentAddr__field_descriptor)]
   unknownFields
     = Lens.Family2.Unchecked.lens
         _AddHoldInvoiceResp'_unknownFields
@@ -654,6 +698,8 @@ instance Data.ProtoLens.Message AddHoldInvoiceResp where
   defMessage
     = AddHoldInvoiceResp'_constructor
         {_AddHoldInvoiceResp'paymentRequest = Data.ProtoLens.fieldDefault,
+         _AddHoldInvoiceResp'addIndex = Data.ProtoLens.fieldDefault,
+         _AddHoldInvoiceResp'paymentAddr = Data.ProtoLens.fieldDefault,
          _AddHoldInvoiceResp'_unknownFields = []}
   parseMessage
     = let
@@ -692,6 +738,19 @@ instance Data.ProtoLens.Message AddHoldInvoiceResp where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"paymentRequest") y x)
+                        16
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       Data.ProtoLens.Encoding.Bytes.getVarInt "add_index"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"addIndex") y x)
+                        26
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "payment_addr"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"paymentAddr") y x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -722,15 +781,45 @@ instance Data.ProtoLens.Message AddHoldInvoiceResp where
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
                          Data.Text.Encoding.encodeUtf8
                          _v))
-             (Data.ProtoLens.Encoding.Wire.buildFieldSet
-                (Lens.Family2.view Data.ProtoLens.unknownFields _x))
+             ((Data.Monoid.<>)
+                (let
+                   _v = Lens.Family2.view (Data.ProtoLens.Field.field @"addIndex") _x
+                 in
+                   if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                       Data.Monoid.mempty
+                   else
+                       (Data.Monoid.<>)
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
+                         (Data.ProtoLens.Encoding.Bytes.putVarInt _v))
+                ((Data.Monoid.<>)
+                   (let
+                      _v
+                        = Lens.Family2.view (Data.ProtoLens.Field.field @"paymentAddr") _x
+                    in
+                      if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                          Data.Monoid.mempty
+                      else
+                          (Data.Monoid.<>)
+                            (Data.ProtoLens.Encoding.Bytes.putVarInt 26)
+                            ((\ bs
+                                -> (Data.Monoid.<>)
+                                     (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                        (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                               _v))
+                   (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                      (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
 instance Control.DeepSeq.NFData AddHoldInvoiceResp where
   rnf
     = \ x__
         -> Control.DeepSeq.deepseq
              (_AddHoldInvoiceResp'_unknownFields x__)
              (Control.DeepSeq.deepseq
-                (_AddHoldInvoiceResp'paymentRequest x__) ())
+                (_AddHoldInvoiceResp'paymentRequest x__)
+                (Control.DeepSeq.deepseq
+                   (_AddHoldInvoiceResp'addIndex x__)
+                   (Control.DeepSeq.deepseq
+                      (_AddHoldInvoiceResp'paymentAddr x__) ())))
 {- | Fields :
      
          * 'Proto.InvoiceGrpc_Fields.paymentHash' @:: Lens' CancelInvoiceMsg Data.ByteString.ByteString@ -}
@@ -914,6 +1003,433 @@ instance Control.DeepSeq.NFData CancelInvoiceResp where
     = \ x__
         -> Control.DeepSeq.deepseq
              (_CancelInvoiceResp'_unknownFields x__) ()
+{- | Fields :
+     
+         * 'Proto.InvoiceGrpc_Fields.lookupModifier' @:: Lens' LookupInvoiceMsg LookupModifier@
+         * 'Proto.InvoiceGrpc_Fields.maybe'invoiceRef' @:: Lens' LookupInvoiceMsg (Prelude.Maybe LookupInvoiceMsg'InvoiceRef)@
+         * 'Proto.InvoiceGrpc_Fields.maybe'paymentHash' @:: Lens' LookupInvoiceMsg (Prelude.Maybe Data.ByteString.ByteString)@
+         * 'Proto.InvoiceGrpc_Fields.paymentHash' @:: Lens' LookupInvoiceMsg Data.ByteString.ByteString@
+         * 'Proto.InvoiceGrpc_Fields.maybe'paymentAddr' @:: Lens' LookupInvoiceMsg (Prelude.Maybe Data.ByteString.ByteString)@
+         * 'Proto.InvoiceGrpc_Fields.paymentAddr' @:: Lens' LookupInvoiceMsg Data.ByteString.ByteString@
+         * 'Proto.InvoiceGrpc_Fields.maybe'setId' @:: Lens' LookupInvoiceMsg (Prelude.Maybe Data.ByteString.ByteString)@
+         * 'Proto.InvoiceGrpc_Fields.setId' @:: Lens' LookupInvoiceMsg Data.ByteString.ByteString@ -}
+data LookupInvoiceMsg
+  = LookupInvoiceMsg'_constructor {_LookupInvoiceMsg'lookupModifier :: !LookupModifier,
+                                   _LookupInvoiceMsg'invoiceRef :: !(Prelude.Maybe LookupInvoiceMsg'InvoiceRef),
+                                   _LookupInvoiceMsg'_unknownFields :: !Data.ProtoLens.FieldSet}
+  deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
+instance Prelude.Show LookupInvoiceMsg where
+  showsPrec _ __x __s
+    = Prelude.showChar
+        '{'
+        (Prelude.showString
+           (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
+instance Text.PrettyPrint.GenericPretty.Out LookupInvoiceMsg
+data LookupInvoiceMsg'InvoiceRef
+  = LookupInvoiceMsg'PaymentHash !Data.ByteString.ByteString |
+    LookupInvoiceMsg'PaymentAddr !Data.ByteString.ByteString |
+    LookupInvoiceMsg'SetId !Data.ByteString.ByteString
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out LookupInvoiceMsg'InvoiceRef
+instance Data.ProtoLens.Field.HasField LookupInvoiceMsg "lookupModifier" LookupModifier where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _LookupInvoiceMsg'lookupModifier
+           (\ x__ y__ -> x__ {_LookupInvoiceMsg'lookupModifier = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField LookupInvoiceMsg "maybe'invoiceRef" (Prelude.Maybe LookupInvoiceMsg'InvoiceRef) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _LookupInvoiceMsg'invoiceRef
+           (\ x__ y__ -> x__ {_LookupInvoiceMsg'invoiceRef = y__}))
+        Prelude.id
+instance Data.ProtoLens.Field.HasField LookupInvoiceMsg "maybe'paymentHash" (Prelude.Maybe Data.ByteString.ByteString) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _LookupInvoiceMsg'invoiceRef
+           (\ x__ y__ -> x__ {_LookupInvoiceMsg'invoiceRef = y__}))
+        (Lens.Family2.Unchecked.lens
+           (\ x__
+              -> case x__ of
+                   (Prelude.Just (LookupInvoiceMsg'PaymentHash x__val))
+                     -> Prelude.Just x__val
+                   _otherwise -> Prelude.Nothing)
+           (\ _ y__ -> Prelude.fmap LookupInvoiceMsg'PaymentHash y__))
+instance Data.ProtoLens.Field.HasField LookupInvoiceMsg "paymentHash" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _LookupInvoiceMsg'invoiceRef
+           (\ x__ y__ -> x__ {_LookupInvoiceMsg'invoiceRef = y__}))
+        ((Prelude..)
+           (Lens.Family2.Unchecked.lens
+              (\ x__
+                 -> case x__ of
+                      (Prelude.Just (LookupInvoiceMsg'PaymentHash x__val))
+                        -> Prelude.Just x__val
+                      _otherwise -> Prelude.Nothing)
+              (\ _ y__ -> Prelude.fmap LookupInvoiceMsg'PaymentHash y__))
+           (Data.ProtoLens.maybeLens Data.ProtoLens.fieldDefault))
+instance Data.ProtoLens.Field.HasField LookupInvoiceMsg "maybe'paymentAddr" (Prelude.Maybe Data.ByteString.ByteString) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _LookupInvoiceMsg'invoiceRef
+           (\ x__ y__ -> x__ {_LookupInvoiceMsg'invoiceRef = y__}))
+        (Lens.Family2.Unchecked.lens
+           (\ x__
+              -> case x__ of
+                   (Prelude.Just (LookupInvoiceMsg'PaymentAddr x__val))
+                     -> Prelude.Just x__val
+                   _otherwise -> Prelude.Nothing)
+           (\ _ y__ -> Prelude.fmap LookupInvoiceMsg'PaymentAddr y__))
+instance Data.ProtoLens.Field.HasField LookupInvoiceMsg "paymentAddr" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _LookupInvoiceMsg'invoiceRef
+           (\ x__ y__ -> x__ {_LookupInvoiceMsg'invoiceRef = y__}))
+        ((Prelude..)
+           (Lens.Family2.Unchecked.lens
+              (\ x__
+                 -> case x__ of
+                      (Prelude.Just (LookupInvoiceMsg'PaymentAddr x__val))
+                        -> Prelude.Just x__val
+                      _otherwise -> Prelude.Nothing)
+              (\ _ y__ -> Prelude.fmap LookupInvoiceMsg'PaymentAddr y__))
+           (Data.ProtoLens.maybeLens Data.ProtoLens.fieldDefault))
+instance Data.ProtoLens.Field.HasField LookupInvoiceMsg "maybe'setId" (Prelude.Maybe Data.ByteString.ByteString) where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _LookupInvoiceMsg'invoiceRef
+           (\ x__ y__ -> x__ {_LookupInvoiceMsg'invoiceRef = y__}))
+        (Lens.Family2.Unchecked.lens
+           (\ x__
+              -> case x__ of
+                   (Prelude.Just (LookupInvoiceMsg'SetId x__val))
+                     -> Prelude.Just x__val
+                   _otherwise -> Prelude.Nothing)
+           (\ _ y__ -> Prelude.fmap LookupInvoiceMsg'SetId y__))
+instance Data.ProtoLens.Field.HasField LookupInvoiceMsg "setId" Data.ByteString.ByteString where
+  fieldOf _
+    = (Prelude..)
+        (Lens.Family2.Unchecked.lens
+           _LookupInvoiceMsg'invoiceRef
+           (\ x__ y__ -> x__ {_LookupInvoiceMsg'invoiceRef = y__}))
+        ((Prelude..)
+           (Lens.Family2.Unchecked.lens
+              (\ x__
+                 -> case x__ of
+                      (Prelude.Just (LookupInvoiceMsg'SetId x__val))
+                        -> Prelude.Just x__val
+                      _otherwise -> Prelude.Nothing)
+              (\ _ y__ -> Prelude.fmap LookupInvoiceMsg'SetId y__))
+           (Data.ProtoLens.maybeLens Data.ProtoLens.fieldDefault))
+instance Data.ProtoLens.Message LookupInvoiceMsg where
+  messageName _ = Data.Text.pack "invoicesrpc.LookupInvoiceMsg"
+  packedMessageDescriptor _
+    = "\n\
+      \\DLELookupInvoiceMsg\DC2#\n\
+      \\fpayment_hash\CAN\SOH \SOH(\fH\NULR\vpaymentHash\DC2#\n\
+      \\fpayment_addr\CAN\STX \SOH(\fH\NULR\vpaymentAddr\DC2\ETB\n\
+      \\ACKset_id\CAN\ETX \SOH(\fH\NULR\ENQsetId\DC2D\n\
+      \\SIlookup_modifier\CAN\EOT \SOH(\SO2\ESC.invoicesrpc.LookupModifierR\SOlookupModifierB\r\n\
+      \\vinvoice_ref"
+  packedFileDescriptor _ = packedFileDescriptor
+  fieldsByTag
+    = let
+        lookupModifier__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "lookup_modifier"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.EnumField ::
+                 Data.ProtoLens.FieldTypeDescriptor LookupModifier)
+              (Data.ProtoLens.PlainField
+                 Data.ProtoLens.Optional
+                 (Data.ProtoLens.Field.field @"lookupModifier")) ::
+              Data.ProtoLens.FieldDescriptor LookupInvoiceMsg
+        paymentHash__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "payment_hash"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.OptionalField
+                 (Data.ProtoLens.Field.field @"maybe'paymentHash")) ::
+              Data.ProtoLens.FieldDescriptor LookupInvoiceMsg
+        paymentAddr__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "payment_addr"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.OptionalField
+                 (Data.ProtoLens.Field.field @"maybe'paymentAddr")) ::
+              Data.ProtoLens.FieldDescriptor LookupInvoiceMsg
+        setId__field_descriptor
+          = Data.ProtoLens.FieldDescriptor
+              "set_id"
+              (Data.ProtoLens.ScalarField Data.ProtoLens.BytesField ::
+                 Data.ProtoLens.FieldTypeDescriptor Data.ByteString.ByteString)
+              (Data.ProtoLens.OptionalField
+                 (Data.ProtoLens.Field.field @"maybe'setId")) ::
+              Data.ProtoLens.FieldDescriptor LookupInvoiceMsg
+      in
+        Data.Map.fromList
+          [(Data.ProtoLens.Tag 4, lookupModifier__field_descriptor),
+           (Data.ProtoLens.Tag 1, paymentHash__field_descriptor),
+           (Data.ProtoLens.Tag 2, paymentAddr__field_descriptor),
+           (Data.ProtoLens.Tag 3, setId__field_descriptor)]
+  unknownFields
+    = Lens.Family2.Unchecked.lens
+        _LookupInvoiceMsg'_unknownFields
+        (\ x__ y__ -> x__ {_LookupInvoiceMsg'_unknownFields = y__})
+  defMessage
+    = LookupInvoiceMsg'_constructor
+        {_LookupInvoiceMsg'lookupModifier = Data.ProtoLens.fieldDefault,
+         _LookupInvoiceMsg'invoiceRef = Prelude.Nothing,
+         _LookupInvoiceMsg'_unknownFields = []}
+  parseMessage
+    = let
+        loop ::
+          LookupInvoiceMsg
+          -> Data.ProtoLens.Encoding.Bytes.Parser LookupInvoiceMsg
+        loop x
+          = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
+               if end then
+                   do (let missing = []
+                       in
+                         if Prelude.null missing then
+                             Prelude.return ()
+                         else
+                             Prelude.fail
+                               ((Prelude.++)
+                                  "Missing required fields: "
+                                  (Prelude.show (missing :: [Prelude.String]))))
+                      Prelude.return
+                        (Lens.Family2.over
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t) x)
+               else
+                   do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                      case tag of
+                        32
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (Prelude.fmap
+                                          Prelude.toEnum
+                                          (Prelude.fmap
+                                             Prelude.fromIntegral
+                                             Data.ProtoLens.Encoding.Bytes.getVarInt))
+                                       "lookup_modifier"
+                                loop
+                                  (Lens.Family2.set
+                                     (Data.ProtoLens.Field.field @"lookupModifier") y x)
+                        10
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "payment_hash"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"paymentHash") y x)
+                        18
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "payment_addr"
+                                loop
+                                  (Lens.Family2.set (Data.ProtoLens.Field.field @"paymentAddr") y x)
+                        26
+                          -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
+                                       (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
+                                           Data.ProtoLens.Encoding.Bytes.getBytes
+                                             (Prelude.fromIntegral len))
+                                       "set_id"
+                                loop (Lens.Family2.set (Data.ProtoLens.Field.field @"setId") y x)
+                        wire
+                          -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
+                                        wire
+                                loop
+                                  (Lens.Family2.over
+                                     Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
+      in
+        (Data.ProtoLens.Encoding.Bytes.<?>)
+          (do loop Data.ProtoLens.defMessage) "LookupInvoiceMsg"
+  buildMessage
+    = \ _x
+        -> (Data.Monoid.<>)
+             (let
+                _v
+                  = Lens.Family2.view
+                      (Data.ProtoLens.Field.field @"lookupModifier") _x
+              in
+                if (Prelude.==) _v Data.ProtoLens.fieldDefault then
+                    Data.Monoid.mempty
+                else
+                    (Data.Monoid.<>)
+                      (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
+                      ((Prelude..)
+                         ((Prelude..)
+                            Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
+                         Prelude.fromEnum
+                         _v))
+             ((Data.Monoid.<>)
+                (case
+                     Lens.Family2.view
+                       (Data.ProtoLens.Field.field @"maybe'invoiceRef") _x
+                 of
+                   Prelude.Nothing -> Data.Monoid.mempty
+                   (Prelude.Just (LookupInvoiceMsg'PaymentHash v))
+                     -> (Data.Monoid.<>)
+                          (Data.ProtoLens.Encoding.Bytes.putVarInt 10)
+                          ((\ bs
+                              -> (Data.Monoid.<>)
+                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                             v)
+                   (Prelude.Just (LookupInvoiceMsg'PaymentAddr v))
+                     -> (Data.Monoid.<>)
+                          (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
+                          ((\ bs
+                              -> (Data.Monoid.<>)
+                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                             v)
+                   (Prelude.Just (LookupInvoiceMsg'SetId v))
+                     -> (Data.Monoid.<>)
+                          (Data.ProtoLens.Encoding.Bytes.putVarInt 26)
+                          ((\ bs
+                              -> (Data.Monoid.<>)
+                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
+                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
+                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
+                             v))
+                (Data.ProtoLens.Encoding.Wire.buildFieldSet
+                   (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
+instance Control.DeepSeq.NFData LookupInvoiceMsg where
+  rnf
+    = \ x__
+        -> Control.DeepSeq.deepseq
+             (_LookupInvoiceMsg'_unknownFields x__)
+             (Control.DeepSeq.deepseq
+                (_LookupInvoiceMsg'lookupModifier x__)
+                (Control.DeepSeq.deepseq (_LookupInvoiceMsg'invoiceRef x__) ()))
+instance Control.DeepSeq.NFData LookupInvoiceMsg'InvoiceRef where
+  rnf (LookupInvoiceMsg'PaymentHash x__) = Control.DeepSeq.rnf x__
+  rnf (LookupInvoiceMsg'PaymentAddr x__) = Control.DeepSeq.rnf x__
+  rnf (LookupInvoiceMsg'SetId x__) = Control.DeepSeq.rnf x__
+_LookupInvoiceMsg'PaymentHash ::
+  Data.ProtoLens.Prism.Prism' LookupInvoiceMsg'InvoiceRef Data.ByteString.ByteString
+_LookupInvoiceMsg'PaymentHash
+  = Data.ProtoLens.Prism.prism'
+      LookupInvoiceMsg'PaymentHash
+      (\ p__
+         -> case p__ of
+              (LookupInvoiceMsg'PaymentHash p__val) -> Prelude.Just p__val
+              _otherwise -> Prelude.Nothing)
+_LookupInvoiceMsg'PaymentAddr ::
+  Data.ProtoLens.Prism.Prism' LookupInvoiceMsg'InvoiceRef Data.ByteString.ByteString
+_LookupInvoiceMsg'PaymentAddr
+  = Data.ProtoLens.Prism.prism'
+      LookupInvoiceMsg'PaymentAddr
+      (\ p__
+         -> case p__ of
+              (LookupInvoiceMsg'PaymentAddr p__val) -> Prelude.Just p__val
+              _otherwise -> Prelude.Nothing)
+_LookupInvoiceMsg'SetId ::
+  Data.ProtoLens.Prism.Prism' LookupInvoiceMsg'InvoiceRef Data.ByteString.ByteString
+_LookupInvoiceMsg'SetId
+  = Data.ProtoLens.Prism.prism'
+      LookupInvoiceMsg'SetId
+      (\ p__
+         -> case p__ of
+              (LookupInvoiceMsg'SetId p__val) -> Prelude.Just p__val
+              _otherwise -> Prelude.Nothing)
+newtype LookupModifier'UnrecognizedValue
+  = LookupModifier'UnrecognizedValue Data.Int.Int32
+  deriving stock (Prelude.Eq,
+                  Prelude.Ord,
+                  Prelude.Show,
+                  GHC.Generics.Generic)
+instance Text.PrettyPrint.GenericPretty.Out LookupModifier'UnrecognizedValue
+data LookupModifier
+  = DEFAULT |
+    HTLC_SET_ONLY |
+    HTLC_SET_BLANK |
+    LookupModifier'Unrecognized !LookupModifier'UnrecognizedValue
+  deriving stock (Prelude.Show,
+                  Prelude.Eq,
+                  Prelude.Ord,
+                  GHC.Generics.Generic)
+instance Data.ProtoLens.MessageEnum LookupModifier where
+  maybeToEnum 0 = Prelude.Just DEFAULT
+  maybeToEnum 1 = Prelude.Just HTLC_SET_ONLY
+  maybeToEnum 2 = Prelude.Just HTLC_SET_BLANK
+  maybeToEnum k
+    = Prelude.Just
+        (LookupModifier'Unrecognized
+           (LookupModifier'UnrecognizedValue (Prelude.fromIntegral k)))
+  showEnum DEFAULT = "DEFAULT"
+  showEnum HTLC_SET_ONLY = "HTLC_SET_ONLY"
+  showEnum HTLC_SET_BLANK = "HTLC_SET_BLANK"
+  showEnum
+    (LookupModifier'Unrecognized (LookupModifier'UnrecognizedValue k))
+    = Prelude.show k
+  readEnum k
+    | (Prelude.==) k "DEFAULT" = Prelude.Just DEFAULT
+    | (Prelude.==) k "HTLC_SET_ONLY" = Prelude.Just HTLC_SET_ONLY
+    | (Prelude.==) k "HTLC_SET_BLANK" = Prelude.Just HTLC_SET_BLANK
+    | Prelude.otherwise
+    = (Prelude.>>=) (Text.Read.readMaybe k) Data.ProtoLens.maybeToEnum
+instance Prelude.Bounded LookupModifier where
+  minBound = DEFAULT
+  maxBound = HTLC_SET_BLANK
+instance Prelude.Enum LookupModifier where
+  toEnum k__
+    = Prelude.maybe
+        (Prelude.error
+           ((Prelude.++)
+              "toEnum: unknown value for enum LookupModifier: "
+              (Prelude.show k__)))
+        Prelude.id
+        (Data.ProtoLens.maybeToEnum k__)
+  fromEnum DEFAULT = 0
+  fromEnum HTLC_SET_ONLY = 1
+  fromEnum HTLC_SET_BLANK = 2
+  fromEnum
+    (LookupModifier'Unrecognized (LookupModifier'UnrecognizedValue k))
+    = Prelude.fromIntegral k
+  succ HTLC_SET_BLANK
+    = Prelude.error
+        "LookupModifier.succ: bad argument HTLC_SET_BLANK. This value would be out of bounds."
+  succ DEFAULT = HTLC_SET_ONLY
+  succ HTLC_SET_ONLY = HTLC_SET_BLANK
+  succ (LookupModifier'Unrecognized _)
+    = Prelude.error
+        "LookupModifier.succ: bad argument: unrecognized value"
+  pred DEFAULT
+    = Prelude.error
+        "LookupModifier.pred: bad argument DEFAULT. This value would be out of bounds."
+  pred HTLC_SET_ONLY = DEFAULT
+  pred HTLC_SET_BLANK = HTLC_SET_ONLY
+  pred (LookupModifier'Unrecognized _)
+    = Prelude.error
+        "LookupModifier.pred: bad argument: unrecognized value"
+  enumFrom = Data.ProtoLens.Message.Enum.messageEnumFrom
+  enumFromTo = Data.ProtoLens.Message.Enum.messageEnumFromTo
+  enumFromThen = Data.ProtoLens.Message.Enum.messageEnumFromThen
+  enumFromThenTo = Data.ProtoLens.Message.Enum.messageEnumFromThenTo
+instance Data.ProtoLens.FieldDefault LookupModifier where
+  fieldDefault = DEFAULT
+instance Control.DeepSeq.NFData LookupModifier where
+  rnf x__ = Prelude.seq x__ ()
+instance Text.PrettyPrint.GenericPretty.Out LookupModifier
 {- | Fields :
      
          * 'Proto.InvoiceGrpc_Fields.preimage' @:: Lens' SettleInvoiceMsg Data.ByteString.ByteString@ -}
@@ -1217,6 +1733,7 @@ instance Data.ProtoLens.Service.Types.Service Invoices where
   type ServicePackage Invoices = "invoicesrpc"
   type ServiceMethods Invoices = '["addHoldInvoice",
                                    "cancelInvoice",
+                                   "lookupInvoiceV2",
                                    "settleInvoice",
                                    "subscribeSingleInvoice"]
   packedServiceDescriptor _
@@ -1225,7 +1742,8 @@ instance Data.ProtoLens.Service.Types.Service Invoices where
       \\SYNSubscribeSingleInvoice\DC2*.invoicesrpc.SubscribeSingleInvoiceRequest\SUB\SO.lnrpc.Invoice0\SOH\DC2N\n\
       \\rCancelInvoice\DC2\GS.invoicesrpc.CancelInvoiceMsg\SUB\RS.invoicesrpc.CancelInvoiceResp\DC2U\n\
       \\SOAddHoldInvoice\DC2\".invoicesrpc.AddHoldInvoiceRequest\SUB\US.invoicesrpc.AddHoldInvoiceResp\DC2N\n\
-      \\rSettleInvoice\DC2\GS.invoicesrpc.SettleInvoiceMsg\SUB\RS.invoicesrpc.SettleInvoiceResp"
+      \\rSettleInvoice\DC2\GS.invoicesrpc.SettleInvoiceMsg\SUB\RS.invoicesrpc.SettleInvoiceResp\DC2@\n\
+      \\SILookupInvoiceV2\DC2\GS.invoicesrpc.LookupInvoiceMsg\SUB\SO.lnrpc.Invoice"
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "subscribeSingleInvoice" where
   type MethodName Invoices "subscribeSingleInvoice" = "SubscribeSingleInvoice"
   type MethodInput Invoices "subscribeSingleInvoice" = SubscribeSingleInvoiceRequest
@@ -1246,6 +1764,11 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "settleInvoice" whe
   type MethodInput Invoices "settleInvoice" = SettleInvoiceMsg
   type MethodOutput Invoices "settleInvoice" = SettleInvoiceResp
   type MethodStreamingType Invoices "settleInvoice" =  'Data.ProtoLens.Service.Types.NonStreaming
+instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "lookupInvoiceV2" where
+  type MethodName Invoices "lookupInvoiceV2" = "LookupInvoiceV2"
+  type MethodInput Invoices "lookupInvoiceV2" = LookupInvoiceMsg
+  type MethodOutput Invoices "lookupInvoiceV2" = Proto.LndGrpc.Invoice
+  type MethodStreamingType Invoices "lookupInvoiceV2" =  'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\
@@ -1267,293 +1790,410 @@ packedFileDescriptor
     \cltvExpiry\DC21\n\
     \\vroute_hints\CAN\b \ETX(\v2\DLE.lnrpc.RouteHintR\n\
     \routeHints\DC2\CAN\n\
-    \\aprivate\CAN\t \SOH(\bR\aprivate\"=\n\
+    \\aprivate\CAN\t \SOH(\bR\aprivate\"}\n\
     \\DC2AddHoldInvoiceResp\DC2'\n\
-    \\SIpayment_request\CAN\SOH \SOH(\tR\SOpaymentRequest\".\n\
+    \\SIpayment_request\CAN\SOH \SOH(\tR\SOpaymentRequest\DC2\ESC\n\
+    \\tadd_index\CAN\STX \SOH(\EOTR\baddIndex\DC2!\n\
+    \\fpayment_addr\CAN\ETX \SOH(\fR\vpaymentAddr\".\n\
     \\DLESettleInvoiceMsg\DC2\SUB\n\
     \\bpreimage\CAN\SOH \SOH(\fR\bpreimage\"\DC3\n\
     \\DC1SettleInvoiceResp\"<\n\
     \\GSSubscribeSingleInvoiceRequest\DC2\NAK\n\
-    \\ACKr_hash\CAN\STX \SOH(\fR\ENQrHashJ\EOT\b\SOH\DLE\STX2\217\STX\n\
+    \\ACKr_hash\CAN\STX \SOH(\fR\ENQrHashJ\EOT\b\SOH\DLE\STX\"\202\SOH\n\
+    \\DLELookupInvoiceMsg\DC2#\n\
+    \\fpayment_hash\CAN\SOH \SOH(\fH\NULR\vpaymentHash\DC2#\n\
+    \\fpayment_addr\CAN\STX \SOH(\fH\NULR\vpaymentAddr\DC2\ETB\n\
+    \\ACKset_id\CAN\ETX \SOH(\fH\NULR\ENQsetId\DC2D\n\
+    \\SIlookup_modifier\CAN\EOT \SOH(\SO2\ESC.invoicesrpc.LookupModifierR\SOlookupModifierB\r\n\
+    \\vinvoice_ref*D\n\
+    \\SOLookupModifier\DC2\v\n\
+    \\aDEFAULT\DLE\NUL\DC2\DC1\n\
+    \\rHTLC_SET_ONLY\DLE\SOH\DC2\DC2\n\
+    \\SO\&HTLC_SET_BLANK\DLE\STX2\155\ETX\n\
     \\bInvoices\DC2V\n\
     \\SYNSubscribeSingleInvoice\DC2*.invoicesrpc.SubscribeSingleInvoiceRequest\SUB\SO.lnrpc.Invoice0\SOH\DC2N\n\
     \\rCancelInvoice\DC2\GS.invoicesrpc.CancelInvoiceMsg\SUB\RS.invoicesrpc.CancelInvoiceResp\DC2U\n\
     \\SOAddHoldInvoice\DC2\".invoicesrpc.AddHoldInvoiceRequest\SUB\US.invoicesrpc.AddHoldInvoiceResp\DC2N\n\
-    \\rSettleInvoice\DC2\GS.invoicesrpc.SettleInvoiceMsg\SUB\RS.invoicesrpc.SettleInvoiceRespB3Z1github.com/lightningnetwork/lnd/lnrpc/invoicesrpcJ\175\ESC\n\
-    \\ACK\DC2\EOT\STX\NUL{\SOH\n\
-    \\147\SOH\n\
-    \\SOH\f\DC2\ETX\STX\NUL\DC22\136\SOHsource https://raw.githubusercontent.com/lightningnetwork/lnd/c733c139e95a6ef4e5f9ac88b43328ac96c333ef/lnrpc/invoicesrpc/invoices.proto\n\
-    \\n\
-    \\t\n\
-    \\STX\ETX\NUL\DC2\ETX\EOT\NUL\CAN\n\
+    \\rSettleInvoice\DC2\GS.invoicesrpc.SettleInvoiceMsg\SUB\RS.invoicesrpc.SettleInvoiceResp\DC2@\n\
+    \\SILookupInvoiceV2\DC2\GS.invoicesrpc.LookupInvoiceMsg\SUB\SO.lnrpc.InvoiceB3Z1github.com/lightningnetwork/lnd/lnrpc/invoicesrpcJ\182'\n\
+    \\a\DC2\ENQ\NUL\NUL\171\SOH\SOH\n\
     \\b\n\
-    \\SOH\STX\DC2\ETX\ACK\NUL\DC4\n\
-    \\b\n\
-    \\SOH\b\DC2\ETX\b\NULH\n\
+    \\SOH\f\DC2\ETX\NUL\NUL\DC2\n\
     \\t\n\
-    \\STX\b\v\DC2\ETX\b\NULH\n\
+    \\STX\ETX\NUL\DC2\ETX\STX\NUL\CAN\n\
+    \\b\n\
+    \\SOH\STX\DC2\ETX\EOT\NUL\DC4\n\
+    \\b\n\
+    \\SOH\b\DC2\ETX\ACK\NULH\n\
+    \\t\n\
+    \\STX\b\v\DC2\ETX\ACK\NULH\n\
     \d\n\
-    \\STX\ACK\NUL\DC2\EOT\f\NUL'\SOH\SUBX Invoices is a service that can be used to create, accept, settle and cancel\n\
+    \\STX\ACK\NUL\DC2\EOT\n\
+    \\NUL+\SOH\SUBX Invoices is a service that can be used to create, accept, settle and cancel\n\
     \ invoices.\n\
     \\n\
     \\n\
     \\n\
-    \\ETX\ACK\NUL\SOH\DC2\ETX\f\b\DLE\n\
+    \\ETX\ACK\NUL\SOH\DC2\ETX\n\
+    \\b\DLE\n\
     \\215\SOH\n\
-    \\EOT\ACK\NUL\STX\NUL\DC2\EOT\DC2\EOT\DC3'\SUB\200\SOH\n\
+    \\EOT\ACK\NUL\STX\NUL\DC2\EOT\DLE\EOT\DC1'\SUB\200\SOH\n\
     \SubscribeSingleInvoice returns a uni-directional stream (server -> client)\n\
     \to notify the client of state transitions of the specified invoice.\n\
     \Initially the current invoice state is always sent out.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX\DC2\b\RS\n\
+    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX\DLE\b\RS\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX\DC2 =\n\
+    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX\DLE =\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\ACK\DC2\ETX\DC3\DC1\ETB\n\
+    \\ENQ\ACK\NUL\STX\NUL\ACK\DC2\ETX\DC1\DC1\ETB\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX\DC3\CAN%\n\
+    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX\DC1\CAN%\n\
     \\172\SOH\n\
-    \\EOT\ACK\NUL\STX\SOH\DC2\ETX\SUB\EOTE\SUB\158\SOH\n\
+    \\EOT\ACK\NUL\STX\SOH\DC2\ETX\CAN\EOTE\SUB\158\SOH\n\
     \CancelInvoice cancels a currently open invoice. If the invoice is already\n\
     \canceled, this call will succeed. If the invoice is already settled, it will\n\
     \fail.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX\SUB\b\NAK\n\
+    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX\CAN\b\NAK\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX\SUB\ETB'\n\
+    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX\CAN\ETB'\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX\SUB2C\n\
+    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX\CAN2C\n\
     \n\n\
-    \\EOT\ACK\NUL\STX\STX\DC2\ETX \EOTL\SUBa\n\
+    \\EOT\ACK\NUL\STX\STX\DC2\ETX\RS\EOTL\SUBa\n\
     \AddHoldInvoice creates a hold invoice. It ties the invoice to the hash\n\
     \supplied in the request.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX \b\SYN\n\
+    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX\RS\b\SYN\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX \CAN-\n\
+    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX\RS\CAN-\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX 8J\n\
+    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX\RS8J\n\
     \t\n\
-    \\EOT\ACK\NUL\STX\ETX\DC2\ETX&\EOTE\SUBg\n\
+    \\EOT\ACK\NUL\STX\ETX\DC2\ETX$\EOTE\SUBg\n\
     \SettleInvoice settles an accepted invoice. If the invoice is already\n\
     \settled, this call will succeed.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETX&\b\NAK\n\
+    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETX$\b\NAK\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETX&\ETB'\n\
+    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETX$\ETB'\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETX&2C\n\
+    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETX$2C\n\
+    \\150\SOH\n\
+    \\EOT\ACK\NUL\STX\EOT\DC2\ETX*\EOTC\SUB\136\SOH\n\
+    \LookupInvoiceV2 attempts to look up at invoice. An invoice can be refrenced\n\
+    \using either its payment hash, payment address, or set ID.\n\
+    \\n\
+    \\f\n\
+    \\ENQ\ACK\NUL\STX\EOT\SOH\DC2\ETX*\b\ETB\n\
+    \\f\n\
+    \\ENQ\ACK\NUL\STX\EOT\STX\DC2\ETX*\EM)\n\
+    \\f\n\
+    \\ENQ\ACK\NUL\STX\EOT\ETX\DC2\ETX*4A\n\
     \\n\
     \\n\
-    \\STX\EOT\NUL\DC2\EOT)\NUL,\SOH\n\
+    \\STX\EOT\NUL\DC2\EOT-\NUL0\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\NUL\SOH\DC2\ETX)\b\CAN\n\
+    \\ETX\EOT\NUL\SOH\DC2\ETX-\b\CAN\n\
     \B\n\
-    \\EOT\EOT\NUL\STX\NUL\DC2\ETX+\EOT\ESC\SUB5 Hash corresponding to the (hold) invoice to cancel.\n\
+    \\EOT\EOT\NUL\STX\NUL\DC2\ETX/\EOT\ESC\SUB5 Hash corresponding to the (hold) invoice to cancel.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETX+\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETX/\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\ETX+\n\
+    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\ETX/\n\
     \\SYN\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\ETX+\EM\SUB\n\
+    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\ETX/\EM\SUB\n\
     \\n\
     \\n\
-    \\STX\EOT\SOH\DC2\EOT-\NUL.\SOH\n\
+    \\STX\EOT\SOH\DC2\EOT1\NUL2\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\SOH\SOH\DC2\ETX-\b\EM\n\
+    \\ETX\EOT\SOH\SOH\DC2\ETX1\b\EM\n\
     \\n\
     \\n\
-    \\STX\EOT\STX\DC2\EOT0\NULb\SOH\n\
+    \\STX\EOT\STX\DC2\EOT4\NULf\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\STX\SOH\DC2\ETX0\b\GS\n\
+    \\ETX\EOT\STX\SOH\DC2\ETX4\b\GS\n\
     \\252\SOH\n\
-    \\EOT\EOT\STX\STX\NUL\DC2\ETX7\EOT\DC4\SUB\238\SOH\n\
+    \\EOT\EOT\STX\STX\NUL\DC2\ETX;\EOT\DC4\SUB\238\SOH\n\
     \An optional memo to attach along with the invoice. Used for record keeping\n\
     \purposes for the invoice's creator, and will also be set in the description\n\
     \field of the encoded payment request if the description_hash field is not\n\
     \being used.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETX7\EOT\n\
+    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETX;\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\ETX7\v\SI\n\
+    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\ETX;\v\SI\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\ETX7\DC2\DC3\n\
+    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\ETX;\DC2\DC3\n\
     \'\n\
-    \\EOT\EOT\STX\STX\SOH\DC2\ETX:\EOT\DC3\SUB\SUB The hash of the preimage\n\
+    \\EOT\EOT\STX\STX\SOH\DC2\ETX>\EOT\DC3\SUB\SUB The hash of the preimage\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETX:\EOT\t\n\
+    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETX>\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\ETX:\n\
+    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\ETX>\n\
     \\SO\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\ETX:\DC1\DC2\n\
+    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\ETX>\DC1\DC2\n\
     \m\n\
-    \\EOT\EOT\STX\STX\STX\DC2\ETXA\EOT\DC4\SUB`\n\
+    \\EOT\EOT\STX\STX\STX\DC2\ETXE\EOT\DC4\SUB`\n\
     \The value of this invoice in satoshis\n\
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETXA\EOT\t\n\
+    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETXE\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\SOH\DC2\ETXA\n\
+    \\ENQ\EOT\STX\STX\STX\SOH\DC2\ETXE\n\
     \\SI\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\ETX\DC2\ETXA\DC2\DC3\n\
+    \\ENQ\EOT\STX\STX\STX\ETX\DC2\ETXE\DC2\DC3\n\
     \r\n\
-    \\EOT\EOT\STX\STX\ETX\DC2\ETXH\EOT\SUB\SUBe\n\
+    \\EOT\EOT\STX\STX\ETX\DC2\ETXL\EOT\SUB\SUBe\n\
     \The value of this invoice in millisatoshis\n\
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\ETXH\EOT\t\n\
+    \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\ETXL\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ETX\SOH\DC2\ETXH\n\
+    \\ENQ\EOT\STX\STX\ETX\SOH\DC2\ETXL\n\
     \\DC4\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ETX\ETX\DC2\ETXH\ETB\EM\n\
+    \\ENQ\EOT\STX\STX\ETX\ETX\DC2\ETXL\ETB\EM\n\
     \\194\SOH\n\
-    \\EOT\EOT\STX\STX\EOT\DC2\ETXO\EOT\US\SUB\180\SOH\n\
+    \\EOT\EOT\STX\STX\EOT\DC2\ETXS\EOT\US\SUB\180\SOH\n\
     \Hash (SHA-256) of a description of the payment. Used if the description of\n\
     \payment (memo) is too long to naturally fit within the description field\n\
     \of an encoded payment request.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\EOT\ENQ\DC2\ETXO\EOT\t\n\
+    \\ENQ\EOT\STX\STX\EOT\ENQ\DC2\ETXS\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\EOT\SOH\DC2\ETXO\n\
+    \\ENQ\EOT\STX\STX\EOT\SOH\DC2\ETXS\n\
     \\SUB\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\EOT\ETX\DC2\ETXO\GS\RS\n\
+    \\ENQ\EOT\STX\STX\EOT\ETX\DC2\ETXS\GS\RS\n\
     \P\n\
-    \\EOT\EOT\STX\STX\ENQ\DC2\ETXR\EOT\NAK\SUBC Payment request expiry time in seconds. Default is 3600 (1 hour).\n\
+    \\EOT\EOT\STX\STX\ENQ\DC2\ETXV\EOT\NAK\SUBC Payment request expiry time in seconds. Default is 3600 (1 hour).\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\ETXR\EOT\t\n\
+    \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\ETXV\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ENQ\SOH\DC2\ETXR\n\
+    \\ENQ\EOT\STX\STX\ENQ\SOH\DC2\ETXV\n\
     \\DLE\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ENQ\ETX\DC2\ETXR\DC3\DC4\n\
+    \\ENQ\EOT\STX\STX\ENQ\ETX\DC2\ETXV\DC3\DC4\n\
     \)\n\
-    \\EOT\EOT\STX\STX\ACK\DC2\ETXU\EOT\GS\SUB\FS Fallback on-chain address.\n\
+    \\EOT\EOT\STX\STX\ACK\DC2\ETXY\EOT\GS\SUB\FS Fallback on-chain address.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ACK\ENQ\DC2\ETXU\EOT\n\
+    \\ENQ\EOT\STX\STX\ACK\ENQ\DC2\ETXY\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ACK\SOH\DC2\ETXU\v\CAN\n\
+    \\ENQ\EOT\STX\STX\ACK\SOH\DC2\ETXY\v\CAN\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ACK\ETX\DC2\ETXU\ESC\FS\n\
+    \\ENQ\EOT\STX\STX\ACK\ETX\DC2\ETXY\ESC\FS\n\
     \T\n\
-    \\EOT\EOT\STX\STX\a\DC2\ETXX\EOT\ESC\SUBG Delta to use for the time-lock of the CLTV extended to the final hop.\n\
+    \\EOT\EOT\STX\STX\a\DC2\ETX\\\EOT\ESC\SUBG Delta to use for the time-lock of the CLTV extended to the final hop.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\a\ENQ\DC2\ETXX\EOT\n\
+    \\ENQ\EOT\STX\STX\a\ENQ\DC2\ETX\\\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\a\SOH\DC2\ETXX\v\SYN\n\
+    \\ENQ\EOT\STX\STX\a\SOH\DC2\ETX\\\v\SYN\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\a\ETX\DC2\ETXX\EM\SUB\n\
+    \\ENQ\EOT\STX\STX\a\ETX\DC2\ETX\\\EM\SUB\n\
     \n\n\
-    \\EOT\EOT\STX\STX\b\DC2\ETX^\EOT-\SUBa\n\
+    \\EOT\EOT\STX\STX\b\DC2\ETXb\EOT-\SUBa\n\
     \Route hints that can each be individually used to assist in reaching the\n\
     \invoice's destination.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\EOT\DC2\ETX^\EOT\f\n\
+    \\ENQ\EOT\STX\STX\b\EOT\DC2\ETXb\EOT\f\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\ACK\DC2\ETX^\r\FS\n\
+    \\ENQ\EOT\STX\STX\b\ACK\DC2\ETXb\r\FS\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\SOH\DC2\ETX^\GS(\n\
+    \\ENQ\EOT\STX\STX\b\SOH\DC2\ETXb\GS(\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\ETX\DC2\ETX^+,\n\
+    \\ENQ\EOT\STX\STX\b\ETX\DC2\ETXb+,\n\
     \V\n\
-    \\EOT\EOT\STX\STX\t\DC2\ETXa\EOT\NAK\SUBI Whether this invoice should include routing hints for private channels.\n\
+    \\EOT\EOT\STX\STX\t\DC2\ETXe\EOT\NAK\SUBI Whether this invoice should include routing hints for private channels.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\t\ENQ\DC2\ETXa\EOT\b\n\
+    \\ENQ\EOT\STX\STX\t\ENQ\DC2\ETXe\EOT\b\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\t\SOH\DC2\ETXa\t\DLE\n\
+    \\ENQ\EOT\STX\STX\t\SOH\DC2\ETXe\t\DLE\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\t\ETX\DC2\ETXa\DC3\DC4\n\
+    \\ENQ\EOT\STX\STX\t\ETX\DC2\ETXe\DC3\DC4\n\
     \\n\
     \\n\
-    \\STX\EOT\ETX\DC2\EOTd\NULk\SOH\n\
+    \\STX\EOT\ETX\DC2\EOTh\NUL~\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\ETX\SOH\DC2\ETXd\b\SUB\n\
-    \\188\SOH\n\
-    \\EOT\EOT\ETX\STX\NUL\DC2\ETXj\EOT\US\SUB\174\SOH\n\
-    \A bare-bones invoice for a payment within the Lightning Network.  With the\n\
+    \\ETX\EOT\ETX\SOH\DC2\ETXh\b\SUB\n\
+    \\187\SOH\n\
+    \\EOT\EOT\ETX\STX\NUL\DC2\ETXn\EOT\US\SUB\173\SOH\n\
+    \A bare-bones invoice for a payment within the Lightning Network. With the\n\
     \details of the invoice, the sender has all the data necessary to send a\n\
     \payment to the recipient.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\ETXj\EOT\n\
+    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\ETXn\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\ETXj\v\SUB\n\
+    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\ETXn\v\SUB\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\ETXj\GS\RS\n\
+    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\ETXn\GS\RS\n\
+    \\149\STX\n\
+    \\EOT\EOT\ETX\STX\SOH\DC2\ETXv\EOT\EM\SUB\135\STX\n\
+    \The \"add\" index of this invoice. Each newly created invoice will increment\n\
+    \this index making it monotonically increasing. Callers to the\n\
+    \SubscribeInvoices call can use this to instantly get notified of all added\n\
+    \invoices with an add_index greater than this one.\n\
     \\n\
+    \\f\n\
+    \\ENQ\EOT\ETX\STX\SOH\ENQ\DC2\ETXv\EOT\n\
     \\n\
-    \\STX\EOT\EOT\DC2\EOTm\NULq\SOH\n\
+    \\f\n\
+    \\ENQ\EOT\ETX\STX\SOH\SOH\DC2\ETXv\v\DC4\n\
+    \\f\n\
+    \\ENQ\EOT\ETX\STX\SOH\ETX\DC2\ETXv\ETB\CAN\n\
+    \\162\SOH\n\
+    \\EOT\EOT\ETX\STX\STX\DC2\ETX}\EOT\ESC\SUB\148\SOH\n\
+    \The payment address of the generated invoice. This value should be used\n\
+    \in all payments for this invoice as we require it for end to end\n\
+    \security.\n\
     \\n\
-    \\n\
-    \\ETX\EOT\EOT\SOH\DC2\ETXm\b\CAN\n\
-    \_\n\
-    \\EOT\EOT\EOT\STX\NUL\DC2\ETXp\EOT\ETB\SUBR Externally discovered pre-image that should be used to settle the hold\n\
+    \\f\n\
+    \\ENQ\EOT\ETX\STX\STX\ENQ\DC2\ETX}\EOT\t\n\
+    \\f\n\
+    \\ENQ\EOT\ETX\STX\STX\SOH\DC2\ETX}\n\
+    \\SYN\n\
+    \\f\n\
+    \\ENQ\EOT\ETX\STX\STX\ETX\DC2\ETX}\EM\SUB\n\
+    \\f\n\
+    \\STX\EOT\EOT\DC2\ACK\128\SOH\NUL\132\SOH\SOH\n\
+    \\v\n\
+    \\ETX\EOT\EOT\SOH\DC2\EOT\128\SOH\b\CAN\n\
+    \`\n\
+    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\131\SOH\EOT\ETB\SUBR Externally discovered pre-image that should be used to settle the hold\n\
     \ invoice.\n\
     \\n\
-    \\f\n\
-    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\ETXp\EOT\t\n\
-    \\f\n\
-    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\ETXp\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\131\SOH\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\131\SOH\n\
     \\DC2\n\
+    \\r\n\
+    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\131\SOH\NAK\SYN\n\
     \\f\n\
-    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\ETXp\NAK\SYN\n\
-    \\n\
-    \\n\
-    \\STX\EOT\ENQ\DC2\EOTs\NULt\SOH\n\
-    \\n\
-    \\n\
-    \\ETX\EOT\ENQ\SOH\DC2\ETXs\b\EM\n\
-    \\n\
-    \\n\
-    \\STX\EOT\ACK\DC2\EOTv\NUL{\SOH\n\
-    \\n\
-    \\n\
-    \\ETX\EOT\ACK\SOH\DC2\ETXv\b%\n\
-    \\n\
-    \\n\
-    \\ETX\EOT\ACK\t\DC2\ETXw\EOT\SI\n\
+    \\STX\EOT\ENQ\DC2\ACK\134\SOH\NUL\135\SOH\SOH\n\
     \\v\n\
-    \\EOT\EOT\ACK\t\NUL\DC2\ETXw\r\SO\n\
+    \\ETX\EOT\ENQ\SOH\DC2\EOT\134\SOH\b\EM\n\
     \\f\n\
-    \\ENQ\EOT\ACK\t\NUL\SOH\DC2\ETXw\r\SO\n\
+    \\STX\EOT\ACK\DC2\ACK\137\SOH\NUL\142\SOH\SOH\n\
+    \\v\n\
+    \\ETX\EOT\ACK\SOH\DC2\EOT\137\SOH\b%\n\
+    \\v\n\
+    \\ETX\EOT\ACK\t\DC2\EOT\138\SOH\EOT\SI\n\
     \\f\n\
-    \\ENQ\EOT\ACK\t\NUL\STX\DC2\ETXw\r\SO\n\
-    \H\n\
-    \\EOT\EOT\ACK\STX\NUL\DC2\ETXz\EOT\NAK\SUB; Hash corresponding to the (hold) invoice to subscribe to.\n\
+    \\EOT\EOT\ACK\t\NUL\DC2\EOT\138\SOH\r\SO\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\t\NUL\SOH\DC2\EOT\138\SOH\r\SO\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\t\NUL\STX\DC2\EOT\138\SOH\r\SO\n\
+    \I\n\
+    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\141\SOH\EOT\NAK\SUB; Hash corresponding to the (hold) invoice to subscribe to.\n\
     \\n\
-    \\f\n\
-    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\ETXz\EOT\t\n\
-    \\f\n\
-    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\ETXz\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\141\SOH\EOT\t\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\141\SOH\n\
     \\DLE\n\
+    \\r\n\
+    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\141\SOH\DC3\DC4\n\
     \\f\n\
-    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\ETXz\DC3\DC4b\ACKproto3"
+    \\STX\ENQ\NUL\DC2\ACK\144\SOH\NUL\161\SOH\SOH\n\
+    \\v\n\
+    \\ETX\ENQ\NUL\SOH\DC2\EOT\144\SOH\ENQ\DC3\n\
+    \M\n\
+    \\EOT\ENQ\NUL\STX\NUL\DC2\EOT\146\SOH\EOT\DLE\SUB? The default look up modifier, no look up behavior is changed.\n\
+    \\n\
+    \\r\n\
+    \\ENQ\ENQ\NUL\STX\NUL\SOH\DC2\EOT\146\SOH\EOT\v\n\
+    \\r\n\
+    \\ENQ\ENQ\NUL\STX\NUL\STX\DC2\EOT\146\SOH\SO\SI\n\
+    \\144\SOH\n\
+    \\EOT\ENQ\NUL\STX\SOH\DC2\EOT\152\SOH\EOT\SYN\SUB\129\SOH\n\
+    \Indicates that when a look up is done based on a set_id, then only that set\n\
+    \of HTLCs related to that set ID should be returned.\n\
+    \\n\
+    \\r\n\
+    \\ENQ\ENQ\NUL\STX\SOH\SOH\DC2\EOT\152\SOH\EOT\DC1\n\
+    \\r\n\
+    \\ENQ\ENQ\NUL\STX\SOH\STX\DC2\EOT\152\SOH\DC4\NAK\n\
+    \\170\STX\n\
+    \\EOT\ENQ\NUL\STX\STX\DC2\EOT\160\SOH\EOT\ETB\SUB\155\STX\n\
+    \Indicates that when a look up is done using a payment_addr, then no HTLCs\n\
+    \related to the payment_addr should be returned. This is useful when one\n\
+    \wants to be able to obtain the set of associated setIDs with a given\n\
+    \invoice, then look up the sub-invoices \"projected\" by that set ID.\n\
+    \\n\
+    \\r\n\
+    \\ENQ\ENQ\NUL\STX\STX\SOH\DC2\EOT\160\SOH\EOT\DC2\n\
+    \\r\n\
+    \\ENQ\ENQ\NUL\STX\STX\STX\DC2\EOT\160\SOH\NAK\SYN\n\
+    \\f\n\
+    \\STX\EOT\a\DC2\ACK\163\SOH\NUL\171\SOH\SOH\n\
+    \\v\n\
+    \\ETX\EOT\a\SOH\DC2\EOT\163\SOH\b\CAN\n\
+    \\SO\n\
+    \\EOT\EOT\a\b\NUL\DC2\ACK\164\SOH\EOT\168\SOH\ENQ\n\
+    \\r\n\
+    \\ENQ\EOT\a\b\NUL\SOH\DC2\EOT\164\SOH\n\
+    \\NAK\n\
+    \\f\n\
+    \\EOT\EOT\a\STX\NUL\DC2\EOT\165\SOH\b\US\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\165\SOH\b\r\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\NUL\SOH\DC2\EOT\165\SOH\SO\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\NUL\ETX\DC2\EOT\165\SOH\GS\RS\n\
+    \\f\n\
+    \\EOT\EOT\a\STX\SOH\DC2\EOT\166\SOH\b\US\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\SOH\ENQ\DC2\EOT\166\SOH\b\r\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\SOH\SOH\DC2\EOT\166\SOH\SO\SUB\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\SOH\ETX\DC2\EOT\166\SOH\GS\RS\n\
+    \\f\n\
+    \\EOT\EOT\a\STX\STX\DC2\EOT\167\SOH\b\EM\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\STX\ENQ\DC2\EOT\167\SOH\b\r\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\STX\SOH\DC2\EOT\167\SOH\SO\DC4\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\STX\ETX\DC2\EOT\167\SOH\ETB\CAN\n\
+    \\f\n\
+    \\EOT\EOT\a\STX\ETX\DC2\EOT\170\SOH\EOT'\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\ETX\ACK\DC2\EOT\170\SOH\EOT\DC2\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\ETX\SOH\DC2\EOT\170\SOH\DC3\"\n\
+    \\r\n\
+    \\ENQ\EOT\a\STX\ETX\ETX\DC2\EOT\170\SOH%&b\ACKproto3"

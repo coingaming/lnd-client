@@ -31,10 +31,12 @@ import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
+import LndClient.Data.SignMessage
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
 import qualified LndClient.Data.TrackPayment as TrackPayment
+import LndClient.Data.VerifyMessage
 import LndClient.Import
 import LndClient.LndTest
 import LndClient.QRCode
@@ -343,28 +345,37 @@ spec = do
         res <- Async.race (sleep $ MicroSecondsDelay 100000) $ Async.cancel a
         res `shouldSatisfy` isRight
   it "trackPaymentV2" $
+    withEnv $
+      do
+        void $ setupOneChannel Alice Bob
+        --
+        -- prepare invoice and subscription
+        --
+        alice <- getLndEnv Alice
+        bob <- getLndEnv Bob
+        inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
+        let req =
+              SendPaymentRequest
+                (AddInvoice.paymentRequest inv)
+                $ AddInvoice.valueMsat addInvoiceRequest
+        --
+        -- spawn payment watcher and settle invoice
+        --
+        Watcher.withWatcher alice trackPaymentV2Chan (\_ _ _ -> pure ()) $ \w -> do
+          void $ liftLndResult =<< sendPayment alice req
+          chan <- Watcher.dupLndTChan w
+          Watcher.watch w $
+            TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
+          res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
+          liftIO $ res `shouldSatisfy` isJust
+  it "signVerify" $
     withEnv $ do
-      void $ setupOneChannel Alice Bob
-      --
-      -- prepare invoice and subscription
-      --
       alice <- getLndEnv Alice
       bob <- getLndEnv Bob
-      inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
-      let req =
-            SendPaymentRequest
-              (AddInvoice.paymentRequest inv)
-              $ AddInvoice.valueMsat addInvoiceRequest
-      --
-      -- spawn payment watcher and settle invoice
-      --
-      Watcher.withWatcher alice trackPaymentV2Chan (\_ _ _ -> pure ()) $ \w -> do
-        void $ liftLndResult =<< sendPayment alice req
-        chan <- Watcher.dupLndTChan w
-        Watcher.watch w $
-          TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
-        res <- readTChanTimeout (MicroSecondsDelay 2000000) chan
-        liftIO $ res `shouldSatisfy` isJust
+      SignMessageResponse sig <- liftLndResult =<< signMessage alice (SignMessageRequest "test" (KeyLocator 6 0) False False)
+      GetInfoResponse pubKey _ _ <- liftLndResult =<< getInfo alice
+      VerifyMessageResponse res <- liftLndResult =<< verifyMessage bob (VerifyMessageRequest "test" sig (coerce pubKey))
+      liftIO $ res `shouldBe` True
   it "waitForGrpc" $
     withEnv $ do
       res <- waitForGrpc =<< getLndEnv Alice
