@@ -11,7 +11,7 @@ module LndClient.Data.Type
 where
 
 import Chronos (Timespan)
-import Control.Exception (Exception)
+import Control.Exception (Exception, IOException)
 import qualified Data.Set as Set
 import LndClient.Import.External
 import LndClient.Orphan ()
@@ -30,6 +30,7 @@ data LndError
   | LndEnvError Text
   | TChanTimeout Text
   | NetworkException Text
+  | LndIOException IOException
   deriving (Eq, Show, Generic)
 
 instance Out LndError

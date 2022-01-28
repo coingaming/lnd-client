@@ -15,13 +15,13 @@ import Data.Text
 import GHC.IO.Exception (IOException)
 import GHC.TypeLits (Symbol)
 import LndClient.Data.LndEnv
+import LndClient.Data.Type (LndError (LndWalletNotExists))
 import LndClient.Import
 import Network.GRPC.Client.Helpers
 import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
 import Network.HPACK (HeaderList)
 import Network.HTTP2.Client
 import qualified Prelude
-import LndClient.Data.Type (LndError(LndWalletNotExists))
 
 runUnary ::
   ( MonadUnliftIO p,
@@ -101,8 +101,6 @@ catchExceptions x =
                 Handler
                   ( \(ex :: IOException) -> case stripPrefix ("Network.Socket.connect" :: Text) (pack $ Prelude.show ex) of
                       Just mes -> pure $ Left $ NetworkException mes
-                      Nothing -> pure $ Left $ LndError $ pack $ Prelude.show ex
+                      Nothing -> pure $ Left $ LndIOException ex
                   )
               ]
-
-
