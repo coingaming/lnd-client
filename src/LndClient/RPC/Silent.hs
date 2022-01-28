@@ -85,7 +85,8 @@ lazyUnlockWallet env = do
   unlocked <- isRight <$> getInfo env
   if unlocked
     then return $ Right ()
-    else unlockWallet env
+--    else unlockWallet env
+    else return $ Right ()
 
 lazyInitWallet ::
   (MonadUnliftIO m) =>
@@ -95,7 +96,8 @@ lazyInitWallet env = do
   unlockRes <- lazyUnlockWallet env
   if isRight unlockRes
     then return unlockRes
-    else initWallet env
+--    else initWallet env
+    else return $ Right ()
 
 ensureHodlInvoice ::
   (MonadUnliftIO m) =>

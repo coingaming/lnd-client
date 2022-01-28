@@ -49,7 +49,7 @@ spec = do
     x <- readLndEnv
     envLndSyncGrpcTimeout x `shouldBe` newGrpcTimeout 59
     envLndAsyncGrpcTimeout x `shouldBe` Nothing
-  it "decodePayReq" $
+  focus $ it "decodePayReq" $
     withEnv $ do
       lnd <- getLndEnv Bob
       x0 <- liftLndResult =<< addInvoice lnd addInvoiceRequest

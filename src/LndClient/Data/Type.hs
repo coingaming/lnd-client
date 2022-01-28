@@ -22,11 +22,13 @@ data LndError
   | FromGrpcError Text
   | LndGrpcError E.ClientError
   | LndGrpcException Text
+  | LndLockedError Text
   | GrpcUnexpectedResult Text
   | GrpcEmptyResult
   | LndError Text
   | LndEnvError Text
   | TChanTimeout Text
+  | NetworkException Text
   deriving (Eq, Show, Generic)
 
 instance Out LndError
