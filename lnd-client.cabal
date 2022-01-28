@@ -125,6 +125,7 @@ library
     , envparse ==0.4.1.*
     , extra >=1.6.18 && <1.6.20
     , generic-pretty-instances
+    , http-client >=0.7.9
     , http2 >=2.0.3
     , http2-client
     , http2-client-grpc >=0.8.0.0
@@ -196,6 +197,7 @@ test-suite lnd-client-test
     , extra >=1.6.18 && <1.6.20
     , generic-pretty-instances
     , hspec ==2.7.1.*
+    , http-client >=0.7.9
     , http2 >=2.0.3
     , http2-client
     , http2-client-grpc >=0.8.0.0

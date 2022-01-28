@@ -34,6 +34,7 @@ dependencies:
 - base64-bytestring     >= 1.0.0.2 && <  1.0.1
 - text                  >= 1.2.3.1 && < 1.2.4
 - aeson                 >= 1.4.4.0
+- http-client           >= 0.7.9
 # protobuf and gRPC
 - containers            >= 0.6.0.1 && < 0.6.1
 - deepseq               >= 1.4.4.0 && < 1.4.5

@@ -21,6 +21,7 @@ import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
 import Network.HPACK (HeaderList)
 import Network.HTTP2.Client
 import qualified Prelude
+import LndClient.Data.Type (LndError(LndWalletNotExists))
 
 runUnary ::
   ( MonadUnliftIO p,
@@ -39,9 +40,9 @@ runUnary rpc env req = do
     Right (Right (Right (Right (_, _, Right x)))) ->
       Right x
     Right (Right (Right (Right (_, _, Left "wallet not created, create one to enable full RPC access")))) ->
-      Left $ LndLockedError "wallet not created"
+      Left LndWalletNotExists
     Right (Right (Right (Right (_, _, Left "wallet locked, unlock it to enable full RPC access")))) ->
-      Left $ LndLockedError "wallet locked"
+      Left LndWalletLocked
     Right (Right (Right (Right (_, _, Left e)))) ->
       Left $ LndError $ pack e
     Right (Right (Right (Left e))) ->
@@ -103,3 +104,5 @@ catchExceptions x =
                       Nothing -> pure $ Left $ LndError $ pack $ Prelude.show ex
                   )
               ]
+
+

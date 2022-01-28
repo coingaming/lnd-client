@@ -22,7 +22,8 @@ data LndError
   | FromGrpcError Text
   | LndGrpcError E.ClientError
   | LndGrpcException Text
-  | LndLockedError Text
+  | LndWalletLocked
+  | LndWalletNotExists
   | GrpcUnexpectedResult Text
   | GrpcEmptyResult
   | LndError Text
