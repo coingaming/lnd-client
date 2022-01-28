@@ -101,6 +101,5 @@ catchExceptions x =
                   ( \(ex :: IOException) -> case stripPrefix ("Network.Socket.connect" :: Text) (pack $ Prelude.show ex) of
                       Just mes -> pure $ Left $ NetworkException mes
                       Nothing -> pure $ Left $ LndError $ pack $ Prelude.show ex
-                  ),
-                Handler (\(_e0 :: SomeException) -> pure (Left $ LndError "HTTP"))
+                  )
               ]

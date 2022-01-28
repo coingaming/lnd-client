@@ -20,7 +20,7 @@ import LndClient.Data.CloseChannel
 import LndClient.Data.ClosedChannels (ClosedChannelsRequest (..))
 import qualified LndClient.Data.GetInfo as GI
 import LndClient.Data.HtlcEvent (HtlcEvent (..))
---import qualified LndClient.Data.InitWallet as IW
+import qualified LndClient.Data.InitWallet as IW
 import LndClient.Data.Invoice (Invoice (..))
 import LndClient.Data.ListChannels (ListChannelsRequest (..))
 import LndClient.Data.ListInvoices (ListInvoiceRequest (..), ListInvoiceResponse (..))
@@ -44,7 +44,7 @@ import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
 import LndClient.Data.TrackPayment (TrackPaymentRequest (..))
---import qualified LndClient.Data.UnlockWallet as UW
+import qualified LndClient.Data.UnlockWallet as UW
 import qualified LndClient.Data.VerifyMessage as VM
   ( VerifyMessageRequest (..),
     VerifyMessageResponse (..),
@@ -55,7 +55,7 @@ import Network.GRPC.HTTP2.ProtoLens (RPC (..))
 import qualified Proto.InvoiceGrpc as LnGRPC
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.RouterGrpc as LnGRPC
---import qualified Proto.WalletUnlockerGrpc as LnGRPC
+import qualified Proto.WalletUnlockerGrpc as LnGRPC
 import qualified Proto.SignerGrpc as LnGRPC
 
 data RpcKind = RpcSilent | RpcKatip
@@ -82,43 +82,41 @@ mkRpc k = do
     initWallet env = do
       case envLndCipherSeedMnemonic env of
         Nothing -> pure . Left $ LndEnvError "CipherSeed is required for initWallet"
-        Just _seed -> do
---          res <-
---            $(grpcRetry) $
---              $(grpcSync)
---                (RPC :: RPC LnGRPC.WalletUnlocker "initWallet")
---                env
---                IW.InitWalletRequest
---                  { IW.walletPassword =
---                      coerce $ envLndWalletPassword env,
---                    IW.cipherSeedMnemonic =
---                      coerce seed,
---                    IW.aezeedPassphrase =
---                      coerce $ envLndAezeedPassphrase env
---                  }
---          if isRight res
---            then waitForGrpc env
---            else return res
-            pure $ Right ()
+        Just seed -> do
+          res <-
+            $(grpcRetry) $
+              $(grpcSync)
+                (RPC :: RPC LnGRPC.WalletUnlocker "initWallet")
+                env
+                IW.InitWalletRequest
+                  { IW.walletPassword =
+                      coerce $ envLndWalletPassword env,
+                    IW.cipherSeedMnemonic =
+                      coerce seed,
+                    IW.aezeedPassphrase =
+                      coerce $ envLndAezeedPassphrase env
+                  }
+          if isRight res
+            then waitForGrpc env
+            else return res
 
     unlockWallet ::
       $(tcc m) =>
       LndEnv ->
       $(pure m) (Either LndError ())
-    unlockWallet _env = do
---      res <-
---        $(grpcRetry) $
---          $(grpcSync)
---            (RPC :: RPC LnGRPC.WalletUnlocker "unlockWallet")
---            env
---            UW.UnlockWalletRequest
---              { UW.walletPassword = coerce $ envLndWalletPassword env,
---                UW.recoveryWindow = 100
---              }
---      if isRight res
---        then waitForGrpc env
---        else return res
-      pure $ Right ()
+    unlockWallet env = do
+      res <-
+        $(grpcRetry) $
+          $(grpcSync)
+            (RPC :: RPC LnGRPC.WalletUnlocker "unlockWallet")
+            env
+            UW.UnlockWalletRequest
+              { UW.walletPassword = coerce $ envLndWalletPassword env,
+                UW.recoveryWindow = 100
+              }
+      if isRight res
+        then waitForGrpc env
+        else return res
 
     newAddress ::
       $(tcc m) =>

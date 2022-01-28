@@ -96,8 +96,7 @@ lazyUnlockWallet env =
       then do
         $(logTM) (newSev env DebugS) "Wallet is already unlocked, doing nothing!"
         return $ Right ()
---      else unlockWallet env
-        else pure $ Right ()
+      else unlockWallet env
 
 lazyInitWallet ::
   (KatipContext m, MonadUnliftIO m) =>
@@ -112,8 +111,7 @@ lazyInitWallet env =
       then do
         $(logTM) (newSev env DebugS) "Wallet is already initialized, doing nothing!"
         return unlockRes
-      --else initWallet env
-      else pure $ Right ()
+      else initWallet env
 
 ensureHodlInvoice ::
   (KatipContext m, MonadUnliftIO m) =>
