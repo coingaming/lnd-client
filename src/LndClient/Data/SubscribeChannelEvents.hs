@@ -61,7 +61,7 @@ instance FromGrpc UpdateChannel LnGRPC.ChannelEventUpdate'Channel where
   fromGrpc x = case x of
     LnGRPC.ChannelEventUpdate'OpenChannel c -> ChannelEventUpdateChannelOpenChannel <$> fromGrpc c
     LnGRPC.ChannelEventUpdate'ActiveChannel cp -> ChannelEventUpdateChannelActiveChannel <$> fromGrpc cp
-    LnGRPC.ChannelEventUpdate'InactiveChannel cp -> ChannelEventUpdateChannelActiveChannel <$> fromGrpc cp
+    LnGRPC.ChannelEventUpdate'InactiveChannel cp -> ChannelEventUpdateChannelInactiveChannel <$> fromGrpc cp
     LnGRPC.ChannelEventUpdate'PendingOpenChannel pa -> ChannelEventUpdateChannelPendingOpenChannel <$> fromGrpc pa
     LnGRPC.ChannelEventUpdate'ClosedChannel cc -> ChannelEventUpdateChannelClosedChannel <$> fromGrpc cc
     LnGRPC.ChannelEventUpdate'FullyResolvedChannel cc -> ChannelEventUpdateChannelFullyResolved <$> fromGrpc cc
