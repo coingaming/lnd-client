@@ -372,10 +372,22 @@ spec = do
     withEnv $ do
       alice <- getLndEnv Alice
       bob <- getLndEnv Bob
-      SignMessageResponse sig <- liftLndResult =<< signMessage alice (SignMessageRequest "test" (KeyLocator 6 0) False False)
-      GetInfoResponse pubKey _ _ <- liftLndResult =<< getInfo alice
-      VerifyMessageResponse res <- liftLndResult =<< verifyMessage bob (VerifyMessageRequest "test" sig (coerce pubKey))
-      liftIO $ res `shouldBe` True
+      --
+      -- TODO : verifyMessage will work only in case
+      -- where both (double-hash and compact) flags
+      -- are set to False. Investigate why.
+      --
+      SignMessageResponse sig <-
+        liftLndResult
+          =<< signMessage alice (SignMessageRequest "test" (KeyLocator 6 0) False False)
+      GetInfoResponse pubKey _ _ <-
+        liftLndResult
+          =<< getInfo alice
+      VerifyMessageResponse res <-
+        liftLndResult
+          =<< verifyMessage bob (VerifyMessageRequest "test" sig (coerce pubKey))
+      liftIO $
+        res `shouldBe` True
   it "waitForGrpc" $
     withEnv $ do
       res <- waitForGrpc =<< getLndEnv Alice
