@@ -23,7 +23,10 @@ data Channel = Channel
     remoteBalance :: MSat,
     commitFee :: MSat,
     active :: Bool,
-    initiator :: LnInitiator
+    initiator :: LnInitiator,
+    totalSatoshisSent :: MSat,
+    totalSatoshisReceived :: MSat,
+    numUpdates :: Word64
   }
   deriving (Eq, Ord, Show, Generic)
 
@@ -48,6 +51,9 @@ instance FromGrpc Channel LnGRPC.Channel where
       <*> fromGrpcSat (x ^. LnGRPC.commitFee)
       <*> fromGrpc (x ^. LnGRPC.active)
       <*> fromGrpc (x ^. LnGRPC.initiator)
+      <*> fromGrpcSat (x ^. LnGRPC.totalSatoshisSent)
+      <*> fromGrpcSat (x ^. LnGRPC.totalSatoshisReceived)
+      <*> fromGrpc (x ^. LnGRPC.numUpdates)
 
 instance FromGrpc [Channel] LnGRPC.ListChannelsResponse where
   fromGrpc x = fromGrpc (x ^. LnGRPC.channels)
