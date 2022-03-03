@@ -42,6 +42,7 @@ module LndClient.RPC.Katip
     subscribeSingleInvoiceChan,
     signMessage,
     verifyMessage,
+    trackPaymentSync,
   )
 where
 
@@ -52,7 +53,9 @@ import qualified LndClient.Data.Channel as Channel
 import LndClient.Data.CloseChannel as CloseChannel (CloseChannelRequest (..), CloseStatusUpdate (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as ListChannels (ListChannelsRequest (..))
+import LndClient.Data.Payment as Payment
 import LndClient.Data.Peer (ConnectPeerRequest (..))
+import LndClient.Data.TrackPayment as TrackPayment
 import LndClient.Import
 import LndClient.RPC.Generic
 import LndClient.RPC.TH
@@ -174,3 +177,26 @@ closeChannelSync env mConn req =
       case upd of
         Just res -> return $ Right res
         Nothing -> closeChannelRecursive mVar0 $ n - 1
+
+trackPaymentSync ::
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  TrackPaymentRequest ->
+  m (Either LndError Payment)
+trackPaymentSync env req = do
+  mVar <- newEmptyMVar
+  void $
+    Util.spawnLink $
+      trackPaymentV2
+        (void . tryPutMVar mVar)
+        env
+        req
+  waitTrackResult mVar 10
+  where
+    waitTrackResult _ (0 :: Int) = return $ Left $ LndError "Track Payment timeout expired"
+    waitTrackResult mVar0 n = do
+      sleep $ MicroSecondsDelay 1000000
+      upd <- tryTakeMVar mVar0
+      case upd of
+        Just res -> return $ Right res
+        Nothing -> waitTrackResult mVar0 (n -1)

@@ -16,13 +16,10 @@ import LndClient.Data.AddInvoice as AddInvoice
   ( AddInvoiceRequest (..),
     AddInvoiceResponse (..),
   )
-import LndClient.Data.Channel as Channel (Channel (..))
-import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import qualified LndClient.Data.CloseChannel as CloseChannel
 import qualified LndClient.Data.ClosedChannels as ClosedChannels
 import LndClient.Data.GetInfo (GetInfoResponse (..))
 import LndClient.Data.Invoice as Invoice (Invoice (..), InvoiceState (..))
-import LndClient.Data.ListChannels as LC (ListChannelsRequest (..))
 import LndClient.Data.ListInvoices as ListInvoices
   ( ListInvoiceRequest (..),
     ListInvoiceResponse (..),
@@ -32,6 +29,7 @@ import LndClient.Data.PayReq as PayReq (PayReq (..))
 import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SignMessage
+import LndClient.Data.Payment as Payment (Payment (..), PaymentStatus (..))
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
@@ -290,27 +288,27 @@ spec = do
         ListInvoices.invoices
           <$> (liftLndResult =<< listInvoices lnd listReq)
       liftIO $ xs `shouldSatisfy` any ((rh ==) . Invoice.rHash)
-  it "listChannelAndClose" $
-    withEnv $ do
-      void $ setupOneChannel Alice Bob
-      lnd <- getLndEnv Bob
-      let listReq = ListChannelsRequest False False False False Nothing
-      cs0 <- liftLndResult =<< listChannels lnd listReq
-      lazyConnectNodes proxyOwner
-      cp <-
-        liftMaybe "ChannelPoint is required" $
-          Channel.channelPoint <$> safeHead cs0
-      withSpawnLink
-        ( closeChannel
-            (const $ return ())
-            lnd
-            (CloseChannelRequest cp False Nothing Nothing Nothing)
-        )
-        ( const $ do
-            liftLndResult =<< receiveClosedChannels proxyOwner [cp]
-            cs1 <- liftLndResult =<< listChannels lnd listReq
-            liftIO $ (length cs0 - length cs1) `shouldBe` 1
-        )
+--  it "listChannelAndClose" $
+--    withEnv $ do
+--      void $ setupOneChannel Alice Bob
+--      lnd <- getLndEnv Bob
+--      let listReq = ListChannelsRequest False False False False Nothing
+--      cs0 <- liftLndResult =<< listChannels lnd listReq
+--      lazyConnectNodes proxyOwner
+--      cp <-
+--        liftMaybe "ChannelPoint is required" $
+--          Channel.channelPoint <$> safeHead cs0
+--      withSpawnLink
+--        ( closeChannel
+--            (const $ return ())
+--            lnd
+--            (CloseChannelRequest cp False Nothing Nothing Nothing)
+--        )
+--        ( const $ do
+--            liftLndResult =<< receiveClosedChannels proxyOwner [cp]
+--            cs1 <- liftLndResult =<< listChannels lnd listReq
+--            liftIO $ (length cs0 - length cs1) `shouldBe` 1
+--        )
   it "closedChannels" $
     withEnv $ do
       cp <- setupOneChannel Alice Bob
@@ -421,6 +419,21 @@ spec = do
             Left {} -> fail "Pending channels fail"
             Right (PendingChannelsResponse _ x _ _ _) -> x
       liftIO $ pc `shouldNotSatisfy` null
+  it "trackPaymentV2Sync" $
+    withEnv $
+      do
+        void $ setupOneChannel Alice Bob
+        alice <- getLndEnv Alice
+        bob <- getLndEnv Bob
+        inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
+        let req =
+              SendPaymentRequest
+                (AddInvoice.paymentRequest inv)
+                $ AddInvoice.valueMsat addInvoiceRequest
+        let tpreq = TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
+        _ <- sendPayment alice req
+        tp <- liftLndResult =<< trackPaymentSync alice tpreq
+        liftIO $ Payment.state tp `shouldBe` Payment.SUCCEEDED
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
