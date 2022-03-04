@@ -419,7 +419,7 @@ spec = do
             Left {} -> fail "Pending channels fail"
             Right (PendingChannelsResponse _ x _ _ _) -> x
       liftIO $ pc `shouldNotSatisfy` null
-  it "trackPaymentV2Sync" $
+  it "trackPaymentV2Sync SUCCEEDED" $
     withEnv $
       do
         void $ setupOneChannel Alice Bob
@@ -434,6 +434,21 @@ spec = do
         _ <- sendPayment alice req
         tp <- liftLndResult =<< trackPaymentSync alice tpreq
         liftIO $ Payment.state tp `shouldBe` Payment.SUCCEEDED
+  it "trackPaymentV2Sync FAILED" $
+    withEnv $
+      do
+        void $ setupZeroChannels proxyOwner
+        alice <- getLndEnv Alice
+        bob <- getLndEnv Bob
+        inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
+        let req =
+              SendPaymentRequest
+                (AddInvoice.paymentRequest inv)
+                $ AddInvoice.valueMsat addInvoiceRequest
+        let tpreq = TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
+        _ <- sendPayment alice req
+        tp <- liftLndResult =<< trackPaymentSync alice tpreq
+        liftIO $ Payment.state tp `shouldBe` Payment.FAILED
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing

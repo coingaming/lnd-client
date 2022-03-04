@@ -193,7 +193,9 @@ trackPaymentSync env req = do
         req
   waitTrackResult mVar 10
   where
-    waitTrackResult _ (0 :: Int) = return $ Left $ LndError "Track Payment timeout expired"
+    waitTrackResult _ (0 :: Int) = do
+      $(logTM) (newSev env ErrorS) "Track Payment timeout expired"
+      return $ Left $ LndError "Track Payment timeout expired"
     waitTrackResult mVar0 n = do
       sleep $ MicroSecondsDelay 1000000
       upd <- tryTakeMVar mVar0
