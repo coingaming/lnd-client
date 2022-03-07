@@ -1,5 +1,6 @@
 module LndClient.Data.Payment
   ( Payment (..),
+    PaymentStatus (..),
   )
 where
 

@@ -29,6 +29,7 @@ import LndClient.Data.ListInvoices as ListInvoices
   )
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
 import LndClient.Data.PayReq as PayReq (PayReq (..))
+import LndClient.Data.Payment as Payment (Payment (..), PaymentStatus (..))
 import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
 import LndClient.Data.SignMessage
@@ -421,6 +422,36 @@ spec = do
             Left {} -> fail "Pending channels fail"
             Right (PendingChannelsResponse _ x _ _ _) -> x
       liftIO $ pc `shouldNotSatisfy` null
+  it "trackPaymentV2Sync SUCCEEDED" $
+    withEnv $
+      do
+        void $ setupOneChannel Alice Bob
+        alice <- getLndEnv Alice
+        bob <- getLndEnv Bob
+        inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
+        let req =
+              SendPaymentRequest
+                (AddInvoice.paymentRequest inv)
+                $ AddInvoice.valueMsat addInvoiceRequest
+        let tpreq = TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
+        _ <- sendPayment alice req
+        tp <- liftLndResult =<< trackPaymentSync alice tpreq
+        liftIO $ Payment.state tp `shouldBe` Payment.SUCCEEDED
+  it "trackPaymentV2Sync FAILED" $
+    withEnv $
+      do
+        void $ setupZeroChannels proxyOwner
+        alice <- getLndEnv Alice
+        bob <- getLndEnv Bob
+        inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
+        let req =
+              SendPaymentRequest
+                (AddInvoice.paymentRequest inv)
+                $ AddInvoice.valueMsat addInvoiceRequest
+        let tpreq = TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
+        _ <- sendPayment alice req
+        tp <- liftLndResult =<< trackPaymentSync alice tpreq
+        liftIO $ Payment.state tp `shouldBe` Payment.FAILED
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
