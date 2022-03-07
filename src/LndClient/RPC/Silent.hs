@@ -160,16 +160,16 @@ trackPaymentSync ::
   m (Either LndError Payment)
 trackPaymentSync env req = do
   mVar <- newEmptyMVar
-  void $ Util.spawnLink $
-    trackPaymentV2
-      (void . tryPutMVar mVar)
-      env
-      req
-  waitTrackResult mVar 10
+  withSpawnLink
+      (trackPaymentV2
+        (void . tryPutMVar mVar)
+        env
+        req)
+      (const $ waitTrackResult mVar 10)
   where
     waitTrackResult _ (0 :: Int) = return $ Left $ LndError "Track Payment timeout expired"
     waitTrackResult mVar0 n = do
-      sleep $ MicroSecondsDelay 1000000
+      sleep $ MicroSecondsDelay 100000
       upd <- tryTakeMVar mVar0
       case upd of
         Just res -> return $ Right res
