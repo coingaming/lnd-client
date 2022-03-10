@@ -35,6 +35,7 @@ import LndClient.Data.Peer
   )
 import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
+import LndClient.Data.SendCoins (SendCoinsRequest, SendCoinsResponse)
 import LndClient.Data.SignMessage
   ( SignMessageRequest (..),
     SignMessageResponse (..),
@@ -352,6 +353,17 @@ mkRpc k = do
       $(grpcRetry)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "sendPaymentSync")
+          env
+
+    sendCoins ::
+      $(tcc m) =>
+      LndEnv ->
+      SendCoinsRequest ->
+      $(pure m) (Either LndError SendCoinsResponse)
+    sendCoins env =
+      $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.Lightning "sendCoins")
           env
 
     subscribeHtlcEvents ::

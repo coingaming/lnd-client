@@ -41,6 +41,7 @@ type family SecretRpc (t :: GHC.Symbol) :: GHC.Nat where
   SecretRpc "connectPeer" = 0
   SecretRpc "getInfo" = 0
   SecretRpc "sendPaymentSync" = 0
+  SecretRpc "sendCoins" = 0
   SecretRpc "decodePayReq" = 0
   SecretRpc "lookupInvoice" = 0
   SecretRpc "pendingChannels" = 0
