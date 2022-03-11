@@ -196,7 +196,7 @@ walletAddress owner = do
 
 lazyMineInitialCoins :: forall m owner. LndTest m owner => Proxy owner -> m ()
 lazyMineInitialCoins = const $ do
-  mapM_ (liftLndResult <=< Lnd.lazyInitWallet <=< getLndEnv) xs
+--  mapM_ (liftLndResult <=< Lnd.lazyInitWallet <=< getLndEnv) xs
   bc <- getBtcClient someone
   h <- liftIO $ Btc.getBlockCount bc
   -- reward coins are spendable only after 100 blocks

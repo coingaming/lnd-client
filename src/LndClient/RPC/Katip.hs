@@ -43,6 +43,7 @@ module LndClient.RPC.Katip
     signMessage,
     verifyMessage,
     trackPaymentSync,
+    catchWalletLock,
   )
 where
 
@@ -186,11 +187,12 @@ trackPaymentSync ::
 trackPaymentSync env req = do
   mVar <- newEmptyMVar
   withSpawnLink
-      (trackPaymentV2
+    ( trackPaymentV2
         (void . tryPutMVar mVar)
         env
-        req)
-      (const $ waitTrackResult mVar 10)
+        req
+    )
+    (const $ waitTrackResult mVar 10)
   where
     waitTrackResult _ (0 :: Int) = do
       $(logTM) (newSev env ErrorS) "Track Payment timeout expired"
@@ -201,3 +203,17 @@ trackPaymentSync env req = do
       case upd of
         Just res -> return $ Right res
         Nothing -> waitTrackResult mVar0 (n -1)
+
+catchWalletLock ::
+  forall m a.
+  (MonadUnliftIO m, KatipContext m) =>
+  LndEnv ->
+  m (Either LndError a) ->
+  m (Either LndError a)
+catchWalletLock env x = do
+  x0 <- x
+  case x0 of
+    Left LndWalletLocked -> do
+      _ <- lazyUnlockWallet env
+      x
+    _ -> pure x0

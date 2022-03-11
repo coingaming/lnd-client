@@ -208,3 +208,4 @@ grpcSubscribeKatip rpc handler env req =
               (ts, ()) <- liftIO . stopwatch $ handler x
               katipAddLndPublic env LndElapsedSecondsSub (showElapsedSeconds ts) $
                 $(logTM) (newSeverity env DebugS (Just ts) Nothing) rpcSucceeded
+
