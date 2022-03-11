@@ -40,6 +40,7 @@ data RpcName
   | ConnectPeer
   | GetInfo
   | SendPayment
+  | SendCoins
   | WaitForGrpc
   | DecodePayReq
   | LookupInvoice

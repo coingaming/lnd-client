@@ -21,6 +21,7 @@ module LndClient.RPC.Silent
     connectPeer,
     lazyConnectPeer,
     sendPayment,
+    sendCoins,
     getInfo,
     subscribeInvoices,
     subscribeInvoicesChan,
@@ -174,5 +175,6 @@ trackPaymentSync env req = do
       case upd of
         Just res -> return $ Right res
         Nothing -> waitTrackResult mVar0 (n-1)
+
 
 

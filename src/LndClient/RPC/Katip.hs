@@ -23,6 +23,7 @@ module LndClient.RPC.Katip
     connectPeer,
     lazyConnectPeer,
     sendPayment,
+    sendCoins,
     getInfo,
     subscribeInvoices,
     subscribeInvoicesChan,
