@@ -4,9 +4,10 @@ module LndClient.Data.Payment
   )
 where
 
-import LndClient.Import
+import LndClient.Import hiding (state)
 import qualified Proto.LndGrpc as LnGRPC
 import qualified Proto.LndGrpc_Fields as LnGRPC
+import Text.PrettyPrint.GenericPretty.Import
 
 data Payment = Payment
   { paymentHash :: RHash,
@@ -28,12 +29,20 @@ data PaymentStatus
 instance Out PaymentStatus
 
 instance FromGrpc Payment LnGRPC.Payment where
-  fromGrpc x =
-    Payment
-      <$> fromGrpc (x ^. LnGRPC.paymentHash)
-      <*> fromGrpc (x ^. LnGRPC.paymentPreimage)
-      <*> fromGrpcMSat (x ^. LnGRPC.valueMsat)
-      <*> fromGrpc (x ^. LnGRPC.status)
+  fromGrpc x = do
+    res <-
+      Payment
+        <$> fromGrpc (x ^. LnGRPC.paymentHash)
+        <*> fromGrpc (x ^. LnGRPC.paymentPreimage)
+        <*> fromGrpcMSat (x ^. LnGRPC.valueMsat)
+        <*> fromGrpc (x ^. LnGRPC.status)
+    if (state res == SUCCEEDED)
+      && (newRHash (paymentPreimage res) /= paymentHash res)
+      then
+        Left . LndError $
+          "paymentPreimage doesn't match paymentHash, got: "
+            <> inspectPlain res
+      else Right res
 
 instance FromGrpc PaymentStatus LnGRPC.Payment'PaymentStatus where
   fromGrpc x =
