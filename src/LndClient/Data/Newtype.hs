@@ -103,7 +103,8 @@ newtype MSat = MSat Word64
       Num,
       Ord,
       FromJSON,
-      Show
+      Show,
+      Read
     )
   deriving stock
     ( Generic
