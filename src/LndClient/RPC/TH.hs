@@ -53,11 +53,11 @@ import qualified LndClient.Data.VerifyMessage as VM
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
-import qualified Proto.InvoiceGrpc as LnGRPC
-import qualified Proto.LndGrpc as LnGRPC
-import qualified Proto.RouterGrpc as LnGRPC
-import qualified Proto.SignerGrpc as LnGRPC
-import qualified Proto.WalletUnlockerGrpc as LnGRPC
+import qualified Proto.Invoicesrpc.Invoices as LnGRPC
+import qualified Proto.Lightning as LnGRPC
+import qualified Proto.Routerrpc.Router as LnGRPC
+import qualified Proto.Signrpc.Signer as LnGRPC
+import qualified Proto.Walletunlocker as LnGRPC
 
 data RpcKind = RpcSilent | RpcKatip
 

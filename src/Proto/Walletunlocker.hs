@@ -1,9 +1,9 @@
-{- This file was auto-generated from wallet_unlocker_grpc.proto by the proto-lens-protoc program. -}
+{- This file was auto-generated from walletunlocker.proto by the proto-lens-protoc program. -}
 {-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies, DeriveGeneric#-}
 {-# OPTIONS_GHC -Wno-unused-imports#-}
 {-# OPTIONS_GHC -Wno-duplicate-exports#-}
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
-module Proto.WalletUnlockerGrpc (
+module Proto.Walletunlocker (
         WalletUnlocker(..), ChangePasswordRequest(),
         ChangePasswordResponse(), GenSeedRequest(), GenSeedResponse(),
         InitWalletRequest(), InitWalletResponse(), UnlockWalletRequest(),
@@ -37,13 +37,13 @@ import qualified Data.ProtoLens.Runtime.Data.Vector as Data.Vector
 import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Generic
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
-import qualified Proto.LndGrpc
+import qualified Proto.Lightning
 {- | Fields :
      
-         * 'Proto.WalletUnlockerGrpc_Fields.currentPassword' @:: Lens' ChangePasswordRequest Data.ByteString.ByteString@
-         * 'Proto.WalletUnlockerGrpc_Fields.newPassword' @:: Lens' ChangePasswordRequest Data.ByteString.ByteString@
-         * 'Proto.WalletUnlockerGrpc_Fields.statelessInit' @:: Lens' ChangePasswordRequest Prelude.Bool@
-         * 'Proto.WalletUnlockerGrpc_Fields.newMacaroonRootKey' @:: Lens' ChangePasswordRequest Prelude.Bool@ -}
+         * 'Proto.Walletunlocker_Fields.currentPassword' @:: Lens' ChangePasswordRequest Data.ByteString.ByteString@
+         * 'Proto.Walletunlocker_Fields.newPassword' @:: Lens' ChangePasswordRequest Data.ByteString.ByteString@
+         * 'Proto.Walletunlocker_Fields.statelessInit' @:: Lens' ChangePasswordRequest Prelude.Bool@
+         * 'Proto.Walletunlocker_Fields.newMacaroonRootKey' @:: Lens' ChangePasswordRequest Prelude.Bool@ -}
 data ChangePasswordRequest
   = ChangePasswordRequest'_constructor {_ChangePasswordRequest'currentPassword :: !Data.ByteString.ByteString,
                                         _ChangePasswordRequest'newPassword :: !Data.ByteString.ByteString,
@@ -299,7 +299,7 @@ instance Control.DeepSeq.NFData ChangePasswordRequest where
                          (_ChangePasswordRequest'newMacaroonRootKey x__) ()))))
 {- | Fields :
      
-         * 'Proto.WalletUnlockerGrpc_Fields.adminMacaroon' @:: Lens' ChangePasswordResponse Data.ByteString.ByteString@ -}
+         * 'Proto.Walletunlocker_Fields.adminMacaroon' @:: Lens' ChangePasswordResponse Data.ByteString.ByteString@ -}
 data ChangePasswordResponse
   = ChangePasswordResponse'_constructor {_ChangePasswordResponse'adminMacaroon :: !Data.ByteString.ByteString,
                                          _ChangePasswordResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
@@ -418,8 +418,8 @@ instance Control.DeepSeq.NFData ChangePasswordResponse where
                 (_ChangePasswordResponse'adminMacaroon x__) ())
 {- | Fields :
      
-         * 'Proto.WalletUnlockerGrpc_Fields.aezeedPassphrase' @:: Lens' GenSeedRequest Data.ByteString.ByteString@
-         * 'Proto.WalletUnlockerGrpc_Fields.seedEntropy' @:: Lens' GenSeedRequest Data.ByteString.ByteString@ -}
+         * 'Proto.Walletunlocker_Fields.aezeedPassphrase' @:: Lens' GenSeedRequest Data.ByteString.ByteString@
+         * 'Proto.Walletunlocker_Fields.seedEntropy' @:: Lens' GenSeedRequest Data.ByteString.ByteString@ -}
 data GenSeedRequest
   = GenSeedRequest'_constructor {_GenSeedRequest'aezeedPassphrase :: !Data.ByteString.ByteString,
                                  _GenSeedRequest'seedEntropy :: !Data.ByteString.ByteString,
@@ -583,9 +583,9 @@ instance Control.DeepSeq.NFData GenSeedRequest where
                 (Control.DeepSeq.deepseq (_GenSeedRequest'seedEntropy x__) ()))
 {- | Fields :
      
-         * 'Proto.WalletUnlockerGrpc_Fields.cipherSeedMnemonic' @:: Lens' GenSeedResponse [Data.Text.Text]@
-         * 'Proto.WalletUnlockerGrpc_Fields.vec'cipherSeedMnemonic' @:: Lens' GenSeedResponse (Data.Vector.Vector Data.Text.Text)@
-         * 'Proto.WalletUnlockerGrpc_Fields.encipheredSeed' @:: Lens' GenSeedResponse Data.ByteString.ByteString@ -}
+         * 'Proto.Walletunlocker_Fields.cipherSeedMnemonic' @:: Lens' GenSeedResponse [Data.Text.Text]@
+         * 'Proto.Walletunlocker_Fields.vec'cipherSeedMnemonic' @:: Lens' GenSeedResponse (Data.Vector.Vector Data.Text.Text)@
+         * 'Proto.Walletunlocker_Fields.encipheredSeed' @:: Lens' GenSeedResponse Data.ByteString.ByteString@ -}
 data GenSeedResponse
   = GenSeedResponse'_constructor {_GenSeedResponse'cipherSeedMnemonic :: !(Data.Vector.Vector Data.Text.Text),
                                   _GenSeedResponse'encipheredSeed :: !Data.ByteString.ByteString,
@@ -778,24 +778,24 @@ instance Control.DeepSeq.NFData GenSeedResponse where
                 (Control.DeepSeq.deepseq (_GenSeedResponse'encipheredSeed x__) ()))
 {- | Fields :
      
-         * 'Proto.WalletUnlockerGrpc_Fields.walletPassword' @:: Lens' InitWalletRequest Data.ByteString.ByteString@
-         * 'Proto.WalletUnlockerGrpc_Fields.cipherSeedMnemonic' @:: Lens' InitWalletRequest [Data.Text.Text]@
-         * 'Proto.WalletUnlockerGrpc_Fields.vec'cipherSeedMnemonic' @:: Lens' InitWalletRequest (Data.Vector.Vector Data.Text.Text)@
-         * 'Proto.WalletUnlockerGrpc_Fields.aezeedPassphrase' @:: Lens' InitWalletRequest Data.ByteString.ByteString@
-         * 'Proto.WalletUnlockerGrpc_Fields.recoveryWindow' @:: Lens' InitWalletRequest Data.Int.Int32@
-         * 'Proto.WalletUnlockerGrpc_Fields.channelBackups' @:: Lens' InitWalletRequest Proto.LndGrpc.ChanBackupSnapshot@
-         * 'Proto.WalletUnlockerGrpc_Fields.maybe'channelBackups' @:: Lens' InitWalletRequest (Prelude.Maybe Proto.LndGrpc.ChanBackupSnapshot)@
-         * 'Proto.WalletUnlockerGrpc_Fields.statelessInit' @:: Lens' InitWalletRequest Prelude.Bool@
-         * 'Proto.WalletUnlockerGrpc_Fields.extendedMasterKey' @:: Lens' InitWalletRequest Data.Text.Text@
-         * 'Proto.WalletUnlockerGrpc_Fields.extendedMasterKeyBirthdayTimestamp' @:: Lens' InitWalletRequest Data.Word.Word64@
-         * 'Proto.WalletUnlockerGrpc_Fields.watchOnly' @:: Lens' InitWalletRequest WatchOnly@
-         * 'Proto.WalletUnlockerGrpc_Fields.maybe'watchOnly' @:: Lens' InitWalletRequest (Prelude.Maybe WatchOnly)@ -}
+         * 'Proto.Walletunlocker_Fields.walletPassword' @:: Lens' InitWalletRequest Data.ByteString.ByteString@
+         * 'Proto.Walletunlocker_Fields.cipherSeedMnemonic' @:: Lens' InitWalletRequest [Data.Text.Text]@
+         * 'Proto.Walletunlocker_Fields.vec'cipherSeedMnemonic' @:: Lens' InitWalletRequest (Data.Vector.Vector Data.Text.Text)@
+         * 'Proto.Walletunlocker_Fields.aezeedPassphrase' @:: Lens' InitWalletRequest Data.ByteString.ByteString@
+         * 'Proto.Walletunlocker_Fields.recoveryWindow' @:: Lens' InitWalletRequest Data.Int.Int32@
+         * 'Proto.Walletunlocker_Fields.channelBackups' @:: Lens' InitWalletRequest Proto.Lightning.ChanBackupSnapshot@
+         * 'Proto.Walletunlocker_Fields.maybe'channelBackups' @:: Lens' InitWalletRequest (Prelude.Maybe Proto.Lightning.ChanBackupSnapshot)@
+         * 'Proto.Walletunlocker_Fields.statelessInit' @:: Lens' InitWalletRequest Prelude.Bool@
+         * 'Proto.Walletunlocker_Fields.extendedMasterKey' @:: Lens' InitWalletRequest Data.Text.Text@
+         * 'Proto.Walletunlocker_Fields.extendedMasterKeyBirthdayTimestamp' @:: Lens' InitWalletRequest Data.Word.Word64@
+         * 'Proto.Walletunlocker_Fields.watchOnly' @:: Lens' InitWalletRequest WatchOnly@
+         * 'Proto.Walletunlocker_Fields.maybe'watchOnly' @:: Lens' InitWalletRequest (Prelude.Maybe WatchOnly)@ -}
 data InitWalletRequest
   = InitWalletRequest'_constructor {_InitWalletRequest'walletPassword :: !Data.ByteString.ByteString,
                                     _InitWalletRequest'cipherSeedMnemonic :: !(Data.Vector.Vector Data.Text.Text),
                                     _InitWalletRequest'aezeedPassphrase :: !Data.ByteString.ByteString,
                                     _InitWalletRequest'recoveryWindow :: !Data.Int.Int32,
-                                    _InitWalletRequest'channelBackups :: !(Prelude.Maybe Proto.LndGrpc.ChanBackupSnapshot),
+                                    _InitWalletRequest'channelBackups :: !(Prelude.Maybe Proto.Lightning.ChanBackupSnapshot),
                                     _InitWalletRequest'statelessInit :: !Prelude.Bool,
                                     _InitWalletRequest'extendedMasterKey :: !Data.Text.Text,
                                     _InitWalletRequest'extendedMasterKeyBirthdayTimestamp :: !Data.Word.Word64,
@@ -846,14 +846,14 @@ instance Data.ProtoLens.Field.HasField InitWalletRequest "recoveryWindow" Data.I
            _InitWalletRequest'recoveryWindow
            (\ x__ y__ -> x__ {_InitWalletRequest'recoveryWindow = y__}))
         Prelude.id
-instance Data.ProtoLens.Field.HasField InitWalletRequest "channelBackups" Proto.LndGrpc.ChanBackupSnapshot where
+instance Data.ProtoLens.Field.HasField InitWalletRequest "channelBackups" Proto.Lightning.ChanBackupSnapshot where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _InitWalletRequest'channelBackups
            (\ x__ y__ -> x__ {_InitWalletRequest'channelBackups = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField InitWalletRequest "maybe'channelBackups" (Prelude.Maybe Proto.LndGrpc.ChanBackupSnapshot) where
+instance Data.ProtoLens.Field.HasField InitWalletRequest "maybe'channelBackups" (Prelude.Maybe Proto.Lightning.ChanBackupSnapshot) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -955,7 +955,7 @@ instance Data.ProtoLens.Message InitWalletRequest where
           = Data.ProtoLens.FieldDescriptor
               "channel_backups"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.LndGrpc.ChanBackupSnapshot)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lightning.ChanBackupSnapshot)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'channelBackups")) ::
               Data.ProtoLens.FieldDescriptor InitWalletRequest
@@ -1343,7 +1343,7 @@ instance Control.DeepSeq.NFData InitWalletRequest where
                                         (_InitWalletRequest'watchOnly x__) ())))))))))
 {- | Fields :
      
-         * 'Proto.WalletUnlockerGrpc_Fields.adminMacaroon' @:: Lens' InitWalletResponse Data.ByteString.ByteString@ -}
+         * 'Proto.Walletunlocker_Fields.adminMacaroon' @:: Lens' InitWalletResponse Data.ByteString.ByteString@ -}
 data InitWalletResponse
   = InitWalletResponse'_constructor {_InitWalletResponse'adminMacaroon :: !Data.ByteString.ByteString,
                                      _InitWalletResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
@@ -1462,15 +1462,15 @@ instance Control.DeepSeq.NFData InitWalletResponse where
                 (_InitWalletResponse'adminMacaroon x__) ())
 {- | Fields :
      
-         * 'Proto.WalletUnlockerGrpc_Fields.walletPassword' @:: Lens' UnlockWalletRequest Data.ByteString.ByteString@
-         * 'Proto.WalletUnlockerGrpc_Fields.recoveryWindow' @:: Lens' UnlockWalletRequest Data.Int.Int32@
-         * 'Proto.WalletUnlockerGrpc_Fields.channelBackups' @:: Lens' UnlockWalletRequest Proto.LndGrpc.ChanBackupSnapshot@
-         * 'Proto.WalletUnlockerGrpc_Fields.maybe'channelBackups' @:: Lens' UnlockWalletRequest (Prelude.Maybe Proto.LndGrpc.ChanBackupSnapshot)@
-         * 'Proto.WalletUnlockerGrpc_Fields.statelessInit' @:: Lens' UnlockWalletRequest Prelude.Bool@ -}
+         * 'Proto.Walletunlocker_Fields.walletPassword' @:: Lens' UnlockWalletRequest Data.ByteString.ByteString@
+         * 'Proto.Walletunlocker_Fields.recoveryWindow' @:: Lens' UnlockWalletRequest Data.Int.Int32@
+         * 'Proto.Walletunlocker_Fields.channelBackups' @:: Lens' UnlockWalletRequest Proto.Lightning.ChanBackupSnapshot@
+         * 'Proto.Walletunlocker_Fields.maybe'channelBackups' @:: Lens' UnlockWalletRequest (Prelude.Maybe Proto.Lightning.ChanBackupSnapshot)@
+         * 'Proto.Walletunlocker_Fields.statelessInit' @:: Lens' UnlockWalletRequest Prelude.Bool@ -}
 data UnlockWalletRequest
   = UnlockWalletRequest'_constructor {_UnlockWalletRequest'walletPassword :: !Data.ByteString.ByteString,
                                       _UnlockWalletRequest'recoveryWindow :: !Data.Int.Int32,
-                                      _UnlockWalletRequest'channelBackups :: !(Prelude.Maybe Proto.LndGrpc.ChanBackupSnapshot),
+                                      _UnlockWalletRequest'channelBackups :: !(Prelude.Maybe Proto.Lightning.ChanBackupSnapshot),
                                       _UnlockWalletRequest'statelessInit :: !Prelude.Bool,
                                       _UnlockWalletRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
@@ -1495,14 +1495,14 @@ instance Data.ProtoLens.Field.HasField UnlockWalletRequest "recoveryWindow" Data
            _UnlockWalletRequest'recoveryWindow
            (\ x__ y__ -> x__ {_UnlockWalletRequest'recoveryWindow = y__}))
         Prelude.id
-instance Data.ProtoLens.Field.HasField UnlockWalletRequest "channelBackups" Proto.LndGrpc.ChanBackupSnapshot where
+instance Data.ProtoLens.Field.HasField UnlockWalletRequest "channelBackups" Proto.Lightning.ChanBackupSnapshot where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _UnlockWalletRequest'channelBackups
            (\ x__ y__ -> x__ {_UnlockWalletRequest'channelBackups = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField UnlockWalletRequest "maybe'channelBackups" (Prelude.Maybe Proto.LndGrpc.ChanBackupSnapshot) where
+instance Data.ProtoLens.Field.HasField UnlockWalletRequest "maybe'channelBackups" (Prelude.Maybe Proto.Lightning.ChanBackupSnapshot) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -1550,7 +1550,7 @@ instance Data.ProtoLens.Message UnlockWalletRequest where
           = Data.ProtoLens.FieldDescriptor
               "channel_backups"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.LndGrpc.ChanBackupSnapshot)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lightning.ChanBackupSnapshot)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'channelBackups")) ::
               Data.ProtoLens.FieldDescriptor UnlockWalletRequest
@@ -1795,10 +1795,10 @@ instance Control.DeepSeq.NFData UnlockWalletResponse where
              (_UnlockWalletResponse'_unknownFields x__) ()
 {- | Fields :
      
-         * 'Proto.WalletUnlockerGrpc_Fields.masterKeyBirthdayTimestamp' @:: Lens' WatchOnly Data.Word.Word64@
-         * 'Proto.WalletUnlockerGrpc_Fields.masterKeyFingerprint' @:: Lens' WatchOnly Data.ByteString.ByteString@
-         * 'Proto.WalletUnlockerGrpc_Fields.accounts' @:: Lens' WatchOnly [WatchOnlyAccount]@
-         * 'Proto.WalletUnlockerGrpc_Fields.vec'accounts' @:: Lens' WatchOnly (Data.Vector.Vector WatchOnlyAccount)@ -}
+         * 'Proto.Walletunlocker_Fields.masterKeyBirthdayTimestamp' @:: Lens' WatchOnly Data.Word.Word64@
+         * 'Proto.Walletunlocker_Fields.masterKeyFingerprint' @:: Lens' WatchOnly Data.ByteString.ByteString@
+         * 'Proto.Walletunlocker_Fields.accounts' @:: Lens' WatchOnly [WatchOnlyAccount]@
+         * 'Proto.Walletunlocker_Fields.vec'accounts' @:: Lens' WatchOnly (Data.Vector.Vector WatchOnlyAccount)@ -}
 data WatchOnly
   = WatchOnly'_constructor {_WatchOnly'masterKeyBirthdayTimestamp :: !Data.Word.Word64,
                             _WatchOnly'masterKeyFingerprint :: !Data.ByteString.ByteString,
@@ -2024,10 +2024,10 @@ instance Control.DeepSeq.NFData WatchOnly where
                    (Control.DeepSeq.deepseq (_WatchOnly'accounts x__) ())))
 {- | Fields :
      
-         * 'Proto.WalletUnlockerGrpc_Fields.purpose' @:: Lens' WatchOnlyAccount Data.Word.Word32@
-         * 'Proto.WalletUnlockerGrpc_Fields.coinType' @:: Lens' WatchOnlyAccount Data.Word.Word32@
-         * 'Proto.WalletUnlockerGrpc_Fields.account' @:: Lens' WatchOnlyAccount Data.Word.Word32@
-         * 'Proto.WalletUnlockerGrpc_Fields.xpub' @:: Lens' WatchOnlyAccount Data.Text.Text@ -}
+         * 'Proto.Walletunlocker_Fields.purpose' @:: Lens' WatchOnlyAccount Data.Word.Word32@
+         * 'Proto.Walletunlocker_Fields.coinType' @:: Lens' WatchOnlyAccount Data.Word.Word32@
+         * 'Proto.Walletunlocker_Fields.account' @:: Lens' WatchOnlyAccount Data.Word.Word32@
+         * 'Proto.Walletunlocker_Fields.xpub' @:: Lens' WatchOnlyAccount Data.Text.Text@ -}
 data WatchOnlyAccount
   = WatchOnlyAccount'_constructor {_WatchOnlyAccount'purpose :: !Data.Word.Word32,
                                    _WatchOnlyAccount'coinType :: !Data.Word.Word32,
@@ -2301,7 +2301,7 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl WalletUnlocker "changePasswo
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\
-    \\SUBwallet_unlocker_grpc.proto\DC2\ENQlnrpc\SUB\SOlnd_grpc.proto\"`\n\
+    \\DC4walletunlocker.proto\DC2\ENQlnrpc\SUB\SIlightning.proto\"`\n\
     \\SOGenSeedRequest\DC2+\n\
     \\DC1aezeed_passphrase\CAN\SOH \SOH(\fR\DLEaezeedPassphrase\DC2!\n\
     \\fseed_entropy\CAN\STX \SOH(\fR\vseedEntropy\"l\n\
@@ -2353,7 +2353,7 @@ packedFileDescriptor
     \\b\n\
     \\SOH\f\DC2\ETX\NUL\NUL\DC2\n\
     \\t\n\
-    \\STX\ETX\NUL\DC2\ETX\STX\NUL\CAN\n\
+    \\STX\ETX\NUL\DC2\ETX\STX\NUL\EM\n\
     \\b\n\
     \\SOH\STX\DC2\ETX\EOT\NUL\SO\n\
     \\b\n\

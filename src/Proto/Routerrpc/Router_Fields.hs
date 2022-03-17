@@ -1,9 +1,9 @@
-{- This file was auto-generated from router_grpc.proto by the proto-lens-protoc program. -}
+{- This file was auto-generated from routerrpc/router.proto by the proto-lens-protoc program. -}
 {-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies, DeriveGeneric#-}
 {-# OPTIONS_GHC -Wno-unused-imports#-}
 {-# OPTIONS_GHC -Wno-duplicate-exports#-}
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
-module Proto.RouterGrpc_Fields where
+module Proto.Routerrpc.Router_Fields where
 import qualified Data.ProtoLens.Runtime.Prelude as Prelude
 import qualified Data.ProtoLens.Runtime.Data.Int as Data.Int
 import qualified Data.ProtoLens.Runtime.Data.Monoid as Data.Monoid
@@ -27,7 +27,7 @@ import qualified Data.ProtoLens.Runtime.Data.Vector as Data.Vector
 import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Generic
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
-import qualified Proto.LndGrpc
+import qualified Proto.Lightning
 action ::
   forall f s a.
   (Prelude.Functor f, Data.ProtoLens.Field.HasField s "action" a) =>
@@ -163,11 +163,6 @@ finalCltvDelta ::
    Data.ProtoLens.Field.HasField s "finalCltvDelta" a) =>
   Lens.Family2.LensLike' f s a
 finalCltvDelta = Data.ProtoLens.Field.field @"finalCltvDelta"
-force ::
-  forall f s a.
-  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "force" a) =>
-  Lens.Family2.LensLike' f s a
-force = Data.ProtoLens.Field.field @"force"
 forwardEvent ::
   forall f s a.
   (Prelude.Functor f,

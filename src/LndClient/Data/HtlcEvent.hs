@@ -4,8 +4,8 @@ module LndClient.Data.HtlcEvent
 where
 
 import LndClient.Import
-import qualified Proto.RouterGrpc as LnGRPC
-import qualified Proto.RouterGrpc_Fields as LnGRPC
+import qualified Proto.Routerrpc.Router as LnGRPC
+import qualified Proto.Routerrpc.Router_Fields as LnGRPC
 
 data HtlcEvent = HtlcEvent
   { incomingChannelId :: Word64,

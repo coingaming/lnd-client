@@ -10,8 +10,8 @@ where
 
 import Data.ProtoLens.Message
 import LndClient.Import
-import qualified Proto.SignerGrpc as LnGRPC
-import qualified Proto.SignerGrpc_Fields as LnGRPC
+import qualified Proto.Signrpc.Signer as LnGRPC
+import qualified Proto.Signrpc.Signer_Fields as LnGRPC
 
 data SignMessageRequest = SignMessageRequest
   { message :: ByteString,

@@ -1,9 +1,9 @@
-{- This file was auto-generated from invoice_grpc.proto by the proto-lens-protoc program. -}
+{- This file was auto-generated from wtclientrpc/wtclient.proto by the proto-lens-protoc program. -}
 {-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies, DeriveGeneric#-}
 {-# OPTIONS_GHC -Wno-unused-imports#-}
 {-# OPTIONS_GHC -Wno-duplicate-exports#-}
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
-module Proto.InvoiceGrpc_Fields where
+module Proto.Wtclientrpc.Wtclient_Fields where
 import qualified Data.ProtoLens.Runtime.Prelude as Prelude
 import qualified Data.ProtoLens.Runtime.Data.Int as Data.Int
 import qualified Data.ProtoLens.Runtime.Data.Monoid as Data.Monoid
@@ -27,135 +27,129 @@ import qualified Data.ProtoLens.Runtime.Data.Vector as Data.Vector
 import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Generic
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
-import qualified Proto.LndGrpc
-addIndex ::
+activeSessionCandidate ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "addIndex" a) =>
+   Data.ProtoLens.Field.HasField s "activeSessionCandidate" a) =>
   Lens.Family2.LensLike' f s a
-addIndex = Data.ProtoLens.Field.field @"addIndex"
-cltvExpiry ::
+activeSessionCandidate
+  = Data.ProtoLens.Field.field @"activeSessionCandidate"
+address ::
+  forall f s a.
+  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "address" a) =>
+  Lens.Family2.LensLike' f s a
+address = Data.ProtoLens.Field.field @"address"
+addresses ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "cltvExpiry" a) =>
+   Data.ProtoLens.Field.HasField s "addresses" a) =>
   Lens.Family2.LensLike' f s a
-cltvExpiry = Data.ProtoLens.Field.field @"cltvExpiry"
-descriptionHash ::
+addresses = Data.ProtoLens.Field.field @"addresses"
+includeSessions ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "descriptionHash" a) =>
+   Data.ProtoLens.Field.HasField s "includeSessions" a) =>
   Lens.Family2.LensLike' f s a
-descriptionHash = Data.ProtoLens.Field.field @"descriptionHash"
-expiry ::
-  forall f s a.
-  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "expiry" a) =>
-  Lens.Family2.LensLike' f s a
-expiry = Data.ProtoLens.Field.field @"expiry"
-fallbackAddr ::
+includeSessions = Data.ProtoLens.Field.field @"includeSessions"
+maxBackups ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "fallbackAddr" a) =>
+   Data.ProtoLens.Field.HasField s "maxBackups" a) =>
   Lens.Family2.LensLike' f s a
-fallbackAddr = Data.ProtoLens.Field.field @"fallbackAddr"
-hash ::
-  forall f s a.
-  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "hash" a) =>
-  Lens.Family2.LensLike' f s a
-hash = Data.ProtoLens.Field.field @"hash"
-lookupModifier ::
+maxBackups = Data.ProtoLens.Field.field @"maxBackups"
+maxUpdates ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "lookupModifier" a) =>
+   Data.ProtoLens.Field.HasField s "maxUpdates" a) =>
   Lens.Family2.LensLike' f s a
-lookupModifier = Data.ProtoLens.Field.field @"lookupModifier"
-maybe'invoiceRef ::
+maxUpdates = Data.ProtoLens.Field.field @"maxUpdates"
+numBackups ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "maybe'invoiceRef" a) =>
+   Data.ProtoLens.Field.HasField s "numBackups" a) =>
   Lens.Family2.LensLike' f s a
-maybe'invoiceRef = Data.ProtoLens.Field.field @"maybe'invoiceRef"
-maybe'paymentAddr ::
+numBackups = Data.ProtoLens.Field.field @"numBackups"
+numFailedBackups ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "maybe'paymentAddr" a) =>
+   Data.ProtoLens.Field.HasField s "numFailedBackups" a) =>
   Lens.Family2.LensLike' f s a
-maybe'paymentAddr = Data.ProtoLens.Field.field @"maybe'paymentAddr"
-maybe'paymentHash ::
+numFailedBackups = Data.ProtoLens.Field.field @"numFailedBackups"
+numPendingBackups ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "maybe'paymentHash" a) =>
+   Data.ProtoLens.Field.HasField s "numPendingBackups" a) =>
   Lens.Family2.LensLike' f s a
-maybe'paymentHash = Data.ProtoLens.Field.field @"maybe'paymentHash"
-maybe'setId ::
+numPendingBackups = Data.ProtoLens.Field.field @"numPendingBackups"
+numSessions ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "maybe'setId" a) =>
+   Data.ProtoLens.Field.HasField s "numSessions" a) =>
   Lens.Family2.LensLike' f s a
-maybe'setId = Data.ProtoLens.Field.field @"maybe'setId"
-memo ::
-  forall f s a.
-  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "memo" a) =>
-  Lens.Family2.LensLike' f s a
-memo = Data.ProtoLens.Field.field @"memo"
-paymentAddr ::
+numSessions = Data.ProtoLens.Field.field @"numSessions"
+numSessionsAcquired ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "paymentAddr" a) =>
+   Data.ProtoLens.Field.HasField s "numSessionsAcquired" a) =>
   Lens.Family2.LensLike' f s a
-paymentAddr = Data.ProtoLens.Field.field @"paymentAddr"
-paymentHash ::
+numSessionsAcquired
+  = Data.ProtoLens.Field.field @"numSessionsAcquired"
+numSessionsExhausted ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "paymentHash" a) =>
+   Data.ProtoLens.Field.HasField s "numSessionsExhausted" a) =>
   Lens.Family2.LensLike' f s a
-paymentHash = Data.ProtoLens.Field.field @"paymentHash"
-paymentRequest ::
+numSessionsExhausted
+  = Data.ProtoLens.Field.field @"numSessionsExhausted"
+policyType ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "paymentRequest" a) =>
+   Data.ProtoLens.Field.HasField s "policyType" a) =>
   Lens.Family2.LensLike' f s a
-paymentRequest = Data.ProtoLens.Field.field @"paymentRequest"
-preimage ::
+policyType = Data.ProtoLens.Field.field @"policyType"
+pubkey ::
+  forall f s a.
+  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "pubkey" a) =>
+  Lens.Family2.LensLike' f s a
+pubkey = Data.ProtoLens.Field.field @"pubkey"
+sessions ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "preimage" a) =>
+   Data.ProtoLens.Field.HasField s "sessions" a) =>
   Lens.Family2.LensLike' f s a
-preimage = Data.ProtoLens.Field.field @"preimage"
-private ::
-  forall f s a.
-  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "private" a) =>
-  Lens.Family2.LensLike' f s a
-private = Data.ProtoLens.Field.field @"private"
-rHash ::
-  forall f s a.
-  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "rHash" a) =>
-  Lens.Family2.LensLike' f s a
-rHash = Data.ProtoLens.Field.field @"rHash"
-routeHints ::
+sessions = Data.ProtoLens.Field.field @"sessions"
+sweepSatPerByte ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "routeHints" a) =>
+   Data.ProtoLens.Field.HasField s "sweepSatPerByte" a) =>
   Lens.Family2.LensLike' f s a
-routeHints = Data.ProtoLens.Field.field @"routeHints"
-setId ::
-  forall f s a.
-  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "setId" a) =>
-  Lens.Family2.LensLike' f s a
-setId = Data.ProtoLens.Field.field @"setId"
-value ::
-  forall f s a.
-  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "value" a) =>
-  Lens.Family2.LensLike' f s a
-value = Data.ProtoLens.Field.field @"value"
-valueMsat ::
+sweepSatPerByte = Data.ProtoLens.Field.field @"sweepSatPerByte"
+sweepSatPerVbyte ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "valueMsat" a) =>
+   Data.ProtoLens.Field.HasField s "sweepSatPerVbyte" a) =>
   Lens.Family2.LensLike' f s a
-valueMsat = Data.ProtoLens.Field.field @"valueMsat"
-vec'routeHints ::
+sweepSatPerVbyte = Data.ProtoLens.Field.field @"sweepSatPerVbyte"
+towers ::
+  forall f s a.
+  (Prelude.Functor f, Data.ProtoLens.Field.HasField s "towers" a) =>
+  Lens.Family2.LensLike' f s a
+towers = Data.ProtoLens.Field.field @"towers"
+vec'addresses ::
   forall f s a.
   (Prelude.Functor f,
-   Data.ProtoLens.Field.HasField s "vec'routeHints" a) =>
+   Data.ProtoLens.Field.HasField s "vec'addresses" a) =>
   Lens.Family2.LensLike' f s a
-vec'routeHints = Data.ProtoLens.Field.field @"vec'routeHints"
+vec'addresses = Data.ProtoLens.Field.field @"vec'addresses"
+vec'sessions ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "vec'sessions" a) =>
+  Lens.Family2.LensLike' f s a
+vec'sessions = Data.ProtoLens.Field.field @"vec'sessions"
+vec'towers ::
+  forall f s a.
+  (Prelude.Functor f,
+   Data.ProtoLens.Field.HasField s "vec'towers" a) =>
+  Lens.Family2.LensLike' f s a
+vec'towers = Data.ProtoLens.Field.field @"vec'towers"

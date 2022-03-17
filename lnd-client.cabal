@@ -41,6 +41,7 @@ library
       LndClient.Data.ClosedChannel
       LndClient.Data.ClosedChannels
       LndClient.Data.ForceClosedChannel
+      LndClient.Data.FundPsbt
       LndClient.Data.GetInfo
       LndClient.Data.HtlcEvent
       LndClient.Data.InitWallet
@@ -81,16 +82,32 @@ library
       LndClient.Util
       LndClient.Watcher
       LndGrpc.Client
-      Proto.InvoiceGrpc
-      Proto.InvoiceGrpc_Fields
-      Proto.LndGrpc
-      Proto.LndGrpc_Fields
-      Proto.RouterGrpc
-      Proto.RouterGrpc_Fields
-      Proto.SignerGrpc
-      Proto.SignerGrpc_Fields
-      Proto.WalletUnlockerGrpc
-      Proto.WalletUnlockerGrpc_Fields
+      Proto.Autopilotrpc.Autopilot
+      Proto.Autopilotrpc.Autopilot_Fields
+      Proto.Chainrpc.Chainnotifier
+      Proto.Chainrpc.Chainnotifier_Fields
+      Proto.Invoicesrpc.Invoices
+      Proto.Invoicesrpc.Invoices_Fields
+      Proto.Lightning
+      Proto.Lightning_Fields
+      Proto.Lnclipb.Lncli
+      Proto.Lnclipb.Lncli_Fields
+      Proto.Routerrpc.Router
+      Proto.Routerrpc.Router_Fields
+      Proto.Signrpc.Signer
+      Proto.Signrpc.Signer_Fields
+      Proto.Stateservice
+      Proto.Stateservice_Fields
+      Proto.Verrpc.Verrpc
+      Proto.Verrpc.Verrpc_Fields
+      Proto.Walletrpc.Walletkit
+      Proto.Walletrpc.Walletkit_Fields
+      Proto.Walletunlocker
+      Proto.Walletunlocker_Fields
+      Proto.Watchtowerrpc.Watchtower
+      Proto.Watchtowerrpc.Watchtower_Fields
+      Proto.Wtclientrpc.Wtclient
+      Proto.Wtclientrpc.Wtclient_Fields
   other-modules:
       Paths_lnd_client
   hs-source-dirs:
@@ -239,6 +256,7 @@ test-suite lnd-client-test
         LndClient.Data.ClosedChannel
         LndClient.Data.ClosedChannels
         LndClient.Data.ForceClosedChannel
+        LndClient.Data.FundPsbt
         LndClient.Data.GetInfo
         LndClient.Data.HtlcEvent
         LndClient.Data.InitWallet
@@ -279,16 +297,32 @@ test-suite lnd-client-test
         LndClient.Util
         LndClient.Watcher
         LndGrpc.Client
-        Proto.InvoiceGrpc
-        Proto.InvoiceGrpc_Fields
-        Proto.LndGrpc
-        Proto.LndGrpc_Fields
-        Proto.RouterGrpc
-        Proto.RouterGrpc_Fields
-        Proto.SignerGrpc
-        Proto.SignerGrpc_Fields
-        Proto.WalletUnlockerGrpc
-        Proto.WalletUnlockerGrpc_Fields
+        Proto.Autopilotrpc.Autopilot
+        Proto.Autopilotrpc.Autopilot_Fields
+        Proto.Chainrpc.Chainnotifier
+        Proto.Chainrpc.Chainnotifier_Fields
+        Proto.Invoicesrpc.Invoices
+        Proto.Invoicesrpc.Invoices_Fields
+        Proto.Lightning
+        Proto.Lightning_Fields
+        Proto.Lnclipb.Lncli
+        Proto.Lnclipb.Lncli_Fields
+        Proto.Routerrpc.Router
+        Proto.Routerrpc.Router_Fields
+        Proto.Signrpc.Signer
+        Proto.Signrpc.Signer_Fields
+        Proto.Stateservice
+        Proto.Stateservice_Fields
+        Proto.Verrpc.Verrpc
+        Proto.Verrpc.Verrpc_Fields
+        Proto.Walletrpc.Walletkit
+        Proto.Walletrpc.Walletkit_Fields
+        Proto.Walletunlocker
+        Proto.Walletunlocker_Fields
+        Proto.Watchtowerrpc.Watchtower
+        Proto.Watchtowerrpc.Watchtower_Fields
+        Proto.Wtclientrpc.Wtclient
+        Proto.Wtclientrpc.Wtclient_Fields
     hs-source-dirs:
         src
   else

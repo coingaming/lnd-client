@@ -10,8 +10,8 @@ import Data.ProtoLens.Message
 import LndClient.Data.Channel
 import LndClient.Data.ChannelPoint
 import LndClient.Import
-import qualified Proto.LndGrpc as LnGRPC
-import qualified Proto.LndGrpc_Fields as LnGRPC
+import qualified Proto.Lightning as LnGRPC
+import qualified Proto.Lightning_Fields as LnGRPC
 
 data OpenChannelRequest = OpenChannelRequest
   { nodePubkey :: NodePubKey,

@@ -7,8 +7,8 @@ where
 
 import Data.ProtoLens.Message
 import LndClient.Import
-import qualified Proto.RouterGrpc as LnGRPC
-import qualified Proto.RouterGrpc_Fields as LnGRPC
+import qualified Proto.Routerrpc.Router as LnGRPC
+import qualified Proto.Routerrpc.Router_Fields as LnGRPC
 
 data TrackPaymentRequest = TrackPaymentRequest
   { paymentHash :: RHash,

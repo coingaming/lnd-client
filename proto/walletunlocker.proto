@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "lnd_grpc.proto";
+import "lightning.proto";
 
 package lnrpc;
 
