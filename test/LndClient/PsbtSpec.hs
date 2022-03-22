@@ -19,8 +19,6 @@ import qualified LndClient.Data.SendCoins as SC
 import qualified LndClient.Data.ListUnspent as LU
 import qualified LndClient.Data.FundPsbt as FP
 import qualified Data.Map as M
-import qualified Data.ByteString.Base64 as B64
-import qualified Data.Text.Encoding as T
 
 spec :: Spec
 spec = do
@@ -39,7 +37,7 @@ spec = do
       whenRight fr $ \fr' -> do
         psbt <- fundPsbt lndAlice fr'
         whenRight psbt $ \psbt' -> do
-          let t = T.decodeUtf8 $ B64.encode $ FP.fundedPsbt psbt'
+          let t = psbtBtcCli $ FP.fundedPsbt psbt'
           traceShowM t
           pure ()
         pure ()

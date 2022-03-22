@@ -22,9 +22,7 @@ instance ToGrpc TxTemplate W.FundPsbtRequest'Template where
     where
       msg i o = defMessage & W.inputs .~ i & W.outputs .~ o
 
-data FundPsbtRequest = FundPsbtRequest
-  { account :: Text,
-    template :: TxTemplate,
+data FundPsbtRequest = FundPsbtRequest { account :: Text, template :: TxTemplate,
     minConfs :: Int32,
     spendUnconfirmed :: Bool,
     targetConf :: Word32

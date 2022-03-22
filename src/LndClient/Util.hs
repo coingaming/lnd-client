@@ -11,6 +11,7 @@ module LndClient.Util
     catchAsync,
     txIdParser,
     txIdHex,
+    psbtBtcCli,
     MicroSecondsDelay (..),
     sleep,
   )
@@ -24,6 +25,8 @@ import qualified Data.ByteString as BS (reverse)
 import qualified Data.ByteString.Base16 as B16 (decode, encode)
 import LndClient.Data.Type
 import LndClient.Import.External
+import qualified Data.Text.Encoding as T
+import qualified Data.ByteString.Base64 as B64
 
 newtype MicroSecondsDelay = MicroSecondsDelay Int
 
@@ -35,6 +38,10 @@ txIdParser xr =
 
 txIdHex :: ByteString -> Text
 txIdHex = decodeUtf8 . BS.reverse . B16.encode
+
+
+psbtBtcCli :: ByteString -> Text
+psbtBtcCli x = T.decodeUtf8 $ B64.encode x
 
 retrySilent ::
   MonadIO m => m (Either LndError a) -> m (Either LndError a)

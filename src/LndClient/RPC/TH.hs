@@ -61,6 +61,7 @@ import qualified Proto.Walletunlocker as LnGRPC
 import LndClient.Data.FundPsbt (FundPsbtRequest, FundPsbtResponse)
 import qualified Proto.Walletrpc.Walletkit as LnGRPC
 import LndClient.Data.ListUnspent
+import LndClient.Data.FinalizePsbt
 
 data RpcKind = RpcSilent | RpcKatip
 
@@ -392,6 +393,18 @@ mkRpc k = do
         . $(grpcRetry)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "fundPsbt")
+          env
+
+    finalizePsbt ::
+      $(tcc m) =>
+      LndEnv ->
+      FinalizePsbtRequest ->
+      $(pure m) (Either LndError FinalizePsbtResponse)
+    finalizePsbt env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "finalizePsbt")
           env
 
     listUnspent ::
