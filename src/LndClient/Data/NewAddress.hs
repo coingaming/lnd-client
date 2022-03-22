@@ -26,7 +26,8 @@ data AddressType
   | NESTED_PUBKEY_HASH
   | UNUSED_WITNESS_PUBKEY_HASH
   | UNUSED_NESTED_PUBKEY_HASH
-  deriving (Show, Eq, Generic)
+  | UNKNOWN
+  deriving (Show, Eq, Ord, Generic)
 
 instance Out AddressType
 
@@ -50,12 +51,24 @@ instance ToGrpc NewAddressRequest LnGRPC.NewAddressRequest where
 
 instance ToGrpc AddressType LnGRPC.AddressType where
   toGrpc x =
-    Right $ case x of
-      WITNESS_PUBKEY_HASH -> LnGRPC.WITNESS_PUBKEY_HASH
-      NESTED_PUBKEY_HASH -> LnGRPC.NESTED_PUBKEY_HASH
-      UNUSED_WITNESS_PUBKEY_HASH -> LnGRPC.UNUSED_WITNESS_PUBKEY_HASH
-      UNUSED_NESTED_PUBKEY_HASH -> LnGRPC.UNUSED_NESTED_PUBKEY_HASH
+    case x of
+      WITNESS_PUBKEY_HASH -> Right LnGRPC.WITNESS_PUBKEY_HASH
+      NESTED_PUBKEY_HASH -> Right LnGRPC.NESTED_PUBKEY_HASH
+      UNUSED_WITNESS_PUBKEY_HASH -> Right LnGRPC.UNUSED_WITNESS_PUBKEY_HASH
+      UNUSED_NESTED_PUBKEY_HASH -> Right LnGRPC.UNUSED_NESTED_PUBKEY_HASH
+      UNKNOWN -> Left $ LndError "Unknown address type"
 
 instance FromGrpc NewAddressResponse LnGRPC.NewAddressResponse where
   fromGrpc x =
     NewAddressResponse <$> Right (x ^. LnGRPC.address)
+
+instance FromGrpc AddressType LnGRPC.AddressType where
+  fromGrpc x = Right $ case x of
+    LnGRPC.WITNESS_PUBKEY_HASH -> WITNESS_PUBKEY_HASH
+    LnGRPC.NESTED_PUBKEY_HASH -> NESTED_PUBKEY_HASH
+    LnGRPC.UNUSED_WITNESS_PUBKEY_HASH -> UNUSED_WITNESS_PUBKEY_HASH
+    LnGRPC.UNUSED_NESTED_PUBKEY_HASH -> UNUSED_NESTED_PUBKEY_HASH
+    _ -> UNKNOWN
+
+
+

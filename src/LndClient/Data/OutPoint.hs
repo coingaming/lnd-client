@@ -17,7 +17,6 @@ instance Out OutPoint
 instance ToGrpc OutPoint LnGRPC.OutPoint where
   toGrpc x = Right $ defMessage
     & LnGRPC.txidBytes .~ txid x
-    & LnGRPC.txidStr .~ txIdHex (txid x)
     & LnGRPC.outputIndex .~ outputIndex x
 
 instance FromGrpc OutPoint LnGRPC.OutPoint where

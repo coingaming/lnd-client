@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 module LndClient.Data.ListUnspent
-  (ListUnspentRequest, ListUnspentResponse)
+  (ListUnspentRequest(..), ListUnspentResponse(..), Utxo(..))
 where
 
 import Data.ProtoLens.Message
@@ -10,6 +10,7 @@ import qualified Proto.Walletrpc.Walletkit_Fields as W
 import LndClient.Data.OutPoint
 import qualified Proto.Lightning as L
 import qualified Proto.Lightning_Fields as L
+import LndClient.Data.NewAddress (AddressType)
 
 data ListUnspentRequest = ListUnspentRequest
   {
@@ -29,25 +30,6 @@ instance ToGrpc ListUnspentRequest W.ListUnspentRequest where
           & W.minConfs .~ mn
           & W.maxConfs .~ mx
           & W.account .~ a
-
-
-data AddressType =
-  WITNESS_PUBKEY_HASH |
-  NESTED_PUBKEY_HASH |
-  UNUSED_WITNESS_PUBKEY_HASH |
-  UNUSED_NESTED_PUBKEY_HASH |
-  UNKNOWN
-  deriving (Eq, Ord, Show, Generic)
-
-instance Out AddressType
-
-instance FromGrpc AddressType L.AddressType where
-  fromGrpc x = pure $ case x of
-            L.WITNESS_PUBKEY_HASH -> WITNESS_PUBKEY_HASH
-            L.NESTED_PUBKEY_HASH -> NESTED_PUBKEY_HASH
-            L.UNUSED_WITNESS_PUBKEY_HASH -> UNUSED_WITNESS_PUBKEY_HASH
-            L.UNUSED_NESTED_PUBKEY_HASH -> UNUSED_NESTED_PUBKEY_HASH
-            _ -> UNKNOWN
 
 
 data Utxo = Utxo
