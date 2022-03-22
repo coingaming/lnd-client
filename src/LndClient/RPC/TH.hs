@@ -58,6 +58,9 @@ import qualified Proto.Lightning as LnGRPC
 import qualified Proto.Routerrpc.Router as LnGRPC
 import qualified Proto.Signrpc.Signer as LnGRPC
 import qualified Proto.Walletunlocker as LnGRPC
+import LndClient.Data.FundPsbt (FundPsbtRequest, FundPsbtResponse)
+import qualified Proto.Walletrpc.Walletkit as LnGRPC
+import LndClient.Data.ListUnspent
 
 data RpcKind = RpcSilent | RpcKatip
 
@@ -206,8 +209,7 @@ mkRpc k = do
         env
         $ accessor req
 
-    subscribeInvoices ::
-      $(tcc m) =>
+    subscribeInvoices :: $(tcc m) =>
       (Invoice -> IO ()) ->
       LndEnv ->
       SubscribeInvoicesRequest ->
@@ -378,6 +380,30 @@ mkRpc k = do
         . $(grpcRetry)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "sendPaymentSync")
+          env
+
+    fundPsbt ::
+      $(tcc m) =>
+      LndEnv ->
+      FundPsbtRequest ->
+      $(pure m) (Either LndError FundPsbtResponse)
+    fundPsbt env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "fundPsbt")
+          env
+
+    listUnspent ::
+      $(tcc m) =>
+      LndEnv ->
+      ListUnspentRequest ->
+      $(pure m) (Either LndError ListUnspentResponse)
+    listUnspent env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "listUnspent")
           env
 
     sendCoins ::

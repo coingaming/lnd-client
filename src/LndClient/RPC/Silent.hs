@@ -22,6 +22,8 @@ module LndClient.RPC.Silent
     lazyConnectPeer,
     sendPayment,
     sendCoins,
+    fundPsbt,
+    listUnspent,
     getInfo,
     subscribeInvoices,
     subscribeInvoicesChan,

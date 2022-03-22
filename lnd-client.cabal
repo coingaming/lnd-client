@@ -49,10 +49,12 @@ library
       LndClient.Data.Kind
       LndClient.Data.ListChannels
       LndClient.Data.ListInvoices
+      LndClient.Data.ListUnspent
       LndClient.Data.LndEnv
       LndClient.Data.NewAddress
       LndClient.Data.Newtype
       LndClient.Data.OpenChannel
+      LndClient.Data.OutPoint
       LndClient.Data.Payment
       LndClient.Data.PayReq
       LndClient.Data.Peer
@@ -178,6 +180,7 @@ test-suite lnd-client-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      LndClient.PsbtSpec
       LndClient.RPCSpec
       LndClient.TestApp
       Paths_lnd_client
@@ -264,10 +267,12 @@ test-suite lnd-client-test
         LndClient.Data.Kind
         LndClient.Data.ListChannels
         LndClient.Data.ListInvoices
+        LndClient.Data.ListUnspent
         LndClient.Data.LndEnv
         LndClient.Data.NewAddress
         LndClient.Data.Newtype
         LndClient.Data.OpenChannel
+        LndClient.Data.OutPoint
         LndClient.Data.Payment
         LndClient.Data.PayReq
         LndClient.Data.Peer
