@@ -24,6 +24,7 @@ module LndClient.RPC.Silent
     sendCoins,
     fundPsbt,
     finalizePsbt,
+    publishTransaction,
     listUnspent,
     getInfo,
     subscribeInvoices,

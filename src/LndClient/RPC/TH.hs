@@ -50,6 +50,9 @@ import qualified LndClient.Data.VerifyMessage as VM
   ( VerifyMessageRequest (..),
     VerifyMessageResponse (..),
   )
+
+import LndClient.Data.FundPsbt (FundPsbtRequest, FundPsbtResponse)
+import LndClient.Data.PublishTransaction (PublishTransactionRequest, PublishTransactionResponse)
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
@@ -58,7 +61,6 @@ import qualified Proto.Lightning as LnGRPC
 import qualified Proto.Routerrpc.Router as LnGRPC
 import qualified Proto.Signrpc.Signer as LnGRPC
 import qualified Proto.Walletunlocker as LnGRPC
-import LndClient.Data.FundPsbt (FundPsbtRequest, FundPsbtResponse)
 import qualified Proto.Walletrpc.Walletkit as LnGRPC
 import LndClient.Data.ListUnspent
 import LndClient.Data.FinalizePsbt
@@ -405,6 +407,18 @@ mkRpc k = do
         . $(grpcRetry)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "finalizePsbt")
+          env
+
+    publishTransaction ::
+      $(tcc m) =>
+      LndEnv ->
+      PublishTransactionRequest ->
+      $(pure m) (Either LndError PublishTransactionResponse)
+    publishTransaction env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "publishTransaction")
           env
 
     listUnspent ::

@@ -26,6 +26,7 @@ module LndClient.RPC.Katip
     sendCoins,
     fundPsbt,
     finalizePsbt,
+    publishTransaction,
     listUnspent,
     getInfo,
     subscribeInvoices,
