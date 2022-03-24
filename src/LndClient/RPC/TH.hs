@@ -64,6 +64,7 @@ import qualified Proto.Walletunlocker as LnGRPC
 import qualified Proto.Walletrpc.Walletkit as LnGRPC
 import LndClient.Data.ListUnspent
 import LndClient.Data.FinalizePsbt
+import LndClient.Data.ListLeases (ListLeasesRequest, ListLeasesResponse)
 
 data RpcKind = RpcSilent | RpcKatip
 
@@ -431,6 +432,18 @@ mkRpc k = do
         . $(grpcRetry)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "listUnspent")
+          env
+
+    listLeases ::
+      $(tcc m) =>
+      LndEnv ->
+      ListLeasesRequest ->
+      $(pure m) (Either LndError ListLeasesResponse)
+    listLeases env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "listLeases")
           env
 
     sendCoins ::

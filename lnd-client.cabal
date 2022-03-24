@@ -50,6 +50,7 @@ library
       LndClient.Data.Kind
       LndClient.Data.ListChannels
       LndClient.Data.ListInvoices
+      LndClient.Data.ListLeases
       LndClient.Data.ListUnspent
       LndClient.Data.LndEnv
       LndClient.Data.NewAddress
@@ -270,6 +271,7 @@ test-suite lnd-client-test
         LndClient.Data.Kind
         LndClient.Data.ListChannels
         LndClient.Data.ListInvoices
+        LndClient.Data.ListLeases
         LndClient.Data.ListUnspent
         LndClient.Data.LndEnv
         LndClient.Data.NewAddress
