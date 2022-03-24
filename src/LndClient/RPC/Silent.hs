@@ -27,6 +27,7 @@ module LndClient.RPC.Silent
     publishTransaction,
     listUnspent,
     listLeases,
+    leaseOutput,
     getInfo,
     subscribeInvoices,
     subscribeInvoicesChan,

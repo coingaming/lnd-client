@@ -48,6 +48,7 @@ library
       LndClient.Data.InitWallet
       LndClient.Data.Invoice
       LndClient.Data.Kind
+      LndClient.Data.LeaseOutput
       LndClient.Data.ListChannels
       LndClient.Data.ListInvoices
       LndClient.Data.ListLeases
@@ -269,6 +270,7 @@ test-suite lnd-client-test
         LndClient.Data.InitWallet
         LndClient.Data.Invoice
         LndClient.Data.Kind
+        LndClient.Data.LeaseOutput
         LndClient.Data.ListChannels
         LndClient.Data.ListInvoices
         LndClient.Data.ListLeases

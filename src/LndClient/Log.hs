@@ -47,6 +47,7 @@ type family SecretRpc (t :: GHC.Symbol) :: GHC.Nat where
   SecretRpc "publishTransaction" = 0
   SecretRpc "listUnspent" = 0
   SecretRpc "listLeases" = 0
+  SecretRpc "leaseOutput" = 0
   SecretRpc "decodePayReq" = 0
   SecretRpc "lookupInvoice" = 0
   SecretRpc "pendingChannels" = 0

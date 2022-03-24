@@ -47,6 +47,3 @@ instance Out ListLeasesResponse
 instance FromGrpc ListLeasesResponse W.ListLeasesResponse where
   fromGrpc x = ListLeasesResponse <$> mapM fromGrpc (x ^. W.lockedUtxos)
 
-
-
-
