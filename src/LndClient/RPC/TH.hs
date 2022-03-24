@@ -53,6 +53,7 @@ import qualified LndClient.Data.VerifyMessage as VM
 
 import LndClient.Data.FundPsbt (FundPsbtRequest, FundPsbtResponse)
 import LndClient.Data.PublishTransaction (PublishTransactionRequest, PublishTransactionResponse)
+import LndClient.Data.ReleaseOutput (ReleaseOutputRequest, ReleaseOutputResponse)
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
@@ -458,6 +459,19 @@ mkRpc k = do
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "leaseOutput")
           env
+
+    releaseOutput ::
+      $(tcc m) =>
+      LndEnv ->
+      ReleaseOutputRequest ->
+      $(pure m) (Either LndError ReleaseOutputResponse)
+    releaseOutput env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "releaseOutput")
+          env
+
 
     sendCoins ::
       $(tcc m) =>

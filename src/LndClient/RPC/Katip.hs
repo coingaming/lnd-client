@@ -30,6 +30,7 @@ module LndClient.RPC.Katip
     listUnspent,
     listLeases,
     leaseOutput,
+    releaseOutput,
     getInfo,
     subscribeInvoices,
     subscribeInvoicesChan,

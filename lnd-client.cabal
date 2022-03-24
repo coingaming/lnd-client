@@ -65,6 +65,7 @@ library
       LndClient.Data.PendingChannels
       LndClient.Data.PendingOpenChannel
       LndClient.Data.PublishTransaction
+      LndClient.Data.ReleaseOutput
       LndClient.Data.SendCoins
       LndClient.Data.SendPayment
       LndClient.Data.SignMessage
@@ -287,6 +288,7 @@ test-suite lnd-client-test
         LndClient.Data.PendingChannels
         LndClient.Data.PendingOpenChannel
         LndClient.Data.PublishTransaction
+        LndClient.Data.ReleaseOutput
         LndClient.Data.SendCoins
         LndClient.Data.SendPayment
         LndClient.Data.SignMessage
