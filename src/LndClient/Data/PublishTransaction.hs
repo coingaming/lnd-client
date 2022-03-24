@@ -26,7 +26,7 @@ instance ToGrpc PublishTransactionRequest W.Transaction where
           & W.txHex .~ f
           & W.label .~ a
 
-data PublishTransactionResponse = PublishTransactionResponse
+newtype PublishTransactionResponse = PublishTransactionResponse
   { publishError :: Text
   }
   deriving (Eq, Ord, Show, Generic)

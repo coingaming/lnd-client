@@ -11,18 +11,20 @@ import qualified Proto.Walletrpc.Walletkit_Fields as W
 
 data TxTemplate = TxTemplate
   { inputs :: [OutPoint],
-    outputs :: Map Text Word64
+    outputs :: Map Text MSat
   }
   deriving (Eq, Ord, Show, Generic)
 
 instance Out TxTemplate
 
 instance ToGrpc TxTemplate W.FundPsbtRequest'Template where
-  toGrpc x = W.FundPsbtRequest'Raw <$> (msg <$> mapM toGrpc (inputs x) <*> pure (outputs x))
+  toGrpc x = W.FundPsbtRequest'Raw <$> (msg <$> mapM toGrpc (inputs x) <*> mapM toGrpcSat (outputs x))
     where
       msg i o = defMessage & W.inputs .~ i & W.outputs .~ o
 
-data FundPsbtRequest = FundPsbtRequest { account :: Text, template :: TxTemplate,
+data FundPsbtRequest = FundPsbtRequest {
+    account :: Text,
+    template :: TxTemplate,
     minConfs :: Int32,
     spendUnconfirmed :: Bool,
     targetConf :: Word32
