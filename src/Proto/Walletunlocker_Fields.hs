@@ -1,9 +1,9 @@
-{- This file was auto-generated from wallet_unlocker_grpc.proto by the proto-lens-protoc program. -}
+{- This file was auto-generated from walletunlocker.proto by the proto-lens-protoc program. -}
 {-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies, DeriveGeneric#-}
 {-# OPTIONS_GHC -Wno-unused-imports#-}
 {-# OPTIONS_GHC -Wno-duplicate-exports#-}
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
-module Proto.WalletUnlockerGrpc_Fields where
+module Proto.Walletunlocker_Fields where
 import qualified Data.ProtoLens.Runtime.Prelude as Prelude
 import qualified Data.ProtoLens.Runtime.Data.Int as Data.Int
 import qualified Data.ProtoLens.Runtime.Data.Monoid as Data.Monoid
@@ -27,7 +27,7 @@ import qualified Data.ProtoLens.Runtime.Data.Vector as Data.Vector
 import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Generic
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
-import qualified Proto.LndGrpc
+import qualified Proto.Lightning
 account ::
   forall f s a.
   (Prelude.Functor f, Data.ProtoLens.Field.HasField s "account" a) =>

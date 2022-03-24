@@ -50,14 +50,23 @@ import qualified LndClient.Data.VerifyMessage as VM
   ( VerifyMessageRequest (..),
     VerifyMessageResponse (..),
   )
+
+import LndClient.Data.FundPsbt (FundPsbtRequest, FundPsbtResponse)
+import LndClient.Data.PublishTransaction (PublishTransactionRequest, PublishTransactionResponse)
+import LndClient.Data.ReleaseOutput (ReleaseOutputRequest, ReleaseOutputResponse)
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
-import qualified Proto.InvoiceGrpc as LnGRPC
-import qualified Proto.LndGrpc as LnGRPC
-import qualified Proto.RouterGrpc as LnGRPC
-import qualified Proto.SignerGrpc as LnGRPC
-import qualified Proto.WalletUnlockerGrpc as LnGRPC
+import qualified Proto.Invoicesrpc.Invoices as LnGRPC
+import qualified Proto.Lightning as LnGRPC
+import qualified Proto.Routerrpc.Router as LnGRPC
+import qualified Proto.Signrpc.Signer as LnGRPC
+import qualified Proto.Walletunlocker as LnGRPC
+import qualified Proto.Walletrpc.Walletkit as LnGRPC
+import LndClient.Data.ListUnspent
+import LndClient.Data.FinalizePsbt
+import LndClient.Data.ListLeases (ListLeasesRequest, ListLeasesResponse)
+import LndClient.Data.LeaseOutput (LeaseOutputRequest, LeaseOutputResponse)
 
 data RpcKind = RpcSilent | RpcKatip
 
@@ -206,8 +215,7 @@ mkRpc k = do
         env
         $ accessor req
 
-    subscribeInvoices ::
-      $(tcc m) =>
+    subscribeInvoices :: $(tcc m) =>
       (Invoice -> IO ()) ->
       LndEnv ->
       SubscribeInvoicesRequest ->
@@ -379,6 +387,91 @@ mkRpc k = do
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "sendPaymentSync")
           env
+
+    fundPsbt ::
+      $(tcc m) =>
+      LndEnv ->
+      FundPsbtRequest ->
+      $(pure m) (Either LndError FundPsbtResponse)
+    fundPsbt env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "fundPsbt")
+          env
+
+    finalizePsbt ::
+      $(tcc m) =>
+      LndEnv ->
+      FinalizePsbtRequest ->
+      $(pure m) (Either LndError FinalizePsbtResponse)
+    finalizePsbt env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "finalizePsbt")
+          env
+
+    publishTransaction ::
+      $(tcc m) =>
+      LndEnv ->
+      PublishTransactionRequest ->
+      $(pure m) (Either LndError PublishTransactionResponse)
+    publishTransaction env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "publishTransaction")
+          env
+
+    listUnspent ::
+      $(tcc m) =>
+      LndEnv ->
+      ListUnspentRequest ->
+      $(pure m) (Either LndError ListUnspentResponse)
+    listUnspent env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "listUnspent")
+          env
+
+    listLeases ::
+      $(tcc m) =>
+      LndEnv ->
+      ListLeasesRequest ->
+      $(pure m) (Either LndError ListLeasesResponse)
+    listLeases env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "listLeases")
+          env
+
+    leaseOutput ::
+      $(tcc m) =>
+      LndEnv ->
+      LeaseOutputRequest ->
+      $(pure m) (Either LndError LeaseOutputResponse)
+    leaseOutput env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "leaseOutput")
+          env
+
+    releaseOutput ::
+      $(tcc m) =>
+      LndEnv ->
+      ReleaseOutputRequest ->
+      $(pure m) (Either LndError ReleaseOutputResponse)
+    releaseOutput env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.WalletKit "releaseOutput")
+          env
+
 
     sendCoins ::
       $(tcc m) =>

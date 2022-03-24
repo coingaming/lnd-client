@@ -42,10 +42,10 @@ import LndClient.Data.Kind
 import LndClient.Data.Type
 import LndClient.Import.External
 import LndClient.Util
-import qualified Proto.InvoiceGrpc as IGrpc
-import qualified Proto.InvoiceGrpc_Fields as IGrpc
-import qualified Proto.LndGrpc as LnGrpc
-import qualified Proto.LndGrpc_Fields as LnGrpc
+import qualified Proto.Invoicesrpc.Invoices as IGrpc
+import qualified Proto.Invoicesrpc.Invoices_Fields as IGrpc
+import qualified Proto.Lightning as LnGrpc
+import qualified Proto.Lightning_Fields as LnGrpc
 import Prelude (Show)
 
 newtype Vout (a :: TxKind) = Vout Word32

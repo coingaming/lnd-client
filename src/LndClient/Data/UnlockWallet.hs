@@ -5,8 +5,8 @@ where
 
 import Data.ProtoLens.Message
 import LndClient.Import
-import qualified Proto.WalletUnlockerGrpc as LnGRPC
-import qualified Proto.WalletUnlockerGrpc_Fields as LnGRPC
+import qualified Proto.Walletunlocker as LnGRPC
+import qualified Proto.Walletunlocker_Fields as LnGRPC
 import Prelude (Show (..))
 
 data UnlockWalletRequest = UnlockWalletRequest

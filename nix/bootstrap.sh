@@ -5,8 +5,9 @@ set -e
 export NIX_SSHOPTS='source /etc/profile.d/nix.sh;'
 
 echo "
-substituters = https://cache.nixos.org file:///tmp/nix_ci_cache
+substituters = https://cache.nixos.org https://hydra.iohk.io file:///tmp/nix_ci_cache
 trusted-substituters = file:///tmp/nix_ci_cache
+trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
 system-features = kvm
 http2 = false
 require-sigs = false
@@ -33,9 +34,9 @@ nix-env -iAP \
   nixpkgs.openssh
 
 echo "
-substituters = file:///tmp/nix_ci_cache https://cache.nixos.org ssh://ubuntu@q-ci-cache.q.testenv.io
+substituters = file:///tmp/nix_ci_cache https://cache.nixos.org ssh://ubuntu@q-ci-cache.q.testenv.io https://hydra.iohk.io
 trusted-substituters = ssh://ubuntu@q-ci-cache.q.testenv.io file:///tmp/nix_ci_cache
-trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
 system-features = kvm
 http2 = false
 require-sigs = false

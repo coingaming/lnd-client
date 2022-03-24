@@ -1,9 +1,9 @@
-{- This file was auto-generated from signer_grpc.proto by the proto-lens-protoc program. -}
+{- This file was auto-generated from signrpc/signer.proto by the proto-lens-protoc program. -}
 {-# LANGUAGE ScopedTypeVariables, DataKinds, TypeFamilies, UndecidableInstances, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, PatternSynonyms, MagicHash, NoImplicitPrelude, BangPatterns, TypeApplications, OverloadedStrings, DerivingStrategies, DeriveGeneric#-}
 {-# OPTIONS_GHC -Wno-unused-imports#-}
 {-# OPTIONS_GHC -Wno-duplicate-exports#-}
 {-# OPTIONS_GHC -Wno-dodgy-exports#-}
-module Proto.SignerGrpc (
+module Proto.Signrpc.Signer (
         Signer(..), InputScript(), InputScriptResp(), KeyDescriptor(),
         KeyLocator(), SharedKeyRequest(), SharedKeyResponse(),
         SignDescriptor(), SignMessageReq(), SignMessageResp(), SignReq(),
@@ -39,9 +39,9 @@ import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unbox
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.witness' @:: Lens' InputScript [Data.ByteString.ByteString]@
-         * 'Proto.SignerGrpc_Fields.vec'witness' @:: Lens' InputScript (Data.Vector.Vector Data.ByteString.ByteString)@
-         * 'Proto.SignerGrpc_Fields.sigScript' @:: Lens' InputScript Data.ByteString.ByteString@ -}
+         * 'Proto.Signrpc.Signer_Fields.witness' @:: Lens' InputScript [Data.ByteString.ByteString]@
+         * 'Proto.Signrpc.Signer_Fields.vec'witness' @:: Lens' InputScript (Data.Vector.Vector Data.ByteString.ByteString)@
+         * 'Proto.Signrpc.Signer_Fields.sigScript' @:: Lens' InputScript Data.ByteString.ByteString@ -}
 data InputScript
   = InputScript'_constructor {_InputScript'witness :: !(Data.Vector.Vector Data.ByteString.ByteString),
                               _InputScript'sigScript :: !Data.ByteString.ByteString,
@@ -220,8 +220,8 @@ instance Control.DeepSeq.NFData InputScript where
                 (Control.DeepSeq.deepseq (_InputScript'sigScript x__) ()))
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.inputScripts' @:: Lens' InputScriptResp [InputScript]@
-         * 'Proto.SignerGrpc_Fields.vec'inputScripts' @:: Lens' InputScriptResp (Data.Vector.Vector InputScript)@ -}
+         * 'Proto.Signrpc.Signer_Fields.inputScripts' @:: Lens' InputScriptResp [InputScript]@
+         * 'Proto.Signrpc.Signer_Fields.vec'inputScripts' @:: Lens' InputScriptResp (Data.Vector.Vector InputScript)@ -}
 data InputScriptResp
   = InputScriptResp'_constructor {_InputScriptResp'inputScripts :: !(Data.Vector.Vector InputScript),
                                   _InputScriptResp'_unknownFields :: !Data.ProtoLens.FieldSet}
@@ -361,9 +361,9 @@ instance Control.DeepSeq.NFData InputScriptResp where
              (Control.DeepSeq.deepseq (_InputScriptResp'inputScripts x__) ())
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.rawKeyBytes' @:: Lens' KeyDescriptor Data.ByteString.ByteString@
-         * 'Proto.SignerGrpc_Fields.keyLoc' @:: Lens' KeyDescriptor KeyLocator@
-         * 'Proto.SignerGrpc_Fields.maybe'keyLoc' @:: Lens' KeyDescriptor (Prelude.Maybe KeyLocator)@ -}
+         * 'Proto.Signrpc.Signer_Fields.rawKeyBytes' @:: Lens' KeyDescriptor Data.ByteString.ByteString@
+         * 'Proto.Signrpc.Signer_Fields.keyLoc' @:: Lens' KeyDescriptor KeyLocator@
+         * 'Proto.Signrpc.Signer_Fields.maybe'keyLoc' @:: Lens' KeyDescriptor (Prelude.Maybe KeyLocator)@ -}
 data KeyDescriptor
   = KeyDescriptor'_constructor {_KeyDescriptor'rawKeyBytes :: !Data.ByteString.ByteString,
                                 _KeyDescriptor'keyLoc :: !(Prelude.Maybe KeyLocator),
@@ -529,8 +529,8 @@ instance Control.DeepSeq.NFData KeyDescriptor where
                 (Control.DeepSeq.deepseq (_KeyDescriptor'keyLoc x__) ()))
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.keyFamily' @:: Lens' KeyLocator Data.Int.Int32@
-         * 'Proto.SignerGrpc_Fields.keyIndex' @:: Lens' KeyLocator Data.Int.Int32@ -}
+         * 'Proto.Signrpc.Signer_Fields.keyFamily' @:: Lens' KeyLocator Data.Int.Int32@
+         * 'Proto.Signrpc.Signer_Fields.keyIndex' @:: Lens' KeyLocator Data.Int.Int32@ -}
 data KeyLocator
   = KeyLocator'_constructor {_KeyLocator'keyFamily :: !Data.Int.Int32,
                              _KeyLocator'keyIndex :: !Data.Int.Int32,
@@ -682,11 +682,11 @@ instance Control.DeepSeq.NFData KeyLocator where
                 (Control.DeepSeq.deepseq (_KeyLocator'keyIndex x__) ()))
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.ephemeralPubkey' @:: Lens' SharedKeyRequest Data.ByteString.ByteString@
-         * 'Proto.SignerGrpc_Fields.keyLoc' @:: Lens' SharedKeyRequest KeyLocator@
-         * 'Proto.SignerGrpc_Fields.maybe'keyLoc' @:: Lens' SharedKeyRequest (Prelude.Maybe KeyLocator)@
-         * 'Proto.SignerGrpc_Fields.keyDesc' @:: Lens' SharedKeyRequest KeyDescriptor@
-         * 'Proto.SignerGrpc_Fields.maybe'keyDesc' @:: Lens' SharedKeyRequest (Prelude.Maybe KeyDescriptor)@ -}
+         * 'Proto.Signrpc.Signer_Fields.ephemeralPubkey' @:: Lens' SharedKeyRequest Data.ByteString.ByteString@
+         * 'Proto.Signrpc.Signer_Fields.keyLoc' @:: Lens' SharedKeyRequest KeyLocator@
+         * 'Proto.Signrpc.Signer_Fields.maybe'keyLoc' @:: Lens' SharedKeyRequest (Prelude.Maybe KeyLocator)@
+         * 'Proto.Signrpc.Signer_Fields.keyDesc' @:: Lens' SharedKeyRequest KeyDescriptor@
+         * 'Proto.Signrpc.Signer_Fields.maybe'keyDesc' @:: Lens' SharedKeyRequest (Prelude.Maybe KeyDescriptor)@ -}
 data SharedKeyRequest
   = SharedKeyRequest'_constructor {_SharedKeyRequest'ephemeralPubkey :: !Data.ByteString.ByteString,
                                    _SharedKeyRequest'keyLoc :: !(Prelude.Maybe KeyLocator),
@@ -906,7 +906,7 @@ instance Control.DeepSeq.NFData SharedKeyRequest where
                    (Control.DeepSeq.deepseq (_SharedKeyRequest'keyDesc x__) ())))
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.sharedKey' @:: Lens' SharedKeyResponse Data.ByteString.ByteString@ -}
+         * 'Proto.Signrpc.Signer_Fields.sharedKey' @:: Lens' SharedKeyResponse Data.ByteString.ByteString@ -}
 data SharedKeyResponse
   = SharedKeyResponse'_constructor {_SharedKeyResponse'sharedKey :: !Data.ByteString.ByteString,
                                     _SharedKeyResponse'_unknownFields :: !Data.ProtoLens.FieldSet}
@@ -1022,15 +1022,15 @@ instance Control.DeepSeq.NFData SharedKeyResponse where
              (Control.DeepSeq.deepseq (_SharedKeyResponse'sharedKey x__) ())
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.keyDesc' @:: Lens' SignDescriptor KeyDescriptor@
-         * 'Proto.SignerGrpc_Fields.maybe'keyDesc' @:: Lens' SignDescriptor (Prelude.Maybe KeyDescriptor)@
-         * 'Proto.SignerGrpc_Fields.singleTweak' @:: Lens' SignDescriptor Data.ByteString.ByteString@
-         * 'Proto.SignerGrpc_Fields.doubleTweak' @:: Lens' SignDescriptor Data.ByteString.ByteString@
-         * 'Proto.SignerGrpc_Fields.witnessScript' @:: Lens' SignDescriptor Data.ByteString.ByteString@
-         * 'Proto.SignerGrpc_Fields.output' @:: Lens' SignDescriptor TxOut@
-         * 'Proto.SignerGrpc_Fields.maybe'output' @:: Lens' SignDescriptor (Prelude.Maybe TxOut)@
-         * 'Proto.SignerGrpc_Fields.sighash' @:: Lens' SignDescriptor Data.Word.Word32@
-         * 'Proto.SignerGrpc_Fields.inputIndex' @:: Lens' SignDescriptor Data.Int.Int32@ -}
+         * 'Proto.Signrpc.Signer_Fields.keyDesc' @:: Lens' SignDescriptor KeyDescriptor@
+         * 'Proto.Signrpc.Signer_Fields.maybe'keyDesc' @:: Lens' SignDescriptor (Prelude.Maybe KeyDescriptor)@
+         * 'Proto.Signrpc.Signer_Fields.singleTweak' @:: Lens' SignDescriptor Data.ByteString.ByteString@
+         * 'Proto.Signrpc.Signer_Fields.doubleTweak' @:: Lens' SignDescriptor Data.ByteString.ByteString@
+         * 'Proto.Signrpc.Signer_Fields.witnessScript' @:: Lens' SignDescriptor Data.ByteString.ByteString@
+         * 'Proto.Signrpc.Signer_Fields.output' @:: Lens' SignDescriptor TxOut@
+         * 'Proto.Signrpc.Signer_Fields.maybe'output' @:: Lens' SignDescriptor (Prelude.Maybe TxOut)@
+         * 'Proto.Signrpc.Signer_Fields.sighash' @:: Lens' SignDescriptor Data.Word.Word32@
+         * 'Proto.Signrpc.Signer_Fields.inputIndex' @:: Lens' SignDescriptor Data.Int.Int32@ -}
 data SignDescriptor
   = SignDescriptor'_constructor {_SignDescriptor'keyDesc :: !(Prelude.Maybe KeyDescriptor),
                                  _SignDescriptor'singleTweak :: !Data.ByteString.ByteString,
@@ -1429,11 +1429,11 @@ instance Control.DeepSeq.NFData SignDescriptor where
                                (Control.DeepSeq.deepseq (_SignDescriptor'inputIndex x__) ())))))))
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.msg' @:: Lens' SignMessageReq Data.ByteString.ByteString@
-         * 'Proto.SignerGrpc_Fields.keyLoc' @:: Lens' SignMessageReq KeyLocator@
-         * 'Proto.SignerGrpc_Fields.maybe'keyLoc' @:: Lens' SignMessageReq (Prelude.Maybe KeyLocator)@
-         * 'Proto.SignerGrpc_Fields.doubleHash' @:: Lens' SignMessageReq Prelude.Bool@
-         * 'Proto.SignerGrpc_Fields.compactSig' @:: Lens' SignMessageReq Prelude.Bool@ -}
+         * 'Proto.Signrpc.Signer_Fields.msg' @:: Lens' SignMessageReq Data.ByteString.ByteString@
+         * 'Proto.Signrpc.Signer_Fields.keyLoc' @:: Lens' SignMessageReq KeyLocator@
+         * 'Proto.Signrpc.Signer_Fields.maybe'keyLoc' @:: Lens' SignMessageReq (Prelude.Maybe KeyLocator)@
+         * 'Proto.Signrpc.Signer_Fields.doubleHash' @:: Lens' SignMessageReq Prelude.Bool@
+         * 'Proto.Signrpc.Signer_Fields.compactSig' @:: Lens' SignMessageReq Prelude.Bool@ -}
 data SignMessageReq
   = SignMessageReq'_constructor {_SignMessageReq'msg :: !Data.ByteString.ByteString,
                                  _SignMessageReq'keyLoc :: !(Prelude.Maybe KeyLocator),
@@ -1683,7 +1683,7 @@ instance Control.DeepSeq.NFData SignMessageReq where
                       (Control.DeepSeq.deepseq (_SignMessageReq'compactSig x__) ()))))
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.signature' @:: Lens' SignMessageResp Data.ByteString.ByteString@ -}
+         * 'Proto.Signrpc.Signer_Fields.signature' @:: Lens' SignMessageResp Data.ByteString.ByteString@ -}
 data SignMessageResp
   = SignMessageResp'_constructor {_SignMessageResp'signature :: !Data.ByteString.ByteString,
                                   _SignMessageResp'_unknownFields :: !Data.ProtoLens.FieldSet}
@@ -1798,9 +1798,9 @@ instance Control.DeepSeq.NFData SignMessageResp where
              (Control.DeepSeq.deepseq (_SignMessageResp'signature x__) ())
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.rawTxBytes' @:: Lens' SignReq Data.ByteString.ByteString@
-         * 'Proto.SignerGrpc_Fields.signDescs' @:: Lens' SignReq [SignDescriptor]@
-         * 'Proto.SignerGrpc_Fields.vec'signDescs' @:: Lens' SignReq (Data.Vector.Vector SignDescriptor)@ -}
+         * 'Proto.Signrpc.Signer_Fields.rawTxBytes' @:: Lens' SignReq Data.ByteString.ByteString@
+         * 'Proto.Signrpc.Signer_Fields.signDescs' @:: Lens' SignReq [SignDescriptor]@
+         * 'Proto.Signrpc.Signer_Fields.vec'signDescs' @:: Lens' SignReq (Data.Vector.Vector SignDescriptor)@ -}
 data SignReq
   = SignReq'_constructor {_SignReq'rawTxBytes :: !Data.ByteString.ByteString,
                           _SignReq'signDescs :: !(Data.Vector.Vector SignDescriptor),
@@ -1983,8 +1983,8 @@ instance Control.DeepSeq.NFData SignReq where
                 (Control.DeepSeq.deepseq (_SignReq'signDescs x__) ()))
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.rawSigs' @:: Lens' SignResp [Data.ByteString.ByteString]@
-         * 'Proto.SignerGrpc_Fields.vec'rawSigs' @:: Lens' SignResp (Data.Vector.Vector Data.ByteString.ByteString)@ -}
+         * 'Proto.Signrpc.Signer_Fields.rawSigs' @:: Lens' SignResp [Data.ByteString.ByteString]@
+         * 'Proto.Signrpc.Signer_Fields.vec'rawSigs' @:: Lens' SignResp (Data.Vector.Vector Data.ByteString.ByteString)@ -}
 data SignResp
   = SignResp'_constructor {_SignResp'rawSigs :: !(Data.Vector.Vector Data.ByteString.ByteString),
                            _SignResp'_unknownFields :: !Data.ProtoLens.FieldSet}
@@ -2114,8 +2114,8 @@ instance Control.DeepSeq.NFData SignResp where
              (Control.DeepSeq.deepseq (_SignResp'rawSigs x__) ())
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.value' @:: Lens' TxOut Data.Int.Int64@
-         * 'Proto.SignerGrpc_Fields.pkScript' @:: Lens' TxOut Data.ByteString.ByteString@ -}
+         * 'Proto.Signrpc.Signer_Fields.value' @:: Lens' TxOut Data.Int.Int64@
+         * 'Proto.Signrpc.Signer_Fields.pkScript' @:: Lens' TxOut Data.ByteString.ByteString@ -}
 data TxOut
   = TxOut'_constructor {_TxOut'value :: !Data.Int.Int64,
                         _TxOut'pkScript :: !Data.ByteString.ByteString,
@@ -2264,9 +2264,9 @@ instance Control.DeepSeq.NFData TxOut where
                 (Control.DeepSeq.deepseq (_TxOut'pkScript x__) ()))
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.msg' @:: Lens' VerifyMessageReq Data.ByteString.ByteString@
-         * 'Proto.SignerGrpc_Fields.signature' @:: Lens' VerifyMessageReq Data.ByteString.ByteString@
-         * 'Proto.SignerGrpc_Fields.pubkey' @:: Lens' VerifyMessageReq Data.ByteString.ByteString@ -}
+         * 'Proto.Signrpc.Signer_Fields.msg' @:: Lens' VerifyMessageReq Data.ByteString.ByteString@
+         * 'Proto.Signrpc.Signer_Fields.signature' @:: Lens' VerifyMessageReq Data.ByteString.ByteString@
+         * 'Proto.Signrpc.Signer_Fields.pubkey' @:: Lens' VerifyMessageReq Data.ByteString.ByteString@ -}
 data VerifyMessageReq
   = VerifyMessageReq'_constructor {_VerifyMessageReq'msg :: !Data.ByteString.ByteString,
                                    _VerifyMessageReq'signature :: !Data.ByteString.ByteString,
@@ -2466,7 +2466,7 @@ instance Control.DeepSeq.NFData VerifyMessageReq where
                    (Control.DeepSeq.deepseq (_VerifyMessageReq'pubkey x__) ())))
 {- | Fields :
      
-         * 'Proto.SignerGrpc_Fields.valid' @:: Lens' VerifyMessageResp Prelude.Bool@ -}
+         * 'Proto.Signrpc.Signer_Fields.valid' @:: Lens' VerifyMessageResp Prelude.Bool@ -}
 data VerifyMessageResp
   = VerifyMessageResp'_constructor {_VerifyMessageResp'valid :: !Prelude.Bool,
                                     _VerifyMessageResp'_unknownFields :: !Data.ProtoLens.FieldSet}
@@ -2617,7 +2617,7 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl Signer "deriveSharedKey" whe
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\
-    \\DC1signer_grpc.proto\DC2\asignrpc\"H\n\
+    \\DC4signrpc/signer.proto\DC2\asignrpc\"H\n\
     \\n\
     \KeyLocator\DC2\GS\n\
     \\n\

@@ -12,8 +12,8 @@ import LndClient.Data.ChannelPoint
   )
 import LndClient.Data.Newtype
 import LndClient.Import
-import qualified Proto.LndGrpc as LnGRPC
-import qualified Proto.LndGrpc_Fields as LnGRPC
+import qualified Proto.Lightning as LnGRPC
+import qualified Proto.Lightning_Fields as LnGRPC
 
 data Channel = Channel
   { remotePubkey :: NodePubKey,

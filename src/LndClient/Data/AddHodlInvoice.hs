@@ -7,8 +7,8 @@ where
 
 import Data.ProtoLens.Message
 import LndClient.Import
-import qualified Proto.InvoiceGrpc as LnGRPC
-import qualified Proto.InvoiceGrpc_Fields as LnGRPC
+import qualified Proto.Invoicesrpc.Invoices as LnGRPC
+import qualified Proto.Invoicesrpc.Invoices_Fields as LnGRPC
 
 data AddHodlInvoiceRequest = AddHodlInvoiceRequest
   { memo :: Maybe Text,

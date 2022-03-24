@@ -1,16 +1,15 @@
 #!/bin/sh
 
 set -e
+shopt -s globstar
 
-rm ./proto/*.proto
+rm -fr ./proto
+mkdir ./proto
 
-curl https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/lightning.proto --output ./proto/lnd_grpc.proto
-curl https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/invoicesrpc/invoices.proto --output ./proto/invoice_grpc.proto
-curl https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/routerrpc/router.proto --output ./proto/router_grpc.proto
-curl https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/walletunlocker.proto --output ./proto/wallet_unlocker_grpc.proto
-curl https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/signrpc/signer.proto --output ./proto/signer_grpc.proto
+tmp_dir=`mktemp -d`
+dest_dir="$(pwd)/proto"
 
-sed -i 's/lightning.proto/lnd_grpc.proto/' ./proto/invoice_grpc.proto
-sed -i 's/lightning.proto/lnd_grpc.proto/' ./proto/router_grpc.proto
-sed -i 's/lightning.proto/lnd_grpc.proto/' ./proto/wallet_unlocker_grpc.proto
-sed -i 's/lightning.proto/lnd_grpc.proto/' ./proto/signer_grpc.proto
+git clone --depth 1 -b "v0.14.0-beta" git@github.com:lightningnetwork/lnd.git "$tmp_dir"
+
+cd "$tmp_dir/lnrpc"
+cp --parents -r **/*.proto "$dest_dir"
