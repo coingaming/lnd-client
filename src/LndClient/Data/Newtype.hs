@@ -27,6 +27,7 @@ module LndClient.Data.Newtype
     defaultAsyncGrpcTimeout,
     TxId (..),
     Vout (..),
+    ChanId (..),
   )
 where
 
@@ -47,6 +48,19 @@ import qualified Proto.Invoicesrpc.Invoices_Fields as IGrpc
 import qualified Proto.Lightning as LnGrpc
 import qualified Proto.Lightning_Fields as LnGrpc
 import Prelude (Show)
+
+newtype ChanId = ChanId Word64
+  deriving newtype
+    ( PersistField,
+      PersistFieldSql,
+      Eq,
+      Ord,
+      Show,
+      Read
+    )
+  deriving stock (Generic)
+
+instance Out ChanId
 
 newtype Vout (a :: TxKind) = Vout Word32
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
@@ -168,11 +182,17 @@ instance ToGrpc (TxId a) ByteString where
 instance ToGrpc (Vout a) Word32 where
   toGrpc = Right . coerce
 
+instance ToGrpc ChanId Word64 where
+  toGrpc = Right . coerce
+
 instance ToGrpc AddIndex Word64 where
   toGrpc = Right . coerce
 
 instance ToGrpc SettleIndex Word64 where
   toGrpc = Right . coerce
+
+instance FromGrpc ChanId Word64 where
+  fromGrpc = Right . coerce
 
 instance FromGrpc RHash ByteString where
   fromGrpc = Right . RHash

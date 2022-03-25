@@ -18,6 +18,7 @@ import qualified Proto.Lightning_Fields as LnGRPC
 data Channel = Channel
   { remotePubkey :: NodePubKey,
     channelPoint :: ChannelPoint,
+    chanId :: ChanId,
     capacity :: MSat,
     localBalance :: MSat,
     remoteBalance :: MSat,
@@ -45,6 +46,7 @@ instance FromGrpc Channel LnGRPC.Channel where
     Channel
       <$> fromGrpc (x ^. LnGRPC.remotePubkey)
       <*> channelPointParser (x ^. LnGRPC.channelPoint)
+      <*> fromGrpc (x ^. LnGRPC.chanId)
       <*> fromGrpcSat (x ^. LnGRPC.capacity)
       <*> fromGrpcSat (x ^. LnGRPC.localBalance)
       <*> fromGrpcSat (x ^. LnGRPC.remoteBalance)
