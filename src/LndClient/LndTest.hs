@@ -535,7 +535,10 @@ sendTestPayment amt0 sender0 recepient0 = do
         SendPayment.SendPaymentRequest
           { SendPayment.paymentRequest =
               AddInvoice.paymentRequest invoice,
-            SendPayment.amt = amt0
+            SendPayment.amt =
+              amt0,
+            SendPayment.outgoingChanId =
+              Nothing
           }
   void . liftLndResult =<< Lnd.sendPayment sender payReq
 

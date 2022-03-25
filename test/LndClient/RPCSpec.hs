@@ -116,7 +116,7 @@ spec = do
         =<< receiveInvoice bob rh Invoice.OPEN chan
       alice <- getLndEnv Alice
       let pr = AddInvoice.paymentRequest inv
-      let spr = SendPaymentRequest pr $ MSat 1000000
+      let spr = SendPaymentRequest pr (MSat 1000000) Nothing
       void $ liftLndResult =<< sendPayment alice spr
       res <- receiveInvoice bob rh Invoice.SETTLED chan
       liftIO $ res `shouldSatisfy` isRight
@@ -226,7 +226,7 @@ spec = do
       watchSingleInvoice Bob rh
       liftLndResult
         =<< receiveInvoice bob rh Invoice.OPEN q
-      let spr = SendPaymentRequest pr $ MSat 1000000
+      let spr = SendPaymentRequest pr (MSat 1000000) Nothing
       alice <- getLndEnv Alice
       withSpawnLink
         (liftLndResult =<< sendPayment alice spr)
@@ -257,7 +257,7 @@ spec = do
       watchSingleInvoice Bob rh
       liftLndResult
         =<< receiveInvoice bob rh Invoice.OPEN q
-      let spr = SendPaymentRequest pr $ MSat 1000000
+      let spr = SendPaymentRequest pr (MSat 1000000) Nothing
       alice <- getLndEnv Alice
       withSpawnLink
         (liftLndResult =<< sendPayment alice spr)
@@ -358,7 +358,8 @@ spec = do
         let req =
               SendPaymentRequest
                 (AddInvoice.paymentRequest inv)
-                $ AddInvoice.valueMsat addInvoiceRequest
+                (AddInvoice.valueMsat addInvoiceRequest)
+                Nothing
         --
         -- spawn payment watcher and settle invoice
         --
@@ -432,7 +433,8 @@ spec = do
         let req =
               SendPaymentRequest
                 (AddInvoice.paymentRequest inv)
-                $ AddInvoice.valueMsat addInvoiceRequest
+                (AddInvoice.valueMsat addInvoiceRequest)
+                Nothing
         let tpreq = TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
         _ <- sendPayment alice req
         tp <- liftLndResult =<< trackPaymentSync alice tpreq
@@ -447,7 +449,8 @@ spec = do
         let req =
               SendPaymentRequest
                 (AddInvoice.paymentRequest inv)
-                $ AddInvoice.valueMsat addInvoiceRequest
+                (AddInvoice.valueMsat addInvoiceRequest)
+                Nothing
         let tpreq = TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
         _ <- sendPayment alice req
         tp <- liftLndResult =<< trackPaymentSync alice tpreq
