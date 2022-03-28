@@ -46,6 +46,7 @@ instance Out ChannelCloseUpdate
 data ChannelCloseSummary = ChannelCloseSummary
   { remotePubkey :: NodePubKey,
     chPoint :: ChannelPoint,
+    chanId :: ChanId,
     settledBalance :: MSat,
     closingTxId :: TxId 'Closing
   }
@@ -91,5 +92,6 @@ instance FromGrpc ChannelCloseSummary LnGRPC.ChannelCloseSummary where
     ChannelCloseSummary
       <$> fromGrpc (x ^. LnGRPC.remotePubkey)
       <*> channelPointParser (x ^. LnGRPC.channelPoint)
+      <*> fromGrpc (x ^. LnGRPC.chanId)
       <*> fromGrpcSat (x ^. LnGRPC.settledBalance)
       <*> fromGrpc (x ^. LnGRPC.closingTxHash)
