@@ -137,10 +137,14 @@ katipAddLndLoc ::
   m a ->
   m a
 katipAddLndLoc env =
-  katipAddLndPublic env LndHost (Grpc._grpcClientConfigHost conf)
-    . katipAddLndPublic env LndPort (toInteger $ Grpc._grpcClientConfigPort conf)
-  where
-    conf = envLndConfig env
+  case Grpc._grpcClientConfigAddress $ envLndConfig env of
+    Grpc.AddressTCP host port ->
+      katipAddLndPublic env LndHost host
+        . katipAddLndPublic env LndPort (toInteger port)
+    Grpc.AddressUnix {} ->
+      katipAddLndPublic env LndHost ("AddressUnix" :: Text)
+    Grpc.AddressSocket {} ->
+      katipAddLndPublic env LndHost ("AddressSocket" :: Text)
 
 rpcRunning :: Katip.LogStr
 rpcRunning = "RPC is running..."

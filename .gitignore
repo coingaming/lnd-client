@@ -13,3 +13,8 @@ result-*
 nohup.out
 .DS_Store
 .lnd/tls*
+lnd-client-prof.aux
+lnd-client-prof.hp
+lnd-client-prof.prof
+lnd-client-prof.ps
+lnd-client-prof.svg

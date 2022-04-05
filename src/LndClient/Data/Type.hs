@@ -15,7 +15,7 @@ import Control.Exception (Exception, IOException)
 import qualified Data.Set as Set
 import LndClient.Import.External
 import LndClient.Orphan ()
-import qualified Network.HTTP2.Client.Exceptions as E
+import qualified Network.HTTP2.Client2.Exceptions as E
 
 data LndError
   = ToGrpcError Text
