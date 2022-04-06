@@ -47,7 +47,7 @@ import Network.GRPC.Client.Helpers
     grpcClientConfigSimple,
   )
 import Network.GRPC.HTTP2.Encoding (uncompressed)
-import Network.HTTP2.Client
+import Network.HTTP2.Client2
 import qualified Network.TLS as TLS
 import qualified Network.TLS.Extra.Cipher as TLS
 import qualified Universum

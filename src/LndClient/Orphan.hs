@@ -5,11 +5,11 @@ module LndClient.Orphan
   )
 where
 
+import Control.Exception (IOException)
 import Data.ProtoLens.Message
-import Network.HTTP2.Client.Exceptions as E
+import Network.HTTP2.Client2.Exceptions as E
 import Text.PrettyPrint.GenericPretty
 import Universum
-import Control.Exception (IOException)
 
 instance Out E.ClientError where
   docPrec n x = docPrec n (Universum.show x :: String)

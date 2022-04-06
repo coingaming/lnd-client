@@ -19,7 +19,7 @@ import LndClient.Data.LndEnv
 import LndClient.Import
 import LndClient.LndTest
 import qualified Network.Bitcoin as BTC (Client)
-import Network.GRPC.Client.Helpers (GrpcClientConfig (..))
+import Network.GRPC.Client.Helpers (Address (..), GrpcClientConfig (..))
 
 data Env = Env
   { envAlice :: TestEnv,
@@ -46,11 +46,14 @@ proxyOwner :: Proxy Owner
 proxyOwner = Proxy
 
 newBobEnv :: LndEnv -> LndEnv
-newBobEnv x =
-  x
+newBobEnv env =
+  env
     { envLndConfig =
-        (envLndConfig x)
-          { _grpcClientConfigPort = 11009
+        lnd
+          { _grpcClientConfigAddress =
+              case _grpcClientConfigAddress lnd of
+                AddressTCP host _ -> AddressTCP host 11009
+                x -> x
           },
       envLndCipherSeedMnemonic =
         Just $
@@ -82,6 +85,8 @@ newBobEnv x =
             ],
       envLndAezeedPassphrase = Nothing
     }
+  where
+    lnd = envLndConfig env
 
 withEnv :: AppM IO () -> IO ()
 withEnv action = do

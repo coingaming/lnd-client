@@ -1,4 +1,4 @@
-cabal-version: 1.12
+cabal-version: 2.0
 
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
@@ -151,12 +151,152 @@ library
     , extra >=1.6.18 && <1.6.20
     , generic-pretty-instances
     , http-client >=0.7.9
-    , http2 >=2.0.3
+    , http2 >=3.0.3
     , http2-client
     , http2-client-grpc >=0.8.0.0
     , http2-grpc-proto-lens >=0.1.0.0
     , http2-grpc-types >=0.5.0.0
     , katip >=0.8.3.0 && <0.8.5
+    , microlens >=0.4.10
+    , network-bitcoin ==1.8.3
+    , pem >=0.2.4 && <0.3
+    , persistent >=2.11.0.2
+    , persistent-template >=2.9
+    , pretty
+    , pretty-simple
+    , proto-lens >=0.7.0
+    , proto-lens-runtime >=0.7.0
+    , qrcode-core >=0.9 && <0.9.3
+    , qrcode-juicypixels ==0.8.0.*
+    , scientific >=0.3.6.2 && <0.3.7
+    , stm >=2.5.0.0 && <2.5.1
+    , template-haskell >=2.14.0.0 && <2.14.1
+    , text >=1.2.3.1 && <1.2.4
+    , tls
+    , unbounded-delays >=0.1.1.0 && <0.1.2
+    , universum ==1.5.0.*
+    , unliftio >=0.2.12
+    , vector
+    , x509 ==1.7.5.*
+    , x509-store
+  default-language: Haskell2010
+
+library lnd-client-tkit
+  exposed-modules:
+      LndClient.TestApp
+  other-modules:
+      Paths_lnd_client
+  hs-source-dirs:
+      tkit
+  default-extensions:
+      NoImplicitPrelude
+      MultiParamTypeClasses
+      LambdaCase
+      OverloadedStrings
+      ScopedTypeVariables
+      DataKinds
+      KindSignatures
+      StrictData
+      DeriveGeneric
+      TypeOperators
+  ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures
+  build-depends:
+      GenericPretty
+    , JuicyPixels >=3.3.3 && <3.4
+    , aeson >=1.4.4.0
+    , asn1-encoding >=0.9.6 && <0.10
+    , asn1-types ==0.3.*
+    , async ==2.2.2.*
+    , base
+    , base16-bytestring >=1.0.1.0 && <1.0.2
+    , base64-bytestring >=1.0.0.2 && <1.0.1
+    , bytestring >=0.10.8.2 && <0.10.9
+    , chronos >=1.0.7 && <1.1
+    , containers >=0.6.0.1 && <0.6.1
+    , cryptohash-sha256 >=0.11.101.0 && <0.11.102
+    , cryptonite >=0.25 && <0.29
+    , deepseq >=1.4.4.0 && <1.4.5
+    , envparse ==0.4.1.*
+    , extra >=1.6.18 && <1.6.20
+    , generic-pretty-instances
+    , http-client >=0.7.9
+    , http2 >=3.0.3
+    , http2-client
+    , http2-client-grpc >=0.8.0.0
+    , http2-grpc-proto-lens >=0.1.0.0
+    , http2-grpc-types >=0.5.0.0
+    , katip >=0.8.3.0 && <0.8.5
+    , lnd-client
+    , microlens >=0.4.10
+    , network-bitcoin ==1.8.3
+    , pem >=0.2.4 && <0.3
+    , persistent >=2.11.0.2
+    , persistent-template >=2.9
+    , pretty
+    , pretty-simple
+    , proto-lens >=0.7.0
+    , proto-lens-runtime >=0.7.0
+    , qrcode-core >=0.9 && <0.9.3
+    , qrcode-juicypixels ==0.8.0.*
+    , scientific >=0.3.6.2 && <0.3.7
+    , stm >=2.5.0.0 && <2.5.1
+    , template-haskell >=2.14.0.0 && <2.14.1
+    , text >=1.2.3.1 && <1.2.4
+    , tls
+    , unbounded-delays >=0.1.1.0 && <0.1.2
+    , universum ==1.5.0.*
+    , unliftio >=0.2.12
+    , vector
+    , x509 ==1.7.5.*
+    , x509-store
+  default-language: Haskell2010
+
+executable lnd-client-prof
+  main-is: LndClient/Main.hs
+  other-modules:
+      Paths_lnd_client
+  hs-source-dirs:
+      prof
+  default-extensions:
+      NoImplicitPrelude
+      MultiParamTypeClasses
+      LambdaCase
+      OverloadedStrings
+      ScopedTypeVariables
+      DataKinds
+      KindSignatures
+      StrictData
+      DeriveGeneric
+      TypeOperators
+  ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -main-is LndClient.Main -O2 -threaded -prof -fprof-auto "-with-rtsopts=-N -s -p -h -xt"
+  build-depends:
+      GenericPretty
+    , JuicyPixels >=3.3.3 && <3.4
+    , aeson >=1.4.4.0
+    , asn1-encoding >=0.9.6 && <0.10
+    , asn1-types ==0.3.*
+    , async ==2.2.2.*
+    , base
+    , base16-bytestring >=1.0.1.0 && <1.0.2
+    , base64-bytestring >=1.0.0.2 && <1.0.1
+    , bytestring >=0.10.8.2 && <0.10.9
+    , chronos >=1.0.7 && <1.1
+    , containers >=0.6.0.1 && <0.6.1
+    , cryptohash-sha256 >=0.11.101.0 && <0.11.102
+    , cryptonite >=0.25 && <0.29
+    , deepseq >=1.4.4.0 && <1.4.5
+    , envparse ==0.4.1.*
+    , extra >=1.6.18 && <1.6.20
+    , generic-pretty-instances
+    , http-client >=0.7.9
+    , http2 >=3.0.3
+    , http2-client
+    , http2-client-grpc >=0.8.0.0
+    , http2-grpc-proto-lens >=0.1.0.0
+    , http2-grpc-types >=0.5.0.0
+    , katip >=0.8.3.0 && <0.8.5
+    , lnd-client
+    , lnd-client-tkit
     , microlens >=0.4.10
     , network-bitcoin ==1.8.3
     , pem >=0.2.4 && <0.3
@@ -187,7 +327,6 @@ test-suite lnd-client-test
   other-modules:
       LndClient.PsbtSpec
       LndClient.RPCSpec
-      LndClient.TestApp
       Paths_lnd_client
   hs-source-dirs:
       test
@@ -224,7 +363,7 @@ test-suite lnd-client-test
     , generic-pretty-instances
     , hspec ==2.7.1.*
     , http-client >=0.7.9
-    , http2 >=2.0.3
+    , http2 >=3.0.3
     , http2-client
     , http2-client-grpc >=0.8.0.0
     , http2-grpc-proto-lens >=0.1.0.0
@@ -338,9 +477,12 @@ test-suite lnd-client-test
         Proto.Watchtowerrpc.Watchtower_Fields
         Proto.Wtclientrpc.Wtclient
         Proto.Wtclientrpc.Wtclient_Fields
+        LndClient.TestApp
     hs-source-dirs:
         src
+        tkit
   else
     build-depends:
         lnd-client
+      , lnd-client-tkit
   default-language: Haskell2010

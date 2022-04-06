@@ -1,9 +1,10 @@
 {
   extraBuildInputs ? [],
-  withShellHook ? false
+  withShellHook ? false,
+  profile ? false
 }:
 let
-  project = import ./default.nix;
+  project = import ./default.nix { inherit profile; };
   header = import ./nix/header.nix;
   haskellPackages = header.haskellPackages;
   pkgs = header.pkgs;
@@ -17,6 +18,7 @@ project.shellFor {
     haskellPackages.fswatcher
     haskellPackages.hpack
     haskellPackages.stack
+    haskellPackages.hp2pretty
     pkgs.bitcoin
     pkgs.openssl
     pkgs.expect

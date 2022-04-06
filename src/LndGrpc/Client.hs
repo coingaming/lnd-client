@@ -20,7 +20,7 @@ import LndClient.Import
 import Network.GRPC.Client.Helpers
 import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens
 import Network.HPACK (HeaderList)
-import Network.HTTP2.Client
+import Network.HTTP2.Client2
 import qualified Prelude
 
 runUnary ::

@@ -1,3 +1,6 @@
+{
+  profile ? false
+}:
 let
   pkgs = (import ./nix/header.nix).pkgs;
   lnd = import ./nix/lnd.nix { inherit pkgs; };
@@ -9,6 +12,7 @@ in pkgs.haskell-nix.project {
   };
   compiler-nix-name = "ghc865";
   modules = [{
+    enableLibraryProfiling = profile;
     packages.lnd-client.components.library.doCoverage = true;
     packages.lnd-client.components.tests.lnd-client-test.preCheck = ''
       ./script/unstack.sh prepare
