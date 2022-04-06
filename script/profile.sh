@@ -11,7 +11,5 @@ trap "hp2pretty $THIS_DIR/../lnd-client-prof.hp && firefox $THIS_DIR/../lnd-clie
   #sh "$THIS_DIR/unstack.sh" prepare
   . "$THIS_DIR/export-test-envs.sh"
   hpack
-  cabal run lnd-client-prof
-  #hp2pretty lnd-client-prof.hp
-  #firefox lnd-client-prof.svg
+  cabal run lnd-client-prof --enable-profiling
 )
