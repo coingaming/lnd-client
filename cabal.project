@@ -1,7 +1,6 @@
 packages: *.cabal
 
-allow-newer: http2-grpc-proto-lens:proto-lens, http2-grpc-proto-lens:proto-lens, http2-client:http2, chronos:aeson, http2-client-grpc:http2, http2-client-grpc:http2-client
-allow-older: http2-client-grpc:http2-client
+allow-newer: http2-grpc-proto-lens:proto-lens, http2-grpc-proto-lens:proto-lens, http2-client:http2, chronos:aeson, http2-client-grpc:http2
 
 source-repository-package
   type: git
@@ -33,34 +32,34 @@ source-repository-package
 
 source-repository-package
   type: git
-  location: https://github.com/akshaymankar/http2-client.git
+  location: https://github.com/coingaming/http2-client.git
   tag: 59df9dcaddf56930aca88e37efece280475f823e
   --sha256: 19gmql3hy0k4i71kiipkayp0fzjjbwgc2y5f5mrcnicnarfq0w4r
 
 source-repository-package
   type: git
-  location: https://github.com/akshaymankar/http2-grpc-haskell.git
+  location: https://github.com/coingaming/http2-grpc-haskell.git
   tag: 4037e853bb73e9c547fce31a11cf633a09907228
   --sha256: 1hliz5v0jw3i84fgm7y3q4blzcfkfx1ml1xcc52hks2jsnv5d9is
   subdir: http2-client-grpc
 
 source-repository-package
   type: git
-  location: https://github.com/akshaymankar/http2-grpc-haskell.git
+  location: https://github.com/coingaming/http2-grpc-haskell.git
   tag: 4037e853bb73e9c547fce31a11cf633a09907228
   --sha256: 1hliz5v0jw3i84fgm7y3q4blzcfkfx1ml1xcc52hks2jsnv5d9is
   subdir: http2-grpc-types
 
 source-repository-package
   type: git
-  location: https://github.com/akshaymankar/http2-grpc-haskell.git
+  location: https://github.com/coingaming/http2-grpc-haskell.git
   tag: 4037e853bb73e9c547fce31a11cf633a09907228
   --sha256: 1hliz5v0jw3i84fgm7y3q4blzcfkfx1ml1xcc52hks2jsnv5d9is
   subdir: http2-grpc-proto-lens
 
 source-repository-package
   type: git
-  location: https://github.com/akshaymankar/http2-grpc-haskell.git
+  location: https://github.com/coingaming/http2-grpc-haskell.git
   tag: 4037e853bb73e9c547fce31a11cf633a09907228
   --sha256: 1hliz5v0jw3i84fgm7y3q4blzcfkfx1ml1xcc52hks2jsnv5d9is
   subdir: http2-grpc-proto3-wire
