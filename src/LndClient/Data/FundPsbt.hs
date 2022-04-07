@@ -1,6 +1,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module LndClient.Data.FundPsbt (FundPsbtRequest (..), FundPsbtResponse (..), TxTemplate (..)) where
+module LndClient.Data.FundPsbt (
+  FundPsbtRequest (..),
+  FundPsbtResponse (..),
+  TxTemplate (..), UtxoLease(..)) where
 
 import Data.ProtoLens.Message
 import Lens.Micro
