@@ -47,7 +47,7 @@ spec =
       utxos <- findUtxosByTxId lndAlice txid
       --print $ "Found in Alice unspent list:" ++ show utxos
       let temp = FP.TxTemplate (LU.outpoint <$> utxos) (M.fromList [(addrBob, psbtBackAmt)])
-      let fr = FP.FundPsbtRequest "" temp 2 False 2
+      let fr = FP.FundPsbtRequest "" temp 2 False (FP.SatPerVbyte 2)
       psbt <- liftLndResult =<< fundPsbt lndAlice fr
       fin <- liftLndResult =<< finalizePsbt lndAlice (FNP.FinalizePsbtRequest (FP.fundedPsbt psbt) "")
       --print $ "Final psbt from Alice:" ++ show finPsbt
