@@ -29,7 +29,7 @@ data Channel = Channel
     totalSatoshisReceived :: MSat,
     numUpdates :: Word64
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out Channel
 
@@ -37,7 +37,7 @@ data PendingUpdate (a :: TxKind) = PendingUpdate
   { txid :: TxId a,
     outputIndex :: Vout a
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out (PendingUpdate a)
 

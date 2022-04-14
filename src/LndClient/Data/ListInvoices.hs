@@ -20,7 +20,7 @@ data ListInvoiceRequest = ListInvoiceRequest
     numMaxInvoices :: Word64,
     reversed :: Bool
   }
-  deriving (Generic, Show)
+  deriving stock (Generic, Show)
 
 instance Out ListInvoiceRequest
 
@@ -29,7 +29,7 @@ data ListInvoiceResponse = ListInvoiceResponse
     lastIndexOffset :: AddIndex,
     firstIndexOffset :: AddIndex
   }
-  deriving (Generic, Show)
+  deriving stock (Generic, Show)
 
 instance Out ListInvoiceResponse
 

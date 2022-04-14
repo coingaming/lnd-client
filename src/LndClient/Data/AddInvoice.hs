@@ -16,7 +16,7 @@ data AddInvoiceRequest = AddInvoiceRequest
     memo :: Maybe Text,
     expiry :: Maybe Seconds
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out AddInvoiceRequest
 
@@ -25,7 +25,7 @@ data AddInvoiceResponse = AddInvoiceResponse
     paymentRequest :: PaymentRequest,
     addIndex :: AddIndex
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out AddInvoiceResponse
 

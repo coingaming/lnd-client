@@ -15,7 +15,7 @@ data Payment = Payment
     valueMsat :: MSat,
     state :: PaymentStatus
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out Payment
 
@@ -24,7 +24,7 @@ data PaymentStatus
   | IN_FLIGHT
   | SUCCEEDED
   | FAILED
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out PaymentStatus
 

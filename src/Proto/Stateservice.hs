@@ -204,8 +204,7 @@ instance Data.ProtoLens.Message GetStateResponse where
                       ((Prelude..)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                         Prelude.fromEnum
-                         _v))
+                         Prelude.fromEnum _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
 instance Control.DeepSeq.NFData GetStateResponse where
@@ -383,8 +382,7 @@ instance Data.ProtoLens.Message SubscribeStateResponse where
                       ((Prelude..)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                         Prelude.fromEnum
-                         _v))
+                         Prelude.fromEnum _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
 instance Control.DeepSeq.NFData SubscribeStateResponse where
@@ -450,8 +448,7 @@ instance Prelude.Enum WalletState where
         (Prelude.error
            ((Prelude.++)
               "toEnum: unknown value for enum WalletState: " (Prelude.show k__)))
-        Prelude.id
-        (Data.ProtoLens.maybeToEnum k__)
+        Prelude.id (Data.ProtoLens.maybeToEnum k__)
   fromEnum NON_EXISTING = 0
   fromEnum LOCKED = 1
   fromEnum UNLOCKED = 2
@@ -506,12 +503,12 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl State "subscribeState" where
   type MethodName State "subscribeState" = "SubscribeState"
   type MethodInput State "subscribeState" = SubscribeStateRequest
   type MethodOutput State "subscribeState" = SubscribeStateResponse
-  type MethodStreamingType State "subscribeState" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodStreamingType State "subscribeState" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl State "getState" where
   type MethodName State "getState" = "GetState"
   type MethodInput State "getState" = GetStateRequest
   type MethodOutput State "getState" = GetStateResponse
-  type MethodStreamingType State "getState" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType State "getState" = 'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\

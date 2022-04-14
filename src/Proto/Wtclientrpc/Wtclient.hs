@@ -191,8 +191,7 @@ instance Data.ProtoLens.Message AddTowerRequest where
                                     (Data.ProtoLens.Encoding.Bytes.putVarInt
                                        (Prelude.fromIntegral (Data.ByteString.length bs)))
                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                            Data.Text.Encoding.encodeUtf8
-                            _v))
+                            Data.Text.Encoding.encodeUtf8 _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData AddTowerRequest where
@@ -416,8 +415,7 @@ instance Data.ProtoLens.Message GetTowerInfoRequest where
                        (Data.Monoid.<>)
                          (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
                          ((Prelude..)
-                            Data.ProtoLens.Encoding.Bytes.putVarInt
-                            (\ b -> if b then 1 else 0)
+                            Data.ProtoLens.Encoding.Bytes.putVarInt (\ b -> if b then 1 else 0)
                             _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
@@ -533,8 +531,7 @@ instance Data.ProtoLens.Message ListTowersRequest where
                     (Data.Monoid.<>)
                       (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
                       ((Prelude..)
-                         Data.ProtoLens.Encoding.Bytes.putVarInt
-                         (\ b -> if b then 1 else 0)
+                         Data.ProtoLens.Encoding.Bytes.putVarInt (\ b -> if b then 1 else 0)
                          _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
@@ -627,8 +624,7 @@ instance Data.ProtoLens.Message ListTowersResponse where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'towers") frozen'towers x))
                else
@@ -670,8 +666,7 @@ instance Data.ProtoLens.Message ListTowersResponse where
                                    (Data.ProtoLens.Encoding.Bytes.putVarInt
                                       (Prelude.fromIntegral (Data.ByteString.length bs)))
                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                           Data.ProtoLens.encodeMessage
-                           _v))
+                           Data.ProtoLens.encodeMessage _v))
                 (Lens.Family2.view (Data.ProtoLens.Field.field @"vec'towers") _x))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
@@ -787,8 +782,7 @@ instance Data.ProtoLens.Message PolicyRequest where
                       ((Prelude..)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                         Prelude.fromEnum
-                         _v))
+                         Prelude.fromEnum _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
 instance Control.DeepSeq.NFData PolicyRequest where
@@ -1040,8 +1034,7 @@ instance Prelude.Enum PolicyType where
         (Prelude.error
            ((Prelude.++)
               "toEnum: unknown value for enum PolicyType: " (Prelude.show k__)))
-        Prelude.id
-        (Data.ProtoLens.maybeToEnum k__)
+        Prelude.id (Data.ProtoLens.maybeToEnum k__)
   fromEnum LEGACY = 0
   fromEnum ANCHOR = 1
   fromEnum (PolicyType'Unrecognized (PolicyType'UnrecognizedValue k))
@@ -1219,8 +1212,7 @@ instance Data.ProtoLens.Message RemoveTowerRequest where
                                     (Data.ProtoLens.Encoding.Bytes.putVarInt
                                        (Prelude.fromIntegral (Data.ByteString.length bs)))
                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                            Data.Text.Encoding.encodeUtf8
-                            _v))
+                            Data.Text.Encoding.encodeUtf8 _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData RemoveTowerRequest where
@@ -1636,8 +1628,7 @@ instance Data.ProtoLens.Message StatsResponse where
                                 (Data.Monoid.<>)
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
                                   ((Prelude..)
-                                     Data.ProtoLens.Encoding.Bytes.putVarInt
-                                     Prelude.fromIntegral
+                                     Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                      _v))
                          (Data.ProtoLens.Encoding.Wire.buildFieldSet
                             (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))
@@ -1830,11 +1821,9 @@ instance Data.ProtoLens.Message Tower where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
-                              (Data.ProtoLens.Field.field @"vec'addresses")
-                              frozen'addresses
+                              (Data.ProtoLens.Field.field @"vec'addresses") frozen'addresses
                               (Lens.Family2.set
                                  (Data.ProtoLens.Field.field @"vec'sessions") frozen'sessions x)))
                else
@@ -1848,8 +1837,7 @@ instance Data.ProtoLens.Message Tower where
                                        "pubkey"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"pubkey") y x)
-                                  mutable'addresses
-                                  mutable'sessions
+                                  mutable'addresses mutable'sessions
                         18
                           -> do !y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                         (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -1872,8 +1860,7 @@ instance Data.ProtoLens.Message Tower where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"activeSessionCandidate") y x)
-                                  mutable'addresses
-                                  mutable'sessions
+                                  mutable'addresses mutable'sessions
                         32
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -1882,8 +1869,7 @@ instance Data.ProtoLens.Message Tower where
                                        "num_sessions"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"numSessions") y x)
-                                  mutable'addresses
-                                  mutable'sessions
+                                  mutable'addresses mutable'sessions
                         42
                           -> do !y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                         (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -1900,8 +1886,7 @@ instance Data.ProtoLens.Message Tower where
                                 loop
                                   (Lens.Family2.over
                                      Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
-                                  mutable'addresses
-                                  mutable'sessions
+                                  mutable'addresses mutable'sessions
       in
         (Data.ProtoLens.Encoding.Bytes.<?>)
           (do mutable'addresses <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
@@ -1938,8 +1923,7 @@ instance Data.ProtoLens.Message Tower where
                                       (Data.ProtoLens.Encoding.Bytes.putVarInt
                                          (Prelude.fromIntegral (Data.ByteString.length bs)))
                                       (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                              Data.Text.Encoding.encodeUtf8
-                              _v))
+                              Data.Text.Encoding.encodeUtf8 _v))
                    (Lens.Family2.view
                       (Data.ProtoLens.Field.field @"vec'addresses") _x))
                 ((Data.Monoid.<>)
@@ -1954,8 +1938,7 @@ instance Data.ProtoLens.Message Tower where
                           (Data.Monoid.<>)
                             (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
                             ((Prelude..)
-                               Data.ProtoLens.Encoding.Bytes.putVarInt
-                               (\ b -> if b then 1 else 0)
+                               Data.ProtoLens.Encoding.Bytes.putVarInt (\ b -> if b then 1 else 0)
                                _v))
                    ((Data.Monoid.<>)
                       (let
@@ -1981,8 +1964,7 @@ instance Data.ProtoLens.Message Tower where
                                                   (Prelude.fromIntegral
                                                      (Data.ByteString.length bs)))
                                                (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                       Data.ProtoLens.encodeMessage
-                                       _v))
+                                       Data.ProtoLens.encodeMessage _v))
                             (Lens.Family2.view
                                (Data.ProtoLens.Field.field @"vec'sessions") _x))
                          (Data.ProtoLens.Encoding.Wire.buildFieldSet
@@ -2274,8 +2256,7 @@ instance Data.ProtoLens.Message TowerSession where
                                 (Data.Monoid.<>)
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
                                   ((Prelude..)
-                                     Data.ProtoLens.Encoding.Bytes.putVarInt
-                                     Prelude.fromIntegral
+                                     Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                      _v))
                          (Data.ProtoLens.Encoding.Wire.buildFieldSet
                             (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))
@@ -2318,32 +2299,32 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl WatchtowerClient "addTower" 
   type MethodName WatchtowerClient "addTower" = "AddTower"
   type MethodInput WatchtowerClient "addTower" = AddTowerRequest
   type MethodOutput WatchtowerClient "addTower" = AddTowerResponse
-  type MethodStreamingType WatchtowerClient "addTower" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType WatchtowerClient "addTower" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl WatchtowerClient "removeTower" where
   type MethodName WatchtowerClient "removeTower" = "RemoveTower"
   type MethodInput WatchtowerClient "removeTower" = RemoveTowerRequest
   type MethodOutput WatchtowerClient "removeTower" = RemoveTowerResponse
-  type MethodStreamingType WatchtowerClient "removeTower" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType WatchtowerClient "removeTower" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl WatchtowerClient "listTowers" where
   type MethodName WatchtowerClient "listTowers" = "ListTowers"
   type MethodInput WatchtowerClient "listTowers" = ListTowersRequest
   type MethodOutput WatchtowerClient "listTowers" = ListTowersResponse
-  type MethodStreamingType WatchtowerClient "listTowers" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType WatchtowerClient "listTowers" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl WatchtowerClient "getTowerInfo" where
   type MethodName WatchtowerClient "getTowerInfo" = "GetTowerInfo"
   type MethodInput WatchtowerClient "getTowerInfo" = GetTowerInfoRequest
   type MethodOutput WatchtowerClient "getTowerInfo" = Tower
-  type MethodStreamingType WatchtowerClient "getTowerInfo" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType WatchtowerClient "getTowerInfo" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl WatchtowerClient "stats" where
   type MethodName WatchtowerClient "stats" = "Stats"
   type MethodInput WatchtowerClient "stats" = StatsRequest
   type MethodOutput WatchtowerClient "stats" = StatsResponse
-  type MethodStreamingType WatchtowerClient "stats" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType WatchtowerClient "stats" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl WatchtowerClient "policy" where
   type MethodName WatchtowerClient "policy" = "Policy"
   type MethodInput WatchtowerClient "policy" = PolicyRequest
   type MethodOutput WatchtowerClient "policy" = PolicyResponse
-  type MethodStreamingType WatchtowerClient "policy" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType WatchtowerClient "policy" = 'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\

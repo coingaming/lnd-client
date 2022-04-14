@@ -312,11 +312,9 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
-                              (Data.ProtoLens.Field.field @"vec'routeHints")
-                              frozen'routeHints
+                              (Data.ProtoLens.Field.field @"vec'routeHints") frozen'routeHints
                               x))
                else
                    do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -449,8 +447,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              ((Data.Monoid.<>)
                 (let _v = Lens.Family2.view (Data.ProtoLens.Field.field @"hash") _x
                  in
@@ -514,8 +511,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                    (Data.Monoid.<>)
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
                                      ((Prelude..)
-                                        Data.ProtoLens.Encoding.Bytes.putVarInt
-                                        Prelude.fromIntegral
+                                        Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                         _v))
                             ((Data.Monoid.<>)
                                (let
@@ -535,8 +531,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                                       (Prelude.fromIntegral
                                                          (Data.ByteString.length bs)))
                                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                           Data.Text.Encoding.encodeUtf8
-                                           _v))
+                                           Data.Text.Encoding.encodeUtf8 _v))
                                ((Data.Monoid.<>)
                                   (let
                                      _v
@@ -562,8 +557,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                                                  (Data.ByteString.length bs)))
                                                            (Data.ProtoLens.Encoding.Bytes.putBytes
                                                               bs))
-                                                   Data.ProtoLens.encodeMessage
-                                                   _v))
+                                                   Data.ProtoLens.encodeMessage _v))
                                         (Lens.Family2.view
                                            (Data.ProtoLens.Field.field @"vec'routeHints") _x))
                                      ((Data.Monoid.<>)
@@ -579,8 +573,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 72)
                                                  ((Prelude..)
                                                     Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                    (\ b -> if b then 1 else 0)
-                                                    _v))
+                                                    (\ b -> if b then 1 else 0) _v))
                                         (Data.ProtoLens.Encoding.Wire.buildFieldSet
                                            (Lens.Family2.view
                                               Data.ProtoLens.unknownFields _x)))))))))))
@@ -779,8 +772,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceResp where
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              ((Data.Monoid.<>)
                 (let
                    _v = Lens.Family2.view (Data.ProtoLens.Field.field @"addIndex") _x
@@ -1275,8 +1267,7 @@ instance Data.ProtoLens.Message LookupInvoiceMsg where
                       ((Prelude..)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                         Prelude.fromEnum
-                         _v))
+                         Prelude.fromEnum _v))
              ((Data.Monoid.<>)
                 (case
                      Lens.Family2.view
@@ -1397,8 +1388,7 @@ instance Prelude.Enum LookupModifier where
            ((Prelude.++)
               "toEnum: unknown value for enum LookupModifier: "
               (Prelude.show k__)))
-        Prelude.id
-        (Data.ProtoLens.maybeToEnum k__)
+        Prelude.id (Data.ProtoLens.maybeToEnum k__)
   fromEnum DEFAULT = 0
   fromEnum HTLC_SET_ONLY = 1
   fromEnum HTLC_SET_BLANK = 2
@@ -1748,27 +1738,27 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "subscribeSingleInv
   type MethodName Invoices "subscribeSingleInvoice" = "SubscribeSingleInvoice"
   type MethodInput Invoices "subscribeSingleInvoice" = SubscribeSingleInvoiceRequest
   type MethodOutput Invoices "subscribeSingleInvoice" = Proto.Lightning.Invoice
-  type MethodStreamingType Invoices "subscribeSingleInvoice" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodStreamingType Invoices "subscribeSingleInvoice" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "cancelInvoice" where
   type MethodName Invoices "cancelInvoice" = "CancelInvoice"
   type MethodInput Invoices "cancelInvoice" = CancelInvoiceMsg
   type MethodOutput Invoices "cancelInvoice" = CancelInvoiceResp
-  type MethodStreamingType Invoices "cancelInvoice" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Invoices "cancelInvoice" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "addHoldInvoice" where
   type MethodName Invoices "addHoldInvoice" = "AddHoldInvoice"
   type MethodInput Invoices "addHoldInvoice" = AddHoldInvoiceRequest
   type MethodOutput Invoices "addHoldInvoice" = AddHoldInvoiceResp
-  type MethodStreamingType Invoices "addHoldInvoice" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Invoices "addHoldInvoice" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "settleInvoice" where
   type MethodName Invoices "settleInvoice" = "SettleInvoice"
   type MethodInput Invoices "settleInvoice" = SettleInvoiceMsg
   type MethodOutput Invoices "settleInvoice" = SettleInvoiceResp
-  type MethodStreamingType Invoices "settleInvoice" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Invoices "settleInvoice" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "lookupInvoiceV2" where
   type MethodName Invoices "lookupInvoiceV2" = "LookupInvoiceV2"
   type MethodInput Invoices "lookupInvoiceV2" = LookupInvoiceMsg
   type MethodOutput Invoices "lookupInvoiceV2" = Proto.Lightning.Invoice
-  type MethodStreamingType Invoices "lookupInvoiceV2" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Invoices "lookupInvoiceV2" = 'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\

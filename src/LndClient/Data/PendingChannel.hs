@@ -18,7 +18,7 @@ data PendingChannel = PendingChannel
     remoteChanReserveSat :: MSat,
     initiator :: LnInitiator
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out PendingChannel
 

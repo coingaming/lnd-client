@@ -15,7 +15,6 @@ import Data.Text
 import GHC.IO.Exception (IOException)
 import GHC.TypeLits (Symbol)
 import LndClient.Data.LndEnv
-import LndClient.Data.Type (LndError (LndWalletNotExists))
 import LndClient.Import
 import Network.GRPC.Client.Helpers
 import qualified Network.GRPC.HTTP2.ProtoLens as ProtoLens

@@ -15,7 +15,7 @@ data PendingOpenChannel = PendingOpenChannel
     commitWeight :: Int64,
     feePerKw :: MSat
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out PendingOpenChannel
 

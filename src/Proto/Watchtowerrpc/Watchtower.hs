@@ -235,11 +235,9 @@ instance Data.ProtoLens.Message GetInfoResponse where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
-                              (Data.ProtoLens.Field.field @"vec'listeners")
-                              frozen'listeners
+                              (Data.ProtoLens.Field.field @"vec'listeners") frozen'listeners
                               (Lens.Family2.set
                                  (Data.ProtoLens.Field.field @"vec'uris") frozen'uris x)))
                else
@@ -253,8 +251,7 @@ instance Data.ProtoLens.Message GetInfoResponse where
                                        "pubkey"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"pubkey") y x)
-                                  mutable'listeners
-                                  mutable'uris
+                                  mutable'listeners mutable'uris
                         18
                           -> do !y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                         (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -289,8 +286,7 @@ instance Data.ProtoLens.Message GetInfoResponse where
                                 loop
                                   (Lens.Family2.over
                                      Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
-                                  mutable'listeners
-                                  mutable'uris
+                                  mutable'listeners mutable'uris
       in
         (Data.ProtoLens.Encoding.Bytes.<?>)
           (do mutable'listeners <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
@@ -327,8 +323,7 @@ instance Data.ProtoLens.Message GetInfoResponse where
                                       (Data.ProtoLens.Encoding.Bytes.putVarInt
                                          (Prelude.fromIntegral (Data.ByteString.length bs)))
                                       (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                              Data.Text.Encoding.encodeUtf8
-                              _v))
+                              Data.Text.Encoding.encodeUtf8 _v))
                    (Lens.Family2.view
                       (Data.ProtoLens.Field.field @"vec'listeners") _x))
                 ((Data.Monoid.<>)
@@ -342,8 +337,7 @@ instance Data.ProtoLens.Message GetInfoResponse where
                                          (Data.ProtoLens.Encoding.Bytes.putVarInt
                                             (Prelude.fromIntegral (Data.ByteString.length bs)))
                                          (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                 Data.Text.Encoding.encodeUtf8
-                                 _v))
+                                 Data.Text.Encoding.encodeUtf8 _v))
                       (Lens.Family2.view (Data.ProtoLens.Field.field @"vec'uris") _x))
                    (Data.ProtoLens.Encoding.Wire.buildFieldSet
                       (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
@@ -371,7 +365,7 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl Watchtower "getInfo" where
   type MethodName Watchtower "getInfo" = "GetInfo"
   type MethodInput Watchtower "getInfo" = GetInfoRequest
   type MethodOutput Watchtower "getInfo" = GetInfoResponse
-  type MethodStreamingType Watchtower "getInfo" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Watchtower "getInfo" = 'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\

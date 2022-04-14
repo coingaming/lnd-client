@@ -20,7 +20,7 @@ data Invoice = Invoice
     addIndex :: AddIndex,
     state :: InvoiceState
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out Invoice
 
@@ -29,7 +29,7 @@ data InvoiceState
   | SETTLED
   | CANCELED
   | ACCEPTED
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out InvoiceState
 

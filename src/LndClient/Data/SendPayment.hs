@@ -16,7 +16,7 @@ data SendPaymentRequest = SendPaymentRequest
     amt :: MSat,
     outgoingChanId :: Maybe ChanId
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out SendPaymentRequest
 
@@ -25,7 +25,7 @@ data SendPaymentResponse = SendPaymentResponse
     paymentPreimage :: RPreimage,
     paymentHash :: RHash
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out SendPaymentResponse
 

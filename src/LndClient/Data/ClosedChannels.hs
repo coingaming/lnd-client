@@ -19,7 +19,7 @@ data ClosedChannelsRequest = ClosedChannelsRequest
     fundingCanceled :: Bool,
     abandoned :: Bool
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out ClosedChannelsRequest
 

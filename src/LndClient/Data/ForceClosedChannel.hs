@@ -16,7 +16,7 @@ data ForceClosedChannel = ForceClosedChannel
     blocksTilMaturity :: Int32,
     recoveredBalance :: MSat
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out ForceClosedChannel
 

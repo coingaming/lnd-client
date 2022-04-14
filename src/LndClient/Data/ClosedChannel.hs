@@ -12,7 +12,7 @@ data ClosedChannel = ClosedChannel
   { channel :: PendingChannel,
     closingTxid :: TxId 'Closing
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out ClosedChannel
 

@@ -16,7 +16,7 @@ data UnlockWalletRequest = UnlockWalletRequest
     --  TODO : channel_backups
     --
   }
-  deriving (Eq)
+  deriving stock (Eq)
 
 instance Show UnlockWalletRequest where
   show = const "SECRET"

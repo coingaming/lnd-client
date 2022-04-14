@@ -20,7 +20,7 @@ data PendingChannelsResponse = PendingChannelsResponse
     pendingForceClosingChannels :: [ForceClosedChannel],
     waitingCloseChannels :: [WaitingCloseChannel]
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out PendingChannelsResponse
 

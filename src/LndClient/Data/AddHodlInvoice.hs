@@ -16,7 +16,7 @@ data AddHodlInvoiceRequest = AddHodlInvoiceRequest
     valueMsat :: MSat,
     expiry :: Maybe Seconds
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out AddHodlInvoiceRequest
 

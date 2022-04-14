@@ -12,7 +12,7 @@ data WaitingCloseChannel = WaitingCloseChannel
   { channel :: PendingChannel,
     limboBalance :: MSat
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out WaitingCloseChannel
 

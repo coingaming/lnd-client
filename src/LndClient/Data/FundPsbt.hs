@@ -13,7 +13,7 @@ data TxTemplate = TxTemplate
   { inputs :: [OutPoint],
     outputs :: Map Text MSat
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out TxTemplate
 
@@ -22,21 +22,24 @@ instance ToGrpc TxTemplate W.FundPsbtRequest'Template where
     where
       msg i o = defMessage & W.inputs .~ i & W.outputs .~ o
 
-data FundPsbtRequest = FundPsbtRequest {
-    account :: Text,
+data FundPsbtRequest = FundPsbtRequest
+  { account :: Text,
     template :: TxTemplate,
     minConfs :: Int32,
     spendUnconfirmed :: Bool,
     targetConf :: Word32
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out FundPsbtRequest
 
 instance ToGrpc FundPsbtRequest W.FundPsbtRequest where
-  toGrpc x = msg
-    (account x) (spendUnconfirmed x)
-    (W.FundPsbtRequest'TargetConf $ targetConf x) <$> toGrpc (template x)
+  toGrpc x =
+    msg
+      (account x)
+      (spendUnconfirmed x)
+      (W.FundPsbtRequest'TargetConf $ targetConf x)
+      <$> toGrpc (template x)
     where
       msg a s f t =
         defMessage
@@ -50,7 +53,7 @@ data UtxoLease = UtxoLease
     outpoint :: OutPoint,
     expiration :: Word64
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out UtxoLease
 
@@ -66,7 +69,7 @@ data FundPsbtResponse = FundPsbtResponse
     changeOutputIndex :: Int32,
     lockedUtxos :: [UtxoLease]
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out FundPsbtResponse
 

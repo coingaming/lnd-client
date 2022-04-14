@@ -12,7 +12,7 @@ data PayReq = PayReq
     numMsat :: MSat,
     expiry :: Seconds
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out PayReq
 

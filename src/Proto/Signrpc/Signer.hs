@@ -141,8 +141,7 @@ instance Data.ProtoLens.Message InputScript where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'witness") frozen'witness x))
                else
@@ -301,12 +300,10 @@ instance Data.ProtoLens.Message InputScriptResp where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'inputScripts")
-                              frozen'inputScripts
-                              x))
+                              frozen'inputScripts x))
                else
                    do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
                       case tag of
@@ -347,8 +344,7 @@ instance Data.ProtoLens.Message InputScriptResp where
                                    (Data.ProtoLens.Encoding.Bytes.putVarInt
                                       (Prelude.fromIntegral (Data.ByteString.length bs)))
                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                           Data.ProtoLens.encodeMessage
-                           _v))
+                           Data.ProtoLens.encodeMessage _v))
                 (Lens.Family2.view
                    (Data.ProtoLens.Field.field @"vec'inputScripts") _x))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
@@ -515,8 +511,7 @@ instance Data.ProtoLens.Message KeyDescriptor where
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt
                                         (Prelude.fromIntegral (Data.ByteString.length bs)))
                                      (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                             Data.ProtoLens.encodeMessage
-                             _v))
+                             Data.ProtoLens.encodeMessage _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData KeyDescriptor where
@@ -874,8 +869,7 @@ instance Data.ProtoLens.Message SharedKeyRequest where
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt
                                         (Prelude.fromIntegral (Data.ByteString.length bs)))
                                      (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                             Data.ProtoLens.encodeMessage
-                             _v))
+                             Data.ProtoLens.encodeMessage _v))
                 ((Data.Monoid.<>)
                    (case
                         Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'keyDesc") _x
@@ -890,8 +884,7 @@ instance Data.ProtoLens.Message SharedKeyRequest where
                                         (Data.ProtoLens.Encoding.Bytes.putVarInt
                                            (Prelude.fromIntegral (Data.ByteString.length bs)))
                                         (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                Data.ProtoLens.encodeMessage
-                                _v))
+                                Data.ProtoLens.encodeMessage _v))
                    (Data.ProtoLens.Encoding.Wire.buildFieldSet
                       (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
 instance Control.DeepSeq.NFData SharedKeyRequest where
@@ -1312,8 +1305,7 @@ instance Data.ProtoLens.Message SignDescriptor where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              ((Data.Monoid.<>)
                 (let
                    _v
@@ -1377,8 +1369,7 @@ instance Data.ProtoLens.Message SignDescriptor where
                                               (Data.ProtoLens.Encoding.Bytes.putVarInt
                                                  (Prelude.fromIntegral (Data.ByteString.length bs)))
                                               (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                      Data.ProtoLens.encodeMessage
-                                      _v))
+                                      Data.ProtoLens.encodeMessage _v))
                          ((Data.Monoid.<>)
                             (let
                                _v = Lens.Family2.view (Data.ProtoLens.Field.field @"sighash") _x
@@ -1389,8 +1380,7 @@ instance Data.ProtoLens.Message SignDescriptor where
                                    (Data.Monoid.<>)
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt 56)
                                      ((Prelude..)
-                                        Data.ProtoLens.Encoding.Bytes.putVarInt
-                                        Prelude.fromIntegral
+                                        Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                         _v))
                             ((Data.Monoid.<>)
                                (let
@@ -1405,8 +1395,7 @@ instance Data.ProtoLens.Message SignDescriptor where
                                         (Data.ProtoLens.Encoding.Bytes.putVarInt 64)
                                         ((Prelude..)
                                            Data.ProtoLens.Encoding.Bytes.putVarInt
-                                           Prelude.fromIntegral
-                                           _v))
+                                           Prelude.fromIntegral _v))
                                (Data.ProtoLens.Encoding.Wire.buildFieldSet
                                   (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))))
 instance Control.DeepSeq.NFData SignDescriptor where
@@ -1637,8 +1626,7 @@ instance Data.ProtoLens.Message SignMessageReq where
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt
                                         (Prelude.fromIntegral (Data.ByteString.length bs)))
                                      (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                             Data.ProtoLens.encodeMessage
-                             _v))
+                             Data.ProtoLens.encodeMessage _v))
                 ((Data.Monoid.<>)
                    (let
                       _v
@@ -1650,8 +1638,7 @@ instance Data.ProtoLens.Message SignMessageReq where
                           (Data.Monoid.<>)
                             (Data.ProtoLens.Encoding.Bytes.putVarInt 24)
                             ((Prelude..)
-                               Data.ProtoLens.Encoding.Bytes.putVarInt
-                               (\ b -> if b then 1 else 0)
+                               Data.ProtoLens.Encoding.Bytes.putVarInt (\ b -> if b then 1 else 0)
                                _v))
                    ((Data.Monoid.<>)
                       (let
@@ -1665,8 +1652,7 @@ instance Data.ProtoLens.Message SignMessageReq where
                                (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
                                ((Prelude..)
                                   Data.ProtoLens.Encoding.Bytes.putVarInt
-                                  (\ b -> if b then 1 else 0)
-                                  _v))
+                                  (\ b -> if b then 1 else 0) _v))
                       (Data.ProtoLens.Encoding.Wire.buildFieldSet
                          (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))
 instance Control.DeepSeq.NFData SignMessageReq where
@@ -1899,8 +1885,7 @@ instance Data.ProtoLens.Message SignReq where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'signDescs") frozen'signDescs x))
                else
@@ -1967,8 +1952,7 @@ instance Data.ProtoLens.Message SignReq where
                                       (Data.ProtoLens.Encoding.Bytes.putVarInt
                                          (Prelude.fromIntegral (Data.ByteString.length bs)))
                                       (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                              Data.ProtoLens.encodeMessage
-                              _v))
+                              Data.ProtoLens.encodeMessage _v))
                    (Lens.Family2.view
                       (Data.ProtoLens.Field.field @"vec'signDescs") _x))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
@@ -2061,8 +2045,7 @@ instance Data.ProtoLens.Message SignResp where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'rawSigs") frozen'rawSigs x))
                else
@@ -2561,8 +2544,7 @@ instance Data.ProtoLens.Message VerifyMessageResp where
                     (Data.Monoid.<>)
                       (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
                       ((Prelude..)
-                         Data.ProtoLens.Encoding.Bytes.putVarInt
-                         (\ b -> if b then 1 else 0)
+                         Data.ProtoLens.Encoding.Bytes.putVarInt (\ b -> if b then 1 else 0)
                          _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
@@ -2593,27 +2575,27 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl Signer "signOutputRaw" where
   type MethodName Signer "signOutputRaw" = "SignOutputRaw"
   type MethodInput Signer "signOutputRaw" = SignReq
   type MethodOutput Signer "signOutputRaw" = SignResp
-  type MethodStreamingType Signer "signOutputRaw" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Signer "signOutputRaw" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Signer "computeInputScript" where
   type MethodName Signer "computeInputScript" = "ComputeInputScript"
   type MethodInput Signer "computeInputScript" = SignReq
   type MethodOutput Signer "computeInputScript" = InputScriptResp
-  type MethodStreamingType Signer "computeInputScript" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Signer "computeInputScript" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Signer "signMessage" where
   type MethodName Signer "signMessage" = "SignMessage"
   type MethodInput Signer "signMessage" = SignMessageReq
   type MethodOutput Signer "signMessage" = SignMessageResp
-  type MethodStreamingType Signer "signMessage" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Signer "signMessage" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Signer "verifyMessage" where
   type MethodName Signer "verifyMessage" = "VerifyMessage"
   type MethodInput Signer "verifyMessage" = VerifyMessageReq
   type MethodOutput Signer "verifyMessage" = VerifyMessageResp
-  type MethodStreamingType Signer "verifyMessage" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Signer "verifyMessage" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Signer "deriveSharedKey" where
   type MethodName Signer "deriveSharedKey" = "DeriveSharedKey"
   type MethodInput Signer "deriveSharedKey" = SharedKeyRequest
   type MethodOutput Signer "deriveSharedKey" = SharedKeyResponse
-  type MethodStreamingType Signer "deriveSharedKey" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Signer "deriveSharedKey" = 'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\

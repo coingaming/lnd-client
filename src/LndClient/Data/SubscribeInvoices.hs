@@ -14,7 +14,7 @@ data SubscribeInvoicesRequest = SubscribeInvoicesRequest
   { addIndex :: Maybe AddIndex,
     settleIndex :: Maybe SettleIndex
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out SubscribeInvoicesRequest
 

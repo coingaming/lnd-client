@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+
 module LndClient.Data.LeaseOutput
   ( LeaseOutputRequest (..),
     LeaseOutputResponse (..),
@@ -6,19 +7,18 @@ module LndClient.Data.LeaseOutput
 where
 
 import Data.ProtoLens.Message
+import LndClient.Data.OutPoint
 import LndClient.Import
+import qualified Proto.Lightning as LnGRPC
 import qualified Proto.Walletrpc.Walletkit as W
 import qualified Proto.Walletrpc.Walletkit_Fields as W
-import qualified Proto.Lightning as LnGRPC
-import LndClient.Data.OutPoint
 
 data LeaseOutputRequest = LeaseOutputRequest
-  {
-    id' :: ByteString,
+  { id' :: ByteString,
     outpoint :: Maybe OutPoint,
     expirationSeconds :: Word64
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out LeaseOutputRequest
 
@@ -27,8 +27,8 @@ instance ToGrpc LeaseOutputRequest W.LeaseOutputRequest where
     where
       out' :: Either LndError (Maybe LnGRPC.OutPoint)
       out' = case outpoint x of
-               Just op -> Just <$> toGrpc op
-               Nothing -> Right Nothing
+        Just op -> Just <$> toGrpc op
+        Nothing -> Right Nothing
       msg i e o =
         defMessage
           & (W.id .~ i)
@@ -36,12 +36,11 @@ instance ToGrpc LeaseOutputRequest W.LeaseOutputRequest where
           & (W.expirationSeconds .~ e)
 
 newtype LeaseOutputResponse = LeaseOutputResponse
-  { expiration :: Word64 }
-  deriving (Eq, Ord, Show, Generic)
+  {expiration :: Word64}
+  deriving newtype (Eq, Ord, Show)
+  deriving stock (Generic)
 
 instance Out LeaseOutputResponse
 
 instance FromGrpc LeaseOutputResponse W.LeaseOutputResponse where
-  fromGrpc x = LeaseOutputResponse <$>fromGrpc (x ^. W.expiration)
-
-
+  fromGrpc x = LeaseOutputResponse <$> fromGrpc (x ^. W.expiration)

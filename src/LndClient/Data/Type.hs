@@ -10,8 +10,7 @@ module LndClient.Data.Type
   )
 where
 
-import Chronos (Timespan)
-import Control.Exception (Exception, IOException)
+import Control.Exception (IOException)
 import qualified Data.Set as Set
 import LndClient.Import.External
 import LndClient.Orphan ()
@@ -31,7 +30,7 @@ data LndError
   | TChanTimeout Text
   | NetworkException Text
   | LndIOException IOException
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out LndError
 
@@ -49,7 +48,7 @@ data LoggingMeta
   | LndElapsedSecondsSub
   | LndMethodCompose
   | LndTestReceiveInvoice
-  deriving (Eq, Ord, Show, Read, Generic, Enum, Bounded)
+  deriving stock (Eq, Ord, Show, Read, Generic, Enum, Bounded)
 
 instance Out LoggingMeta
 
@@ -70,7 +69,7 @@ data LnInitiator
   | LnInitiatorLocal
   | LnInitiatorRemote
   | LnInitiatorBoth
-  deriving (Eq, Ord, Show, Read, Generic)
+  deriving stock (Eq, Ord, Show, Read, Generic)
 
 instance Out LnInitiator
 

@@ -277,8 +277,7 @@ instance Data.ProtoLens.Message Version where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'buildTags") frozen'buildTags x))
                else
@@ -426,8 +425,7 @@ instance Data.ProtoLens.Message Version where
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              ((Data.Monoid.<>)
                 (let
                    _v
@@ -444,8 +442,7 @@ instance Data.ProtoLens.Message Version where
                                     (Data.ProtoLens.Encoding.Bytes.putVarInt
                                        (Prelude.fromIntegral (Data.ByteString.length bs)))
                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                            Data.Text.Encoding.encodeUtf8
-                            _v))
+                            Data.Text.Encoding.encodeUtf8 _v))
                 ((Data.Monoid.<>)
                    (let
                       _v = Lens.Family2.view (Data.ProtoLens.Field.field @"version") _x
@@ -461,8 +458,7 @@ instance Data.ProtoLens.Message Version where
                                        (Data.ProtoLens.Encoding.Bytes.putVarInt
                                           (Prelude.fromIntegral (Data.ByteString.length bs)))
                                        (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                               Data.Text.Encoding.encodeUtf8
-                               _v))
+                               Data.Text.Encoding.encodeUtf8 _v))
                    ((Data.Monoid.<>)
                       (let
                          _v = Lens.Family2.view (Data.ProtoLens.Field.field @"appMajor") _x
@@ -484,8 +480,7 @@ instance Data.ProtoLens.Message Version where
                                 (Data.Monoid.<>)
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
                                   ((Prelude..)
-                                     Data.ProtoLens.Encoding.Bytes.putVarInt
-                                     Prelude.fromIntegral
+                                     Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                      _v))
                          ((Data.Monoid.<>)
                             (let
@@ -497,8 +492,7 @@ instance Data.ProtoLens.Message Version where
                                    (Data.Monoid.<>)
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt 48)
                                      ((Prelude..)
-                                        Data.ProtoLens.Encoding.Bytes.putVarInt
-                                        Prelude.fromIntegral
+                                        Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                         _v))
                             ((Data.Monoid.<>)
                                (let
@@ -518,8 +512,7 @@ instance Data.ProtoLens.Message Version where
                                                       (Prelude.fromIntegral
                                                          (Data.ByteString.length bs)))
                                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                           Data.Text.Encoding.encodeUtf8
-                                           _v))
+                                           Data.Text.Encoding.encodeUtf8 _v))
                                ((Data.Monoid.<>)
                                   (Data.ProtoLens.Encoding.Bytes.foldMapBuilder
                                      (\ _v
@@ -532,8 +525,7 @@ instance Data.ProtoLens.Message Version where
                                                            (Prelude.fromIntegral
                                                               (Data.ByteString.length bs)))
                                                         (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                                Data.Text.Encoding.encodeUtf8
-                                                _v))
+                                                Data.Text.Encoding.encodeUtf8 _v))
                                      (Lens.Family2.view
                                         (Data.ProtoLens.Field.field @"vec'buildTags") _x))
                                   ((Data.Monoid.<>)
@@ -555,8 +547,7 @@ instance Data.ProtoLens.Message Version where
                                                                (Data.ByteString.length bs)))
                                                          (Data.ProtoLens.Encoding.Bytes.putBytes
                                                             bs))
-                                                 Data.Text.Encoding.encodeUtf8
-                                                 _v))
+                                                 Data.Text.Encoding.encodeUtf8 _v))
                                      (Data.ProtoLens.Encoding.Wire.buildFieldSet
                                         (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))))))
 instance Control.DeepSeq.NFData Version where
@@ -660,7 +651,7 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl Versioner "getVersion" where
   type MethodName Versioner "getVersion" = "GetVersion"
   type MethodInput Versioner "getVersion" = VersionRequest
   type MethodOutput Versioner "getVersion" = Version
-  type MethodStreamingType Versioner "getVersion" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Versioner "getVersion" = 'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\

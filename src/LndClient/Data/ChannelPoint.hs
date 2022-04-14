@@ -19,7 +19,7 @@ data ChannelPoint = ChannelPoint
   { fundingTxId :: TxId 'Funding,
     outputIndex :: Vout 'Funding
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out ChannelPoint
 

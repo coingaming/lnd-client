@@ -229,11 +229,9 @@ instance Data.ProtoLens.Message BuildRouteRequest where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
-                              (Data.ProtoLens.Field.field @"vec'hopPubkeys")
-                              frozen'hopPubkeys
+                              (Data.ProtoLens.Field.field @"vec'hopPubkeys") frozen'hopPubkeys
                               x))
                else
                    do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -489,8 +487,7 @@ instance Data.ProtoLens.Message BuildRouteResponse where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
 instance Control.DeepSeq.NFData BuildRouteResponse where
@@ -545,8 +542,7 @@ instance Prelude.Enum ChanStatusAction where
            ((Prelude.++)
               "toEnum: unknown value for enum ChanStatusAction: "
               (Prelude.show k__)))
-        Prelude.id
-        (Data.ProtoLens.maybeToEnum k__)
+        Prelude.id (Data.ProtoLens.maybeToEnum k__)
   fromEnum ENABLE = 0
   fromEnum DISABLE = 1
   fromEnum AUTO = 2
@@ -851,8 +847,7 @@ instance Prelude.Enum FailureDetail where
            ((Prelude.++)
               "toEnum: unknown value for enum FailureDetail: "
               (Prelude.show k__)))
-        Prelude.id
-        (Data.ProtoLens.maybeToEnum k__)
+        Prelude.id (Data.ProtoLens.maybeToEnum k__)
   fromEnum UNKNOWN = 0
   fromEnum NO_DETAIL = 1
   fromEnum ONION_DECODE = 2
@@ -1052,8 +1047,7 @@ instance Data.ProtoLens.Message ForwardEvent where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
 instance Control.DeepSeq.NFData ForwardEvent where
@@ -1466,8 +1460,7 @@ instance Data.ProtoLens.Message ForwardHtlcInterceptRequest where
                                    loop
                                      (Lens.Family2.over
                                         (Data.ProtoLens.Field.field @"customRecords")
-                                        (\ !t -> Data.Map.insert key value t)
-                                        x))
+                                        (\ !t -> Data.Map.insert key value t) x))
                         74
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -1502,8 +1495,7 @@ instance Data.ProtoLens.Message ForwardHtlcInterceptRequest where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              ((Data.Monoid.<>)
                 (let
                    _v
@@ -1582,8 +1574,7 @@ instance Data.ProtoLens.Message ForwardHtlcInterceptRequest where
                                         (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
                                         ((Prelude..)
                                            Data.ProtoLens.Encoding.Bytes.putVarInt
-                                           Prelude.fromIntegral
-                                           _v))
+                                           Prelude.fromIntegral _v))
                                ((Data.Monoid.<>)
                                   (Data.Monoid.mconcat
                                      (Prelude.map
@@ -1987,8 +1978,7 @@ instance Data.ProtoLens.Message ForwardHtlcInterceptResponse where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              ((Data.Monoid.<>)
                 (let
                    _v = Lens.Family2.view (Data.ProtoLens.Field.field @"action") _x
@@ -2001,8 +1991,7 @@ instance Data.ProtoLens.Message ForwardHtlcInterceptResponse where
                          ((Prelude..)
                             ((Prelude..)
                                Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                            Prelude.fromEnum
-                            _v))
+                            Prelude.fromEnum _v))
                 ((Data.Monoid.<>)
                    (let
                       _v = Lens.Family2.view (Data.ProtoLens.Field.field @"preimage") _x
@@ -2216,8 +2205,7 @@ instance Data.ProtoLens.Message GetMissionControlConfigResponse where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
 instance Control.DeepSeq.NFData GetMissionControlConfigResponse where
@@ -2737,8 +2725,7 @@ instance Data.ProtoLens.Message HtlcEvent where
                                         ((Prelude..)
                                            Data.ProtoLens.Encoding.Bytes.putVarInt
                                            Prelude.fromIntegral)
-                                        Prelude.fromEnum
-                                        _v))
+                                        Prelude.fromEnum _v))
                             ((Data.Monoid.<>)
                                (case
                                     Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'event") _x
@@ -2754,8 +2741,7 @@ instance Data.ProtoLens.Message HtlcEvent where
                                                        (Prelude.fromIntegral
                                                           (Data.ByteString.length bs)))
                                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                            Data.ProtoLens.encodeMessage
-                                            v)
+                                            Data.ProtoLens.encodeMessage v)
                                   (Prelude.Just (HtlcEvent'ForwardFailEvent v))
                                     -> (Data.Monoid.<>)
                                          (Data.ProtoLens.Encoding.Bytes.putVarInt 66)
@@ -2766,8 +2752,7 @@ instance Data.ProtoLens.Message HtlcEvent where
                                                        (Prelude.fromIntegral
                                                           (Data.ByteString.length bs)))
                                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                            Data.ProtoLens.encodeMessage
-                                            v)
+                                            Data.ProtoLens.encodeMessage v)
                                   (Prelude.Just (HtlcEvent'SettleEvent v))
                                     -> (Data.Monoid.<>)
                                          (Data.ProtoLens.Encoding.Bytes.putVarInt 74)
@@ -2778,8 +2763,7 @@ instance Data.ProtoLens.Message HtlcEvent where
                                                        (Prelude.fromIntegral
                                                           (Data.ByteString.length bs)))
                                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                            Data.ProtoLens.encodeMessage
-                                            v)
+                                            Data.ProtoLens.encodeMessage v)
                                   (Prelude.Just (HtlcEvent'LinkFailEvent v))
                                     -> (Data.Monoid.<>)
                                          (Data.ProtoLens.Encoding.Bytes.putVarInt 82)
@@ -2790,8 +2774,7 @@ instance Data.ProtoLens.Message HtlcEvent where
                                                        (Prelude.fromIntegral
                                                           (Data.ByteString.length bs)))
                                                     (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                            Data.ProtoLens.encodeMessage
-                                            v))
+                                            Data.ProtoLens.encodeMessage v))
                                (Data.ProtoLens.Encoding.Wire.buildFieldSet
                                   (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))))
 instance Control.DeepSeq.NFData HtlcEvent where
@@ -2902,8 +2885,7 @@ instance Prelude.Enum HtlcEvent'EventType where
         (Prelude.error
            ((Prelude.++)
               "toEnum: unknown value for enum EventType: " (Prelude.show k__)))
-        Prelude.id
-        (Data.ProtoLens.maybeToEnum k__)
+        Prelude.id (Data.ProtoLens.maybeToEnum k__)
   fromEnum HtlcEvent'UNKNOWN = 0
   fromEnum HtlcEvent'SEND = 1
   fromEnum HtlcEvent'RECEIVE = 2
@@ -3383,8 +3365,7 @@ instance Data.ProtoLens.Message LinkFailEvent where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              ((Data.Monoid.<>)
                 (let
                    _v
@@ -3398,8 +3379,7 @@ instance Data.ProtoLens.Message LinkFailEvent where
                          ((Prelude..)
                             ((Prelude..)
                                Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                            Prelude.fromEnum
-                            _v))
+                            Prelude.fromEnum _v))
                 ((Data.Monoid.<>)
                    (let
                       _v
@@ -3414,8 +3394,7 @@ instance Data.ProtoLens.Message LinkFailEvent where
                             ((Prelude..)
                                ((Prelude..)
                                   Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                               Prelude.fromEnum
-                               _v))
+                               Prelude.fromEnum _v))
                    ((Data.Monoid.<>)
                       (let
                          _v
@@ -3433,8 +3412,7 @@ instance Data.ProtoLens.Message LinkFailEvent where
                                           (Data.ProtoLens.Encoding.Bytes.putVarInt
                                              (Prelude.fromIntegral (Data.ByteString.length bs)))
                                           (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                  Data.Text.Encoding.encodeUtf8
-                                  _v))
+                                  Data.Text.Encoding.encodeUtf8 _v))
                       (Data.ProtoLens.Encoding.Wire.buildFieldSet
                          (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))
 instance Control.DeepSeq.NFData LinkFailEvent where
@@ -3644,8 +3622,7 @@ instance Data.ProtoLens.Message MissionControlConfig where
                                        "minimum_failure_relax_interval"
                                 loop
                                   (Lens.Family2.set
-                                     (Data.ProtoLens.Field.field @"minimumFailureRelaxInterval")
-                                     y
+                                     (Data.ProtoLens.Field.field @"minimumFailureRelaxInterval") y
                                      x)
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
@@ -3683,8 +3660,7 @@ instance Data.ProtoLens.Message MissionControlConfig where
                          (Data.ProtoLens.Encoding.Bytes.putVarInt 21)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putFixed32
-                            Data.ProtoLens.Encoding.Bytes.floatToWord
-                            _v))
+                            Data.ProtoLens.Encoding.Bytes.floatToWord _v))
                 ((Data.Monoid.<>)
                    (let
                       _v = Lens.Family2.view (Data.ProtoLens.Field.field @"weight") _x
@@ -3696,8 +3672,7 @@ instance Data.ProtoLens.Message MissionControlConfig where
                             (Data.ProtoLens.Encoding.Bytes.putVarInt 29)
                             ((Prelude..)
                                Data.ProtoLens.Encoding.Bytes.putFixed32
-                               Data.ProtoLens.Encoding.Bytes.floatToWord
-                               _v))
+                               Data.ProtoLens.Encoding.Bytes.floatToWord _v))
                    ((Data.Monoid.<>)
                       (let
                          _v
@@ -4035,8 +4010,7 @@ instance Data.ProtoLens.Message PairData where
                                 (Data.Monoid.<>)
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt 48)
                                   ((Prelude..)
-                                     Data.ProtoLens.Encoding.Bytes.putVarInt
-                                     Prelude.fromIntegral
+                                     Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                      _v))
                          ((Data.Monoid.<>)
                             (let
@@ -4050,8 +4024,7 @@ instance Data.ProtoLens.Message PairData where
                                    (Data.Monoid.<>)
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt 56)
                                      ((Prelude..)
-                                        Data.ProtoLens.Encoding.Bytes.putVarInt
-                                        Prelude.fromIntegral
+                                        Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                         _v))
                             (Data.ProtoLens.Encoding.Wire.buildFieldSet
                                (Lens.Family2.view Data.ProtoLens.unknownFields _x)))))))
@@ -4267,8 +4240,7 @@ instance Data.ProtoLens.Message PairHistory where
                                         (Data.ProtoLens.Encoding.Bytes.putVarInt
                                            (Prelude.fromIntegral (Data.ByteString.length bs)))
                                         (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                Data.ProtoLens.encodeMessage
-                                _v))
+                                Data.ProtoLens.encodeMessage _v))
                    (Data.ProtoLens.Encoding.Wire.buildFieldSet
                       (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
 instance Control.DeepSeq.NFData PairHistory where
@@ -4347,8 +4319,7 @@ instance Prelude.Enum PaymentState where
            ((Prelude.++)
               "toEnum: unknown value for enum PaymentState: "
               (Prelude.show k__)))
-        Prelude.id
-        (Data.ProtoLens.maybeToEnum k__)
+        Prelude.id (Data.ProtoLens.maybeToEnum k__)
   fromEnum IN_FLIGHT = 0
   fromEnum SUCCEEDED = 1
   fromEnum FAILED_TIMEOUT = 2
@@ -4514,8 +4485,7 @@ instance Data.ProtoLens.Message PaymentStatus where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'htlcs") frozen'htlcs x))
                else
@@ -4577,8 +4547,7 @@ instance Data.ProtoLens.Message PaymentStatus where
                       ((Prelude..)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                         Prelude.fromEnum
-                         _v))
+                         Prelude.fromEnum _v))
              ((Data.Monoid.<>)
                 (let
                    _v = Lens.Family2.view (Data.ProtoLens.Field.field @"preimage") _x
@@ -4605,8 +4574,7 @@ instance Data.ProtoLens.Message PaymentStatus where
                                          (Data.ProtoLens.Encoding.Bytes.putVarInt
                                             (Prelude.fromIntegral (Data.ByteString.length bs)))
                                          (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                 Data.ProtoLens.encodeMessage
-                                 _v))
+                                 Data.ProtoLens.encodeMessage _v))
                       (Lens.Family2.view (Data.ProtoLens.Field.field @"vec'htlcs") _x))
                    (Data.ProtoLens.Encoding.Wire.buildFieldSet
                       (Lens.Family2.view Data.ProtoLens.unknownFields _x))))
@@ -4771,8 +4739,7 @@ instance Data.ProtoLens.Message QueryMissionControlResponse where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'pairs") frozen'pairs x))
                else
@@ -4814,8 +4781,7 @@ instance Data.ProtoLens.Message QueryMissionControlResponse where
                                    (Data.ProtoLens.Encoding.Bytes.putVarInt
                                       (Prelude.fromIntegral (Data.ByteString.length bs)))
                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                           Data.ProtoLens.encodeMessage
-                           _v))
+                           Data.ProtoLens.encodeMessage _v))
                 (Lens.Family2.view (Data.ProtoLens.Field.field @"vec'pairs") _x))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
@@ -5164,8 +5130,7 @@ instance Data.ProtoLens.Message QueryProbabilityResponse where
                       (Data.ProtoLens.Encoding.Bytes.putVarInt 9)
                       ((Prelude..)
                          Data.ProtoLens.Encoding.Bytes.putFixed64
-                         Data.ProtoLens.Encoding.Bytes.doubleToWord
-                         _v))
+                         Data.ProtoLens.Encoding.Bytes.doubleToWord _v))
              ((Data.Monoid.<>)
                 (case
                      Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'history") _x
@@ -5180,8 +5145,7 @@ instance Data.ProtoLens.Message QueryProbabilityResponse where
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt
                                         (Prelude.fromIntegral (Data.ByteString.length bs)))
                                      (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                             Data.ProtoLens.encodeMessage
-                             _v))
+                             Data.ProtoLens.encodeMessage _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData QueryProbabilityResponse where
@@ -5378,8 +5342,7 @@ instance Prelude.Enum ResolveHoldForwardAction where
            ((Prelude.++)
               "toEnum: unknown value for enum ResolveHoldForwardAction: "
               (Prelude.show k__)))
-        Prelude.id
-        (Data.ProtoLens.maybeToEnum k__)
+        Prelude.id (Data.ProtoLens.maybeToEnum k__)
   fromEnum SETTLE = 0
   fromEnum FAIL = 1
   fromEnum RESUME = 2
@@ -6280,8 +6243,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'destFeatures")
                               frozen'destFeatures
@@ -6289,8 +6251,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                  (Data.ProtoLens.Field.field @"vec'outgoingChanIds")
                                  frozen'outgoingChanIds
                                  (Lens.Family2.set
-                                    (Data.ProtoLens.Field.field @"vec'routeHints")
-                                    frozen'routeHints
+                                    (Data.ProtoLens.Field.field @"vec'routeHints") frozen'routeHints
                                     x))))
                else
                    do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -6303,9 +6264,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                        "dest"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"dest") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         16
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -6314,9 +6273,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                        "amt"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"amt") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         96
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -6325,9 +6282,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                        "amt_msat"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"amtMsat") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         26
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -6336,9 +6291,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                        "payment_hash"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"paymentHash") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         32
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -6348,9 +6301,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"finalCltvDelta") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         162
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -6359,9 +6310,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                        "payment_addr"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"paymentAddr") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         42
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (do value <- do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -6376,9 +6325,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"paymentRequest") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         48
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -6388,9 +6335,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"timeoutSeconds") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         56
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -6399,9 +6344,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                        "fee_limit_sat"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"feeLimitSat") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         104
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -6411,18 +6354,14 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"feeLimitMsat") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         64
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        Data.ProtoLens.Encoding.Bytes.getVarInt "outgoing_chan_id"
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"outgoingChanId") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         152
                           -> do !y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                         Data.ProtoLens.Encoding.Bytes.getVarInt "outgoing_chan_ids"
@@ -6459,9 +6398,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"lastHopPubkey") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         72
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -6470,9 +6407,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                        "cltv_limit"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"cltvLimit") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         82
                           -> do !y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                         (do len <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -6499,10 +6434,8 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                    loop
                                      (Lens.Family2.over
                                         (Data.ProtoLens.Field.field @"destCustomRecords")
-                                        (\ !t -> Data.Map.insert key value t)
-                                        x)
-                                     mutable'destFeatures
-                                     mutable'outgoingChanIds
+                                        (\ !t -> Data.Map.insert key value t) x)
+                                     mutable'destFeatures mutable'outgoingChanIds
                                      mutable'routeHints)
                         120
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
@@ -6512,9 +6445,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"allowSelfPayment") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         128
                           -> do !y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                         (Prelude.fmap
@@ -6559,9 +6490,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                        "max_parts"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"maxParts") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         144
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -6570,18 +6499,14 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"noInflightUpdates") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         168
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        Data.ProtoLens.Encoding.Bytes.getVarInt "max_shard_size_msat"
                                 loop
                                   (Lens.Family2.set
                                      (Data.ProtoLens.Field.field @"maxShardSizeMsat") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         176
                           -> do y <- (Data.ProtoLens.Encoding.Bytes.<?>)
                                        (Prelude.fmap
@@ -6589,18 +6514,14 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                        "amp"
                                 loop
                                   (Lens.Family2.set (Data.ProtoLens.Field.field @"amp") y x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
                                 loop
                                   (Lens.Family2.over
                                      Data.ProtoLens.unknownFields (\ !t -> (:) y t) x)
-                                  mutable'destFeatures
-                                  mutable'outgoingChanIds
-                                  mutable'routeHints
+                                  mutable'destFeatures mutable'outgoingChanIds mutable'routeHints
       in
         (Data.ProtoLens.Encoding.Bytes.<?>)
           (do mutable'destFeatures <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
@@ -6610,10 +6531,8 @@ instance Data.ProtoLens.Message SendPaymentRequest where
               mutable'routeHints <- Data.ProtoLens.Encoding.Parser.Unsafe.unsafeLiftIO
                                       Data.ProtoLens.Encoding.Growing.new
               loop
-                Data.ProtoLens.defMessage
-                mutable'destFeatures
-                mutable'outgoingChanIds
-                mutable'routeHints)
+                Data.ProtoLens.defMessage mutable'destFeatures
+                mutable'outgoingChanIds mutable'routeHints)
           "SendPaymentRequest"
   buildMessage
     = \ _x
@@ -6680,8 +6599,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                 (Data.Monoid.<>)
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt 32)
                                   ((Prelude..)
-                                     Data.ProtoLens.Encoding.Bytes.putVarInt
-                                     Prelude.fromIntegral
+                                     Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                      _v))
                          ((Data.Monoid.<>)
                             (let
@@ -6717,8 +6635,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                                       (Prelude.fromIntegral
                                                          (Data.ByteString.length bs)))
                                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                           Data.Text.Encoding.encodeUtf8
-                                           _v))
+                                           Data.Text.Encoding.encodeUtf8 _v))
                                ((Data.Monoid.<>)
                                   (let
                                      _v
@@ -6732,8 +6649,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                            (Data.ProtoLens.Encoding.Bytes.putVarInt 48)
                                            ((Prelude..)
                                               Data.ProtoLens.Encoding.Bytes.putVarInt
-                                              Prelude.fromIntegral
-                                              _v))
+                                              Prelude.fromIntegral _v))
                                   ((Data.Monoid.<>)
                                      (let
                                         _v
@@ -6747,8 +6663,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                               (Data.ProtoLens.Encoding.Bytes.putVarInt 56)
                                               ((Prelude..)
                                                  Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                 Prelude.fromIntegral
-                                                 _v))
+                                                 Prelude.fromIntegral _v))
                                      ((Data.Monoid.<>)
                                         (let
                                            _v
@@ -6762,8 +6677,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 104)
                                                  ((Prelude..)
                                                     Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                    Prelude.fromIntegral
-                                                    _v))
+                                                    Prelude.fromIntegral _v))
                                         ((Data.Monoid.<>)
                                            (let
                                               _v
@@ -6841,8 +6755,7 @@ instance Data.ProtoLens.Message SendPaymentRequest where
                                                                 72)
                                                              ((Prelude..)
                                                                 Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                                Prelude.fromIntegral
-                                                                _v))
+                                                                Prelude.fromIntegral _v))
                                                     ((Data.Monoid.<>)
                                                        (Data.ProtoLens.Encoding.Bytes.foldMapBuilder
                                                           (\ _v
@@ -7404,8 +7317,7 @@ instance Data.ProtoLens.Message SendToRouteRequest where
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt
                                         (Prelude.fromIntegral (Data.ByteString.length bs)))
                                      (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                             Data.ProtoLens.encodeMessage
-                             _v))
+                             Data.ProtoLens.encodeMessage _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData SendToRouteRequest where
@@ -7572,8 +7484,7 @@ instance Data.ProtoLens.Message SendToRouteResponse where
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt
                                         (Prelude.fromIntegral (Data.ByteString.length bs)))
                                      (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                             Data.ProtoLens.encodeMessage
-                             _v))
+                             Data.ProtoLens.encodeMessage _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData SendToRouteResponse where
@@ -7699,8 +7610,7 @@ instance Data.ProtoLens.Message SetMissionControlConfigRequest where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
 instance Control.DeepSeq.NFData SetMissionControlConfigRequest where
@@ -8112,8 +8022,7 @@ instance Data.ProtoLens.Message TrackPaymentRequest where
                        (Data.Monoid.<>)
                          (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
                          ((Prelude..)
-                            Data.ProtoLens.Encoding.Bytes.putVarInt
-                            (\ b -> if b then 1 else 0)
+                            Data.ProtoLens.Encoding.Bytes.putVarInt (\ b -> if b then 1 else 0)
                             _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
@@ -8270,8 +8179,7 @@ instance Data.ProtoLens.Message UpdateChanStatusRequest where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              ((Data.Monoid.<>)
                 (let
                    _v = Lens.Family2.view (Data.ProtoLens.Field.field @"action") _x
@@ -8284,8 +8192,7 @@ instance Data.ProtoLens.Message UpdateChanStatusRequest where
                          ((Prelude..)
                             ((Prelude..)
                                Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                            Prelude.fromEnum
-                            _v))
+                            Prelude.fromEnum _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData UpdateChanStatusRequest where
@@ -8445,8 +8352,7 @@ instance Data.ProtoLens.Message XImportMissionControlRequest where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'pairs") frozen'pairs x))
                else
@@ -8488,8 +8394,7 @@ instance Data.ProtoLens.Message XImportMissionControlRequest where
                                    (Data.ProtoLens.Encoding.Bytes.putVarInt
                                       (Prelude.fromIntegral (Data.ByteString.length bs)))
                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                           Data.ProtoLens.encodeMessage
-                           _v))
+                           Data.ProtoLens.encodeMessage _v))
                 (Lens.Family2.view (Data.ProtoLens.Field.field @"vec'pairs") _x))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
@@ -8615,87 +8520,87 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl Router "sendPaymentV2" where
   type MethodName Router "sendPaymentV2" = "SendPaymentV2"
   type MethodInput Router "sendPaymentV2" = SendPaymentRequest
   type MethodOutput Router "sendPaymentV2" = Proto.Lightning.Payment
-  type MethodStreamingType Router "sendPaymentV2" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodStreamingType Router "sendPaymentV2" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "trackPaymentV2" where
   type MethodName Router "trackPaymentV2" = "TrackPaymentV2"
   type MethodInput Router "trackPaymentV2" = TrackPaymentRequest
   type MethodOutput Router "trackPaymentV2" = Proto.Lightning.Payment
-  type MethodStreamingType Router "trackPaymentV2" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodStreamingType Router "trackPaymentV2" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "estimateRouteFee" where
   type MethodName Router "estimateRouteFee" = "EstimateRouteFee"
   type MethodInput Router "estimateRouteFee" = RouteFeeRequest
   type MethodOutput Router "estimateRouteFee" = RouteFeeResponse
-  type MethodStreamingType Router "estimateRouteFee" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "estimateRouteFee" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "sendToRoute" where
   type MethodName Router "sendToRoute" = "SendToRoute"
   type MethodInput Router "sendToRoute" = SendToRouteRequest
   type MethodOutput Router "sendToRoute" = SendToRouteResponse
-  type MethodStreamingType Router "sendToRoute" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "sendToRoute" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "sendToRouteV2" where
   type MethodName Router "sendToRouteV2" = "SendToRouteV2"
   type MethodInput Router "sendToRouteV2" = SendToRouteRequest
   type MethodOutput Router "sendToRouteV2" = Proto.Lightning.HTLCAttempt
-  type MethodStreamingType Router "sendToRouteV2" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "sendToRouteV2" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "resetMissionControl" where
   type MethodName Router "resetMissionControl" = "ResetMissionControl"
   type MethodInput Router "resetMissionControl" = ResetMissionControlRequest
   type MethodOutput Router "resetMissionControl" = ResetMissionControlResponse
-  type MethodStreamingType Router "resetMissionControl" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "resetMissionControl" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "queryMissionControl" where
   type MethodName Router "queryMissionControl" = "QueryMissionControl"
   type MethodInput Router "queryMissionControl" = QueryMissionControlRequest
   type MethodOutput Router "queryMissionControl" = QueryMissionControlResponse
-  type MethodStreamingType Router "queryMissionControl" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "queryMissionControl" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "ximportMissionControl" where
   type MethodName Router "ximportMissionControl" = "XImportMissionControl"
   type MethodInput Router "ximportMissionControl" = XImportMissionControlRequest
   type MethodOutput Router "ximportMissionControl" = XImportMissionControlResponse
-  type MethodStreamingType Router "ximportMissionControl" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "ximportMissionControl" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "getMissionControlConfig" where
   type MethodName Router "getMissionControlConfig" = "GetMissionControlConfig"
   type MethodInput Router "getMissionControlConfig" = GetMissionControlConfigRequest
   type MethodOutput Router "getMissionControlConfig" = GetMissionControlConfigResponse
-  type MethodStreamingType Router "getMissionControlConfig" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "getMissionControlConfig" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "setMissionControlConfig" where
   type MethodName Router "setMissionControlConfig" = "SetMissionControlConfig"
   type MethodInput Router "setMissionControlConfig" = SetMissionControlConfigRequest
   type MethodOutput Router "setMissionControlConfig" = SetMissionControlConfigResponse
-  type MethodStreamingType Router "setMissionControlConfig" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "setMissionControlConfig" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "queryProbability" where
   type MethodName Router "queryProbability" = "QueryProbability"
   type MethodInput Router "queryProbability" = QueryProbabilityRequest
   type MethodOutput Router "queryProbability" = QueryProbabilityResponse
-  type MethodStreamingType Router "queryProbability" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "queryProbability" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "buildRoute" where
   type MethodName Router "buildRoute" = "BuildRoute"
   type MethodInput Router "buildRoute" = BuildRouteRequest
   type MethodOutput Router "buildRoute" = BuildRouteResponse
-  type MethodStreamingType Router "buildRoute" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "buildRoute" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "subscribeHtlcEvents" where
   type MethodName Router "subscribeHtlcEvents" = "SubscribeHtlcEvents"
   type MethodInput Router "subscribeHtlcEvents" = SubscribeHtlcEventsRequest
   type MethodOutput Router "subscribeHtlcEvents" = HtlcEvent
-  type MethodStreamingType Router "subscribeHtlcEvents" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodStreamingType Router "subscribeHtlcEvents" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "sendPayment" where
   type MethodName Router "sendPayment" = "SendPayment"
   type MethodInput Router "sendPayment" = SendPaymentRequest
   type MethodOutput Router "sendPayment" = PaymentStatus
-  type MethodStreamingType Router "sendPayment" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodStreamingType Router "sendPayment" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "trackPayment" where
   type MethodName Router "trackPayment" = "TrackPayment"
   type MethodInput Router "trackPayment" = TrackPaymentRequest
   type MethodOutput Router "trackPayment" = PaymentStatus
-  type MethodStreamingType Router "trackPayment" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodStreamingType Router "trackPayment" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "htlcInterceptor" where
   type MethodName Router "htlcInterceptor" = "HtlcInterceptor"
   type MethodInput Router "htlcInterceptor" = ForwardHtlcInterceptResponse
   type MethodOutput Router "htlcInterceptor" = ForwardHtlcInterceptRequest
-  type MethodStreamingType Router "htlcInterceptor" =  'Data.ProtoLens.Service.Types.BiDiStreaming
+  type MethodStreamingType Router "htlcInterceptor" = 'Data.ProtoLens.Service.Types.BiDiStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Router "updateChanStatus" where
   type MethodName Router "updateChanStatus" = "UpdateChanStatus"
   type MethodInput Router "updateChanStatus" = UpdateChanStatusRequest
   type MethodOutput Router "updateChanStatus" = UpdateChanStatusResponse
-  type MethodStreamingType Router "updateChanStatus" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Router "updateChanStatus" = 'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\

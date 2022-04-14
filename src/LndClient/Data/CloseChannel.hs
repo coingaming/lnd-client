@@ -23,7 +23,7 @@ data CloseChannelRequest = CloseChannelRequest
     satPerByte :: Maybe Int64,
     deliveryAddress :: Maybe Text
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out CloseChannelRequest
 
@@ -31,7 +31,7 @@ data CloseStatusUpdate
   = Pending (PendingUpdate 'Closing)
   | Close ChannelCloseUpdate
   | NothingUpdate
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out CloseStatusUpdate
 
@@ -39,7 +39,7 @@ data ChannelCloseUpdate = ChannelCloseUpdate
   { closingTxid :: TxId 'Closing,
     success :: Bool
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out ChannelCloseUpdate
 
@@ -50,7 +50,7 @@ data ChannelCloseSummary = ChannelCloseSummary
     settledBalance :: MSat,
     closingTxId :: TxId 'Closing
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out ChannelCloseSummary
 
