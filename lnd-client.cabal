@@ -278,7 +278,8 @@ executable lnd-client-prof
       StrictData
       DeriveGeneric
       TypeOperators
-  ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -main-is LndClient.Main -O2 -threaded -prof -fprof-auto "-with-rtsopts=-N -s -p -h -xt"
+  ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -main-is LndClient.Main -O2 -threaded -prof -fprof-auto "-with-rtsopts=-N -s -p -h -xt" -optl-fuse-ld=gold
+  ld-options: -fuse-ld=gold
   build-depends:
       GenericPretty
     , JuicyPixels >=3.3.3 && <3.4
@@ -355,7 +356,8 @@ test-suite lnd-client-test
       StrictData
       DeriveGeneric
       TypeOperators
-  ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -threaded -rtsopts -with-rtsopts=-N -optl-fuse-ld=gold
+  ld-options: -fuse-ld=gold
   build-depends:
       GenericPretty
     , JuicyPixels >=3.3.3 && <3.4

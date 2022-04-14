@@ -142,6 +142,9 @@ executables:
     - -prof
     - -fprof-auto
     - "\"-with-rtsopts=-N -s -p -h -xt\""
+    - -optl-fuse-ld=gold
+    ld-options:
+    - -fuse-ld=gold
     dependencies:
     - lnd-client
     - lnd-client-tkit
@@ -155,6 +158,9 @@ tests:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -optl-fuse-ld=gold
+    ld-options:
+    - -fuse-ld=gold
     dependencies:
     - hspec >= 2.7.1 && < 2.7.2
     when:

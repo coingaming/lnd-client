@@ -70,10 +70,3 @@ source-repository-package
   tag: 4037e853bb73e9c547fce31a11cf633a09907228
   --sha256: 1hliz5v0jw3i84fgm7y3q4blzcfkfx1ml1xcc52hks2jsnv5d9is
   subdir: http2-grpc-proto3-wire
-
-source-repository-package
-  type: git
-  location: https://github.com/coingaming/http2-grpc-haskell.git
-  tag: 4037e853bb73e9c547fce31a11cf633a09907228
-  --sha256: 1hliz5v0jw3i84fgm7y3q4blzcfkfx1ml1xcc52hks2jsnv5d9is
-  subdir: warp-grpc
