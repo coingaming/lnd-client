@@ -12,8 +12,8 @@ system-features = kvm
 http2 = false
 require-sigs = false
 sandbox = false
-cores = 8
-max-jobs = 1
+cores = 2
+max-jobs = 4
 " >> /etc/nix/nix.conf
 
 mkdir -p /tmp/nix_ci_cache
@@ -41,8 +41,8 @@ system-features = kvm
 http2 = false
 require-sigs = false
 sandbox = false
-cores = 8
-max-jobs = 1
+cores = 2
+max-jobs = 4
 " > /etc/nix/nix.conf
 
 echo "
