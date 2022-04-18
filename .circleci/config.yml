@@ -3,7 +3,7 @@ version: 2.1
 configure: &configure
   docker:
   - image: nixos/nix:2.3.12
-  resource_class: xlarge
+  resource_class: 2xlarge
 
 release: &release
   run:
