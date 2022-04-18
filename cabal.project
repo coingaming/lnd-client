@@ -1,7 +1,5 @@
 packages: *.cabal
 
-allow-newer: http2-grpc-proto-lens:proto-lens, http2-grpc-proto-lens:proto-lens, http2-client:http2, chronos:aeson, http2-client-grpc:http2
-
 source-repository-package
   type: git
   location: https://github.com/coingaming/signable.git
