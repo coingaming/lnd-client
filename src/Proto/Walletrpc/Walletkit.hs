@@ -59,6 +59,7 @@ import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Gener
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
 import qualified Proto.Lightning
+import qualified Proto.Lnrpc.Ln
 import qualified Proto.Signrpc.Signer
 {- | Fields :
      
@@ -922,14 +923,14 @@ instance Control.DeepSeq.NFData AddressType where
 instance Text.PrettyPrint.GenericPretty.Out AddressType
 {- | Fields :
      
-         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' BumpFeeRequest Proto.Lightning.OutPoint@
-         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' BumpFeeRequest (Prelude.Maybe Proto.Lightning.OutPoint)@
+         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' BumpFeeRequest Proto.Lnrpc.Ln.OutPoint@
+         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' BumpFeeRequest (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint)@
          * 'Proto.Walletrpc.Walletkit_Fields.targetConf' @:: Lens' BumpFeeRequest Data.Word.Word32@
          * 'Proto.Walletrpc.Walletkit_Fields.satPerByte' @:: Lens' BumpFeeRequest Data.Word.Word32@
          * 'Proto.Walletrpc.Walletkit_Fields.force' @:: Lens' BumpFeeRequest Prelude.Bool@
          * 'Proto.Walletrpc.Walletkit_Fields.satPerVbyte' @:: Lens' BumpFeeRequest Data.Word.Word64@ -}
 data BumpFeeRequest
-  = BumpFeeRequest'_constructor {_BumpFeeRequest'outpoint :: !(Prelude.Maybe Proto.Lightning.OutPoint),
+  = BumpFeeRequest'_constructor {_BumpFeeRequest'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln.OutPoint),
                                  _BumpFeeRequest'targetConf :: !Data.Word.Word32,
                                  _BumpFeeRequest'satPerByte :: !Data.Word.Word32,
                                  _BumpFeeRequest'force :: !Prelude.Bool,
@@ -943,14 +944,14 @@ instance Prelude.Show BumpFeeRequest where
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
 instance Text.PrettyPrint.GenericPretty.Out BumpFeeRequest
-instance Data.ProtoLens.Field.HasField BumpFeeRequest "outpoint" Proto.Lightning.OutPoint where
+instance Data.ProtoLens.Field.HasField BumpFeeRequest "outpoint" Proto.Lnrpc.Ln.OutPoint where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _BumpFeeRequest'outpoint
            (\ x__ y__ -> x__ {_BumpFeeRequest'outpoint = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField BumpFeeRequest "maybe'outpoint" (Prelude.Maybe Proto.Lightning.OutPoint) where
+instance Data.ProtoLens.Field.HasField BumpFeeRequest "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -1004,7 +1005,7 @@ instance Data.ProtoLens.Message BumpFeeRequest where
           = Data.ProtoLens.FieldDescriptor
               "outpoint"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lightning.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'outpoint")) ::
               Data.ProtoLens.FieldDescriptor BumpFeeRequest
@@ -3821,12 +3822,12 @@ instance Control.DeepSeq.NFData LabelTransactionResponse where
 {- | Fields :
      
          * 'Proto.Walletrpc.Walletkit_Fields.id' @:: Lens' LeaseOutputRequest Data.ByteString.ByteString@
-         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' LeaseOutputRequest Proto.Lightning.OutPoint@
-         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' LeaseOutputRequest (Prelude.Maybe Proto.Lightning.OutPoint)@
+         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' LeaseOutputRequest Proto.Lnrpc.Ln.OutPoint@
+         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' LeaseOutputRequest (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint)@
          * 'Proto.Walletrpc.Walletkit_Fields.expirationSeconds' @:: Lens' LeaseOutputRequest Data.Word.Word64@ -}
 data LeaseOutputRequest
   = LeaseOutputRequest'_constructor {_LeaseOutputRequest'id :: !Data.ByteString.ByteString,
-                                     _LeaseOutputRequest'outpoint :: !(Prelude.Maybe Proto.Lightning.OutPoint),
+                                     _LeaseOutputRequest'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln.OutPoint),
                                      _LeaseOutputRequest'expirationSeconds :: !Data.Word.Word64,
                                      _LeaseOutputRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
@@ -3844,14 +3845,14 @@ instance Data.ProtoLens.Field.HasField LeaseOutputRequest "id" Data.ByteString.B
            _LeaseOutputRequest'id
            (\ x__ y__ -> x__ {_LeaseOutputRequest'id = y__}))
         Prelude.id
-instance Data.ProtoLens.Field.HasField LeaseOutputRequest "outpoint" Proto.Lightning.OutPoint where
+instance Data.ProtoLens.Field.HasField LeaseOutputRequest "outpoint" Proto.Lnrpc.Ln.OutPoint where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _LeaseOutputRequest'outpoint
            (\ x__ y__ -> x__ {_LeaseOutputRequest'outpoint = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField LeaseOutputRequest "maybe'outpoint" (Prelude.Maybe Proto.Lightning.OutPoint) where
+instance Data.ProtoLens.Field.HasField LeaseOutputRequest "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -3888,7 +3889,7 @@ instance Data.ProtoLens.Message LeaseOutputRequest where
           = Data.ProtoLens.FieldDescriptor
               "outpoint"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lightning.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'outpoint")) ::
               Data.ProtoLens.FieldDescriptor LeaseOutputRequest
@@ -5473,8 +5474,8 @@ instance Control.DeepSeq.NFData ListUnspentResponse where
              (Control.DeepSeq.deepseq (_ListUnspentResponse'utxos x__) ())
 {- | Fields :
      
-         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' PendingSweep Proto.Lightning.OutPoint@
-         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' PendingSweep (Prelude.Maybe Proto.Lightning.OutPoint)@
+         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' PendingSweep Proto.Lnrpc.Ln.OutPoint@
+         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' PendingSweep (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint)@
          * 'Proto.Walletrpc.Walletkit_Fields.witnessType' @:: Lens' PendingSweep WitnessType@
          * 'Proto.Walletrpc.Walletkit_Fields.amountSat' @:: Lens' PendingSweep Data.Word.Word32@
          * 'Proto.Walletrpc.Walletkit_Fields.satPerByte' @:: Lens' PendingSweep Data.Word.Word32@
@@ -5486,7 +5487,7 @@ instance Control.DeepSeq.NFData ListUnspentResponse where
          * 'Proto.Walletrpc.Walletkit_Fields.requestedSatPerVbyte' @:: Lens' PendingSweep Data.Word.Word64@
          * 'Proto.Walletrpc.Walletkit_Fields.force' @:: Lens' PendingSweep Prelude.Bool@ -}
 data PendingSweep
-  = PendingSweep'_constructor {_PendingSweep'outpoint :: !(Prelude.Maybe Proto.Lightning.OutPoint),
+  = PendingSweep'_constructor {_PendingSweep'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln.OutPoint),
                                _PendingSweep'witnessType :: !WitnessType,
                                _PendingSweep'amountSat :: !Data.Word.Word32,
                                _PendingSweep'satPerByte :: !Data.Word.Word32,
@@ -5506,14 +5507,14 @@ instance Prelude.Show PendingSweep where
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
 instance Text.PrettyPrint.GenericPretty.Out PendingSweep
-instance Data.ProtoLens.Field.HasField PendingSweep "outpoint" Proto.Lightning.OutPoint where
+instance Data.ProtoLens.Field.HasField PendingSweep "outpoint" Proto.Lnrpc.Ln.OutPoint where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _PendingSweep'outpoint
            (\ x__ y__ -> x__ {_PendingSweep'outpoint = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField PendingSweep "maybe'outpoint" (Prelude.Maybe Proto.Lightning.OutPoint) where
+instance Data.ProtoLens.Field.HasField PendingSweep "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -5615,7 +5616,7 @@ instance Data.ProtoLens.Message PendingSweep where
           = Data.ProtoLens.FieldDescriptor
               "outpoint"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lightning.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'outpoint")) ::
               Data.ProtoLens.FieldDescriptor PendingSweep
@@ -6370,11 +6371,11 @@ instance Control.DeepSeq.NFData PublishResponse where
 {- | Fields :
      
          * 'Proto.Walletrpc.Walletkit_Fields.id' @:: Lens' ReleaseOutputRequest Data.ByteString.ByteString@
-         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' ReleaseOutputRequest Proto.Lightning.OutPoint@
-         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' ReleaseOutputRequest (Prelude.Maybe Proto.Lightning.OutPoint)@ -}
+         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' ReleaseOutputRequest Proto.Lnrpc.Ln.OutPoint@
+         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' ReleaseOutputRequest (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint)@ -}
 data ReleaseOutputRequest
   = ReleaseOutputRequest'_constructor {_ReleaseOutputRequest'id :: !Data.ByteString.ByteString,
-                                       _ReleaseOutputRequest'outpoint :: !(Prelude.Maybe Proto.Lightning.OutPoint),
+                                       _ReleaseOutputRequest'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln.OutPoint),
                                        _ReleaseOutputRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ReleaseOutputRequest where
@@ -6391,14 +6392,14 @@ instance Data.ProtoLens.Field.HasField ReleaseOutputRequest "id" Data.ByteString
            _ReleaseOutputRequest'id
            (\ x__ y__ -> x__ {_ReleaseOutputRequest'id = y__}))
         Prelude.id
-instance Data.ProtoLens.Field.HasField ReleaseOutputRequest "outpoint" Proto.Lightning.OutPoint where
+instance Data.ProtoLens.Field.HasField ReleaseOutputRequest "outpoint" Proto.Lnrpc.Ln.OutPoint where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _ReleaseOutputRequest'outpoint
            (\ x__ y__ -> x__ {_ReleaseOutputRequest'outpoint = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField ReleaseOutputRequest "maybe'outpoint" (Prelude.Maybe Proto.Lightning.OutPoint) where
+instance Data.ProtoLens.Field.HasField ReleaseOutputRequest "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -6427,7 +6428,7 @@ instance Data.ProtoLens.Message ReleaseOutputRequest where
           = Data.ProtoLens.FieldDescriptor
               "outpoint"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lightning.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'outpoint")) ::
               Data.ProtoLens.FieldDescriptor ReleaseOutputRequest
@@ -7192,11 +7193,11 @@ instance Control.DeepSeq.NFData Transaction where
                 (Control.DeepSeq.deepseq (_Transaction'label x__) ()))
 {- | Fields :
      
-         * 'Proto.Walletrpc.Walletkit_Fields.inputs' @:: Lens' TxTemplate [Proto.Lightning.OutPoint]@
-         * 'Proto.Walletrpc.Walletkit_Fields.vec'inputs' @:: Lens' TxTemplate (Data.Vector.Vector Proto.Lightning.OutPoint)@
+         * 'Proto.Walletrpc.Walletkit_Fields.inputs' @:: Lens' TxTemplate [Proto.Lnrpc.Ln.OutPoint]@
+         * 'Proto.Walletrpc.Walletkit_Fields.vec'inputs' @:: Lens' TxTemplate (Data.Vector.Vector Proto.Lnrpc.Ln.OutPoint)@
          * 'Proto.Walletrpc.Walletkit_Fields.outputs' @:: Lens' TxTemplate (Data.Map.Map Data.Text.Text Data.Word.Word64)@ -}
 data TxTemplate
-  = TxTemplate'_constructor {_TxTemplate'inputs :: !(Data.Vector.Vector Proto.Lightning.OutPoint),
+  = TxTemplate'_constructor {_TxTemplate'inputs :: !(Data.Vector.Vector Proto.Lnrpc.Ln.OutPoint),
                              _TxTemplate'outputs :: !(Data.Map.Map Data.Text.Text Data.Word.Word64),
                              _TxTemplate'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
@@ -7207,7 +7208,7 @@ instance Prelude.Show TxTemplate where
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
 instance Text.PrettyPrint.GenericPretty.Out TxTemplate
-instance Data.ProtoLens.Field.HasField TxTemplate "inputs" [Proto.Lightning.OutPoint] where
+instance Data.ProtoLens.Field.HasField TxTemplate "inputs" [Proto.Lnrpc.Ln.OutPoint] where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -7215,7 +7216,7 @@ instance Data.ProtoLens.Field.HasField TxTemplate "inputs" [Proto.Lightning.OutP
         (Lens.Family2.Unchecked.lens
            Data.Vector.Generic.toList
            (\ _ y__ -> Data.Vector.Generic.fromList y__))
-instance Data.ProtoLens.Field.HasField TxTemplate "vec'inputs" (Data.Vector.Vector Proto.Lightning.OutPoint) where
+instance Data.ProtoLens.Field.HasField TxTemplate "vec'inputs" (Data.Vector.Vector Proto.Lnrpc.Ln.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -7245,7 +7246,7 @@ instance Data.ProtoLens.Message TxTemplate where
           = Data.ProtoLens.FieldDescriptor
               "inputs"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lightning.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
               (Data.ProtoLens.RepeatedField
                  Data.ProtoLens.Unpacked (Data.ProtoLens.Field.field @"inputs")) ::
               Data.ProtoLens.FieldDescriptor TxTemplate
@@ -7276,7 +7277,7 @@ instance Data.ProtoLens.Message TxTemplate where
     = let
         loop ::
           TxTemplate
-          -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld Proto.Lightning.OutPoint
+          -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld Proto.Lnrpc.Ln.OutPoint
              -> Data.ProtoLens.Encoding.Bytes.Parser TxTemplate
         loop x mutable'inputs
           = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
@@ -7544,12 +7545,12 @@ instance Control.DeepSeq.NFData TxTemplate'OutputsEntry where
 {- | Fields :
      
          * 'Proto.Walletrpc.Walletkit_Fields.id' @:: Lens' UtxoLease Data.ByteString.ByteString@
-         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' UtxoLease Proto.Lightning.OutPoint@
-         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' UtxoLease (Prelude.Maybe Proto.Lightning.OutPoint)@
+         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' UtxoLease Proto.Lnrpc.Ln.OutPoint@
+         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' UtxoLease (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint)@
          * 'Proto.Walletrpc.Walletkit_Fields.expiration' @:: Lens' UtxoLease Data.Word.Word64@ -}
 data UtxoLease
   = UtxoLease'_constructor {_UtxoLease'id :: !Data.ByteString.ByteString,
-                            _UtxoLease'outpoint :: !(Prelude.Maybe Proto.Lightning.OutPoint),
+                            _UtxoLease'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln.OutPoint),
                             _UtxoLease'expiration :: !Data.Word.Word64,
                             _UtxoLease'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
@@ -7566,13 +7567,13 @@ instance Data.ProtoLens.Field.HasField UtxoLease "id" Data.ByteString.ByteString
         (Lens.Family2.Unchecked.lens
            _UtxoLease'id (\ x__ y__ -> x__ {_UtxoLease'id = y__}))
         Prelude.id
-instance Data.ProtoLens.Field.HasField UtxoLease "outpoint" Proto.Lightning.OutPoint where
+instance Data.ProtoLens.Field.HasField UtxoLease "outpoint" Proto.Lnrpc.Ln.OutPoint where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _UtxoLease'outpoint (\ x__ y__ -> x__ {_UtxoLease'outpoint = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField UtxoLease "maybe'outpoint" (Prelude.Maybe Proto.Lightning.OutPoint) where
+instance Data.ProtoLens.Field.HasField UtxoLease "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -7610,7 +7611,7 @@ instance Data.ProtoLens.Message UtxoLease where
           = Data.ProtoLens.FieldDescriptor
               "outpoint"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lightning.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'outpoint")) ::
               Data.ProtoLens.FieldDescriptor UtxoLease
@@ -8061,7 +8062,7 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl WalletKit "finalizePsbt" whe
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\
-    \\EMwalletrpc/walletkit.proto\DC2\twalletrpc\SUB\SIlightning.proto\SUB\DC4signrpc/signer.proto\"h\n\
+    \\EMwalletrpc/walletkit.proto\DC2\twalletrpc\SUB\SIlightning.proto\SUB\SOlnrpc/ln.proto\SUB\DC4signrpc/signer.proto\"h\n\
     \\DC2ListUnspentRequest\DC2\ESC\n\
     \\tmin_confs\CAN\SOH \SOH(\ENQR\bminConfs\DC2\ESC\n\
     \\tmax_confs\CAN\STX \SOH(\ENQR\bmaxConfs\DC2\CAN\n\
@@ -8264,40 +8265,42 @@ packedFileDescriptor
     \ListSweeps\DC2\FS.walletrpc.ListSweepsRequest\SUB\GS.walletrpc.ListSweepsResponse\DC2[\n\
     \\DLELabelTransaction\DC2\".walletrpc.LabelTransactionRequest\SUB#.walletrpc.LabelTransactionResponse\DC2C\n\
     \\bFundPsbt\DC2\SUB.walletrpc.FundPsbtRequest\SUB\ESC.walletrpc.FundPsbtResponse\DC2O\n\
-    \\fFinalizePsbt\DC2\RS.walletrpc.FinalizePsbtRequest\SUB\US.walletrpc.FinalizePsbtResponseB1Z/github.com/lightningnetwork/lnd/lnrpc/walletrpcJ\184\222\SOH\n\
-    \\a\DC2\ENQ\NUL\NUL\210\ACK\SOH\n\
+    \\fFinalizePsbt\DC2\RS.walletrpc.FinalizePsbtRequest\SUB\US.walletrpc.FinalizePsbtResponseB1Z/github.com/lightningnetwork/lnd/lnrpc/walletrpcJ\195\222\SOH\n\
+    \\a\DC2\ENQ\NUL\NUL\211\ACK\SOH\n\
     \\b\n\
     \\SOH\f\DC2\ETX\NUL\NUL\DC2\n\
     \\t\n\
     \\STX\ETX\NUL\DC2\ETX\STX\NUL\EM\n\
     \\t\n\
-    \\STX\ETX\SOH\DC2\ETX\ETX\NUL\RS\n\
-    \\b\n\
-    \\SOH\STX\DC2\ETX\ENQ\NUL\DC2\n\
-    \\b\n\
-    \\SOH\b\DC2\ETX\a\NULF\n\
+    \\STX\ETX\SOH\DC2\ETX\ETX\NUL\CAN\n\
     \\t\n\
-    \\STX\b\v\DC2\ETX\a\NULF\n\
+    \\STX\ETX\STX\DC2\ETX\EOT\NUL\RS\n\
+    \\b\n\
+    \\SOH\STX\DC2\ETX\ACK\NUL\DC2\n\
+    \\b\n\
+    \\SOH\b\DC2\ETX\b\NULF\n\
+    \\t\n\
+    \\STX\b\v\DC2\ETX\b\NULF\n\
     \l\n\
-    \\STX\ACK\NUL\DC2\ENQ\v\NUL\216\SOH\SOH\SUB_ WalletKit is a service that gives access to the core functionalities of the\n\
+    \\STX\ACK\NUL\DC2\ENQ\f\NUL\217\SOH\SOH\SUB_ WalletKit is a service that gives access to the core functionalities of the\n\
     \ daemon's wallet.\n\
     \\n\
     \\n\
     \\n\
-    \\ETX\ACK\NUL\SOH\DC2\ETX\v\b\DC1\n\
+    \\ETX\ACK\NUL\SOH\DC2\ETX\f\b\DC1\n\
     \\153\SOH\n\
-    \\EOT\ACK\NUL\STX\NUL\DC2\ETX\DLE\EOTG\SUB\139\SOH\n\
+    \\EOT\ACK\NUL\STX\NUL\DC2\ETX\DC1\EOTG\SUB\139\SOH\n\
     \ListUnspent returns a list of all utxos spendable by the wallet with a\n\
     \number of confirmations between the specified minimum and maximum.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX\DLE\b\DC3\n\
+    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX\DC1\b\DC3\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX\DLE\NAK'\n\
+    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX\DC1\NAK'\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX\DLE2E\n\
+    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX\DC12E\n\
     \\218\STX\n\
-    \\EOT\ACK\NUL\STX\SOH\DC2\ETX\EM\EOTG\SUB\204\STX\n\
+    \\EOT\ACK\NUL\STX\SOH\DC2\ETX\SUB\EOTG\SUB\204\STX\n\
     \LeaseOutput locks an output to the given ID, preventing it from being\n\
     \available for any future coin selection attempts. The absolute time of the\n\
     \lock's expiration is returned. The expiration of the lock can be extended by\n\
@@ -8305,80 +8308,80 @@ packedFileDescriptor
     \expiration through `ReleaseOutput`.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX\EM\b\DC3\n\
+    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX\SUB\b\DC3\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX\EM\NAK'\n\
+    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX\SUB\NAK'\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX\EM2E\n\
+    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX\SUB2E\n\
     \\182\SOH\n\
-    \\EOT\ACK\NUL\STX\STX\DC2\ETX \EOTM\SUB\168\SOH\n\
+    \\EOT\ACK\NUL\STX\STX\DC2\ETX!\EOTM\SUB\168\SOH\n\
     \ReleaseOutput unlocks an output, allowing it to be available for coin\n\
     \selection if it remains unspent. The ID should match the one used to\n\
     \originally lock the output.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX \b\NAK\n\
+    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX!\b\NAK\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX \ETB+\n\
+    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX!\ETB+\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX 6K\n\
+    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX!6K\n\
     \;\n\
-    \\EOT\ACK\NUL\STX\ETX\DC2\ETX%\EOTD\SUB.\n\
+    \\EOT\ACK\NUL\STX\ETX\DC2\ETX&\EOTD\SUB.\n\
     \ListLeases lists all currently locked utxos.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETX%\b\DC2\n\
+    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETX&\b\DC2\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETX%\DC4%\n\
+    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETX&\DC4%\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETX%0B\n\
+    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETX&0B\n\
     \\185\SOH\n\
-    \\EOT\ACK\NUL\STX\EOT\DC2\ETX,\EOT?\SUB\171\SOH\n\
+    \\EOT\ACK\NUL\STX\EOT\DC2\ETX-\EOT?\SUB\171\SOH\n\
     \DeriveNextKey attempts to derive the *next* key within the key family\n\
     \(account in BIP43) specified. This method should return the next external\n\
     \child within this branch.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\EOT\SOH\DC2\ETX,\b\NAK\n\
+    \\ENQ\ACK\NUL\STX\EOT\SOH\DC2\ETX-\b\NAK\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\EOT\STX\DC2\ETX,\ETB\GS\n\
+    \\ENQ\ACK\NUL\STX\EOT\STX\DC2\ETX-\ETB\GS\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\EOT\ETX\DC2\ETX,(=\n\
+    \\ENQ\ACK\NUL\STX\EOT\ETX\DC2\ETX-(=\n\
     \`\n\
-    \\EOT\ACK\NUL\STX\ENQ\DC2\ETX2\EOTG\SUBS\n\
+    \\EOT\ACK\NUL\STX\ENQ\DC2\ETX3\EOTG\SUBS\n\
     \DeriveKey attempts to derive an arbitrary key specified by the passed\n\
     \KeyLocator.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ENQ\SOH\DC2\ETX2\b\DC1\n\
+    \\ENQ\ACK\NUL\STX\ENQ\SOH\DC2\ETX3\b\DC1\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ENQ\STX\DC2\ETX2\DC3%\n\
+    \\ENQ\ACK\NUL\STX\ENQ\STX\DC2\ETX3\DC3%\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ENQ\ETX\DC2\ETX20E\n\
+    \\ENQ\ACK\NUL\STX\ENQ\ETX\DC2\ETX30E\n\
     \J\n\
-    \\EOT\ACK\NUL\STX\ACK\DC2\ETX7\EOT6\SUB=\n\
+    \\EOT\ACK\NUL\STX\ACK\DC2\ETX8\EOT6\SUB=\n\
     \NextAddr returns the next unused address within the wallet.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ACK\SOH\DC2\ETX7\b\DLE\n\
+    \\ENQ\ACK\NUL\STX\ACK\SOH\DC2\ETX8\b\DLE\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ACK\STX\DC2\ETX7\DC2\GS\n\
+    \\ENQ\ACK\NUL\STX\ACK\STX\DC2\ETX8\DC2\GS\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ACK\ETX\DC2\ETX7(4\n\
+    \\ENQ\ACK\NUL\STX\ACK\ETX\DC2\ETX8(4\n\
     \\208\SOH\n\
-    \\EOT\ACK\NUL\STX\a\DC2\ETX>\EOTJ\SUB\194\SOH\n\
+    \\EOT\ACK\NUL\STX\a\DC2\ETX?\EOTJ\SUB\194\SOH\n\
     \ListAccounts retrieves all accounts belonging to the wallet by default. A\n\
     \name and key scope filter can be provided to filter through all of the\n\
     \wallet accounts and return only those matching.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\a\SOH\DC2\ETX>\b\DC4\n\
+    \\ENQ\ACK\NUL\STX\a\SOH\DC2\ETX?\b\DC4\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\a\STX\DC2\ETX>\SYN)\n\
+    \\ENQ\ACK\NUL\STX\a\STX\DC2\ETX?\SYN)\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\a\ETX\DC2\ETX>4H\n\
+    \\ENQ\ACK\NUL\STX\a\ETX\DC2\ETX?4H\n\
     \\226\t\n\
-    \\EOT\ACK\NUL\STX\b\DC2\ETXY\EOTM\SUB\212\t\n\
+    \\EOT\ACK\NUL\STX\b\DC2\ETXZ\EOTM\SUB\212\t\n\
     \ImportAccount imports an account backed by an account extended public key.\n\
     \The master key fingerprint denotes the fingerprint of the root key\n\
     \corresponding to the account public key (also known as the key with\n\
@@ -8404,13 +8407,13 @@ packedFileDescriptor
     \events will be supported later on.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\b\SOH\DC2\ETXY\b\NAK\n\
+    \\ENQ\ACK\NUL\STX\b\SOH\DC2\ETXZ\b\NAK\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\b\STX\DC2\ETXY\ETB+\n\
+    \\ENQ\ACK\NUL\STX\b\STX\DC2\ETXZ\ETB+\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\b\ETX\DC2\ETXY6K\n\
+    \\ENQ\ACK\NUL\STX\b\ETX\DC2\ETXZ6K\n\
     \\246\SOH\n\
-    \\EOT\ACK\NUL\STX\t\DC2\EOTb\EOTc*\SUB\231\SOH\n\
+    \\EOT\ACK\NUL\STX\t\DC2\EOTc\EOTd*\SUB\231\SOH\n\
     \ImportPublicKey imports a public key as watch-only into the wallet.\n\
     \\n\
     \NOTE: Events (deposits/spends) for a key will only be detected by lnd if\n\
@@ -8418,14 +8421,14 @@ packedFileDescriptor
     \supported later on.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\t\SOH\DC2\ETXb\b\ETB\n\
+    \\ENQ\ACK\NUL\STX\t\SOH\DC2\ETXc\b\ETB\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\t\STX\DC2\ETXb\EM/\n\
+    \\ENQ\ACK\NUL\STX\t\STX\DC2\ETXc\EM/\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\t\ETX\DC2\ETXc\DC1(\n\
+    \\ENQ\ACK\NUL\STX\t\ETX\DC2\ETXd\DC1(\n\
     \\237\SOH\n\
     \\EOT\ACK\NUL\STX\n\
-    \\DC2\ETXk\EOTC\SUB\223\SOH\n\
+    \\DC2\ETXl\EOTC\SUB\223\SOH\n\
     \PublishTransaction attempts to publish the passed transaction to the\n\
     \network. Once this returns without an error, the wallet will continually\n\
     \attempt to re-broadcast the transaction on start up, until it enters the\n\
@@ -8433,39 +8436,39 @@ packedFileDescriptor
     \\n\
     \\f\n\
     \\ENQ\ACK\NUL\STX\n\
-    \\SOH\DC2\ETXk\b\SUB\n\
+    \\SOH\DC2\ETXl\b\SUB\n\
     \\f\n\
     \\ENQ\ACK\NUL\STX\n\
-    \\STX\DC2\ETXk\FS'\n\
+    \\STX\DC2\ETXl\FS'\n\
     \\f\n\
     \\ENQ\ACK\NUL\STX\n\
-    \\ETX\DC2\ETXk2A\n\
+    \\ETX\DC2\ETXl2A\n\
     \\232\SOH\n\
-    \\EOT\ACK\NUL\STX\v\DC2\ETXr\EOTG\SUB\218\SOH\n\
+    \\EOT\ACK\NUL\STX\v\DC2\ETXs\EOTG\SUB\218\SOH\n\
     \SendOutputs is similar to the existing sendmany call in Bitcoind, and\n\
     \allows the caller to create a transaction that sends to several outputs at\n\
     \once. This is ideal when wanting to batch create a set of transactions.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\v\SOH\DC2\ETXr\b\DC3\n\
+    \\ENQ\ACK\NUL\STX\v\SOH\DC2\ETXs\b\DC3\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\v\STX\DC2\ETXr\NAK'\n\
+    \\ENQ\ACK\NUL\STX\v\STX\DC2\ETXs\NAK'\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\v\ETX\DC2\ETXr2E\n\
+    \\ENQ\ACK\NUL\STX\v\ETX\DC2\ETXs2E\n\
     \\191\SOH\n\
-    \\EOT\ACK\NUL\STX\f\DC2\ETXy\EOTG\SUB\177\SOH\n\
+    \\EOT\ACK\NUL\STX\f\DC2\ETXz\EOTG\SUB\177\SOH\n\
     \EstimateFee attempts to query the internal fee estimator of the wallet to\n\
     \determine the fee (in sat/kw) to attach to a transaction in order to\n\
     \achieve the confirmation target.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\f\SOH\DC2\ETXy\b\DC3\n\
+    \\ENQ\ACK\NUL\STX\f\SOH\DC2\ETXz\b\DC3\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\f\STX\DC2\ETXy\NAK'\n\
+    \\ENQ\ACK\NUL\STX\f\STX\DC2\ETXz\NAK'\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\f\ETX\DC2\ETXy2E\n\
+    \\ENQ\ACK\NUL\STX\f\ETX\DC2\ETXz2E\n\
     \\180\ETX\n\
-    \\EOT\ACK\NUL\STX\r\DC2\EOT\133\SOH\EOTM\SUB\165\ETX\n\
+    \\EOT\ACK\NUL\STX\r\DC2\EOT\134\SOH\EOTM\SUB\165\ETX\n\
     \PendingSweeps returns lists of on-chain outputs that lnd is currently\n\
     \attempting to sweep within its central batching engine. Outputs with similar\n\
     \fee rates are batched together in order to sweep them within a single\n\
@@ -8476,13 +8479,13 @@ packedFileDescriptor
     \the UtxoSweeper, so things may change.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\r\SOH\DC2\EOT\133\SOH\b\NAK\n\
+    \\ENQ\ACK\NUL\STX\r\SOH\DC2\EOT\134\SOH\b\NAK\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\r\STX\DC2\EOT\133\SOH\ETB+\n\
+    \\ENQ\ACK\NUL\STX\r\STX\DC2\EOT\134\SOH\ETB+\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\r\ETX\DC2\EOT\133\SOH6K\n\
+    \\ENQ\ACK\NUL\STX\r\ETX\DC2\EOT\134\SOH6K\n\
     \\177\v\n\
-    \\EOT\ACK\NUL\STX\SO\DC2\EOT\162\SOH\EOT;\SUB\162\v\n\
+    \\EOT\ACK\NUL\STX\SO\DC2\EOT\163\SOH\EOT;\SUB\162\v\n\
     \BumpFee bumps the fee of an arbitrary input within a transaction. This RPC\n\
     \takes a different approach than bitcoind's bumpfee command. lnd has a\n\
     \central batching engine in which inputs with similar fee rates are batched\n\
@@ -8510,38 +8513,38 @@ packedFileDescriptor
     \the new fee preference is sufficient is delegated to the user.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\SO\SOH\DC2\EOT\162\SOH\b\SI\n\
+    \\ENQ\ACK\NUL\STX\SO\SOH\DC2\EOT\163\SOH\b\SI\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\SO\STX\DC2\EOT\162\SOH\DC1\US\n\
+    \\ENQ\ACK\NUL\STX\SO\STX\DC2\EOT\163\SOH\DC1\US\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\SO\ETX\DC2\EOT\162\SOH*9\n\
+    \\ENQ\ACK\NUL\STX\SO\ETX\DC2\EOT\163\SOH*9\n\
     \\192\SOH\n\
-    \\EOT\ACK\NUL\STX\SI\DC2\EOT\169\SOH\EOTD\SUB\177\SOH\n\
+    \\EOT\ACK\NUL\STX\SI\DC2\EOT\170\SOH\EOTD\SUB\177\SOH\n\
     \ListSweeps returns a list of the sweep transactions our node has produced.\n\
     \Note that these sweeps may not be confirmed yet, as we record sweeps on\n\
     \broadcast, not confirmation.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\SI\SOH\DC2\EOT\169\SOH\b\DC2\n\
+    \\ENQ\ACK\NUL\STX\SI\SOH\DC2\EOT\170\SOH\b\DC2\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\SI\STX\DC2\EOT\169\SOH\DC4%\n\
+    \\ENQ\ACK\NUL\STX\SI\STX\DC2\EOT\170\SOH\DC4%\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\SI\ETX\DC2\EOT\169\SOH0B\n\
+    \\ENQ\ACK\NUL\STX\SI\ETX\DC2\EOT\170\SOH0B\n\
     \\141\STX\n\
-    \\EOT\ACK\NUL\STX\DLE\DC2\ACK\177\SOH\EOT\178\SOH+\SUB\252\SOH\n\
+    \\EOT\ACK\NUL\STX\DLE\DC2\ACK\178\SOH\EOT\179\SOH+\SUB\252\SOH\n\
     \LabelTransaction adds a label to a transaction. If the transaction already\n\
     \has a label the call will fail unless the overwrite bool is set. This will\n\
     \overwrite the exiting transaction label. Labels must not be empty, and\n\
     \cannot exceed 500 characters.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\DLE\SOH\DC2\EOT\177\SOH\b\CAN\n\
+    \\ENQ\ACK\NUL\STX\DLE\SOH\DC2\EOT\178\SOH\b\CAN\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\DLE\STX\DC2\EOT\177\SOH\SUB1\n\
+    \\ENQ\ACK\NUL\STX\DLE\STX\DC2\EOT\178\SOH\SUB1\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\DLE\ETX\DC2\EOT\178\SOH\DC1)\n\
+    \\ENQ\ACK\NUL\STX\DLE\ETX\DC2\EOT\179\SOH\DC1)\n\
     \\196\a\n\
-    \\EOT\ACK\NUL\STX\DC1\DC2\EOT\200\SOH\EOT>\SUB\181\a\n\
+    \\EOT\ACK\NUL\STX\DC1\DC2\EOT\201\SOH\EOT>\SUB\181\a\n\
     \FundPsbt creates a fully populated PSBT that contains enough inputs to fund\n\
     \the outputs specified in the template. There are two ways of specifying a\n\
     \template: Either by passing in a PSBT with at least one output declared or\n\
@@ -8562,13 +8565,13 @@ packedFileDescriptor
     \an error on the caller's side.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\DC1\SOH\DC2\EOT\200\SOH\b\DLE\n\
+    \\ENQ\ACK\NUL\STX\DC1\SOH\DC2\EOT\201\SOH\b\DLE\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\DC1\STX\DC2\EOT\200\SOH\DC2!\n\
+    \\ENQ\ACK\NUL\STX\DC1\STX\DC2\EOT\201\SOH\DC2!\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\DC1\ETX\DC2\EOT\200\SOH,<\n\
+    \\ENQ\ACK\NUL\STX\DC1\ETX\DC2\EOT\201\SOH,<\n\
     \\203\ENQ\n\
-    \\EOT\ACK\NUL\STX\DC2\DC2\EOT\215\SOH\EOTJ\SUB\188\ENQ\n\
+    \\EOT\ACK\NUL\STX\DC2\DC2\EOT\216\SOH\EOTJ\SUB\188\ENQ\n\
     \FinalizePsbt expects a partial transaction with all inputs and outputs fully\n\
     \declared and tries to sign all inputs that belong to the wallet. Lnd must be\n\
     \the last signer of the transaction. That means, if there are any unsigned\n\
@@ -8582,262 +8585,262 @@ packedFileDescriptor
     \unlock/release any locked UTXOs in case of an error in this method.\n\
     \\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\DC2\SOH\DC2\EOT\215\SOH\b\DC4\n\
+    \\ENQ\ACK\NUL\STX\DC2\SOH\DC2\EOT\216\SOH\b\DC4\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\DC2\STX\DC2\EOT\215\SOH\SYN)\n\
+    \\ENQ\ACK\NUL\STX\DC2\STX\DC2\EOT\216\SOH\SYN)\n\
     \\r\n\
-    \\ENQ\ACK\NUL\STX\DC2\ETX\DC2\EOT\215\SOH4H\n\
+    \\ENQ\ACK\NUL\STX\DC2\ETX\DC2\EOT\216\SOH4H\n\
     \\f\n\
-    \\STX\EOT\NUL\DC2\ACK\218\SOH\NUL\227\SOH\SOH\n\
+    \\STX\EOT\NUL\DC2\ACK\219\SOH\NUL\228\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\NUL\SOH\DC2\EOT\218\SOH\b\SUB\n\
+    \\ETX\EOT\NUL\SOH\DC2\EOT\219\SOH\b\SUB\n\
     \C\n\
-    \\EOT\EOT\NUL\STX\NUL\DC2\EOT\220\SOH\EOT\CAN\SUB5 The minimum number of confirmations to be included.\n\
+    \\EOT\EOT\NUL\STX\NUL\DC2\EOT\221\SOH\EOT\CAN\SUB5 The minimum number of confirmations to be included.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\EOT\220\SOH\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\EOT\221\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\EOT\220\SOH\n\
+    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\EOT\221\SOH\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\EOT\220\SOH\SYN\ETB\n\
+    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\EOT\221\SOH\SYN\ETB\n\
     \C\n\
-    \\EOT\EOT\NUL\STX\SOH\DC2\EOT\223\SOH\EOT\CAN\SUB5 The maximum number of confirmations to be included.\n\
+    \\EOT\EOT\NUL\STX\SOH\DC2\EOT\224\SOH\EOT\CAN\SUB5 The maximum number of confirmations to be included.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\EOT\223\SOH\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\SOH\ENQ\DC2\EOT\224\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\SOH\SOH\DC2\EOT\223\SOH\n\
+    \\ENQ\EOT\NUL\STX\SOH\SOH\DC2\EOT\224\SOH\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\SOH\ETX\DC2\EOT\223\SOH\SYN\ETB\n\
+    \\ENQ\EOT\NUL\STX\SOH\ETX\DC2\EOT\224\SOH\SYN\ETB\n\
     \S\n\
-    \\EOT\EOT\NUL\STX\STX\DC2\EOT\226\SOH\EOT\ETB\SUBE An optional filter to only include outputs belonging to an account.\n\
+    \\EOT\EOT\NUL\STX\STX\DC2\EOT\227\SOH\EOT\ETB\SUBE An optional filter to only include outputs belonging to an account.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\STX\ENQ\DC2\EOT\226\SOH\EOT\n\
+    \\ENQ\EOT\NUL\STX\STX\ENQ\DC2\EOT\227\SOH\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\STX\SOH\DC2\EOT\226\SOH\v\DC2\n\
+    \\ENQ\EOT\NUL\STX\STX\SOH\DC2\EOT\227\SOH\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT\NUL\STX\STX\ETX\DC2\EOT\226\SOH\NAK\SYN\n\
+    \\ENQ\EOT\NUL\STX\STX\ETX\DC2\EOT\227\SOH\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT\SOH\DC2\ACK\229\SOH\NUL\232\SOH\SOH\n\
+    \\STX\EOT\SOH\DC2\ACK\230\SOH\NUL\233\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\SOH\SOH\DC2\EOT\229\SOH\b\ESC\n\
+    \\ETX\EOT\SOH\SOH\DC2\EOT\230\SOH\b\ESC\n\
     \Q\n\
-    \\EOT\EOT\SOH\STX\NUL\DC2\EOT\231\SOH\EOT\"\SUBC A list of utxos satisfying the specified number of confirmations.\n\
+    \\EOT\EOT\SOH\STX\NUL\DC2\EOT\232\SOH\EOT\"\SUBC A list of utxos satisfying the specified number of confirmations.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\NUL\EOT\DC2\EOT\231\SOH\EOT\f\n\
+    \\ENQ\EOT\SOH\STX\NUL\EOT\DC2\EOT\232\SOH\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\NUL\ACK\DC2\EOT\231\SOH\r\ETB\n\
+    \\ENQ\EOT\SOH\STX\NUL\ACK\DC2\EOT\232\SOH\r\ETB\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\NUL\SOH\DC2\EOT\231\SOH\CAN\GS\n\
+    \\ENQ\EOT\SOH\STX\NUL\SOH\DC2\EOT\232\SOH\CAN\GS\n\
     \\r\n\
-    \\ENQ\EOT\SOH\STX\NUL\ETX\DC2\EOT\231\SOH !\n\
+    \\ENQ\EOT\SOH\STX\NUL\ETX\DC2\EOT\232\SOH !\n\
     \\f\n\
-    \\STX\EOT\STX\DC2\ACK\234\SOH\NUL\247\SOH\SOH\n\
+    \\STX\EOT\STX\DC2\ACK\235\SOH\NUL\248\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\STX\SOH\DC2\EOT\234\SOH\b\SUB\n\
+    \\ETX\EOT\STX\SOH\DC2\EOT\235\SOH\b\SUB\n\
     \\155\SOH\n\
-    \\EOT\EOT\STX\STX\NUL\DC2\EOT\239\SOH\EOT\DC1\SUB\140\SOH\n\
+    \\EOT\EOT\STX\STX\NUL\DC2\EOT\240\SOH\EOT\DC1\SUB\140\SOH\n\
     \An ID of 32 random bytes that must be unique for each distinct application\n\
     \using this RPC which will be used to bound the output lease to.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\EOT\239\SOH\EOT\t\n\
+    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\EOT\240\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\EOT\239\SOH\n\
+    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\EOT\240\SOH\n\
     \\f\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\EOT\239\SOH\SI\DLE\n\
+    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\EOT\240\SOH\SI\DLE\n\
     \D\n\
-    \\EOT\EOT\STX\STX\SOH\DC2\EOT\242\SOH\EOT \SUB6 The identifying outpoint of the output being leased.\n\
+    \\EOT\EOT\STX\STX\SOH\DC2\EOT\243\SOH\EOT \SUB6 The identifying outpoint of the output being leased.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\SOH\ACK\DC2\EOT\242\SOH\EOT\DC2\n\
+    \\ENQ\EOT\STX\STX\SOH\ACK\DC2\EOT\243\SOH\EOT\DC2\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\EOT\242\SOH\DC3\ESC\n\
+    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\EOT\243\SOH\DC3\ESC\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\EOT\242\SOH\RS\US\n\
+    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\EOT\243\SOH\RS\US\n\
     \p\n\
-    \\EOT\EOT\STX\STX\STX\DC2\EOT\246\SOH\EOT\"\SUBb The time in seconds before the lock expires. If set to zero, the default\n\
+    \\EOT\EOT\STX\STX\STX\DC2\EOT\247\SOH\EOT\"\SUBb The time in seconds before the lock expires. If set to zero, the default\n\
     \ lock duration is used.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\EOT\246\SOH\EOT\n\
+    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\EOT\247\SOH\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\STX\SOH\DC2\EOT\246\SOH\v\GS\n\
+    \\ENQ\EOT\STX\STX\STX\SOH\DC2\EOT\247\SOH\v\GS\n\
     \\r\n\
-    \\ENQ\EOT\STX\STX\STX\ETX\DC2\EOT\246\SOH !\n\
+    \\ENQ\EOT\STX\STX\STX\ETX\DC2\EOT\247\SOH !\n\
     \\f\n\
-    \\STX\EOT\ETX\DC2\ACK\249\SOH\NUL\254\SOH\SOH\n\
+    \\STX\EOT\ETX\DC2\ACK\250\SOH\NUL\255\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\ETX\SOH\DC2\EOT\249\SOH\b\ESC\n\
+    \\ETX\EOT\ETX\SOH\DC2\EOT\250\SOH\b\ESC\n\
     \\\\n\
-    \\EOT\EOT\ETX\STX\NUL\DC2\EOT\253\SOH\EOT\SUB\SUBN\n\
+    \\EOT\EOT\ETX\STX\NUL\DC2\EOT\254\SOH\EOT\SUB\SUBN\n\
     \The absolute expiration of the output lease represented as a unix timestamp.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\EOT\253\SOH\EOT\n\
+    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\EOT\254\SOH\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\EOT\253\SOH\v\NAK\n\
+    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\EOT\254\SOH\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\EOT\253\SOH\CAN\EM\n\
+    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\EOT\254\SOH\CAN\EM\n\
     \\f\n\
-    \\STX\EOT\EOT\DC2\ACK\128\STX\NUL\134\STX\SOH\n\
+    \\STX\EOT\EOT\DC2\ACK\129\STX\NUL\135\STX\SOH\n\
     \\v\n\
-    \\ETX\EOT\EOT\SOH\DC2\EOT\128\STX\b\FS\n\
+    \\ETX\EOT\EOT\SOH\DC2\EOT\129\STX\b\FS\n\
     \?\n\
-    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\130\STX\EOT\DC1\SUB1 The unique ID that was used to lock the output.\n\
+    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\131\STX\EOT\DC1\SUB1 The unique ID that was used to lock the output.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\130\STX\EOT\t\n\
+    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\131\STX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\130\STX\n\
+    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\131\STX\n\
     \\f\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\130\STX\SI\DLE\n\
+    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\131\STX\SI\DLE\n\
     \F\n\
-    \\EOT\EOT\EOT\STX\SOH\DC2\EOT\133\STX\EOT \SUB8 The identifying outpoint of the output being released.\n\
+    \\EOT\EOT\EOT\STX\SOH\DC2\EOT\134\STX\EOT \SUB8 The identifying outpoint of the output being released.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\ACK\DC2\EOT\133\STX\EOT\DC2\n\
+    \\ENQ\EOT\EOT\STX\SOH\ACK\DC2\EOT\134\STX\EOT\DC2\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\SOH\DC2\EOT\133\STX\DC3\ESC\n\
+    \\ENQ\EOT\EOT\STX\SOH\SOH\DC2\EOT\134\STX\DC3\ESC\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\SOH\ETX\DC2\EOT\133\STX\RS\US\n\
+    \\ENQ\EOT\EOT\STX\SOH\ETX\DC2\EOT\134\STX\RS\US\n\
     \\f\n\
-    \\STX\EOT\ENQ\DC2\ACK\136\STX\NUL\137\STX\SOH\n\
+    \\STX\EOT\ENQ\DC2\ACK\137\STX\NUL\138\STX\SOH\n\
     \\v\n\
-    \\ETX\EOT\ENQ\SOH\DC2\EOT\136\STX\b\GS\n\
+    \\ETX\EOT\ENQ\SOH\DC2\EOT\137\STX\b\GS\n\
     \\f\n\
-    \\STX\EOT\ACK\DC2\ACK\139\STX\NUL\152\STX\SOH\n\
+    \\STX\EOT\ACK\DC2\ACK\140\STX\NUL\153\STX\SOH\n\
     \\v\n\
-    \\ETX\EOT\ACK\SOH\DC2\EOT\139\STX\b\SO\n\
+    \\ETX\EOT\ACK\SOH\DC2\EOT\140\STX\b\SO\n\
     \\190\SOH\n\
-    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\145\STX\EOT\US\SUB\175\SOH\n\
+    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\146\STX\EOT\US\SUB\175\SOH\n\
     \Is the key finger print of the root pubkey that this request is targeting.\n\
     \This allows the WalletKit to possibly serve out keys for multiple HD chains\n\
     \via public derivation.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\145\STX\EOT\t\n\
+    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\146\STX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\145\STX\n\
+    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\146\STX\n\
     \\SUB\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\145\STX\GS\RS\n\
+    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\146\STX\GS\RS\n\
     \n\n\
-    \\EOT\EOT\ACK\STX\SOH\DC2\EOT\151\STX\EOT\EM\SUB`\n\
+    \\EOT\EOT\ACK\STX\SOH\DC2\EOT\152\STX\EOT\EM\SUB`\n\
     \The target key family to derive a key from. In other contexts, this is\n\
     \known as the \"account\".\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\ENQ\DC2\EOT\151\STX\EOT\t\n\
+    \\ENQ\EOT\ACK\STX\SOH\ENQ\DC2\EOT\152\STX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\SOH\DC2\EOT\151\STX\n\
+    \\ENQ\EOT\ACK\STX\SOH\SOH\DC2\EOT\152\STX\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\SOH\ETX\DC2\EOT\151\STX\ETB\CAN\n\
+    \\ENQ\EOT\ACK\STX\SOH\ETX\DC2\EOT\152\STX\ETB\CAN\n\
     \\f\n\
-    \\STX\EOT\a\DC2\ACK\154\STX\NUL\170\STX\SOH\n\
+    \\STX\EOT\a\DC2\ACK\155\STX\NUL\171\STX\SOH\n\
     \\v\n\
-    \\ETX\EOT\a\SOH\DC2\EOT\154\STX\b\DC3\n\
+    \\ETX\EOT\a\SOH\DC2\EOT\155\STX\b\DC3\n\
     \v\n\
-    \\EOT\EOT\a\STX\NUL\DC2\EOT\159\STX\EOT\ETB\SUBh\n\
+    \\EOT\EOT\a\STX\NUL\DC2\EOT\160\STX\EOT\ETB\SUBh\n\
     \The name of the account to retrieve the next address of. If empty, the\n\
     \default wallet account is used.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\159\STX\EOT\n\
+    \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\160\STX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\SOH\DC2\EOT\159\STX\v\DC2\n\
+    \\ENQ\EOT\a\STX\NUL\SOH\DC2\EOT\160\STX\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\ETX\DC2\EOT\159\STX\NAK\SYN\n\
+    \\ENQ\EOT\a\STX\NUL\ETX\DC2\EOT\160\STX\NAK\SYN\n\
     \.\n\
-    \\EOT\EOT\a\STX\SOH\DC2\EOT\164\STX\EOT\EM\SUB \n\
+    \\EOT\EOT\a\STX\SOH\DC2\EOT\165\STX\EOT\EM\SUB \n\
     \The type of address to derive.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\SOH\ACK\DC2\EOT\164\STX\EOT\SI\n\
+    \\ENQ\EOT\a\STX\SOH\ACK\DC2\EOT\165\STX\EOT\SI\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\SOH\SOH\DC2\EOT\164\STX\DLE\DC4\n\
+    \\ENQ\EOT\a\STX\SOH\SOH\DC2\EOT\165\STX\DLE\DC4\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\SOH\ETX\DC2\EOT\164\STX\ETB\CAN\n\
+    \\ENQ\EOT\a\STX\SOH\ETX\DC2\EOT\165\STX\ETB\CAN\n\
     \;\n\
-    \\EOT\EOT\a\STX\STX\DC2\EOT\169\STX\EOT\DC4\SUB-\n\
+    \\EOT\EOT\a\STX\STX\DC2\EOT\170\STX\EOT\DC4\SUB-\n\
     \Whether a change address should be derived.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\STX\ENQ\DC2\EOT\169\STX\EOT\b\n\
+    \\ENQ\EOT\a\STX\STX\ENQ\DC2\EOT\170\STX\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\STX\SOH\DC2\EOT\169\STX\t\SI\n\
+    \\ENQ\EOT\a\STX\STX\SOH\DC2\EOT\170\STX\t\SI\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\STX\ETX\DC2\EOT\169\STX\DC2\DC3\n\
+    \\ENQ\EOT\a\STX\STX\ETX\DC2\EOT\170\STX\DC2\DC3\n\
     \\f\n\
-    \\STX\EOT\b\DC2\ACK\171\STX\NUL\176\STX\SOH\n\
+    \\STX\EOT\b\DC2\ACK\172\STX\NUL\177\STX\SOH\n\
     \\v\n\
-    \\ETX\EOT\b\SOH\DC2\EOT\171\STX\b\DC4\n\
+    \\ETX\EOT\b\SOH\DC2\EOT\172\STX\b\DC4\n\
     \:\n\
-    \\EOT\EOT\b\STX\NUL\DC2\EOT\175\STX\EOT\DC4\SUB,\n\
+    \\EOT\EOT\b\STX\NUL\DC2\EOT\176\STX\EOT\DC4\SUB,\n\
     \The address encoded using a bech32 format.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\NUL\ENQ\DC2\EOT\175\STX\EOT\n\
+    \\ENQ\EOT\b\STX\NUL\ENQ\DC2\EOT\176\STX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\NUL\SOH\DC2\EOT\175\STX\v\SI\n\
+    \\ENQ\EOT\b\STX\NUL\SOH\DC2\EOT\176\STX\v\SI\n\
     \\r\n\
-    \\ENQ\EOT\b\STX\NUL\ETX\DC2\EOT\175\STX\DC2\DC3\n\
+    \\ENQ\EOT\b\STX\NUL\ETX\DC2\EOT\176\STX\DC2\DC3\n\
     \\f\n\
-    \\STX\ENQ\NUL\DC2\ACK\178\STX\NUL\183\STX\SOH\n\
+    \\STX\ENQ\NUL\DC2\ACK\179\STX\NUL\184\STX\SOH\n\
     \\v\n\
-    \\ETX\ENQ\NUL\SOH\DC2\EOT\178\STX\ENQ\DLE\n\
+    \\ETX\ENQ\NUL\SOH\DC2\EOT\179\STX\ENQ\DLE\n\
     \\f\n\
-    \\EOT\ENQ\NUL\STX\NUL\DC2\EOT\179\STX\EOT\DLE\n\
+    \\EOT\ENQ\NUL\STX\NUL\DC2\EOT\180\STX\EOT\DLE\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\NUL\SOH\DC2\EOT\179\STX\EOT\v\n\
+    \\ENQ\ENQ\NUL\STX\NUL\SOH\DC2\EOT\180\STX\EOT\v\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\NUL\STX\DC2\EOT\179\STX\SO\SI\n\
+    \\ENQ\ENQ\NUL\STX\NUL\STX\DC2\EOT\180\STX\SO\SI\n\
     \\f\n\
-    \\EOT\ENQ\NUL\STX\SOH\DC2\EOT\180\STX\EOT\FS\n\
+    \\EOT\ENQ\NUL\STX\SOH\DC2\EOT\181\STX\EOT\FS\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\SOH\SOH\DC2\EOT\180\STX\EOT\ETB\n\
+    \\ENQ\ENQ\NUL\STX\SOH\SOH\DC2\EOT\181\STX\EOT\ETB\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\SOH\STX\DC2\EOT\180\STX\SUB\ESC\n\
+    \\ENQ\ENQ\NUL\STX\SOH\STX\DC2\EOT\181\STX\SUB\ESC\n\
     \\f\n\
-    \\EOT\ENQ\NUL\STX\STX\DC2\EOT\181\STX\EOT#\n\
+    \\EOT\ENQ\NUL\STX\STX\DC2\EOT\182\STX\EOT#\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\STX\SOH\DC2\EOT\181\STX\EOT\RS\n\
+    \\ENQ\ENQ\NUL\STX\STX\SOH\DC2\EOT\182\STX\EOT\RS\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\STX\STX\DC2\EOT\181\STX!\"\n\
+    \\ENQ\ENQ\NUL\STX\STX\STX\DC2\EOT\182\STX!\"\n\
     \\f\n\
-    \\EOT\ENQ\NUL\STX\ETX\DC2\EOT\182\STX\EOT*\n\
+    \\EOT\ENQ\NUL\STX\ETX\DC2\EOT\183\STX\EOT*\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\ETX\SOH\DC2\EOT\182\STX\EOT%\n\
+    \\ENQ\ENQ\NUL\STX\ETX\SOH\DC2\EOT\183\STX\EOT%\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\ETX\STX\DC2\EOT\182\STX()\n\
+    \\ENQ\ENQ\NUL\STX\ETX\STX\DC2\EOT\183\STX()\n\
     \\f\n\
-    \\STX\EOT\t\DC2\ACK\184\STX\NUL\236\STX\SOH\n\
+    \\STX\EOT\t\DC2\ACK\185\STX\NUL\237\STX\SOH\n\
     \\v\n\
-    \\ETX\EOT\t\SOH\DC2\EOT\184\STX\b\SI\n\
+    \\ETX\EOT\t\SOH\DC2\EOT\185\STX\b\SI\n\
     \6\n\
-    \\EOT\EOT\t\STX\NUL\DC2\EOT\186\STX\EOT\DC4\SUB( The name used to identify the account.\n\
+    \\EOT\EOT\t\STX\NUL\DC2\EOT\187\STX\EOT\DC4\SUB( The name used to identify the account.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\NUL\ENQ\DC2\EOT\186\STX\EOT\n\
+    \\ENQ\EOT\t\STX\NUL\ENQ\DC2\EOT\187\STX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\NUL\SOH\DC2\EOT\186\STX\v\SI\n\
+    \\ENQ\EOT\t\STX\NUL\SOH\DC2\EOT\187\STX\v\SI\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\NUL\ETX\DC2\EOT\186\STX\DC2\DC3\n\
+    \\ENQ\EOT\t\STX\NUL\ETX\DC2\EOT\187\STX\DC2\DC3\n\
     \\128\ETX\n\
-    \\EOT\EOT\t\STX\SOH\DC2\EOT\196\STX\EOT!\SUB\241\STX\n\
+    \\EOT\EOT\t\STX\SOH\DC2\EOT\197\STX\EOT!\SUB\241\STX\n\
     \The type of addresses the account supports.\n\
     \AddressType                       | External Branch | Internal Branch\n\
     \---------------------------------------------------------------------\n\
@@ -8846,188 +8849,188 @@ packedFileDescriptor
     \HYBRID_NESTED_WITNESS_PUBKEY_HASH | NP2WPKH         | P2WPKH\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\SOH\ACK\DC2\EOT\196\STX\EOT\SI\n\
+    \\ENQ\EOT\t\STX\SOH\ACK\DC2\EOT\197\STX\EOT\SI\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\SOH\SOH\DC2\EOT\196\STX\DLE\FS\n\
+    \\ENQ\EOT\t\STX\SOH\SOH\DC2\EOT\197\STX\DLE\FS\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\SOH\ETX\DC2\EOT\196\STX\US \n\
+    \\ENQ\EOT\t\STX\SOH\ETX\DC2\EOT\197\STX\US \n\
     \\220\SOH\n\
-    \\EOT\EOT\t\STX\STX\DC2\EOT\203\STX\EOT#\SUB\205\SOH\n\
+    \\EOT\EOT\t\STX\STX\DC2\EOT\204\STX\EOT#\SUB\205\SOH\n\
     \The public key backing the account that all keys are derived from\n\
     \represented as an extended key. This will always be empty for the default\n\
     \imported account in which single public keys are imported into.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\STX\ENQ\DC2\EOT\203\STX\EOT\n\
+    \\ENQ\EOT\t\STX\STX\ENQ\DC2\EOT\204\STX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\STX\SOH\DC2\EOT\203\STX\v\RS\n\
+    \\ENQ\EOT\t\STX\STX\SOH\DC2\EOT\204\STX\v\RS\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\STX\ETX\DC2\EOT\203\STX!\"\n\
+    \\ENQ\EOT\t\STX\STX\ETX\DC2\EOT\204\STX!\"\n\
     \\240\SOH\n\
-    \\EOT\EOT\t\STX\ETX\DC2\EOT\211\STX\EOT%\SUB\225\SOH\n\
+    \\EOT\EOT\t\STX\ETX\DC2\EOT\212\STX\EOT%\SUB\225\SOH\n\
     \The fingerprint of the root key from which the account public key was\n\
     \derived from. This will always be zero for the default imported account in\n\
     \which single public keys are imported into. The bytes are in big-endian\n\
     \order.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ETX\ENQ\DC2\EOT\211\STX\EOT\t\n\
+    \\ENQ\EOT\t\STX\ETX\ENQ\DC2\EOT\212\STX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ETX\SOH\DC2\EOT\211\STX\n\
+    \\ENQ\EOT\t\STX\ETX\SOH\DC2\EOT\212\STX\n\
     \ \n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ETX\ETX\DC2\EOT\211\STX#$\n\
+    \\ENQ\EOT\t\STX\ETX\ETX\DC2\EOT\212\STX#$\n\
     \\183\SOH\n\
-    \\EOT\EOT\t\STX\EOT\DC2\EOT\218\STX\EOT\US\SUB\168\SOH\n\
+    \\EOT\EOT\t\STX\EOT\DC2\EOT\219\STX\EOT\US\SUB\168\SOH\n\
     \The derivation path corresponding to the account public key. This will\n\
     \always be empty for the default imported account in which single public keys\n\
     \are imported into.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\EOT\ENQ\DC2\EOT\218\STX\EOT\n\
+    \\ENQ\EOT\t\STX\EOT\ENQ\DC2\EOT\219\STX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\EOT\SOH\DC2\EOT\218\STX\v\SUB\n\
+    \\ENQ\EOT\t\STX\EOT\SOH\DC2\EOT\219\STX\v\SUB\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\EOT\ETX\DC2\EOT\218\STX\GS\RS\n\
+    \\ENQ\EOT\t\STX\EOT\ETX\DC2\EOT\219\STX\GS\RS\n\
     \\200\SOH\n\
-    \\EOT\EOT\t\STX\ENQ\DC2\EOT\225\STX\EOT\"\SUB\185\SOH\n\
+    \\EOT\EOT\t\STX\ENQ\DC2\EOT\226\STX\EOT\"\SUB\185\SOH\n\
     \The number of keys derived from the external branch of the account public\n\
     \key. This will always be zero for the default imported account in which\n\
     \single public keys are imported into.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ENQ\ENQ\DC2\EOT\225\STX\EOT\n\
+    \\ENQ\EOT\t\STX\ENQ\ENQ\DC2\EOT\226\STX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ENQ\SOH\DC2\EOT\225\STX\v\GS\n\
+    \\ENQ\EOT\t\STX\ENQ\SOH\DC2\EOT\226\STX\v\GS\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ENQ\ETX\DC2\EOT\225\STX !\n\
+    \\ENQ\EOT\t\STX\ENQ\ETX\DC2\EOT\226\STX !\n\
     \\200\SOH\n\
-    \\EOT\EOT\t\STX\ACK\DC2\EOT\232\STX\EOT\"\SUB\185\SOH\n\
+    \\EOT\EOT\t\STX\ACK\DC2\EOT\233\STX\EOT\"\SUB\185\SOH\n\
     \The number of keys derived from the internal branch of the account public\n\
     \key. This will always be zero for the default imported account in which\n\
     \single public keys are imported into.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ACK\ENQ\DC2\EOT\232\STX\EOT\n\
+    \\ENQ\EOT\t\STX\ACK\ENQ\DC2\EOT\233\STX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ACK\SOH\DC2\EOT\232\STX\v\GS\n\
+    \\ENQ\EOT\t\STX\ACK\SOH\DC2\EOT\233\STX\v\GS\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\ACK\ETX\DC2\EOT\232\STX !\n\
+    \\ENQ\EOT\t\STX\ACK\ETX\DC2\EOT\233\STX !\n\
     \G\n\
-    \\EOT\EOT\t\STX\a\DC2\EOT\235\STX\EOT\CAN\SUB9 Whether the wallet stores private keys for the account.\n\
+    \\EOT\EOT\t\STX\a\DC2\EOT\236\STX\EOT\CAN\SUB9 Whether the wallet stores private keys for the account.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\a\ENQ\DC2\EOT\235\STX\EOT\b\n\
+    \\ENQ\EOT\t\STX\a\ENQ\DC2\EOT\236\STX\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\a\SOH\DC2\EOT\235\STX\t\DC3\n\
+    \\ENQ\EOT\t\STX\a\SOH\DC2\EOT\236\STX\t\DC3\n\
     \\r\n\
-    \\ENQ\EOT\t\STX\a\ETX\DC2\EOT\235\STX\SYN\ETB\n\
+    \\ENQ\EOT\t\STX\a\ETX\DC2\EOT\236\STX\SYN\ETB\n\
     \\f\n\
     \\STX\EOT\n\
-    \\DC2\ACK\237\STX\NUL\243\STX\SOH\n\
+    \\DC2\ACK\238\STX\NUL\244\STX\SOH\n\
     \\v\n\
     \\ETX\EOT\n\
-    \\SOH\DC2\EOT\237\STX\b\ESC\n\
+    \\SOH\DC2\EOT\238\STX\b\ESC\n\
     \N\n\
     \\EOT\EOT\n\
-    \\STX\NUL\DC2\EOT\239\STX\EOT\DC4\SUB@ An optional filter to only return accounts matching this name.\n\
+    \\STX\NUL\DC2\EOT\240\STX\EOT\DC4\SUB@ An optional filter to only return accounts matching this name.\n\
     \\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\NUL\ENQ\DC2\EOT\239\STX\EOT\n\
+    \\STX\NUL\ENQ\DC2\EOT\240\STX\EOT\n\
     \\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\NUL\SOH\DC2\EOT\239\STX\v\SI\n\
+    \\STX\NUL\SOH\DC2\EOT\240\STX\v\SI\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\NUL\ETX\DC2\EOT\239\STX\DC2\DC3\n\
+    \\STX\NUL\ETX\DC2\EOT\240\STX\DC2\DC3\n\
     \V\n\
     \\EOT\EOT\n\
-    \\STX\SOH\DC2\EOT\242\STX\EOT!\SUBH An optional filter to only return accounts matching this address type.\n\
+    \\STX\SOH\DC2\EOT\243\STX\EOT!\SUBH An optional filter to only return accounts matching this address type.\n\
     \\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\SOH\ACK\DC2\EOT\242\STX\EOT\SI\n\
+    \\STX\SOH\ACK\DC2\EOT\243\STX\EOT\SI\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\SOH\SOH\DC2\EOT\242\STX\DLE\FS\n\
+    \\STX\SOH\SOH\DC2\EOT\243\STX\DLE\FS\n\
     \\r\n\
     \\ENQ\EOT\n\
-    \\STX\SOH\ETX\DC2\EOT\242\STX\US \n\
+    \\STX\SOH\ETX\DC2\EOT\243\STX\US \n\
     \\f\n\
-    \\STX\EOT\v\DC2\ACK\244\STX\NUL\246\STX\SOH\n\
+    \\STX\EOT\v\DC2\ACK\245\STX\NUL\247\STX\SOH\n\
     \\v\n\
-    \\ETX\EOT\v\SOH\DC2\EOT\244\STX\b\FS\n\
+    \\ETX\EOT\v\SOH\DC2\EOT\245\STX\b\FS\n\
     \\f\n\
-    \\EOT\EOT\v\STX\NUL\DC2\EOT\245\STX\EOT\"\n\
+    \\EOT\EOT\v\STX\NUL\DC2\EOT\246\STX\EOT\"\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\NUL\EOT\DC2\EOT\245\STX\EOT\f\n\
+    \\ENQ\EOT\v\STX\NUL\EOT\DC2\EOT\246\STX\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\NUL\ACK\DC2\EOT\245\STX\r\DC4\n\
+    \\ENQ\EOT\v\STX\NUL\ACK\DC2\EOT\246\STX\r\DC4\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\NUL\SOH\DC2\EOT\245\STX\NAK\GS\n\
+    \\ENQ\EOT\v\STX\NUL\SOH\DC2\EOT\246\STX\NAK\GS\n\
     \\r\n\
-    \\ENQ\EOT\v\STX\NUL\ETX\DC2\EOT\245\STX !\n\
+    \\ENQ\EOT\v\STX\NUL\ETX\DC2\EOT\246\STX !\n\
     \\f\n\
-    \\STX\EOT\f\DC2\ACK\248\STX\NUL\154\ETX\SOH\n\
+    \\STX\EOT\f\DC2\ACK\249\STX\NUL\155\ETX\SOH\n\
     \\v\n\
-    \\ETX\EOT\f\SOH\DC2\EOT\248\STX\b\FS\n\
+    \\ETX\EOT\f\SOH\DC2\EOT\249\STX\b\FS\n\
     \4\n\
-    \\EOT\EOT\f\STX\NUL\DC2\EOT\250\STX\EOT\DC4\SUB& A name to identify the account with.\n\
+    \\EOT\EOT\f\STX\NUL\DC2\EOT\251\STX\EOT\DC4\SUB& A name to identify the account with.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\NUL\ENQ\DC2\EOT\250\STX\EOT\n\
+    \\ENQ\EOT\f\STX\NUL\ENQ\DC2\EOT\251\STX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\NUL\SOH\DC2\EOT\250\STX\v\SI\n\
+    \\ENQ\EOT\f\STX\NUL\SOH\DC2\EOT\251\STX\v\SI\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\NUL\ETX\DC2\EOT\250\STX\DC2\DC3\n\
+    \\ENQ\EOT\f\STX\NUL\ETX\DC2\EOT\251\STX\DC2\DC3\n\
     \\179\SOH\n\
-    \\EOT\EOT\f\STX\SOH\DC2\EOT\129\ETX\EOT#\SUB\164\SOH\n\
+    \\EOT\EOT\f\STX\SOH\DC2\EOT\130\ETX\EOT#\SUB\164\SOH\n\
     \A public key that corresponds to a wallet account represented as an extended\n\
     \key. It must conform to a derivation path of the form\n\
     \m/purpose'/coin_type'/account'.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\SOH\ENQ\DC2\EOT\129\ETX\EOT\n\
+    \\ENQ\EOT\f\STX\SOH\ENQ\DC2\EOT\130\ETX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\SOH\SOH\DC2\EOT\129\ETX\v\RS\n\
+    \\ENQ\EOT\f\STX\SOH\SOH\DC2\EOT\130\ETX\v\RS\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\SOH\ETX\DC2\EOT\129\ETX!\"\n\
+    \\ENQ\EOT\f\STX\SOH\ETX\DC2\EOT\130\ETX!\"\n\
     \\144\STX\n\
-    \\EOT\EOT\f\STX\STX\DC2\EOT\137\ETX\EOT%\SUB\129\STX\n\
+    \\EOT\EOT\f\STX\STX\DC2\EOT\138\ETX\EOT%\SUB\129\STX\n\
     \The fingerprint of the root key (also known as the key with derivation path\n\
     \m/) from which the account public key was derived from. This may be required\n\
     \by some hardware wallets for proper identification and signing. The bytes\n\
     \must be in big-endian order.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\STX\ENQ\DC2\EOT\137\ETX\EOT\t\n\
+    \\ENQ\EOT\f\STX\STX\ENQ\DC2\EOT\138\ETX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\STX\SOH\DC2\EOT\137\ETX\n\
+    \\ENQ\EOT\f\STX\STX\SOH\DC2\EOT\138\ETX\n\
     \ \n\
     \\r\n\
-    \\ENQ\EOT\f\STX\STX\ETX\DC2\EOT\137\ETX#$\n\
+    \\ENQ\EOT\f\STX\STX\ETX\DC2\EOT\138\ETX#$\n\
     \\197\SOH\n\
-    \\EOT\EOT\f\STX\ETX\DC2\EOT\144\ETX\EOT!\SUB\182\SOH\n\
+    \\EOT\EOT\f\STX\ETX\DC2\EOT\145\ETX\EOT!\SUB\182\SOH\n\
     \An address type is only required when the extended account public key has a\n\
     \legacy version (xpub, tpub, etc.), such that the wallet cannot detect what\n\
     \address scheme it belongs to.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\ETX\ACK\DC2\EOT\144\ETX\EOT\SI\n\
+    \\ENQ\EOT\f\STX\ETX\ACK\DC2\EOT\145\ETX\EOT\SI\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\ETX\SOH\DC2\EOT\144\ETX\DLE\FS\n\
+    \\ENQ\EOT\f\STX\ETX\SOH\DC2\EOT\145\ETX\DLE\FS\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\ETX\ETX\DC2\EOT\144\ETX\US \n\
+    \\ENQ\EOT\f\STX\ETX\ETX\DC2\EOT\145\ETX\US \n\
     \\214\STX\n\
-    \\EOT\EOT\f\STX\EOT\DC2\EOT\153\ETX\EOT\NAK\SUB\199\STX\n\
+    \\EOT\EOT\f\STX\EOT\DC2\EOT\154\ETX\EOT\NAK\SUB\199\STX\n\
     \Whether a dry run should be attempted when importing the account. This\n\
     \serves as a way to confirm whether the account is being imported correctly\n\
     \by returning the first N addresses for the external and internal branches of\n\
@@ -9035,111 +9038,111 @@ packedFileDescriptor
     \import the account as is.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\EOT\ENQ\DC2\EOT\153\ETX\EOT\b\n\
+    \\ENQ\EOT\f\STX\EOT\ENQ\DC2\EOT\154\ETX\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\EOT\SOH\DC2\EOT\153\ETX\t\DLE\n\
+    \\ENQ\EOT\f\STX\EOT\SOH\DC2\EOT\154\ETX\t\DLE\n\
     \\r\n\
-    \\ENQ\EOT\f\STX\EOT\ETX\DC2\EOT\153\ETX\DC3\DC4\n\
+    \\ENQ\EOT\f\STX\EOT\ETX\DC2\EOT\154\ETX\DC3\DC4\n\
     \\f\n\
-    \\STX\EOT\r\DC2\ACK\155\ETX\NUL\172\ETX\SOH\n\
+    \\STX\EOT\r\DC2\ACK\156\ETX\NUL\173\ETX\SOH\n\
     \\v\n\
-    \\ETX\EOT\r\SOH\DC2\EOT\155\ETX\b\GS\n\
+    \\ETX\EOT\r\SOH\DC2\EOT\156\ETX\b\GS\n\
     \4\n\
-    \\EOT\EOT\r\STX\NUL\DC2\EOT\157\ETX\EOT\CAN\SUB& The details of the imported account.\n\
+    \\EOT\EOT\r\STX\NUL\DC2\EOT\158\ETX\EOT\CAN\SUB& The details of the imported account.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\NUL\ACK\DC2\EOT\157\ETX\EOT\v\n\
+    \\ENQ\EOT\r\STX\NUL\ACK\DC2\EOT\158\ETX\EOT\v\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\NUL\SOH\DC2\EOT\157\ETX\f\DC3\n\
+    \\ENQ\EOT\r\STX\NUL\SOH\DC2\EOT\158\ETX\f\DC3\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\NUL\ETX\DC2\EOT\157\ETX\SYN\ETB\n\
+    \\ENQ\EOT\r\STX\NUL\ETX\DC2\EOT\158\ETX\SYN\ETB\n\
     \\233\SOH\n\
-    \\EOT\EOT\r\STX\SOH\DC2\EOT\164\ETX\EOT/\SUB\218\SOH\n\
+    \\EOT\EOT\r\STX\SOH\DC2\EOT\165\ETX\EOT/\SUB\218\SOH\n\
     \The first N addresses that belong to the external branch of the account.\n\
     \The external branch is typically used for external non-change addresses.\n\
     \These are only returned if a dry run was specified within the request.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\SOH\EOT\DC2\EOT\164\ETX\EOT\f\n\
+    \\ENQ\EOT\r\STX\SOH\EOT\DC2\EOT\165\ETX\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\SOH\ENQ\DC2\EOT\164\ETX\r\DC3\n\
+    \\ENQ\EOT\r\STX\SOH\ENQ\DC2\EOT\165\ETX\r\DC3\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\SOH\SOH\DC2\EOT\164\ETX\DC4*\n\
+    \\ENQ\EOT\r\STX\SOH\SOH\DC2\EOT\165\ETX\DC4*\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\SOH\ETX\DC2\EOT\164\ETX-.\n\
+    \\ENQ\EOT\r\STX\SOH\ETX\DC2\EOT\165\ETX-.\n\
     \\220\SOH\n\
-    \\EOT\EOT\r\STX\STX\DC2\EOT\171\ETX\EOT/\SUB\205\SOH\n\
+    \\EOT\EOT\r\STX\STX\DC2\EOT\172\ETX\EOT/\SUB\205\SOH\n\
     \The first N addresses that belong to the internal branch of the account.\n\
     \The internal branch is typically used for change addresses. These are only\n\
     \returned if a dry run was specified within the request.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\STX\EOT\DC2\EOT\171\ETX\EOT\f\n\
+    \\ENQ\EOT\r\STX\STX\EOT\DC2\EOT\172\ETX\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\STX\ENQ\DC2\EOT\171\ETX\r\DC3\n\
+    \\ENQ\EOT\r\STX\STX\ENQ\DC2\EOT\172\ETX\r\DC3\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\STX\SOH\DC2\EOT\171\ETX\DC4*\n\
+    \\ENQ\EOT\r\STX\STX\SOH\DC2\EOT\172\ETX\DC4*\n\
     \\r\n\
-    \\ENQ\EOT\r\STX\STX\ETX\DC2\EOT\171\ETX-.\n\
+    \\ENQ\EOT\r\STX\STX\ETX\DC2\EOT\172\ETX-.\n\
     \\f\n\
-    \\STX\EOT\SO\DC2\ACK\174\ETX\NUL\180\ETX\SOH\n\
+    \\STX\EOT\SO\DC2\ACK\175\ETX\NUL\181\ETX\SOH\n\
     \\v\n\
-    \\ETX\EOT\SO\SOH\DC2\EOT\174\ETX\b\RS\n\
+    \\ETX\EOT\SO\SOH\DC2\EOT\175\ETX\b\RS\n\
     \A\n\
-    \\EOT\EOT\SO\STX\NUL\DC2\EOT\176\ETX\EOT\EM\SUB3 A compressed public key represented as raw bytes.\n\
+    \\EOT\EOT\SO\STX\NUL\DC2\EOT\177\ETX\EOT\EM\SUB3 A compressed public key represented as raw bytes.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SO\STX\NUL\ENQ\DC2\EOT\176\ETX\EOT\t\n\
+    \\ENQ\EOT\SO\STX\NUL\ENQ\DC2\EOT\177\ETX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\SO\STX\NUL\SOH\DC2\EOT\176\ETX\n\
+    \\ENQ\EOT\SO\STX\NUL\SOH\DC2\EOT\177\ETX\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT\SO\STX\NUL\ETX\DC2\EOT\176\ETX\ETB\CAN\n\
+    \\ENQ\EOT\SO\STX\NUL\ETX\DC2\EOT\177\ETX\ETB\CAN\n\
     \O\n\
-    \\EOT\EOT\SO\STX\SOH\DC2\EOT\179\ETX\EOT!\SUBA The type of address that will be generated from the public key.\n\
+    \\EOT\EOT\SO\STX\SOH\DC2\EOT\180\ETX\EOT!\SUBA The type of address that will be generated from the public key.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SO\STX\SOH\ACK\DC2\EOT\179\ETX\EOT\SI\n\
+    \\ENQ\EOT\SO\STX\SOH\ACK\DC2\EOT\180\ETX\EOT\SI\n\
     \\r\n\
-    \\ENQ\EOT\SO\STX\SOH\SOH\DC2\EOT\179\ETX\DLE\FS\n\
+    \\ENQ\EOT\SO\STX\SOH\SOH\DC2\EOT\180\ETX\DLE\FS\n\
     \\r\n\
-    \\ENQ\EOT\SO\STX\SOH\ETX\DC2\EOT\179\ETX\US \n\
+    \\ENQ\EOT\SO\STX\SOH\ETX\DC2\EOT\180\ETX\US \n\
     \\f\n\
-    \\STX\EOT\SI\DC2\ACK\181\ETX\NUL\182\ETX\SOH\n\
+    \\STX\EOT\SI\DC2\ACK\182\ETX\NUL\183\ETX\SOH\n\
     \\v\n\
-    \\ETX\EOT\SI\SOH\DC2\EOT\181\ETX\b\US\n\
+    \\ETX\EOT\SI\SOH\DC2\EOT\182\ETX\b\US\n\
     \\f\n\
-    \\STX\EOT\DLE\DC2\ACK\184\ETX\NUL\194\ETX\SOH\n\
+    \\STX\EOT\DLE\DC2\ACK\185\ETX\NUL\195\ETX\SOH\n\
     \\v\n\
-    \\ETX\EOT\DLE\SOH\DC2\EOT\184\ETX\b\DC3\n\
+    \\ETX\EOT\DLE\SOH\DC2\EOT\185\ETX\b\DC3\n\
     \/\n\
-    \\EOT\EOT\DLE\STX\NUL\DC2\EOT\188\ETX\EOT\NAK\SUB!\n\
+    \\EOT\EOT\DLE\STX\NUL\DC2\EOT\189\ETX\EOT\NAK\SUB!\n\
     \The raw serialized transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DLE\STX\NUL\ENQ\DC2\EOT\188\ETX\EOT\t\n\
+    \\ENQ\EOT\DLE\STX\NUL\ENQ\DC2\EOT\189\ETX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DLE\STX\NUL\SOH\DC2\EOT\188\ETX\n\
+    \\ENQ\EOT\DLE\STX\NUL\SOH\DC2\EOT\189\ETX\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOT\DLE\STX\NUL\ETX\DC2\EOT\188\ETX\DC3\DC4\n\
+    \\ENQ\EOT\DLE\STX\NUL\ETX\DC2\EOT\189\ETX\DC3\DC4\n\
     \Z\n\
-    \\EOT\EOT\DLE\STX\SOH\DC2\EOT\193\ETX\EOT\NAK\SUBL\n\
+    \\EOT\EOT\DLE\STX\SOH\DC2\EOT\194\ETX\EOT\NAK\SUBL\n\
     \An optional label to save with the transaction. Limited to 500 characters.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DLE\STX\SOH\ENQ\DC2\EOT\193\ETX\EOT\n\
+    \\ENQ\EOT\DLE\STX\SOH\ENQ\DC2\EOT\194\ETX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DLE\STX\SOH\SOH\DC2\EOT\193\ETX\v\DLE\n\
+    \\ENQ\EOT\DLE\STX\SOH\SOH\DC2\EOT\194\ETX\v\DLE\n\
     \\r\n\
-    \\ENQ\EOT\DLE\STX\SOH\ETX\DC2\EOT\193\ETX\DC3\DC4\n\
+    \\ENQ\EOT\DLE\STX\SOH\ETX\DC2\EOT\194\ETX\DC3\DC4\n\
     \\f\n\
-    \\STX\EOT\DC1\DC2\ACK\195\ETX\NUL\204\ETX\SOH\n\
+    \\STX\EOT\DC1\DC2\ACK\196\ETX\NUL\205\ETX\SOH\n\
     \\v\n\
-    \\ETX\EOT\DC1\SOH\DC2\EOT\195\ETX\b\ETB\n\
+    \\ETX\EOT\DC1\SOH\DC2\EOT\196\ETX\b\ETB\n\
     \\218\SOH\n\
-    \\EOT\EOT\DC1\STX\NUL\DC2\EOT\203\ETX\EOT\GS\SUB\203\SOH\n\
+    \\EOT\EOT\DC1\STX\NUL\DC2\EOT\204\ETX\EOT\GS\SUB\203\SOH\n\
     \If blank, then no error occurred and the transaction was successfully\n\
     \published. If not the empty string, then a string representation of the\n\
     \broadcast error.\n\
@@ -9147,583 +9150,583 @@ packedFileDescriptor
     \TODO(roasbeef): map to a proper enum type\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\NUL\ENQ\DC2\EOT\203\ETX\EOT\n\
+    \\ENQ\EOT\DC1\STX\NUL\ENQ\DC2\EOT\204\ETX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\NUL\SOH\DC2\EOT\203\ETX\v\CAN\n\
+    \\ENQ\EOT\DC1\STX\NUL\SOH\DC2\EOT\204\ETX\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT\DC1\STX\NUL\ETX\DC2\EOT\203\ETX\ESC\FS\n\
+    \\ENQ\EOT\DC1\STX\NUL\ETX\DC2\EOT\204\ETX\ESC\FS\n\
     \\f\n\
-    \\STX\EOT\DC2\DC2\ACK\206\ETX\NUL\227\ETX\SOH\n\
+    \\STX\EOT\DC2\DC2\ACK\207\ETX\NUL\228\ETX\SOH\n\
     \\v\n\
-    \\ETX\EOT\DC2\SOH\DC2\EOT\206\ETX\b\SUB\n\
+    \\ETX\EOT\DC2\SOH\DC2\EOT\207\ETX\b\SUB\n\
     \j\n\
-    \\EOT\EOT\DC2\STX\NUL\DC2\EOT\211\ETX\EOT\EM\SUB\\\n\
+    \\EOT\EOT\DC2\STX\NUL\DC2\EOT\212\ETX\EOT\EM\SUB\\\n\
     \The number of satoshis per kilo weight that should be used when crafting\n\
     \this transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\NUL\ENQ\DC2\EOT\211\ETX\EOT\t\n\
+    \\ENQ\EOT\DC2\STX\NUL\ENQ\DC2\EOT\212\ETX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\NUL\SOH\DC2\EOT\211\ETX\n\
+    \\ENQ\EOT\DC2\STX\NUL\SOH\DC2\EOT\212\ETX\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\NUL\ETX\DC2\EOT\211\ETX\ETB\CAN\n\
+    \\ENQ\EOT\DC2\STX\NUL\ETX\DC2\EOT\212\ETX\ETB\CAN\n\
     \Z\n\
-    \\EOT\EOT\DC2\STX\SOH\DC2\EOT\216\ETX\EOT'\SUBL\n\
+    \\EOT\EOT\DC2\STX\SOH\DC2\EOT\217\ETX\EOT'\SUBL\n\
     \A slice of the outputs that should be created in the transaction produced.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\SOH\EOT\DC2\EOT\216\ETX\EOT\f\n\
+    \\ENQ\EOT\DC2\STX\SOH\EOT\DC2\EOT\217\ETX\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\SOH\ACK\DC2\EOT\216\ETX\r\SUB\n\
+    \\ENQ\EOT\DC2\STX\SOH\ACK\DC2\EOT\217\ETX\r\SUB\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\SOH\SOH\DC2\EOT\216\ETX\ESC\"\n\
+    \\ENQ\EOT\DC2\STX\SOH\SOH\DC2\EOT\217\ETX\ESC\"\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\SOH\ETX\DC2\EOT\216\ETX%&\n\
+    \\ENQ\EOT\DC2\STX\SOH\ETX\DC2\EOT\217\ETX%&\n\
     \Q\n\
-    \\EOT\EOT\DC2\STX\STX\DC2\EOT\219\ETX\EOT\NAK\SUBC An optional label for the transaction, limited to 500 characters.\n\
+    \\EOT\EOT\DC2\STX\STX\DC2\EOT\220\ETX\EOT\NAK\SUBC An optional label for the transaction, limited to 500 characters.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\STX\ENQ\DC2\EOT\219\ETX\EOT\n\
+    \\ENQ\EOT\DC2\STX\STX\ENQ\DC2\EOT\220\ETX\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\STX\SOH\DC2\EOT\219\ETX\v\DLE\n\
+    \\ENQ\EOT\DC2\STX\STX\SOH\DC2\EOT\220\ETX\v\DLE\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\STX\ETX\DC2\EOT\219\ETX\DC3\DC4\n\
+    \\ENQ\EOT\DC2\STX\STX\ETX\DC2\EOT\220\ETX\DC3\DC4\n\
     \t\n\
-    \\EOT\EOT\DC2\STX\ETX\DC2\EOT\223\ETX\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
+    \\EOT\EOT\DC2\STX\ETX\DC2\EOT\224\ETX\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
     \ the transaction must satisfy.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\ETX\ENQ\DC2\EOT\223\ETX\EOT\t\n\
+    \\ENQ\EOT\DC2\STX\ETX\ENQ\DC2\EOT\224\ETX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\ETX\SOH\DC2\EOT\223\ETX\n\
+    \\ENQ\EOT\DC2\STX\ETX\SOH\DC2\EOT\224\ETX\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\ETX\ETX\DC2\EOT\223\ETX\SYN\ETB\n\
+    \\ENQ\EOT\DC2\STX\ETX\ETX\DC2\EOT\224\ETX\SYN\ETB\n\
     \Y\n\
-    \\EOT\EOT\DC2\STX\EOT\DC2\EOT\226\ETX\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
+    \\EOT\EOT\DC2\STX\EOT\DC2\EOT\227\ETX\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\EOT\ENQ\DC2\EOT\226\ETX\EOT\b\n\
+    \\ENQ\EOT\DC2\STX\EOT\ENQ\DC2\EOT\227\ETX\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\EOT\SOH\DC2\EOT\226\ETX\t\SUB\n\
+    \\ENQ\EOT\DC2\STX\EOT\SOH\DC2\EOT\227\ETX\t\SUB\n\
     \\r\n\
-    \\ENQ\EOT\DC2\STX\EOT\ETX\DC2\EOT\226\ETX\GS\RS\n\
+    \\ENQ\EOT\DC2\STX\EOT\ETX\DC2\EOT\227\ETX\GS\RS\n\
     \\f\n\
-    \\STX\EOT\DC3\DC2\ACK\228\ETX\NUL\233\ETX\SOH\n\
+    \\STX\EOT\DC3\DC2\ACK\229\ETX\NUL\234\ETX\SOH\n\
     \\v\n\
-    \\ETX\EOT\DC3\SOH\DC2\EOT\228\ETX\b\ESC\n\
+    \\ETX\EOT\DC3\SOH\DC2\EOT\229\ETX\b\ESC\n\
     \C\n\
-    \\EOT\EOT\DC3\STX\NUL\DC2\EOT\232\ETX\EOT\NAK\SUB5\n\
+    \\EOT\EOT\DC3\STX\NUL\DC2\EOT\233\ETX\EOT\NAK\SUB5\n\
     \The serialized transaction sent out on the network.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC3\STX\NUL\ENQ\DC2\EOT\232\ETX\EOT\t\n\
+    \\ENQ\EOT\DC3\STX\NUL\ENQ\DC2\EOT\233\ETX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DC3\STX\NUL\SOH\DC2\EOT\232\ETX\n\
+    \\ENQ\EOT\DC3\STX\NUL\SOH\DC2\EOT\233\ETX\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOT\DC3\STX\NUL\ETX\DC2\EOT\232\ETX\DC3\DC4\n\
+    \\ENQ\EOT\DC3\STX\NUL\ETX\DC2\EOT\233\ETX\DC3\DC4\n\
     \\f\n\
-    \\STX\EOT\DC4\DC2\ACK\235\ETX\NUL\240\ETX\SOH\n\
+    \\STX\EOT\DC4\DC2\ACK\236\ETX\NUL\241\ETX\SOH\n\
     \\v\n\
-    \\ETX\EOT\DC4\SOH\DC2\EOT\235\ETX\b\SUB\n\
+    \\ETX\EOT\DC4\SOH\DC2\EOT\236\ETX\b\SUB\n\
     \Q\n\
-    \\EOT\EOT\DC4\STX\NUL\DC2\EOT\239\ETX\EOT\SUB\SUBC\n\
+    \\EOT\EOT\DC4\STX\NUL\DC2\EOT\240\ETX\EOT\SUB\SUBC\n\
     \The number of confirmations to shoot for when estimating the fee.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\DC4\STX\NUL\ENQ\DC2\EOT\239\ETX\EOT\t\n\
+    \\ENQ\EOT\DC4\STX\NUL\ENQ\DC2\EOT\240\ETX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\DC4\STX\NUL\SOH\DC2\EOT\239\ETX\n\
+    \\ENQ\EOT\DC4\STX\NUL\SOH\DC2\EOT\240\ETX\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOT\DC4\STX\NUL\ETX\DC2\EOT\239\ETX\CAN\EM\n\
+    \\ENQ\EOT\DC4\STX\NUL\ETX\DC2\EOT\240\ETX\CAN\EM\n\
     \\f\n\
-    \\STX\EOT\NAK\DC2\ACK\241\ETX\NUL\247\ETX\SOH\n\
+    \\STX\EOT\NAK\DC2\ACK\242\ETX\NUL\248\ETX\SOH\n\
     \\v\n\
-    \\ETX\EOT\NAK\SOH\DC2\EOT\241\ETX\b\ESC\n\
+    \\ETX\EOT\NAK\SOH\DC2\EOT\242\ETX\b\ESC\n\
     \{\n\
-    \\EOT\EOT\NAK\STX\NUL\DC2\EOT\246\ETX\EOT\EM\SUBm\n\
+    \\EOT\EOT\NAK\STX\NUL\DC2\EOT\247\ETX\EOT\EM\SUBm\n\
     \The amount of satoshis per kw that should be used in order to reach the\n\
     \confirmation target in the request.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\NAK\STX\NUL\ENQ\DC2\EOT\246\ETX\EOT\t\n\
+    \\ENQ\EOT\NAK\STX\NUL\ENQ\DC2\EOT\247\ETX\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\NAK\STX\NUL\SOH\DC2\EOT\246\ETX\n\
+    \\ENQ\EOT\NAK\STX\NUL\SOH\DC2\EOT\247\ETX\n\
     \\DC4\n\
     \\r\n\
-    \\ENQ\EOT\NAK\STX\NUL\ETX\DC2\EOT\246\ETX\ETB\CAN\n\
+    \\ENQ\EOT\NAK\STX\NUL\ETX\DC2\EOT\247\ETX\ETB\CAN\n\
     \\f\n\
-    \\STX\ENQ\SOH\DC2\ACK\249\ETX\NUL\209\EOT\SOH\n\
+    \\STX\ENQ\SOH\DC2\ACK\250\ETX\NUL\210\EOT\SOH\n\
     \\v\n\
-    \\ETX\ENQ\SOH\SOH\DC2\EOT\249\ETX\ENQ\DLE\n\
+    \\ETX\ENQ\SOH\SOH\DC2\EOT\250\ETX\ENQ\DLE\n\
     \\f\n\
-    \\EOT\ENQ\SOH\STX\NUL\DC2\EOT\250\ETX\EOT\CAN\n\
+    \\EOT\ENQ\SOH\STX\NUL\DC2\EOT\251\ETX\EOT\CAN\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\NUL\SOH\DC2\EOT\250\ETX\EOT\DC3\n\
+    \\ENQ\ENQ\SOH\STX\NUL\SOH\DC2\EOT\251\ETX\EOT\DC3\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\NUL\STX\DC2\EOT\250\ETX\SYN\ETB\n\
+    \\ENQ\ENQ\SOH\STX\NUL\STX\DC2\EOT\251\ETX\SYN\ETB\n\
     \|\n\
-    \\EOT\ENQ\SOH\STX\SOH\DC2\EOT\128\EOT\EOT\GS\SUBn\n\
+    \\EOT\ENQ\SOH\STX\SOH\DC2\EOT\129\EOT\EOT\GS\SUBn\n\
     \A witness that allows us to spend the output of a commitment transaction\n\
     \after a relative lock-time lockout.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\SOH\SOH\DC2\EOT\128\EOT\EOT\CAN\n\
+    \\ENQ\ENQ\SOH\STX\SOH\SOH\DC2\EOT\129\EOT\EOT\CAN\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\SOH\STX\DC2\EOT\128\EOT\ESC\FS\n\
+    \\ENQ\ENQ\SOH\STX\SOH\STX\DC2\EOT\129\EOT\ESC\FS\n\
     \\131\SOH\n\
-    \\EOT\ENQ\SOH\STX\STX\DC2\EOT\134\EOT\EOT\FS\SUBu\n\
+    \\EOT\ENQ\SOH\STX\STX\DC2\EOT\135\EOT\EOT\FS\SUBu\n\
     \A witness that allows us to spend a settled no-delay output immediately on a\n\
     \counterparty's commitment transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\STX\SOH\DC2\EOT\134\EOT\EOT\ETB\n\
+    \\ENQ\ENQ\SOH\STX\STX\SOH\DC2\EOT\135\EOT\EOT\ETB\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\STX\STX\DC2\EOT\134\EOT\SUB\ESC\n\
+    \\ENQ\ENQ\SOH\STX\STX\STX\DC2\EOT\135\EOT\SUB\ESC\n\
     \\148\SOH\n\
-    \\EOT\ENQ\SOH\STX\ETX\DC2\EOT\140\EOT\EOT\SUB\SUB\133\SOH\n\
+    \\EOT\ENQ\SOH\STX\ETX\DC2\EOT\141\EOT\EOT\SUB\SUB\133\SOH\n\
     \A witness that allows us to sweep the settled output of a malicious\n\
     \counterparty's who broadcasts a revoked commitment transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\ETX\SOH\DC2\EOT\140\EOT\EOT\NAK\n\
+    \\ENQ\ENQ\SOH\STX\ETX\SOH\DC2\EOT\141\EOT\EOT\NAK\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\ETX\STX\DC2\EOT\140\EOT\CAN\EM\n\
+    \\ENQ\ENQ\SOH\STX\ETX\STX\DC2\EOT\141\EOT\CAN\EM\n\
     \\155\SOH\n\
-    \\EOT\ENQ\SOH\STX\EOT\DC2\EOT\146\EOT\EOT\FS\SUB\140\SOH\n\
+    \\EOT\ENQ\SOH\STX\EOT\DC2\EOT\147\EOT\EOT\FS\SUB\140\SOH\n\
     \A witness that allows us to sweep an HTLC which we offered to the remote\n\
     \party in the case that they broadcast a revoked commitment state.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\EOT\SOH\DC2\EOT\146\EOT\EOT\ETB\n\
+    \\ENQ\ENQ\SOH\STX\EOT\SOH\DC2\EOT\147\EOT\EOT\ETB\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\EOT\STX\DC2\EOT\146\EOT\SUB\ESC\n\
+    \\ENQ\ENQ\SOH\STX\EOT\STX\DC2\EOT\147\EOT\SUB\ESC\n\
     \\149\SOH\n\
-    \\EOT\ENQ\SOH\STX\ENQ\DC2\EOT\152\EOT\EOT\GS\SUB\134\SOH\n\
+    \\EOT\ENQ\SOH\STX\ENQ\DC2\EOT\153\EOT\EOT\GS\SUB\134\SOH\n\
     \A witness that allows us to sweep an HTLC output sent to us in the case that\n\
     \the remote party broadcasts a revoked commitment state.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\ENQ\SOH\DC2\EOT\152\EOT\EOT\CAN\n\
+    \\ENQ\ENQ\SOH\STX\ENQ\SOH\DC2\EOT\153\EOT\EOT\CAN\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\ENQ\STX\DC2\EOT\152\EOT\ESC\FS\n\
+    \\ENQ\ENQ\SOH\STX\ENQ\STX\DC2\EOT\153\EOT\ESC\FS\n\
     \\174\STX\n\
-    \\EOT\ENQ\SOH\STX\ACK\DC2\EOT\160\EOT\EOT*\SUB\159\STX\n\
+    \\EOT\ENQ\SOH\STX\ACK\DC2\EOT\161\EOT\EOT*\SUB\159\STX\n\
     \A witness that allows us to sweep an HTLC output that we extended to a\n\
     \party, but was never fulfilled.  This HTLC output isn't directly on the\n\
     \commitment transaction, but is the result of a confirmed second-level HTLC\n\
     \transaction. As a result, we can only spend this after a CSV delay.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\ACK\SOH\DC2\EOT\160\EOT\EOT%\n\
+    \\ENQ\ENQ\SOH\STX\ACK\SOH\DC2\EOT\161\EOT\EOT%\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\ACK\STX\DC2\EOT\160\EOT()\n\
+    \\ENQ\ENQ\SOH\STX\ACK\STX\DC2\EOT\161\EOT()\n\
     \\183\STX\n\
-    \\EOT\ENQ\SOH\STX\a\DC2\EOT\168\EOT\EOT+\SUB\168\STX\n\
+    \\EOT\ENQ\SOH\STX\a\DC2\EOT\169\EOT\EOT+\SUB\168\STX\n\
     \A witness that allows us to sweep an HTLC output that was offered to us, and\n\
     \for which we have a payment preimage. This HTLC output isn't directly on our\n\
     \commitment transaction, but is the result of confirmed second-level HTLC\n\
     \transaction. As a result, we can only spend this after a CSV delay.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\a\SOH\DC2\EOT\168\EOT\EOT&\n\
+    \\ENQ\ENQ\SOH\STX\a\SOH\DC2\EOT\169\EOT\EOT&\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\a\STX\DC2\EOT\168\EOT)*\n\
+    \\ENQ\ENQ\SOH\STX\a\STX\DC2\EOT\169\EOT)*\n\
     \\236\SOH\n\
-    \\EOT\ENQ\SOH\STX\b\DC2\EOT\175\EOT\EOT$\SUB\221\SOH\n\
+    \\EOT\ENQ\SOH\STX\b\DC2\EOT\176\EOT\EOT$\SUB\221\SOH\n\
     \A witness that allows us to sweep an HTLC that we offered to the remote\n\
     \party which lies in the commitment transaction of the remote party. We can\n\
     \spend this output after the absolute CLTV timeout of the HTLC as passed.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\b\SOH\DC2\EOT\175\EOT\EOT\US\n\
+    \\ENQ\ENQ\SOH\STX\b\SOH\DC2\EOT\176\EOT\EOT\US\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\b\STX\DC2\EOT\175\EOT\"#\n\
+    \\ENQ\ENQ\SOH\STX\b\STX\DC2\EOT\176\EOT\"#\n\
     \\132\STX\n\
-    \\EOT\ENQ\SOH\STX\t\DC2\EOT\183\EOT\EOT%\SUB\245\SOH\n\
+    \\EOT\ENQ\SOH\STX\t\DC2\EOT\184\EOT\EOT%\SUB\245\SOH\n\
     \A witness that allows us to sweep an HTLC that was offered to us by the\n\
     \remote party. We use this witness in the case that the remote party goes to\n\
     \chain, and we know the pre-image to the HTLC. We can sweep this without any\n\
     \additional timeout.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\t\SOH\DC2\EOT\183\EOT\EOT \n\
+    \\ENQ\ENQ\SOH\STX\t\SOH\DC2\EOT\184\EOT\EOT \n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\t\STX\DC2\EOT\183\EOT#$\n\
+    \\ENQ\ENQ\SOH\STX\t\STX\DC2\EOT\184\EOT#$\n\
     \\237\SOH\n\
     \\EOT\ENQ\SOH\STX\n\
-    \\DC2\EOT\190\EOT\EOT\"\SUB\222\SOH\n\
+    \\DC2\EOT\191\EOT\EOT\"\SUB\222\SOH\n\
     \A witness that allows us to sweep an HTLC from the remote party's commitment\n\
     \transaction in the case that the broadcast a revoked commitment, but then\n\
     \also immediately attempt to go to the second level to claim the HTLC.\n\
     \\n\
     \\r\n\
     \\ENQ\ENQ\SOH\STX\n\
-    \\SOH\DC2\EOT\190\EOT\EOT\FS\n\
+    \\SOH\DC2\EOT\191\EOT\EOT\FS\n\
     \\r\n\
     \\ENQ\ENQ\SOH\STX\n\
-    \\STX\DC2\EOT\190\EOT\US!\n\
+    \\STX\DC2\EOT\191\EOT\US!\n\
     \\158\SOH\n\
-    \\EOT\ENQ\SOH\STX\v\DC2\EOT\196\EOT\EOT\SUB\SUB\143\SOH\n\
+    \\EOT\ENQ\SOH\STX\v\DC2\EOT\197\EOT\EOT\SUB\SUB\143\SOH\n\
     \A witness type that allows us to spend a regular p2wkh output that's sent to\n\
     \an output which is under complete control of the backing wallet.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\v\SOH\DC2\EOT\196\EOT\EOT\DC4\n\
+    \\ENQ\ENQ\SOH\STX\v\SOH\DC2\EOT\197\EOT\EOT\DC4\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\v\STX\DC2\EOT\196\EOT\ETB\EM\n\
+    \\ENQ\ENQ\SOH\STX\v\STX\DC2\EOT\197\EOT\ETB\EM\n\
     \\145\SOH\n\
-    \\EOT\ENQ\SOH\STX\f\DC2\EOT\202\EOT\EOT!\SUB\130\SOH\n\
+    \\EOT\ENQ\SOH\STX\f\DC2\EOT\203\EOT\EOT!\SUB\130\SOH\n\
     \A witness type that allows us to sweep an output that sends to a nested P2SH\n\
     \script that pays to a key solely under our control.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\f\SOH\DC2\EOT\202\EOT\EOT\ESC\n\
+    \\ENQ\ENQ\SOH\STX\f\SOH\DC2\EOT\203\EOT\EOT\ESC\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\f\STX\DC2\EOT\202\EOT\RS \n\
+    \\ENQ\ENQ\SOH\STX\f\STX\DC2\EOT\203\EOT\RS \n\
     \`\n\
-    \\EOT\ENQ\SOH\STX\r\DC2\EOT\208\EOT\EOT\ESC\SUBR\n\
+    \\EOT\ENQ\SOH\STX\r\DC2\EOT\209\EOT\EOT\ESC\SUBR\n\
     \A witness type that allows us to spend our anchor on the commitment\n\
     \transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\r\SOH\DC2\EOT\208\EOT\EOT\NAK\n\
+    \\ENQ\ENQ\SOH\STX\r\SOH\DC2\EOT\209\EOT\EOT\NAK\n\
     \\r\n\
-    \\ENQ\ENQ\SOH\STX\r\STX\DC2\EOT\208\EOT\CAN\SUB\n\
+    \\ENQ\ENQ\SOH\STX\r\STX\DC2\EOT\209\EOT\CAN\SUB\n\
     \\f\n\
-    \\STX\EOT\SYN\DC2\ACK\211\EOT\NUL\132\ENQ\SOH\n\
+    \\STX\EOT\SYN\DC2\ACK\212\EOT\NUL\133\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\SYN\SOH\DC2\EOT\211\EOT\b\DC4\n\
+    \\ETX\EOT\SYN\SOH\DC2\EOT\212\EOT\b\DC4\n\
     \E\n\
-    \\EOT\EOT\SYN\STX\NUL\DC2\EOT\213\EOT\EOT \SUB7 The outpoint of the output we're attempting to sweep.\n\
+    \\EOT\EOT\SYN\STX\NUL\DC2\EOT\214\EOT\EOT \SUB7 The outpoint of the output we're attempting to sweep.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\NUL\ACK\DC2\EOT\213\EOT\EOT\DC2\n\
+    \\ENQ\EOT\SYN\STX\NUL\ACK\DC2\EOT\214\EOT\EOT\DC2\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\NUL\SOH\DC2\EOT\213\EOT\DC3\ESC\n\
+    \\ENQ\EOT\SYN\STX\NUL\SOH\DC2\EOT\214\EOT\DC3\ESC\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\NUL\ETX\DC2\EOT\213\EOT\RS\US\n\
+    \\ENQ\EOT\SYN\STX\NUL\ETX\DC2\EOT\214\EOT\RS\US\n\
     \I\n\
-    \\EOT\EOT\SYN\STX\SOH\DC2\EOT\216\EOT\EOT!\SUB; The witness type of the output we're attempting to sweep.\n\
+    \\EOT\EOT\SYN\STX\SOH\DC2\EOT\217\EOT\EOT!\SUB; The witness type of the output we're attempting to sweep.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\SOH\ACK\DC2\EOT\216\EOT\EOT\SI\n\
+    \\ENQ\EOT\SYN\STX\SOH\ACK\DC2\EOT\217\EOT\EOT\SI\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\SOH\SOH\DC2\EOT\216\EOT\DLE\FS\n\
+    \\ENQ\EOT\SYN\STX\SOH\SOH\DC2\EOT\217\EOT\DLE\FS\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\SOH\ETX\DC2\EOT\216\EOT\US \n\
+    \\ENQ\EOT\SYN\STX\SOH\ETX\DC2\EOT\217\EOT\US \n\
     \B\n\
-    \\EOT\EOT\SYN\STX\STX\DC2\EOT\219\EOT\EOT\SUB\SUB4 The value of the output we're attempting to sweep.\n\
+    \\EOT\EOT\SYN\STX\STX\DC2\EOT\220\EOT\EOT\SUB\SUB4 The value of the output we're attempting to sweep.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\STX\ENQ\DC2\EOT\219\EOT\EOT\n\
+    \\ENQ\EOT\SYN\STX\STX\ENQ\DC2\EOT\220\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\STX\SOH\DC2\EOT\219\EOT\v\NAK\n\
+    \\ENQ\EOT\SYN\STX\STX\SOH\DC2\EOT\220\EOT\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\STX\ETX\DC2\EOT\219\EOT\CAN\EM\n\
+    \\ENQ\EOT\SYN\STX\STX\ETX\DC2\EOT\220\EOT\CAN\EM\n\
     \\249\SOH\n\
-    \\EOT\EOT\SYN\STX\ETX\DC2\EOT\227\EOT\EOT0\SUB\234\SOH\n\
+    \\EOT\EOT\SYN\STX\ETX\DC2\EOT\228\EOT\EOT0\SUB\234\SOH\n\
     \Deprecated, use sat_per_vbyte.\n\
     \The fee rate we'll use to sweep the output, expressed in sat/vbyte. The fee\n\
     \rate is only determined once a sweeping transaction for the output is\n\
     \created, so it's possible for this to be 0 before this.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\ETX\ENQ\DC2\EOT\227\EOT\EOT\n\
+    \\ENQ\EOT\SYN\STX\ETX\ENQ\DC2\EOT\228\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\ETX\SOH\DC2\EOT\227\EOT\v\ETB\n\
+    \\ENQ\EOT\SYN\STX\ETX\SOH\DC2\EOT\228\EOT\v\ETB\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\ETX\ETX\DC2\EOT\227\EOT\SUB\ESC\n\
+    \\ENQ\EOT\SYN\STX\ETX\ETX\DC2\EOT\228\EOT\SUB\ESC\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\ETX\b\DC2\EOT\227\EOT\FS/\n\
+    \\ENQ\EOT\SYN\STX\ETX\b\DC2\EOT\228\EOT\FS/\n\
     \\SO\n\
-    \\ACK\EOT\SYN\STX\ETX\b\ETX\DC2\EOT\227\EOT\GS.\n\
+    \\ACK\EOT\SYN\STX\ETX\b\ETX\DC2\EOT\228\EOT\GS.\n\
     \P\n\
-    \\EOT\EOT\SYN\STX\EOT\DC2\EOT\230\EOT\EOT\"\SUBB The number of broadcast attempts we've made to sweep the output.\n\
+    \\EOT\EOT\SYN\STX\EOT\DC2\EOT\231\EOT\EOT\"\SUBB The number of broadcast attempts we've made to sweep the output.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\EOT\ENQ\DC2\EOT\230\EOT\EOT\n\
+    \\ENQ\EOT\SYN\STX\EOT\ENQ\DC2\EOT\231\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\EOT\SOH\DC2\EOT\230\EOT\v\GS\n\
+    \\ENQ\EOT\SYN\STX\EOT\SOH\DC2\EOT\231\EOT\v\GS\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\EOT\ETX\DC2\EOT\230\EOT !\n\
+    \\ENQ\EOT\SYN\STX\EOT\ETX\DC2\EOT\231\EOT !\n\
     \u\n\
-    \\EOT\EOT\SYN\STX\ENQ\DC2\EOT\236\EOT\EOT%\SUBg\n\
+    \\EOT\EOT\SYN\STX\ENQ\DC2\EOT\237\EOT\EOT%\SUBg\n\
     \The next height of the chain at which we'll attempt to broadcast the\n\
     \sweep transaction of the output.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\ENQ\ENQ\DC2\EOT\236\EOT\EOT\n\
+    \\ENQ\EOT\SYN\STX\ENQ\ENQ\DC2\EOT\237\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\ENQ\SOH\DC2\EOT\236\EOT\v \n\
+    \\ENQ\EOT\SYN\STX\ENQ\SOH\DC2\EOT\237\EOT\v \n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\ENQ\ETX\DC2\EOT\236\EOT#$\n\
+    \\ENQ\EOT\SYN\STX\ENQ\ETX\DC2\EOT\237\EOT#$\n\
     \B\n\
-    \\EOT\EOT\SYN\STX\ACK\DC2\EOT\239\EOT\EOT%\SUB4 The requested confirmation target for this output.\n\
+    \\EOT\EOT\SYN\STX\ACK\DC2\EOT\240\EOT\EOT%\SUB4 The requested confirmation target for this output.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\ACK\ENQ\DC2\EOT\239\EOT\EOT\n\
+    \\ENQ\EOT\SYN\STX\ACK\ENQ\DC2\EOT\240\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\ACK\SOH\DC2\EOT\239\EOT\v \n\
+    \\ENQ\EOT\SYN\STX\ACK\SOH\DC2\EOT\240\EOT\v \n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\ACK\ETX\DC2\EOT\239\EOT#$\n\
+    \\ENQ\EOT\SYN\STX\ACK\ETX\DC2\EOT\240\EOT#$\n\
     \z\n\
-    \\EOT\EOT\SYN\STX\a\DC2\EOT\243\EOT\EOT:\SUBl Deprecated, use requested_sat_per_vbyte.\n\
+    \\EOT\EOT\SYN\STX\a\DC2\EOT\244\EOT\EOT:\SUBl Deprecated, use requested_sat_per_vbyte.\n\
     \ The requested fee rate, expressed in sat/vbyte, for this output.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\a\ENQ\DC2\EOT\243\EOT\EOT\n\
+    \\ENQ\EOT\SYN\STX\a\ENQ\DC2\EOT\244\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\a\SOH\DC2\EOT\243\EOT\v!\n\
+    \\ENQ\EOT\SYN\STX\a\SOH\DC2\EOT\244\EOT\v!\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\a\ETX\DC2\EOT\243\EOT$%\n\
+    \\ENQ\EOT\SYN\STX\a\ETX\DC2\EOT\244\EOT$%\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\a\b\DC2\EOT\243\EOT&9\n\
+    \\ENQ\EOT\SYN\STX\a\b\DC2\EOT\244\EOT&9\n\
     \\SO\n\
-    \\ACK\EOT\SYN\STX\a\b\ETX\DC2\EOT\243\EOT'8\n\
+    \\ACK\EOT\SYN\STX\a\b\ETX\DC2\EOT\244\EOT'8\n\
     \\218\SOH\n\
-    \\EOT\EOT\SYN\STX\b\DC2\EOT\250\EOT\EOT\RS\SUB\203\SOH\n\
+    \\EOT\EOT\SYN\STX\b\DC2\EOT\251\EOT\EOT\RS\SUB\203\SOH\n\
     \The fee rate we'll use to sweep the output, expressed in sat/vbyte. The fee\n\
     \rate is only determined once a sweeping transaction for the output is\n\
     \created, so it's possible for this to be 0 before this.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\b\ENQ\DC2\EOT\250\EOT\EOT\n\
+    \\ENQ\EOT\SYN\STX\b\ENQ\DC2\EOT\251\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\b\SOH\DC2\EOT\250\EOT\v\CAN\n\
+    \\ENQ\EOT\SYN\STX\b\SOH\DC2\EOT\251\EOT\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\b\ETX\DC2\EOT\250\EOT\ESC\GS\n\
+    \\ENQ\EOT\SYN\STX\b\ETX\DC2\EOT\251\EOT\ESC\GS\n\
     \P\n\
-    \\EOT\EOT\SYN\STX\t\DC2\EOT\253\EOT\EOT(\SUBB The requested fee rate, expressed in sat/vbyte, for this output.\n\
+    \\EOT\EOT\SYN\STX\t\DC2\EOT\254\EOT\EOT(\SUBB The requested fee rate, expressed in sat/vbyte, for this output.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\t\ENQ\DC2\EOT\253\EOT\EOT\n\
+    \\ENQ\EOT\SYN\STX\t\ENQ\DC2\EOT\254\EOT\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\t\SOH\DC2\EOT\253\EOT\v\"\n\
+    \\ENQ\EOT\SYN\STX\t\SOH\DC2\EOT\254\EOT\v\"\n\
     \\r\n\
-    \\ENQ\EOT\SYN\STX\t\ETX\DC2\EOT\253\EOT%'\n\
+    \\ENQ\EOT\SYN\STX\t\ETX\DC2\EOT\254\EOT%'\n\
     \t\n\
     \\EOT\EOT\SYN\STX\n\
-    \\DC2\EOT\131\ENQ\EOT\DC3\SUBf\n\
+    \\DC2\EOT\132\ENQ\EOT\DC3\SUBf\n\
     \Whether this input must be force-swept. This means that it is swept even\n\
     \if it has a negative yield.\n\
     \\n\
     \\r\n\
     \\ENQ\EOT\SYN\STX\n\
-    \\ENQ\DC2\EOT\131\ENQ\EOT\b\n\
+    \\ENQ\DC2\EOT\132\ENQ\EOT\b\n\
     \\r\n\
     \\ENQ\EOT\SYN\STX\n\
-    \\SOH\DC2\EOT\131\ENQ\t\SO\n\
+    \\SOH\DC2\EOT\132\ENQ\t\SO\n\
     \\r\n\
     \\ENQ\EOT\SYN\STX\n\
-    \\ETX\DC2\EOT\131\ENQ\DC1\DC2\n\
+    \\ETX\DC2\EOT\132\ENQ\DC1\DC2\n\
     \\f\n\
-    \\STX\EOT\ETB\DC2\ACK\134\ENQ\NUL\135\ENQ\SOH\n\
+    \\STX\EOT\ETB\DC2\ACK\135\ENQ\NUL\136\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\ETB\SOH\DC2\EOT\134\ENQ\b\FS\n\
+    \\ETX\EOT\ETB\SOH\DC2\EOT\135\ENQ\b\FS\n\
     \\f\n\
-    \\STX\EOT\CAN\DC2\ACK\137\ENQ\NUL\142\ENQ\SOH\n\
+    \\STX\EOT\CAN\DC2\ACK\138\ENQ\NUL\143\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\CAN\SOH\DC2\EOT\137\ENQ\b\GS\n\
+    \\ETX\EOT\CAN\SOH\DC2\EOT\138\ENQ\b\GS\n\
     \Z\n\
-    \\EOT\EOT\CAN\STX\NUL\DC2\EOT\141\ENQ\EOT-\SUBL\n\
+    \\EOT\EOT\CAN\STX\NUL\DC2\EOT\142\ENQ\EOT-\SUBL\n\
     \The set of outputs currently being swept by lnd's central batching engine.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\CAN\STX\NUL\EOT\DC2\EOT\141\ENQ\EOT\f\n\
+    \\ENQ\EOT\CAN\STX\NUL\EOT\DC2\EOT\142\ENQ\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT\CAN\STX\NUL\ACK\DC2\EOT\141\ENQ\r\EM\n\
+    \\ENQ\EOT\CAN\STX\NUL\ACK\DC2\EOT\142\ENQ\r\EM\n\
     \\r\n\
-    \\ENQ\EOT\CAN\STX\NUL\SOH\DC2\EOT\141\ENQ\SUB(\n\
+    \\ENQ\EOT\CAN\STX\NUL\SOH\DC2\EOT\142\ENQ\SUB(\n\
     \\r\n\
-    \\ENQ\EOT\CAN\STX\NUL\ETX\DC2\EOT\141\ENQ+,\n\
+    \\ENQ\EOT\CAN\STX\NUL\ETX\DC2\EOT\142\ENQ+,\n\
     \\f\n\
-    \\STX\EOT\EM\DC2\ACK\144\ENQ\NUL\169\ENQ\SOH\n\
+    \\STX\EOT\EM\DC2\ACK\145\ENQ\NUL\170\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\EM\SOH\DC2\EOT\144\ENQ\b\SYN\n\
+    \\ETX\EOT\EM\SOH\DC2\EOT\145\ENQ\b\SYN\n\
     \>\n\
-    \\EOT\EOT\EM\STX\NUL\DC2\EOT\146\ENQ\EOT \SUB0 The input we're attempting to bump the fee of.\n\
+    \\EOT\EOT\EM\STX\NUL\DC2\EOT\147\ENQ\EOT \SUB0 The input we're attempting to bump the fee of.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\NUL\ACK\DC2\EOT\146\ENQ\EOT\DC2\n\
+    \\ENQ\EOT\EM\STX\NUL\ACK\DC2\EOT\147\ENQ\EOT\DC2\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\NUL\SOH\DC2\EOT\146\ENQ\DC3\ESC\n\
+    \\ENQ\EOT\EM\STX\NUL\SOH\DC2\EOT\147\ENQ\DC3\ESC\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\NUL\ETX\DC2\EOT\146\ENQ\RS\US\n\
+    \\ENQ\EOT\EM\STX\NUL\ETX\DC2\EOT\147\ENQ\RS\US\n\
     \R\n\
-    \\EOT\EOT\EM\STX\SOH\DC2\EOT\149\ENQ\EOT\ESC\SUBD The target number of blocks that the input should be spent within.\n\
+    \\EOT\EOT\EM\STX\SOH\DC2\EOT\150\ENQ\EOT\ESC\SUBD The target number of blocks that the input should be spent within.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\SOH\ENQ\DC2\EOT\149\ENQ\EOT\n\
+    \\ENQ\EOT\EM\STX\SOH\ENQ\DC2\EOT\150\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\SOH\SOH\DC2\EOT\149\ENQ\v\SYN\n\
+    \\ENQ\EOT\EM\STX\SOH\SOH\DC2\EOT\150\ENQ\v\SYN\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\SOH\ETX\DC2\EOT\149\ENQ\EM\SUB\n\
+    \\ENQ\EOT\EM\STX\SOH\ETX\DC2\EOT\150\ENQ\EM\SUB\n\
     \\129\SOH\n\
-    \\EOT\EOT\EM\STX\STX\DC2\EOT\156\ENQ\EOT0\SUBs\n\
+    \\EOT\EOT\EM\STX\STX\DC2\EOT\157\ENQ\EOT0\SUBs\n\
     \Deprecated, use sat_per_vbyte.\n\
     \The fee rate, expressed in sat/vbyte, that should be used to spend the input\n\
     \with.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\STX\ENQ\DC2\EOT\156\ENQ\EOT\n\
+    \\ENQ\EOT\EM\STX\STX\ENQ\DC2\EOT\157\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\STX\SOH\DC2\EOT\156\ENQ\v\ETB\n\
+    \\ENQ\EOT\EM\STX\STX\SOH\DC2\EOT\157\ENQ\v\ETB\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\STX\ETX\DC2\EOT\156\ENQ\SUB\ESC\n\
+    \\ENQ\EOT\EM\STX\STX\ETX\DC2\EOT\157\ENQ\SUB\ESC\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\STX\b\DC2\EOT\156\ENQ\FS/\n\
+    \\ENQ\EOT\EM\STX\STX\b\DC2\EOT\157\ENQ\FS/\n\
     \\SO\n\
-    \\ACK\EOT\EM\STX\STX\b\ETX\DC2\EOT\156\ENQ\GS.\n\
+    \\ACK\EOT\EM\STX\STX\b\ETX\DC2\EOT\157\ENQ\GS.\n\
     \t\n\
-    \\EOT\EOT\EM\STX\ETX\DC2\EOT\162\ENQ\EOT\DC3\SUBf\n\
+    \\EOT\EOT\EM\STX\ETX\DC2\EOT\163\ENQ\EOT\DC3\SUBf\n\
     \Whether this input must be force-swept. This means that it is swept even\n\
     \if it has a negative yield.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\ETX\ENQ\DC2\EOT\162\ENQ\EOT\b\n\
+    \\ENQ\EOT\EM\STX\ETX\ENQ\DC2\EOT\163\ENQ\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\ETX\SOH\DC2\EOT\162\ENQ\t\SO\n\
+    \\ENQ\EOT\EM\STX\ETX\SOH\DC2\EOT\163\ENQ\t\SO\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\ETX\ETX\DC2\EOT\162\ENQ\DC1\DC2\n\
+    \\ENQ\EOT\EM\STX\ETX\ETX\DC2\EOT\163\ENQ\DC1\DC2\n\
     \b\n\
-    \\EOT\EOT\EM\STX\EOT\DC2\EOT\168\ENQ\EOT\GS\SUBT\n\
+    \\EOT\EOT\EM\STX\EOT\DC2\EOT\169\ENQ\EOT\GS\SUBT\n\
     \The fee rate, expressed in sat/vbyte, that should be used to spend the input\n\
     \with.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\EOT\ENQ\DC2\EOT\168\ENQ\EOT\n\
+    \\ENQ\EOT\EM\STX\EOT\ENQ\DC2\EOT\169\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\EOT\SOH\DC2\EOT\168\ENQ\v\CAN\n\
+    \\ENQ\EOT\EM\STX\EOT\SOH\DC2\EOT\169\ENQ\v\CAN\n\
     \\r\n\
-    \\ENQ\EOT\EM\STX\EOT\ETX\DC2\EOT\168\ENQ\ESC\FS\n\
+    \\ENQ\EOT\EM\STX\EOT\ETX\DC2\EOT\169\ENQ\ESC\FS\n\
     \\f\n\
-    \\STX\EOT\SUB\DC2\ACK\171\ENQ\NUL\172\ENQ\SOH\n\
+    \\STX\EOT\SUB\DC2\ACK\172\ENQ\NUL\173\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\SUB\SOH\DC2\EOT\171\ENQ\b\ETB\n\
+    \\ETX\EOT\SUB\SOH\DC2\EOT\172\ENQ\b\ETB\n\
     \\f\n\
-    \\STX\EOT\ESC\DC2\ACK\174\ENQ\NUL\181\ENQ\SOH\n\
+    \\STX\EOT\ESC\DC2\ACK\175\ENQ\NUL\182\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\ESC\SOH\DC2\EOT\174\ENQ\b\EM\n\
+    \\ETX\EOT\ESC\SOH\DC2\EOT\175\ENQ\b\EM\n\
     \\223\SOH\n\
-    \\EOT\EOT\ESC\STX\NUL\DC2\EOT\180\ENQ\EOT\NAK\SUB\208\SOH\n\
+    \\EOT\EOT\ESC\STX\NUL\DC2\EOT\181\ENQ\EOT\NAK\SUB\208\SOH\n\
     \Retrieve the full sweep transaction details. If false, only the sweep txids\n\
     \will be returned. Note that some sweeps that LND publishes will have been\n\
     \replaced-by-fee, so will not be included in this output.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\NUL\ENQ\DC2\EOT\180\ENQ\EOT\b\n\
+    \\ENQ\EOT\ESC\STX\NUL\ENQ\DC2\EOT\181\ENQ\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\NUL\SOH\DC2\EOT\180\ENQ\t\DLE\n\
+    \\ENQ\EOT\ESC\STX\NUL\SOH\DC2\EOT\181\ENQ\t\DLE\n\
     \\r\n\
-    \\ENQ\EOT\ESC\STX\NUL\ETX\DC2\EOT\180\ENQ\DC3\DC4\n\
+    \\ENQ\EOT\ESC\STX\NUL\ETX\DC2\EOT\181\ENQ\DC3\DC4\n\
     \\f\n\
-    \\STX\EOT\FS\DC2\ACK\183\ENQ\NUL\197\ENQ\SOH\n\
+    \\STX\EOT\FS\DC2\ACK\184\ENQ\NUL\198\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\FS\SOH\DC2\EOT\183\ENQ\b\SUB\n\
+    \\ETX\EOT\FS\SOH\DC2\EOT\184\ENQ\b\SUB\n\
     \\SO\n\
-    \\EOT\EOT\FS\ETX\NUL\DC2\ACK\184\ENQ\EOT\191\ENQ\ENQ\n\
+    \\EOT\EOT\FS\ETX\NUL\DC2\ACK\185\ENQ\EOT\192\ENQ\ENQ\n\
     \\r\n\
-    \\ENQ\EOT\FS\ETX\NUL\SOH\DC2\EOT\184\ENQ\f\SUB\n\
+    \\ENQ\EOT\FS\ETX\NUL\SOH\DC2\EOT\185\ENQ\f\SUB\n\
     \\229\SOH\n\
-    \\ACK\EOT\FS\ETX\NUL\STX\NUL\DC2\EOT\190\ENQ\b,\SUB\212\SOH\n\
+    \\ACK\EOT\FS\ETX\NUL\STX\NUL\DC2\EOT\191\ENQ\b,\SUB\212\SOH\n\
     \Reversed, hex-encoded string representing the transaction ids of the\n\
     \sweeps that our node has broadcast. Note that these transactions may\n\
     \not have confirmed yet, we record sweeps on broadcast, not confirmation.\n\
     \\n\
     \\SI\n\
-    \\a\EOT\FS\ETX\NUL\STX\NUL\EOT\DC2\EOT\190\ENQ\b\DLE\n\
+    \\a\EOT\FS\ETX\NUL\STX\NUL\EOT\DC2\EOT\191\ENQ\b\DLE\n\
     \\SI\n\
-    \\a\EOT\FS\ETX\NUL\STX\NUL\ENQ\DC2\EOT\190\ENQ\DC1\ETB\n\
+    \\a\EOT\FS\ETX\NUL\STX\NUL\ENQ\DC2\EOT\191\ENQ\DC1\ETB\n\
     \\SI\n\
-    \\a\EOT\FS\ETX\NUL\STX\NUL\SOH\DC2\EOT\190\ENQ\CAN'\n\
+    \\a\EOT\FS\ETX\NUL\STX\NUL\SOH\DC2\EOT\191\ENQ\CAN'\n\
     \\SI\n\
-    \\a\EOT\FS\ETX\NUL\STX\NUL\ETX\DC2\EOT\190\ENQ*+\n\
+    \\a\EOT\FS\ETX\NUL\STX\NUL\ETX\DC2\EOT\191\ENQ*+\n\
     \\SO\n\
-    \\EOT\EOT\FS\b\NUL\DC2\ACK\193\ENQ\EOT\196\ENQ\ENQ\n\
+    \\EOT\EOT\FS\b\NUL\DC2\ACK\194\ENQ\EOT\197\ENQ\ENQ\n\
     \\r\n\
-    \\ENQ\EOT\FS\b\NUL\SOH\DC2\EOT\193\ENQ\n\
+    \\ENQ\EOT\FS\b\NUL\SOH\DC2\EOT\194\ENQ\n\
     \\DLE\n\
     \\f\n\
-    \\EOT\EOT\FS\STX\NUL\DC2\EOT\194\ENQ\b9\n\
+    \\EOT\EOT\FS\STX\NUL\DC2\EOT\195\ENQ\b9\n\
     \\r\n\
-    \\ENQ\EOT\FS\STX\NUL\ACK\DC2\EOT\194\ENQ\b \n\
+    \\ENQ\EOT\FS\STX\NUL\ACK\DC2\EOT\195\ENQ\b \n\
     \\r\n\
-    \\ENQ\EOT\FS\STX\NUL\SOH\DC2\EOT\194\ENQ!4\n\
+    \\ENQ\EOT\FS\STX\NUL\SOH\DC2\EOT\195\ENQ!4\n\
     \\r\n\
-    \\ENQ\EOT\FS\STX\NUL\ETX\DC2\EOT\194\ENQ78\n\
+    \\ENQ\EOT\FS\STX\NUL\ETX\DC2\EOT\195\ENQ78\n\
     \\f\n\
-    \\EOT\EOT\FS\STX\SOH\DC2\EOT\195\ENQ\b+\n\
+    \\EOT\EOT\FS\STX\SOH\DC2\EOT\196\ENQ\b+\n\
     \\r\n\
-    \\ENQ\EOT\FS\STX\SOH\ACK\DC2\EOT\195\ENQ\b\SYN\n\
+    \\ENQ\EOT\FS\STX\SOH\ACK\DC2\EOT\196\ENQ\b\SYN\n\
     \\r\n\
-    \\ENQ\EOT\FS\STX\SOH\SOH\DC2\EOT\195\ENQ\ETB&\n\
+    \\ENQ\EOT\FS\STX\SOH\SOH\DC2\EOT\196\ENQ\ETB&\n\
     \\r\n\
-    \\ENQ\EOT\FS\STX\SOH\ETX\DC2\EOT\195\ENQ)*\n\
+    \\ENQ\EOT\FS\STX\SOH\ETX\DC2\EOT\196\ENQ)*\n\
     \\f\n\
-    \\STX\EOT\GS\DC2\ACK\199\ENQ\NUL\208\ENQ\SOH\n\
+    \\STX\EOT\GS\DC2\ACK\200\ENQ\NUL\209\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\GS\SOH\DC2\EOT\199\ENQ\b\US\n\
+    \\ETX\EOT\GS\SOH\DC2\EOT\200\ENQ\b\US\n\
     \5\n\
-    \\EOT\EOT\GS\STX\NUL\DC2\EOT\201\ENQ\EOT\DC3\SUB' The txid of the transaction to label.\n\
+    \\EOT\EOT\GS\STX\NUL\DC2\EOT\202\ENQ\EOT\DC3\SUB' The txid of the transaction to label.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\NUL\ENQ\DC2\EOT\201\ENQ\EOT\t\n\
+    \\ENQ\EOT\GS\STX\NUL\ENQ\DC2\EOT\202\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\NUL\SOH\DC2\EOT\201\ENQ\n\
+    \\ENQ\EOT\GS\STX\NUL\SOH\DC2\EOT\202\ENQ\n\
     \\SO\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\NUL\ETX\DC2\EOT\201\ENQ\DC1\DC2\n\
+    \\ENQ\EOT\GS\STX\NUL\ETX\DC2\EOT\202\ENQ\DC1\DC2\n\
     \O\n\
-    \\EOT\EOT\GS\STX\SOH\DC2\EOT\204\ENQ\EOT\NAK\SUBA The label to add to the transaction, limited to 500 characters.\n\
+    \\EOT\EOT\GS\STX\SOH\DC2\EOT\205\ENQ\EOT\NAK\SUBA The label to add to the transaction, limited to 500 characters.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\SOH\ENQ\DC2\EOT\204\ENQ\EOT\n\
+    \\ENQ\EOT\GS\STX\SOH\ENQ\DC2\EOT\205\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\SOH\SOH\DC2\EOT\204\ENQ\v\DLE\n\
+    \\ENQ\EOT\GS\STX\SOH\SOH\DC2\EOT\205\ENQ\v\DLE\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\SOH\ETX\DC2\EOT\204\ENQ\DC3\DC4\n\
+    \\ENQ\EOT\GS\STX\SOH\ETX\DC2\EOT\205\ENQ\DC3\DC4\n\
     \J\n\
-    \\EOT\EOT\GS\STX\STX\DC2\EOT\207\ENQ\EOT\ETB\SUB< Whether to overwrite the existing label, if it is present.\n\
+    \\EOT\EOT\GS\STX\STX\DC2\EOT\208\ENQ\EOT\ETB\SUB< Whether to overwrite the existing label, if it is present.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\STX\ENQ\DC2\EOT\207\ENQ\EOT\b\n\
+    \\ENQ\EOT\GS\STX\STX\ENQ\DC2\EOT\208\ENQ\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\STX\SOH\DC2\EOT\207\ENQ\t\DC2\n\
+    \\ENQ\EOT\GS\STX\STX\SOH\DC2\EOT\208\ENQ\t\DC2\n\
     \\r\n\
-    \\ENQ\EOT\GS\STX\STX\ETX\DC2\EOT\207\ENQ\NAK\SYN\n\
+    \\ENQ\EOT\GS\STX\STX\ETX\DC2\EOT\208\ENQ\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT\RS\DC2\ACK\210\ENQ\NUL\211\ENQ\SOH\n\
+    \\STX\EOT\RS\DC2\ACK\211\ENQ\NUL\212\ENQ\SOH\n\
     \\v\n\
-    \\ETX\EOT\RS\SOH\DC2\EOT\210\ENQ\b \n\
+    \\ETX\EOT\RS\SOH\DC2\EOT\211\ENQ\b \n\
     \\f\n\
-    \\STX\EOT\US\DC2\ACK\213\ENQ\NUL\130\ACK\SOH\n\
+    \\STX\EOT\US\DC2\ACK\214\ENQ\NUL\131\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT\US\SOH\DC2\EOT\213\ENQ\b\ETB\n\
+    \\ETX\EOT\US\SOH\DC2\EOT\214\ENQ\b\ETB\n\
     \\SO\n\
-    \\EOT\EOT\US\b\NUL\DC2\ACK\214\ENQ\EOT\231\ENQ\ENQ\n\
+    \\EOT\EOT\US\b\NUL\DC2\ACK\215\ENQ\EOT\232\ENQ\ENQ\n\
     \\r\n\
-    \\ENQ\EOT\US\b\NUL\SOH\DC2\EOT\214\ENQ\n\
+    \\ENQ\EOT\US\b\NUL\SOH\DC2\EOT\215\ENQ\n\
     \\DC2\n\
     \\221\ETX\n\
-    \\EOT\EOT\US\STX\NUL\DC2\EOT\225\ENQ\b\ETB\SUB\206\ETX\n\
+    \\EOT\EOT\US\STX\NUL\DC2\EOT\226\ENQ\b\ETB\SUB\206\ETX\n\
     \Use an existing PSBT packet as the template for the funded PSBT.\n\
     \\n\
     \The packet must contain at least one non-dust output. If one or more\n\
@@ -9734,124 +9737,124 @@ packedFileDescriptor
     \output is added to the PSBT if necessary.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\NUL\ENQ\DC2\EOT\225\ENQ\b\r\n\
+    \\ENQ\EOT\US\STX\NUL\ENQ\DC2\EOT\226\ENQ\b\r\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\NUL\SOH\DC2\EOT\225\ENQ\SO\DC2\n\
+    \\ENQ\EOT\US\STX\NUL\SOH\DC2\EOT\226\ENQ\SO\DC2\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\NUL\ETX\DC2\EOT\225\ENQ\NAK\SYN\n\
+    \\ENQ\EOT\US\STX\NUL\ETX\DC2\EOT\226\ENQ\NAK\SYN\n\
     \K\n\
-    \\EOT\EOT\US\STX\SOH\DC2\EOT\230\ENQ\b\ESC\SUB=\n\
+    \\EOT\EOT\US\STX\SOH\DC2\EOT\231\ENQ\b\ESC\SUB=\n\
     \Use the outputs and optional inputs from this raw template.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\SOH\ACK\DC2\EOT\230\ENQ\b\DC2\n\
+    \\ENQ\EOT\US\STX\SOH\ACK\DC2\EOT\231\ENQ\b\DC2\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\SOH\SOH\DC2\EOT\230\ENQ\DC3\SYN\n\
+    \\ENQ\EOT\US\STX\SOH\SOH\DC2\EOT\231\ENQ\DC3\SYN\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\SOH\ETX\DC2\EOT\230\ENQ\EM\SUB\n\
+    \\ENQ\EOT\US\STX\SOH\ETX\DC2\EOT\231\ENQ\EM\SUB\n\
     \\SO\n\
-    \\EOT\EOT\US\b\SOH\DC2\ACK\233\ENQ\EOT\244\ENQ\ENQ\n\
+    \\EOT\EOT\US\b\SOH\DC2\ACK\234\ENQ\EOT\245\ENQ\ENQ\n\
     \\r\n\
-    \\ENQ\EOT\US\b\SOH\SOH\DC2\EOT\233\ENQ\n\
+    \\ENQ\EOT\US\b\SOH\SOH\DC2\EOT\234\ENQ\n\
     \\SO\n\
     \X\n\
-    \\EOT\EOT\US\STX\STX\DC2\EOT\237\ENQ\b\US\SUBJ\n\
+    \\EOT\EOT\US\STX\STX\DC2\EOT\238\ENQ\b\US\SUBJ\n\
     \The target number of blocks that the transaction should be confirmed in.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\STX\ENQ\DC2\EOT\237\ENQ\b\SO\n\
+    \\ENQ\EOT\US\STX\STX\ENQ\DC2\EOT\238\ENQ\b\SO\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\STX\SOH\DC2\EOT\237\ENQ\SI\SUB\n\
+    \\ENQ\EOT\US\STX\STX\SOH\DC2\EOT\238\ENQ\SI\SUB\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\STX\ETX\DC2\EOT\237\ENQ\GS\RS\n\
+    \\ENQ\EOT\US\STX\STX\ETX\DC2\EOT\238\ENQ\GS\RS\n\
     \b\n\
-    \\EOT\EOT\US\STX\ETX\DC2\EOT\243\ENQ\b!\SUBT\n\
+    \\EOT\EOT\US\STX\ETX\DC2\EOT\244\ENQ\b!\SUBT\n\
     \The fee rate, expressed in sat/vbyte, that should be used to spend the\n\
     \input with.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ETX\ENQ\DC2\EOT\243\ENQ\b\SO\n\
+    \\ENQ\EOT\US\STX\ETX\ENQ\DC2\EOT\244\ENQ\b\SO\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ETX\SOH\DC2\EOT\243\ENQ\SI\FS\n\
+    \\ENQ\EOT\US\STX\ETX\SOH\DC2\EOT\244\ENQ\SI\FS\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ETX\ETX\DC2\EOT\243\ENQ\US \n\
+    \\ENQ\EOT\US\STX\ETX\ETX\DC2\EOT\244\ENQ\US \n\
     \l\n\
-    \\EOT\EOT\US\STX\EOT\DC2\EOT\250\ENQ\EOT\ETB\SUB^\n\
+    \\EOT\EOT\US\STX\EOT\DC2\EOT\251\ENQ\EOT\ETB\SUB^\n\
     \The name of the account to fund the PSBT with. If empty, the default wallet\n\
     \account is used.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\EOT\ENQ\DC2\EOT\250\ENQ\EOT\n\
+    \\ENQ\EOT\US\STX\EOT\ENQ\DC2\EOT\251\ENQ\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\EOT\SOH\DC2\EOT\250\ENQ\v\DC2\n\
+    \\ENQ\EOT\US\STX\EOT\SOH\DC2\EOT\251\ENQ\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\EOT\ETX\DC2\EOT\250\ENQ\NAK\SYN\n\
+    \\ENQ\EOT\US\STX\EOT\ETX\DC2\EOT\251\ENQ\NAK\SYN\n\
     \t\n\
-    \\EOT\EOT\US\STX\ENQ\DC2\EOT\254\ENQ\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
+    \\EOT\EOT\US\STX\ENQ\DC2\EOT\255\ENQ\EOT\CAN\SUBf The minimum number of confirmations each one of your outputs used for\n\
     \ the transaction must satisfy.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ENQ\ENQ\DC2\EOT\254\ENQ\EOT\t\n\
+    \\ENQ\EOT\US\STX\ENQ\ENQ\DC2\EOT\255\ENQ\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ENQ\SOH\DC2\EOT\254\ENQ\n\
+    \\ENQ\EOT\US\STX\ENQ\SOH\DC2\EOT\255\ENQ\n\
     \\DC3\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ENQ\ETX\DC2\EOT\254\ENQ\SYN\ETB\n\
+    \\ENQ\EOT\US\STX\ENQ\ETX\DC2\EOT\255\ENQ\SYN\ETB\n\
     \Y\n\
-    \\EOT\EOT\US\STX\ACK\DC2\EOT\129\ACK\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
+    \\EOT\EOT\US\STX\ACK\DC2\EOT\130\ACK\EOT\US\SUBK Whether unconfirmed outputs should be used as inputs for the transaction.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ACK\ENQ\DC2\EOT\129\ACK\EOT\b\n\
+    \\ENQ\EOT\US\STX\ACK\ENQ\DC2\EOT\130\ACK\EOT\b\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ACK\SOH\DC2\EOT\129\ACK\t\SUB\n\
+    \\ENQ\EOT\US\STX\ACK\SOH\DC2\EOT\130\ACK\t\SUB\n\
     \\r\n\
-    \\ENQ\EOT\US\STX\ACK\ETX\DC2\EOT\129\ACK\GS\RS\n\
+    \\ENQ\EOT\US\STX\ACK\ETX\DC2\EOT\130\ACK\GS\RS\n\
     \\f\n\
-    \\STX\EOT \DC2\ACK\131\ACK\NUL\147\ACK\SOH\n\
+    \\STX\EOT \DC2\ACK\132\ACK\NUL\148\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT \SOH\DC2\EOT\131\ACK\b\CAN\n\
+    \\ETX\EOT \SOH\DC2\EOT\132\ACK\b\CAN\n\
     \:\n\
-    \\EOT\EOT \STX\NUL\DC2\EOT\135\ACK\EOT\SUB\SUB,\n\
+    \\EOT\EOT \STX\NUL\DC2\EOT\136\ACK\EOT\SUB\SUB,\n\
     \The funded but not yet signed PSBT packet.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT \STX\NUL\ENQ\DC2\EOT\135\ACK\EOT\t\n\
+    \\ENQ\EOT \STX\NUL\ENQ\DC2\EOT\136\ACK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT \STX\NUL\SOH\DC2\EOT\135\ACK\n\
+    \\ENQ\EOT \STX\NUL\SOH\DC2\EOT\136\ACK\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOT \STX\NUL\ETX\DC2\EOT\135\ACK\CAN\EM\n\
+    \\ENQ\EOT \STX\NUL\ETX\DC2\EOT\136\ACK\CAN\EM\n\
     \V\n\
-    \\EOT\EOT \STX\SOH\DC2\EOT\140\ACK\EOT\"\SUBH\n\
+    \\EOT\EOT \STX\SOH\DC2\EOT\141\ACK\EOT\"\SUBH\n\
     \The index of the added change output or -1 if no change was left over.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT \STX\SOH\ENQ\DC2\EOT\140\ACK\EOT\t\n\
+    \\ENQ\EOT \STX\SOH\ENQ\DC2\EOT\141\ACK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT \STX\SOH\SOH\DC2\EOT\140\ACK\n\
+    \\ENQ\EOT \STX\SOH\SOH\DC2\EOT\141\ACK\n\
     \\GS\n\
     \\r\n\
-    \\ENQ\EOT \STX\SOH\ETX\DC2\EOT\140\ACK !\n\
+    \\ENQ\EOT \STX\SOH\ETX\DC2\EOT\141\ACK !\n\
     \d\n\
-    \\EOT\EOT \STX\STX\DC2\EOT\146\ACK\EOT(\SUBV\n\
+    \\EOT\EOT \STX\STX\DC2\EOT\147\ACK\EOT(\SUBV\n\
     \The list of lock leases that were acquired for the inputs in the funded PSBT\n\
     \packet.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT \STX\STX\EOT\DC2\EOT\146\ACK\EOT\f\n\
+    \\ENQ\EOT \STX\STX\EOT\DC2\EOT\147\ACK\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT \STX\STX\ACK\DC2\EOT\146\ACK\r\SYN\n\
+    \\ENQ\EOT \STX\STX\ACK\DC2\EOT\147\ACK\r\SYN\n\
     \\r\n\
-    \\ENQ\EOT \STX\STX\SOH\DC2\EOT\146\ACK\ETB#\n\
+    \\ENQ\EOT \STX\STX\SOH\DC2\EOT\147\ACK\ETB#\n\
     \\r\n\
-    \\ENQ\EOT \STX\STX\ETX\DC2\EOT\146\ACK&'\n\
+    \\ENQ\EOT \STX\STX\ETX\DC2\EOT\147\ACK&'\n\
     \\f\n\
-    \\STX\EOT!\DC2\ACK\149\ACK\NUL\165\ACK\SOH\n\
+    \\STX\EOT!\DC2\ACK\150\ACK\NUL\166\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT!\SOH\DC2\EOT\149\ACK\b\DC2\n\
+    \\ETX\EOT!\SOH\DC2\EOT\150\ACK\b\DC2\n\
     \\163\ETX\n\
-    \\EOT\EOT!\STX\NUL\DC2\EOT\159\ACK\EOT'\SUB\148\ETX\n\
+    \\EOT\EOT!\STX\NUL\DC2\EOT\160\ACK\EOT'\SUB\148\ETX\n\
     \An optional list of inputs to use. Every input must be an UTXO known to the\n\
     \wallet that has not been locked before. The sum of all inputs must be\n\
     \sufficiently greater than the sum of all outputs to pay a miner fee with the\n\
@@ -9861,127 +9864,127 @@ packedFileDescriptor
     \inputs of sufficient value will be added to the resulting PSBT.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NUL\EOT\DC2\EOT\159\ACK\EOT\f\n\
+    \\ENQ\EOT!\STX\NUL\EOT\DC2\EOT\160\ACK\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NUL\ACK\DC2\EOT\159\ACK\r\ESC\n\
+    \\ENQ\EOT!\STX\NUL\ACK\DC2\EOT\160\ACK\r\ESC\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NUL\SOH\DC2\EOT\159\ACK\FS\"\n\
+    \\ENQ\EOT!\STX\NUL\SOH\DC2\EOT\160\ACK\FS\"\n\
     \\r\n\
-    \\ENQ\EOT!\STX\NUL\ETX\DC2\EOT\159\ACK%&\n\
+    \\ENQ\EOT!\STX\NUL\ETX\DC2\EOT\160\ACK%&\n\
     \U\n\
-    \\EOT\EOT!\STX\SOH\DC2\EOT\164\ACK\EOT$\SUBG\n\
+    \\EOT\EOT!\STX\SOH\DC2\EOT\165\ACK\EOT$\SUBG\n\
     \A map of all addresses and the amounts to send to in the funded PSBT.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SOH\ACK\DC2\EOT\164\ACK\EOT\ETB\n\
+    \\ENQ\EOT!\STX\SOH\ACK\DC2\EOT\165\ACK\EOT\ETB\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SOH\SOH\DC2\EOT\164\ACK\CAN\US\n\
+    \\ENQ\EOT!\STX\SOH\SOH\DC2\EOT\165\ACK\CAN\US\n\
     \\r\n\
-    \\ENQ\EOT!\STX\SOH\ETX\DC2\EOT\164\ACK\"#\n\
+    \\ENQ\EOT!\STX\SOH\ETX\DC2\EOT\165\ACK\"#\n\
     \\f\n\
-    \\STX\EOT\"\DC2\ACK\167\ACK\NUL\180\ACK\SOH\n\
+    \\STX\EOT\"\DC2\ACK\168\ACK\NUL\181\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT\"\SOH\DC2\EOT\167\ACK\b\DC1\n\
+    \\ETX\EOT\"\SOH\DC2\EOT\168\ACK\b\DC1\n\
     \>\n\
-    \\EOT\EOT\"\STX\NUL\DC2\EOT\171\ACK\EOT\DC1\SUB0\n\
+    \\EOT\EOT\"\STX\NUL\DC2\EOT\172\ACK\EOT\DC1\SUB0\n\
     \A 32 byte random ID that identifies the lease.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\NUL\ENQ\DC2\EOT\171\ACK\EOT\t\n\
+    \\ENQ\EOT\"\STX\NUL\ENQ\DC2\EOT\172\ACK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\NUL\SOH\DC2\EOT\171\ACK\n\
+    \\ENQ\EOT\"\STX\NUL\SOH\DC2\EOT\172\ACK\n\
     \\f\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\NUL\ETX\DC2\EOT\171\ACK\SI\DLE\n\
+    \\ENQ\EOT\"\STX\NUL\ETX\DC2\EOT\172\ACK\SI\DLE\n\
     \D\n\
-    \\EOT\EOT\"\STX\SOH\DC2\EOT\174\ACK\EOT \SUB6 The identifying outpoint of the output being leased.\n\
+    \\EOT\EOT\"\STX\SOH\DC2\EOT\175\ACK\EOT \SUB6 The identifying outpoint of the output being leased.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\SOH\ACK\DC2\EOT\174\ACK\EOT\DC2\n\
+    \\ENQ\EOT\"\STX\SOH\ACK\DC2\EOT\175\ACK\EOT\DC2\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\SOH\SOH\DC2\EOT\174\ACK\DC3\ESC\n\
+    \\ENQ\EOT\"\STX\SOH\SOH\DC2\EOT\175\ACK\DC3\ESC\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\SOH\ETX\DC2\EOT\174\ACK\RS\US\n\
+    \\ENQ\EOT\"\STX\SOH\ETX\DC2\EOT\175\ACK\RS\US\n\
     \\\\n\
-    \\EOT\EOT\"\STX\STX\DC2\EOT\179\ACK\EOT\SUB\SUBN\n\
+    \\EOT\EOT\"\STX\STX\DC2\EOT\180\ACK\EOT\SUB\SUBN\n\
     \The absolute expiration of the output lease represented as a unix timestamp.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\STX\ENQ\DC2\EOT\179\ACK\EOT\n\
+    \\ENQ\EOT\"\STX\STX\ENQ\DC2\EOT\180\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\STX\SOH\DC2\EOT\179\ACK\v\NAK\n\
+    \\ENQ\EOT\"\STX\STX\SOH\DC2\EOT\180\ACK\v\NAK\n\
     \\r\n\
-    \\ENQ\EOT\"\STX\STX\ETX\DC2\EOT\179\ACK\CAN\EM\n\
+    \\ENQ\EOT\"\STX\STX\ETX\DC2\EOT\180\ACK\CAN\EM\n\
     \\f\n\
-    \\STX\EOT#\DC2\ACK\182\ACK\NUL\195\ACK\SOH\n\
+    \\STX\EOT#\DC2\ACK\183\ACK\NUL\196\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT#\SOH\DC2\EOT\182\ACK\b\ESC\n\
+    \\ETX\EOT#\SOH\DC2\EOT\183\ACK\b\ESC\n\
     \\167\SOH\n\
-    \\EOT\EOT#\STX\NUL\DC2\EOT\188\ACK\EOT\SUB\SUB\152\SOH\n\
+    \\EOT\EOT#\STX\NUL\DC2\EOT\189\ACK\EOT\SUB\SUB\152\SOH\n\
     \A PSBT that should be signed and finalized. The PSBT must contain all\n\
     \required inputs, outputs, UTXO data and partial signatures of all other\n\
     \signers.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT#\STX\NUL\ENQ\DC2\EOT\188\ACK\EOT\t\n\
+    \\ENQ\EOT#\STX\NUL\ENQ\DC2\EOT\189\ACK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT#\STX\NUL\SOH\DC2\EOT\188\ACK\n\
+    \\ENQ\EOT#\STX\NUL\SOH\DC2\EOT\189\ACK\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOT#\STX\NUL\ETX\DC2\EOT\188\ACK\CAN\EM\n\
+    \\ENQ\EOT#\STX\NUL\ETX\DC2\EOT\189\ACK\CAN\EM\n\
     \p\n\
-    \\EOT\EOT#\STX\SOH\DC2\EOT\194\ACK\EOT\ETB\SUBb\n\
+    \\EOT\EOT#\STX\SOH\DC2\EOT\195\ACK\EOT\ETB\SUBb\n\
     \The name of the account to finalize the PSBT with. If empty, the default\n\
     \wallet account is used.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT#\STX\SOH\ENQ\DC2\EOT\194\ACK\EOT\n\
+    \\ENQ\EOT#\STX\SOH\ENQ\DC2\EOT\195\ACK\EOT\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT#\STX\SOH\SOH\DC2\EOT\194\ACK\v\DC2\n\
+    \\ENQ\EOT#\STX\SOH\SOH\DC2\EOT\195\ACK\v\DC2\n\
     \\r\n\
-    \\ENQ\EOT#\STX\SOH\ETX\DC2\EOT\194\ACK\NAK\SYN\n\
+    \\ENQ\EOT#\STX\SOH\ETX\DC2\EOT\195\ACK\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT$\DC2\ACK\196\ACK\NUL\202\ACK\SOH\n\
+    \\STX\EOT$\DC2\ACK\197\ACK\NUL\203\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT$\SOH\DC2\EOT\196\ACK\b\FS\n\
+    \\ETX\EOT$\SOH\DC2\EOT\197\ACK\b\FS\n\
     \J\n\
-    \\EOT\EOT$\STX\NUL\DC2\EOT\198\ACK\EOT\SUB\SUB< The fully signed and finalized transaction in PSBT format.\n\
+    \\EOT\EOT$\STX\NUL\DC2\EOT\199\ACK\EOT\SUB\SUB< The fully signed and finalized transaction in PSBT format.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT$\STX\NUL\ENQ\DC2\EOT\198\ACK\EOT\t\n\
+    \\ENQ\EOT$\STX\NUL\ENQ\DC2\EOT\199\ACK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT$\STX\NUL\SOH\DC2\EOT\198\ACK\n\
+    \\ENQ\EOT$\STX\NUL\SOH\DC2\EOT\199\ACK\n\
     \\NAK\n\
     \\r\n\
-    \\ENQ\EOT$\STX\NUL\ETX\DC2\EOT\198\ACK\CAN\EM\n\
+    \\ENQ\EOT$\STX\NUL\ETX\DC2\EOT\199\ACK\CAN\EM\n\
     \R\n\
-    \\EOT\EOT$\STX\SOH\DC2\EOT\201\ACK\EOT\ESC\SUBD The fully signed and finalized transaction in the raw wire format.\n\
+    \\EOT\EOT$\STX\SOH\DC2\EOT\202\ACK\EOT\ESC\SUBD The fully signed and finalized transaction in the raw wire format.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT$\STX\SOH\ENQ\DC2\EOT\201\ACK\EOT\t\n\
+    \\ENQ\EOT$\STX\SOH\ENQ\DC2\EOT\202\ACK\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT$\STX\SOH\SOH\DC2\EOT\201\ACK\n\
+    \\ENQ\EOT$\STX\SOH\SOH\DC2\EOT\202\ACK\n\
     \\SYN\n\
     \\r\n\
-    \\ENQ\EOT$\STX\SOH\ETX\DC2\EOT\201\ACK\EM\SUB\n\
+    \\ENQ\EOT$\STX\SOH\ETX\DC2\EOT\202\ACK\EM\SUB\n\
     \\f\n\
-    \\STX\EOT%\DC2\ACK\204\ACK\NUL\205\ACK\SOH\n\
+    \\STX\EOT%\DC2\ACK\205\ACK\NUL\206\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT%\SOH\DC2\EOT\204\ACK\b\EM\n\
+    \\ETX\EOT%\SOH\DC2\EOT\205\ACK\b\EM\n\
     \\f\n\
-    \\STX\EOT&\DC2\ACK\207\ACK\NUL\210\ACK\SOH\n\
+    \\STX\EOT&\DC2\ACK\208\ACK\NUL\211\ACK\SOH\n\
     \\v\n\
-    \\ETX\EOT&\SOH\DC2\EOT\207\ACK\b\SUB\n\
+    \\ETX\EOT&\SOH\DC2\EOT\208\ACK\b\SUB\n\
     \3\n\
-    \\EOT\EOT&\STX\NUL\DC2\EOT\209\ACK\EOT(\SUB% The list of currently leased utxos.\n\
+    \\EOT\EOT&\STX\NUL\DC2\EOT\210\ACK\EOT(\SUB% The list of currently leased utxos.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT&\STX\NUL\EOT\DC2\EOT\209\ACK\EOT\f\n\
+    \\ENQ\EOT&\STX\NUL\EOT\DC2\EOT\210\ACK\EOT\f\n\
     \\r\n\
-    \\ENQ\EOT&\STX\NUL\ACK\DC2\EOT\209\ACK\r\SYN\n\
+    \\ENQ\EOT&\STX\NUL\ACK\DC2\EOT\210\ACK\r\SYN\n\
     \\r\n\
-    \\ENQ\EOT&\STX\NUL\SOH\DC2\EOT\209\ACK\ETB#\n\
+    \\ENQ\EOT&\STX\NUL\SOH\DC2\EOT\210\ACK\ETB#\n\
     \\r\n\
-    \\ENQ\EOT&\STX\NUL\ETX\DC2\EOT\209\ACK&'b\ACKproto3"
+    \\ENQ\EOT&\STX\NUL\ETX\DC2\EOT\210\ACK&'b\ACKproto3"

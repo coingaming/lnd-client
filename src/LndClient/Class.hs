@@ -10,7 +10,7 @@ where
 import Data.ProtoLens.Message
 import LndClient.Data.Type
 import LndClient.Import.External
-import qualified Proto.Lightning as LnGrpc
+import qualified Proto.Lnrpc.Ln as LnGrpc
 
 class ToGrpc a b where
   toGrpc :: a -> Either LndError b
@@ -25,8 +25,7 @@ class Eq b => FromGrpc a b where
 instance ToGrpc a a where
   toGrpc = Right
 
-instance ( FieldDefault b, ToGrpc a b) => ToGrpc (Maybe a) b
-  where
+instance (FieldDefault b, ToGrpc a b) => ToGrpc (Maybe a) b where
   toGrpc = \case
     Nothing -> Right fieldDefault
     Just x -> toGrpc x

@@ -40,7 +40,7 @@ import qualified Data.ProtoLens.Runtime.Data.Vector as Data.Vector
 import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Generic
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
-import qualified Proto.Lightning
+import qualified Proto.Lnrpc.Ln
 {- | Fields :
      
          * 'Proto.Invoicesrpc.Invoices_Fields.memo' @:: Lens' AddHoldInvoiceRequest Data.Text.Text@
@@ -51,8 +51,8 @@ import qualified Proto.Lightning
          * 'Proto.Invoicesrpc.Invoices_Fields.expiry' @:: Lens' AddHoldInvoiceRequest Data.Int.Int64@
          * 'Proto.Invoicesrpc.Invoices_Fields.fallbackAddr' @:: Lens' AddHoldInvoiceRequest Data.Text.Text@
          * 'Proto.Invoicesrpc.Invoices_Fields.cltvExpiry' @:: Lens' AddHoldInvoiceRequest Data.Word.Word64@
-         * 'Proto.Invoicesrpc.Invoices_Fields.routeHints' @:: Lens' AddHoldInvoiceRequest [Proto.Lightning.RouteHint]@
-         * 'Proto.Invoicesrpc.Invoices_Fields.vec'routeHints' @:: Lens' AddHoldInvoiceRequest (Data.Vector.Vector Proto.Lightning.RouteHint)@
+         * 'Proto.Invoicesrpc.Invoices_Fields.routeHints' @:: Lens' AddHoldInvoiceRequest [Proto.Lnrpc.Ln.RouteHint]@
+         * 'Proto.Invoicesrpc.Invoices_Fields.vec'routeHints' @:: Lens' AddHoldInvoiceRequest (Data.Vector.Vector Proto.Lnrpc.Ln.RouteHint)@
          * 'Proto.Invoicesrpc.Invoices_Fields.private' @:: Lens' AddHoldInvoiceRequest Prelude.Bool@ -}
 data AddHoldInvoiceRequest
   = AddHoldInvoiceRequest'_constructor {_AddHoldInvoiceRequest'memo :: !Data.Text.Text,
@@ -63,7 +63,7 @@ data AddHoldInvoiceRequest
                                         _AddHoldInvoiceRequest'expiry :: !Data.Int.Int64,
                                         _AddHoldInvoiceRequest'fallbackAddr :: !Data.Text.Text,
                                         _AddHoldInvoiceRequest'cltvExpiry :: !Data.Word.Word64,
-                                        _AddHoldInvoiceRequest'routeHints :: !(Data.Vector.Vector Proto.Lightning.RouteHint),
+                                        _AddHoldInvoiceRequest'routeHints :: !(Data.Vector.Vector Proto.Lnrpc.Ln.RouteHint),
                                         _AddHoldInvoiceRequest'private :: !Prelude.Bool,
                                         _AddHoldInvoiceRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
@@ -130,7 +130,7 @@ instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "cltvExpiry" Data.W
            _AddHoldInvoiceRequest'cltvExpiry
            (\ x__ y__ -> x__ {_AddHoldInvoiceRequest'cltvExpiry = y__}))
         Prelude.id
-instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "routeHints" [Proto.Lightning.RouteHint] where
+instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "routeHints" [Proto.Lnrpc.Ln.RouteHint] where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -139,7 +139,7 @@ instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "routeHints" [Proto
         (Lens.Family2.Unchecked.lens
            Data.Vector.Generic.toList
            (\ _ y__ -> Data.Vector.Generic.fromList y__))
-instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "vec'routeHints" (Data.Vector.Vector Proto.Lightning.RouteHint) where
+instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "vec'routeHints" (Data.Vector.Vector Proto.Lnrpc.Ln.RouteHint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -247,7 +247,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
           = Data.ProtoLens.FieldDescriptor
               "route_hints"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lightning.RouteHint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.RouteHint)
               (Data.ProtoLens.RepeatedField
                  Data.ProtoLens.Unpacked
                  (Data.ProtoLens.Field.field @"routeHints")) ::
@@ -293,7 +293,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
     = let
         loop ::
           AddHoldInvoiceRequest
-          -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld Proto.Lightning.RouteHint
+          -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld Proto.Lnrpc.Ln.RouteHint
              -> Data.ProtoLens.Encoding.Bytes.Parser AddHoldInvoiceRequest
         loop x mutable'routeHints
           = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
@@ -1737,7 +1737,7 @@ instance Data.ProtoLens.Service.Types.Service Invoices where
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "subscribeSingleInvoice" where
   type MethodName Invoices "subscribeSingleInvoice" = "SubscribeSingleInvoice"
   type MethodInput Invoices "subscribeSingleInvoice" = SubscribeSingleInvoiceRequest
-  type MethodOutput Invoices "subscribeSingleInvoice" = Proto.Lightning.Invoice
+  type MethodOutput Invoices "subscribeSingleInvoice" = Proto.Lnrpc.Ln.Invoice
   type MethodStreamingType Invoices "subscribeSingleInvoice" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "cancelInvoice" where
   type MethodName Invoices "cancelInvoice" = "CancelInvoice"
@@ -1757,12 +1757,12 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "settleInvoice" whe
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "lookupInvoiceV2" where
   type MethodName Invoices "lookupInvoiceV2" = "LookupInvoiceV2"
   type MethodInput Invoices "lookupInvoiceV2" = LookupInvoiceMsg
-  type MethodOutput Invoices "lookupInvoiceV2" = Proto.Lightning.Invoice
+  type MethodOutput Invoices "lookupInvoiceV2" = Proto.Lnrpc.Ln.Invoice
   type MethodStreamingType Invoices "lookupInvoiceV2" = 'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\
-    \\SUBinvoicesrpc/invoices.proto\DC2\vinvoicesrpc\SUB\SIlightning.proto\"5\n\
+    \\SUBinvoicesrpc/invoices.proto\DC2\vinvoicesrpc\SUB\SOlnrpc/ln.proto\"5\n\
     \\DLECancelInvoiceMsg\DC2!\n\
     \\fpayment_hash\CAN\SOH \SOH(\fR\vpaymentHash\"\DC3\n\
     \\DC1CancelInvoiceResp\"\202\STX\n\
@@ -1810,7 +1810,7 @@ packedFileDescriptor
     \\b\n\
     \\SOH\f\DC2\ETX\NUL\NUL\DC2\n\
     \\t\n\
-    \\STX\ETX\NUL\DC2\ETX\STX\NUL\EM\n\
+    \\STX\ETX\NUL\DC2\ETX\STX\NUL\CAN\n\
     \\b\n\
     \\SOH\STX\DC2\ETX\EOT\NUL\DC4\n\
     \\b\n\

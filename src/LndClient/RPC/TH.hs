@@ -18,12 +18,17 @@ import LndClient.Data.CloseChannel
     CloseStatusUpdate (..),
   )
 import LndClient.Data.ClosedChannels (ClosedChannelsRequest (..))
+import LndClient.Data.FinalizePsbt
+import LndClient.Data.FundPsbt (FundPsbtRequest, FundPsbtResponse)
 import qualified LndClient.Data.GetInfo as GI
 import LndClient.Data.HtlcEvent (HtlcEvent (..))
 import qualified LndClient.Data.InitWallet as IW
 import LndClient.Data.Invoice (Invoice (..))
+import LndClient.Data.LeaseOutput (LeaseOutputRequest, LeaseOutputResponse)
 import LndClient.Data.ListChannels (ListChannelsRequest (..))
 import LndClient.Data.ListInvoices (ListInvoiceRequest (..), ListInvoiceResponse (..))
+import LndClient.Data.ListLeases (ListLeasesRequest, ListLeasesResponse)
+import LndClient.Data.ListUnspent
 import LndClient.Data.NewAddress (NewAddressRequest (..), NewAddressResponse (..))
 import LndClient.Data.OpenChannel (OpenChannelRequest (..), OpenStatusUpdate (..))
 import LndClient.Data.PayReq (PayReq (..))
@@ -34,8 +39,10 @@ import LndClient.Data.Peer
     Peer (..),
   )
 import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
-import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
+import LndClient.Data.PublishTransaction (PublishTransactionRequest, PublishTransactionResponse)
+import LndClient.Data.ReleaseOutput (ReleaseOutputRequest, ReleaseOutputResponse)
 import LndClient.Data.SendCoins (SendCoinsRequest, SendCoinsResponse)
+import LndClient.Data.SendPayment (SendPaymentRequest (..), SendPaymentResponse (..))
 import LndClient.Data.SignMessage
   ( SignMessageRequest (..),
     SignMessageResponse (..),
@@ -50,23 +57,16 @@ import qualified LndClient.Data.VerifyMessage as VM
   ( VerifyMessageRequest (..),
     VerifyMessageResponse (..),
   )
-
-import LndClient.Data.FundPsbt (FundPsbtRequest, FundPsbtResponse)
-import LndClient.Data.PublishTransaction (PublishTransactionRequest, PublishTransactionResponse)
-import LndClient.Data.ReleaseOutput (ReleaseOutputRequest, ReleaseOutputResponse)
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
 import qualified Proto.Invoicesrpc.Invoices as LnGRPC
 import qualified Proto.Lightning as LnGRPC
+import qualified Proto.Lnrpc.Ln as LnGRPC
 import qualified Proto.Routerrpc.Router as LnGRPC
 import qualified Proto.Signrpc.Signer as LnGRPC
-import qualified Proto.Walletunlocker as LnGRPC
 import qualified Proto.Walletrpc.Walletkit as LnGRPC
-import LndClient.Data.ListUnspent
-import LndClient.Data.FinalizePsbt
-import LndClient.Data.ListLeases (ListLeasesRequest, ListLeasesResponse)
-import LndClient.Data.LeaseOutput (LeaseOutputRequest, LeaseOutputResponse)
+import qualified Proto.Walletunlocker as LnGRPC
 
 data RpcKind = RpcSilent | RpcKatip
 
@@ -215,7 +215,8 @@ mkRpc k = do
         env
         $ accessor req
 
-    subscribeInvoices :: $(tcc m) =>
+    subscribeInvoices ::
+      $(tcc m) =>
       (Invoice -> IO ()) ->
       LndEnv ->
       SubscribeInvoicesRequest ->
@@ -471,7 +472,6 @@ mkRpc k = do
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "releaseOutput")
           env
-
 
     sendCoins ::
       $(tcc m) =>

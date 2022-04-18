@@ -11,8 +11,8 @@ where
 import Data.ProtoLens.Message
 import LndClient.Data.Invoice (Invoice)
 import LndClient.Import
-import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln as LnGRPC
+import qualified Proto.Lnrpc.Ln_Fields as LnGRPC
 
 data ListInvoiceRequest = ListInvoiceRequest
   { pendingOnly :: Bool,
