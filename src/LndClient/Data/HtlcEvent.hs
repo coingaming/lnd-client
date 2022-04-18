@@ -15,7 +15,7 @@ data HtlcEvent = HtlcEvent
     timestampNs :: Word64,
     eventType :: EventType
   }
-  deriving (Eq, Generic)
+  deriving stock (Eq, Generic)
 
 instance Out HtlcEvent
 
@@ -24,7 +24,7 @@ data EventType
   | SEND
   | RECEIVE
   | FORWARD
-  deriving (Eq, Generic)
+  deriving stock (Eq, Generic)
 
 instance Out EventType
 

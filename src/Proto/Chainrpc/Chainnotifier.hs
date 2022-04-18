@@ -607,8 +607,7 @@ instance Data.ProtoLens.Message ConfEvent where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          v)
+                          Data.ProtoLens.encodeMessage v)
                 (Prelude.Just (ConfEvent'Reorg v))
                   -> (Data.Monoid.<>)
                        (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
@@ -618,8 +617,7 @@ instance Data.ProtoLens.Message ConfEvent where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          v))
+                          Data.ProtoLens.encodeMessage v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
 instance Control.DeepSeq.NFData ConfEvent where
@@ -1331,8 +1329,7 @@ instance Data.ProtoLens.Message SpendDetails where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              ((Data.Monoid.<>)
                 (let
                    _v
@@ -1392,8 +1389,7 @@ instance Data.ProtoLens.Message SpendDetails where
                                 (Data.Monoid.<>)
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
                                   ((Prelude..)
-                                     Data.ProtoLens.Encoding.Bytes.putVarInt
-                                     Prelude.fromIntegral
+                                     Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                      _v))
                          (Data.ProtoLens.Encoding.Wire.buildFieldSet
                             (Lens.Family2.view Data.ProtoLens.unknownFields _x))))))
@@ -1591,8 +1587,7 @@ instance Data.ProtoLens.Message SpendEvent where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          v)
+                          Data.ProtoLens.encodeMessage v)
                 (Prelude.Just (SpendEvent'Reorg v))
                   -> (Data.Monoid.<>)
                        (Data.ProtoLens.Encoding.Bytes.putVarInt 18)
@@ -1602,8 +1597,7 @@ instance Data.ProtoLens.Message SpendEvent where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          v))
+                          Data.ProtoLens.encodeMessage v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
 instance Control.DeepSeq.NFData SpendEvent where
@@ -1802,8 +1796,7 @@ instance Data.ProtoLens.Message SpendRequest where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              ((Data.Monoid.<>)
                 (let
                    _v = Lens.Family2.view (Data.ProtoLens.Field.field @"script") _x
@@ -1860,17 +1853,17 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl ChainNotifier "registerConfi
   type MethodName ChainNotifier "registerConfirmationsNtfn" = "RegisterConfirmationsNtfn"
   type MethodInput ChainNotifier "registerConfirmationsNtfn" = ConfRequest
   type MethodOutput ChainNotifier "registerConfirmationsNtfn" = ConfEvent
-  type MethodStreamingType ChainNotifier "registerConfirmationsNtfn" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodStreamingType ChainNotifier "registerConfirmationsNtfn" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl ChainNotifier "registerSpendNtfn" where
   type MethodName ChainNotifier "registerSpendNtfn" = "RegisterSpendNtfn"
   type MethodInput ChainNotifier "registerSpendNtfn" = SpendRequest
   type MethodOutput ChainNotifier "registerSpendNtfn" = SpendEvent
-  type MethodStreamingType ChainNotifier "registerSpendNtfn" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodStreamingType ChainNotifier "registerSpendNtfn" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl ChainNotifier "registerBlockEpochNtfn" where
   type MethodName ChainNotifier "registerBlockEpochNtfn" = "RegisterBlockEpochNtfn"
   type MethodInput ChainNotifier "registerBlockEpochNtfn" = BlockEpoch
   type MethodOutput ChainNotifier "registerBlockEpochNtfn" = BlockEpoch
-  type MethodStreamingType ChainNotifier "registerBlockEpochNtfn" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodStreamingType ChainNotifier "registerBlockEpochNtfn" = 'Data.ProtoLens.Service.Types.ServerStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\

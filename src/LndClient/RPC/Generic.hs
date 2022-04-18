@@ -51,7 +51,7 @@ data RpcName
   | ListInvoices
   | SubscribeSingleInvoice
   | CloseChannelSync
-  deriving (Generic)
+  deriving stock (Generic)
 
 instance ToJSON RpcName
 

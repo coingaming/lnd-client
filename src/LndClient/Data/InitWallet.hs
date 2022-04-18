@@ -16,7 +16,7 @@ data InitWalletRequest = InitWalletRequest
     cipherSeedMnemonic :: CipherSeedMnemonic,
     aezeedPassphrase :: Maybe AezeedPassphrase
   }
-  deriving (Eq)
+  deriving stock (Eq)
 
 instance Show InitWalletRequest where
   show = const "SECRET"

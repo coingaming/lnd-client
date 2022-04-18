@@ -25,7 +25,6 @@ import Control.Monad.Extra as Import
     fromMaybeM,
   )
 import Data.Aeson as Import (FromJSON (..), ToJSON, fromJSON)
-import Data.ByteString as Import (ByteString)
 import Data.Coerce as Import (coerce)
 import Data.List.Extra as Import (enumerate)
 import Data.Text as Import (Text, pack, unpack)
@@ -33,12 +32,15 @@ import Data.Text as Import (Text, pack, unpack)
 -- TODO : use Snoyman bracket
 --
 
-import Data.Text.Lazy as Import (fromStrict, toStrict)
-import Data.Word as Import (Word64)
+import Data.Type.Equality as Import
+  ( TestEquality (..),
+    (:~:) (..),
+    type (==),
+  )
 import Database.Persist.Class as Import (PersistField)
 import Database.Persist.Sql as Import (PersistFieldSql)
 import Database.Persist.TH as Import (derivePersistField)
-import GHC.Generics as Import (Generic, Rep (..))
+import GHC.Generics as Import (Rep (..))
 import Katip as Import
   ( ColorStrategy (..),
     Katip (..),
@@ -79,9 +81,4 @@ import UnliftIO as Import
     catch,
     catches,
     finally,
-  )
-import Data.Type.Equality as Import
-  ( TestEquality (..),
-    (:~:) (..),
-    type (==),
   )

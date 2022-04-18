@@ -1,6 +1,11 @@
 packages: *.cabal
 
-allow-newer: http2-grpc-proto-lens:proto-lens, http2-grpc-proto-lens:proto-lens, http2-client:http2, chronos:aeson, http2-client-grpc:http2
+source-repository-package
+  type: git
+  location: https://github.com/coingaming/signable.git
+  tag: 403a04f9d29181fcc627abb359f31140d6400bfb
+  --sha256: 0p6ck18ap0w518iaq8r09maxz7j23d8ykaskg5sshcb0hcdwpbqf
+  subdir: haskell
 
 source-repository-package
   type: git
@@ -18,17 +23,17 @@ source-repository-package
 
 source-repository-package
   type: git
-  location: https://github.com/coingaming/signable.git
-  tag: 6c977086dbf0e6d23118b164c1620a3129da819c
-  --sha256: 08qplf0agnip3z5wiq5x0nsm3kz28gs3qapi099i68qiz1ma58y9
-  subdir: haskell
+  location: https://github.com/coingaming/src.git
+  tag: 2f56b82df10f5d0161ded69ba61ff0a1ca3df354
+  --sha256: 0y9dcnfrgf6ganllvk1rrslqv1nqxg4dyhvhha2zmknq7lqq84cc
+  subdir: generic-pretty-instances
 
 source-repository-package
   type: git
   location: https://github.com/coingaming/src.git
-  tag: aa77961c718ce63d42100f6935c0a959b681cfe0
-  --sha256: 0nw1zdw6yr8wx7fa2d65x1szbsv604l18x7qgd51y57chbyijk3g
-  subdir: generic-pretty-instances
+  tag: 74f7fc422ff2dc1ad29f724b380f83f53d11c35e
+  --sha256: 1kn6r8izzmgs8q96r5fihwxjr74zdkfgdqcw8ycg3dnvwp3zlcy2
+  subdir: network-bitcoin
 
 source-repository-package
   type: git

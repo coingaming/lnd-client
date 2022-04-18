@@ -15,15 +15,15 @@ data SendCoinsRequest = SendCoinsRequest
   { addr :: Text,
     amount :: MSat
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out SendCoinsRequest
 
 newtype SendCoinsResponse = SendCoinsResponse
-  {
-    txid :: Text
+  { txid :: Text
   }
-  deriving (Eq, Show, Generic)
+  deriving newtype (Eq, Show)
+  deriving stock (Generic)
 
 instance Out SendCoinsResponse
 

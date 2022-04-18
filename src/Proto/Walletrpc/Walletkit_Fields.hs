@@ -28,6 +28,7 @@ import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Gener
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
 import qualified Proto.Lightning
+import qualified Proto.Lnrpc.Ln
 import qualified Proto.Signrpc.Signer
 account ::
   forall f s a.

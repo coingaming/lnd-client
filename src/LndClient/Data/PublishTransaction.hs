@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+
 module LndClient.Data.PublishTransaction
   ( PublishTransactionRequest (..),
     PublishTransactionResponse (..),
@@ -14,7 +15,7 @@ data PublishTransactionRequest = PublishTransactionRequest
   { txHex :: ByteString,
     label :: Text
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out PublishTransactionRequest
 
@@ -29,7 +30,8 @@ instance ToGrpc PublishTransactionRequest W.Transaction where
 newtype PublishTransactionResponse = PublishTransactionResponse
   { publishError :: Text
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving newtype (Eq, Ord, Show)
+  deriving stock (Generic)
 
 instance Out PublishTransactionResponse
 

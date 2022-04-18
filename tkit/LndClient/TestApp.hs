@@ -31,7 +31,7 @@ data Env = Env
   }
 
 data Owner = Alice | Bob
-  deriving
+  deriving stock
     ( Eq,
       Ord,
       Show,
@@ -138,7 +138,8 @@ btcEnv =
 newtype AppM m a = AppM
   { unAppM :: ReaderT Env m a
   }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadReader Env, MonadUnliftIO)
+  deriving stock (Functor)
+  deriving newtype (Applicative, Monad, MonadIO, MonadReader Env, MonadUnliftIO)
 
 instance (MonadIO m) => Katip (AppM m) where
   getLogEnv = asks envKatipLE

@@ -8,4 +8,4 @@ import LndClient.Import.External
 data TxKind
   = Funding
   | Closing
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)

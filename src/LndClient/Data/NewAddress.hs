@@ -8,7 +8,6 @@ module LndClient.Data.NewAddress
 where
 
 import Data.ProtoLens.Message
-import Data.Text (pack)
 import LndClient.Import
 import qualified Proto.Lightning as LnGRPC
 import qualified Proto.Lightning_Fields as LnGRPC
@@ -17,7 +16,7 @@ data NewAddressRequest = NewAddressRequest
   { addrType :: AddressType,
     account :: Maybe String
   }
-  deriving (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic)
 
 instance Out NewAddressRequest
 
@@ -27,14 +26,15 @@ data AddressType
   | UNUSED_WITNESS_PUBKEY_HASH
   | UNUSED_NESTED_PUBKEY_HASH
   | UNKNOWN
-  deriving (Show, Eq, Ord, Generic)
+  deriving stock (Show, Eq, Ord, Generic)
 
 instance Out AddressType
 
 newtype NewAddressResponse = NewAddressResponse
   { address :: Text
   }
-  deriving (Show, Eq, Generic)
+  deriving newtype (Show, Eq)
+  deriving stock (Generic)
 
 instance Out NewAddressResponse
 
@@ -69,6 +69,3 @@ instance FromGrpc AddressType LnGRPC.AddressType where
     LnGRPC.UNUSED_WITNESS_PUBKEY_HASH -> UNUSED_WITNESS_PUBKEY_HASH
     LnGRPC.UNUSED_NESTED_PUBKEY_HASH -> UNUSED_NESTED_PUBKEY_HASH
     _ -> UNKNOWN
-
-
-

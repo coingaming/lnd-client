@@ -5,8 +5,8 @@ where
 
 import LndClient.Data.ChannelPoint
 import LndClient.Import
-import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln as LnGRPC
+import qualified Proto.Lnrpc.Ln_Fields as LnGRPC
 
 data PendingChannel = PendingChannel
   { remoteNodePub :: NodePubKey,
@@ -18,7 +18,7 @@ data PendingChannel = PendingChannel
     remoteChanReserveSat :: MSat,
     initiator :: LnInitiator
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out PendingChannel
 

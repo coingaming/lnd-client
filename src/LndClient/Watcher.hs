@@ -44,12 +44,10 @@ data Watcher req res = Watcher
 
 data KillSignal
   = KillSignal
-  deriving (Eq, Ord, Show)
+  deriving stock (Eq, Ord, Show)
 
-newtype KilledTask req = KilledTask
-  { unKilledTask :: req
-  }
-  deriving (Eq, Ord, Show)
+newtype KilledTask req = KilledTask req
+  deriving newtype (Eq, Ord, Show)
 
 data Cmd req
   = Watch WatcherPid req

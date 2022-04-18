@@ -12,6 +12,8 @@ cov=$(hpc report --hpcdir=$hpcdir/share/hpc/vanilla/mix/lnd-client-0.1.0.0 $tixd
 --exclude=Proto.Invoicesrpc.Invoices_Fields \
 --exclude=Proto.Lightning \
 --exclude=Proto.Lightning_Fields \
+--exclude=Proto.Lnrpc.Ln \
+--exclude=Proto.Lnrpc.Ln_Fields \
 --exclude=Proto.Lnclipb.Lncli \
 --exclude=Proto.Lnclipb.Lncli_Fields \
 --exclude=Proto.Routerrpc.Router \

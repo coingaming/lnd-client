@@ -5,8 +5,8 @@ module LndClient.Data.Payment
 where
 
 import LndClient.Import hiding (state)
-import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln as LnGRPC
+import qualified Proto.Lnrpc.Ln_Fields as LnGRPC
 import Text.PrettyPrint.GenericPretty.Import
 
 data Payment = Payment
@@ -15,7 +15,7 @@ data Payment = Payment
     valueMsat :: MSat,
     state :: PaymentStatus
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out Payment
 
@@ -24,7 +24,7 @@ data PaymentStatus
   | IN_FLIGHT
   | SUCCEEDED
   | FAILED
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out PaymentStatus
 

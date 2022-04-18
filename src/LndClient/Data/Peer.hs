@@ -17,7 +17,7 @@ data Peer = Peer
   { pubKey :: NodePubKey,
     address :: NodeLocation
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out Peer
 
@@ -31,7 +31,7 @@ data LightningAddress = LightningAddress
   { pubkey :: NodePubKey,
     host :: NodeLocation
   }
-  deriving (Eq, Show, Read, Generic)
+  deriving stock (Eq, Show, Read, Generic)
 
 instance Out LightningAddress
 
@@ -50,7 +50,7 @@ data ConnectPeerRequest = ConnectPeerRequest
   { addr :: LightningAddress,
     perm :: Bool
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out ConnectPeerRequest
 
