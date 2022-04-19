@@ -5,8 +5,8 @@ where
 
 import LndClient.Data.ChannelPoint
 import LndClient.Import
-import qualified Proto.Lnrpc.Ln as LnGRPC
-import qualified Proto.Lnrpc.Ln_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data PendingChannel = PendingChannel
   { remoteNodePub :: NodePubKey,

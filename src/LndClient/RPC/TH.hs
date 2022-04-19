@@ -62,7 +62,7 @@ import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
 import qualified Proto.Invoicesrpc.Invoices as LnGRPC
 import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lnrpc.Ln as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
 import qualified Proto.Routerrpc.Router as LnGRPC
 import qualified Proto.Signrpc.Signer as LnGRPC
 import qualified Proto.Walletrpc.Walletkit as LnGRPC

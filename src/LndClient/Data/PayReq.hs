@@ -4,8 +4,8 @@ module LndClient.Data.PayReq
 where
 
 import LndClient.Import
-import qualified Proto.Lnrpc.Ln as LnGRPC
-import qualified Proto.Lnrpc.Ln_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln1 as LnGRPC
+import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
 
 data PayReq = PayReq
   { paymentHash :: RHash,

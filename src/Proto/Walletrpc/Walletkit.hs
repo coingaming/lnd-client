@@ -59,7 +59,7 @@ import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Gener
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
 import qualified Proto.Lightning
-import qualified Proto.Lnrpc.Ln
+import qualified Proto.Lnrpc.Ln0
 import qualified Proto.Signrpc.Signer
 {- | Fields :
      
@@ -923,14 +923,14 @@ instance Control.DeepSeq.NFData AddressType where
 instance Text.PrettyPrint.GenericPretty.Out AddressType
 {- | Fields :
      
-         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' BumpFeeRequest Proto.Lnrpc.Ln.OutPoint@
-         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' BumpFeeRequest (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint)@
+         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' BumpFeeRequest Proto.Lnrpc.Ln0.OutPoint@
+         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' BumpFeeRequest (Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint)@
          * 'Proto.Walletrpc.Walletkit_Fields.targetConf' @:: Lens' BumpFeeRequest Data.Word.Word32@
          * 'Proto.Walletrpc.Walletkit_Fields.satPerByte' @:: Lens' BumpFeeRequest Data.Word.Word32@
          * 'Proto.Walletrpc.Walletkit_Fields.force' @:: Lens' BumpFeeRequest Prelude.Bool@
          * 'Proto.Walletrpc.Walletkit_Fields.satPerVbyte' @:: Lens' BumpFeeRequest Data.Word.Word64@ -}
 data BumpFeeRequest
-  = BumpFeeRequest'_constructor {_BumpFeeRequest'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln.OutPoint),
+  = BumpFeeRequest'_constructor {_BumpFeeRequest'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint),
                                  _BumpFeeRequest'targetConf :: !Data.Word.Word32,
                                  _BumpFeeRequest'satPerByte :: !Data.Word.Word32,
                                  _BumpFeeRequest'force :: !Prelude.Bool,
@@ -944,14 +944,14 @@ instance Prelude.Show BumpFeeRequest where
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
 instance Text.PrettyPrint.GenericPretty.Out BumpFeeRequest
-instance Data.ProtoLens.Field.HasField BumpFeeRequest "outpoint" Proto.Lnrpc.Ln.OutPoint where
+instance Data.ProtoLens.Field.HasField BumpFeeRequest "outpoint" Proto.Lnrpc.Ln0.OutPoint where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _BumpFeeRequest'outpoint
            (\ x__ y__ -> x__ {_BumpFeeRequest'outpoint = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField BumpFeeRequest "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint) where
+instance Data.ProtoLens.Field.HasField BumpFeeRequest "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -1005,7 +1005,7 @@ instance Data.ProtoLens.Message BumpFeeRequest where
           = Data.ProtoLens.FieldDescriptor
               "outpoint"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln0.OutPoint)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'outpoint")) ::
               Data.ProtoLens.FieldDescriptor BumpFeeRequest
@@ -3822,12 +3822,12 @@ instance Control.DeepSeq.NFData LabelTransactionResponse where
 {- | Fields :
      
          * 'Proto.Walletrpc.Walletkit_Fields.id' @:: Lens' LeaseOutputRequest Data.ByteString.ByteString@
-         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' LeaseOutputRequest Proto.Lnrpc.Ln.OutPoint@
-         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' LeaseOutputRequest (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint)@
+         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' LeaseOutputRequest Proto.Lnrpc.Ln0.OutPoint@
+         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' LeaseOutputRequest (Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint)@
          * 'Proto.Walletrpc.Walletkit_Fields.expirationSeconds' @:: Lens' LeaseOutputRequest Data.Word.Word64@ -}
 data LeaseOutputRequest
   = LeaseOutputRequest'_constructor {_LeaseOutputRequest'id :: !Data.ByteString.ByteString,
-                                     _LeaseOutputRequest'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln.OutPoint),
+                                     _LeaseOutputRequest'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint),
                                      _LeaseOutputRequest'expirationSeconds :: !Data.Word.Word64,
                                      _LeaseOutputRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
@@ -3845,14 +3845,14 @@ instance Data.ProtoLens.Field.HasField LeaseOutputRequest "id" Data.ByteString.B
            _LeaseOutputRequest'id
            (\ x__ y__ -> x__ {_LeaseOutputRequest'id = y__}))
         Prelude.id
-instance Data.ProtoLens.Field.HasField LeaseOutputRequest "outpoint" Proto.Lnrpc.Ln.OutPoint where
+instance Data.ProtoLens.Field.HasField LeaseOutputRequest "outpoint" Proto.Lnrpc.Ln0.OutPoint where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _LeaseOutputRequest'outpoint
            (\ x__ y__ -> x__ {_LeaseOutputRequest'outpoint = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField LeaseOutputRequest "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint) where
+instance Data.ProtoLens.Field.HasField LeaseOutputRequest "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -3889,7 +3889,7 @@ instance Data.ProtoLens.Message LeaseOutputRequest where
           = Data.ProtoLens.FieldDescriptor
               "outpoint"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln0.OutPoint)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'outpoint")) ::
               Data.ProtoLens.FieldDescriptor LeaseOutputRequest
@@ -5474,8 +5474,8 @@ instance Control.DeepSeq.NFData ListUnspentResponse where
              (Control.DeepSeq.deepseq (_ListUnspentResponse'utxos x__) ())
 {- | Fields :
      
-         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' PendingSweep Proto.Lnrpc.Ln.OutPoint@
-         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' PendingSweep (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint)@
+         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' PendingSweep Proto.Lnrpc.Ln0.OutPoint@
+         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' PendingSweep (Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint)@
          * 'Proto.Walletrpc.Walletkit_Fields.witnessType' @:: Lens' PendingSweep WitnessType@
          * 'Proto.Walletrpc.Walletkit_Fields.amountSat' @:: Lens' PendingSweep Data.Word.Word32@
          * 'Proto.Walletrpc.Walletkit_Fields.satPerByte' @:: Lens' PendingSweep Data.Word.Word32@
@@ -5487,7 +5487,7 @@ instance Control.DeepSeq.NFData ListUnspentResponse where
          * 'Proto.Walletrpc.Walletkit_Fields.requestedSatPerVbyte' @:: Lens' PendingSweep Data.Word.Word64@
          * 'Proto.Walletrpc.Walletkit_Fields.force' @:: Lens' PendingSweep Prelude.Bool@ -}
 data PendingSweep
-  = PendingSweep'_constructor {_PendingSweep'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln.OutPoint),
+  = PendingSweep'_constructor {_PendingSweep'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint),
                                _PendingSweep'witnessType :: !WitnessType,
                                _PendingSweep'amountSat :: !Data.Word.Word32,
                                _PendingSweep'satPerByte :: !Data.Word.Word32,
@@ -5507,14 +5507,14 @@ instance Prelude.Show PendingSweep where
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
 instance Text.PrettyPrint.GenericPretty.Out PendingSweep
-instance Data.ProtoLens.Field.HasField PendingSweep "outpoint" Proto.Lnrpc.Ln.OutPoint where
+instance Data.ProtoLens.Field.HasField PendingSweep "outpoint" Proto.Lnrpc.Ln0.OutPoint where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _PendingSweep'outpoint
            (\ x__ y__ -> x__ {_PendingSweep'outpoint = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField PendingSweep "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint) where
+instance Data.ProtoLens.Field.HasField PendingSweep "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -5616,7 +5616,7 @@ instance Data.ProtoLens.Message PendingSweep where
           = Data.ProtoLens.FieldDescriptor
               "outpoint"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln0.OutPoint)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'outpoint")) ::
               Data.ProtoLens.FieldDescriptor PendingSweep
@@ -6371,11 +6371,11 @@ instance Control.DeepSeq.NFData PublishResponse where
 {- | Fields :
      
          * 'Proto.Walletrpc.Walletkit_Fields.id' @:: Lens' ReleaseOutputRequest Data.ByteString.ByteString@
-         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' ReleaseOutputRequest Proto.Lnrpc.Ln.OutPoint@
-         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' ReleaseOutputRequest (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint)@ -}
+         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' ReleaseOutputRequest Proto.Lnrpc.Ln0.OutPoint@
+         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' ReleaseOutputRequest (Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint)@ -}
 data ReleaseOutputRequest
   = ReleaseOutputRequest'_constructor {_ReleaseOutputRequest'id :: !Data.ByteString.ByteString,
-                                       _ReleaseOutputRequest'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln.OutPoint),
+                                       _ReleaseOutputRequest'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint),
                                        _ReleaseOutputRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
 instance Prelude.Show ReleaseOutputRequest where
@@ -6392,14 +6392,14 @@ instance Data.ProtoLens.Field.HasField ReleaseOutputRequest "id" Data.ByteString
            _ReleaseOutputRequest'id
            (\ x__ y__ -> x__ {_ReleaseOutputRequest'id = y__}))
         Prelude.id
-instance Data.ProtoLens.Field.HasField ReleaseOutputRequest "outpoint" Proto.Lnrpc.Ln.OutPoint where
+instance Data.ProtoLens.Field.HasField ReleaseOutputRequest "outpoint" Proto.Lnrpc.Ln0.OutPoint where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _ReleaseOutputRequest'outpoint
            (\ x__ y__ -> x__ {_ReleaseOutputRequest'outpoint = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField ReleaseOutputRequest "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint) where
+instance Data.ProtoLens.Field.HasField ReleaseOutputRequest "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -6428,7 +6428,7 @@ instance Data.ProtoLens.Message ReleaseOutputRequest where
           = Data.ProtoLens.FieldDescriptor
               "outpoint"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln0.OutPoint)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'outpoint")) ::
               Data.ProtoLens.FieldDescriptor ReleaseOutputRequest
@@ -7193,11 +7193,11 @@ instance Control.DeepSeq.NFData Transaction where
                 (Control.DeepSeq.deepseq (_Transaction'label x__) ()))
 {- | Fields :
      
-         * 'Proto.Walletrpc.Walletkit_Fields.inputs' @:: Lens' TxTemplate [Proto.Lnrpc.Ln.OutPoint]@
-         * 'Proto.Walletrpc.Walletkit_Fields.vec'inputs' @:: Lens' TxTemplate (Data.Vector.Vector Proto.Lnrpc.Ln.OutPoint)@
+         * 'Proto.Walletrpc.Walletkit_Fields.inputs' @:: Lens' TxTemplate [Proto.Lnrpc.Ln0.OutPoint]@
+         * 'Proto.Walletrpc.Walletkit_Fields.vec'inputs' @:: Lens' TxTemplate (Data.Vector.Vector Proto.Lnrpc.Ln0.OutPoint)@
          * 'Proto.Walletrpc.Walletkit_Fields.outputs' @:: Lens' TxTemplate (Data.Map.Map Data.Text.Text Data.Word.Word64)@ -}
 data TxTemplate
-  = TxTemplate'_constructor {_TxTemplate'inputs :: !(Data.Vector.Vector Proto.Lnrpc.Ln.OutPoint),
+  = TxTemplate'_constructor {_TxTemplate'inputs :: !(Data.Vector.Vector Proto.Lnrpc.Ln0.OutPoint),
                              _TxTemplate'outputs :: !(Data.Map.Map Data.Text.Text Data.Word.Word64),
                              _TxTemplate'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
@@ -7208,7 +7208,7 @@ instance Prelude.Show TxTemplate where
         (Prelude.showString
            (Data.ProtoLens.showMessageShort __x) (Prelude.showChar '}' __s))
 instance Text.PrettyPrint.GenericPretty.Out TxTemplate
-instance Data.ProtoLens.Field.HasField TxTemplate "inputs" [Proto.Lnrpc.Ln.OutPoint] where
+instance Data.ProtoLens.Field.HasField TxTemplate "inputs" [Proto.Lnrpc.Ln0.OutPoint] where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -7216,7 +7216,7 @@ instance Data.ProtoLens.Field.HasField TxTemplate "inputs" [Proto.Lnrpc.Ln.OutPo
         (Lens.Family2.Unchecked.lens
            Data.Vector.Generic.toList
            (\ _ y__ -> Data.Vector.Generic.fromList y__))
-instance Data.ProtoLens.Field.HasField TxTemplate "vec'inputs" (Data.Vector.Vector Proto.Lnrpc.Ln.OutPoint) where
+instance Data.ProtoLens.Field.HasField TxTemplate "vec'inputs" (Data.Vector.Vector Proto.Lnrpc.Ln0.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -7246,7 +7246,7 @@ instance Data.ProtoLens.Message TxTemplate where
           = Data.ProtoLens.FieldDescriptor
               "inputs"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln0.OutPoint)
               (Data.ProtoLens.RepeatedField
                  Data.ProtoLens.Unpacked (Data.ProtoLens.Field.field @"inputs")) ::
               Data.ProtoLens.FieldDescriptor TxTemplate
@@ -7277,7 +7277,7 @@ instance Data.ProtoLens.Message TxTemplate where
     = let
         loop ::
           TxTemplate
-          -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld Proto.Lnrpc.Ln.OutPoint
+          -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld Proto.Lnrpc.Ln0.OutPoint
              -> Data.ProtoLens.Encoding.Bytes.Parser TxTemplate
         loop x mutable'inputs
           = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
@@ -7545,12 +7545,12 @@ instance Control.DeepSeq.NFData TxTemplate'OutputsEntry where
 {- | Fields :
      
          * 'Proto.Walletrpc.Walletkit_Fields.id' @:: Lens' UtxoLease Data.ByteString.ByteString@
-         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' UtxoLease Proto.Lnrpc.Ln.OutPoint@
-         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' UtxoLease (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint)@
+         * 'Proto.Walletrpc.Walletkit_Fields.outpoint' @:: Lens' UtxoLease Proto.Lnrpc.Ln0.OutPoint@
+         * 'Proto.Walletrpc.Walletkit_Fields.maybe'outpoint' @:: Lens' UtxoLease (Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint)@
          * 'Proto.Walletrpc.Walletkit_Fields.expiration' @:: Lens' UtxoLease Data.Word.Word64@ -}
 data UtxoLease
   = UtxoLease'_constructor {_UtxoLease'id :: !Data.ByteString.ByteString,
-                            _UtxoLease'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln.OutPoint),
+                            _UtxoLease'outpoint :: !(Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint),
                             _UtxoLease'expiration :: !Data.Word.Word64,
                             _UtxoLease'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
@@ -7567,13 +7567,13 @@ instance Data.ProtoLens.Field.HasField UtxoLease "id" Data.ByteString.ByteString
         (Lens.Family2.Unchecked.lens
            _UtxoLease'id (\ x__ y__ -> x__ {_UtxoLease'id = y__}))
         Prelude.id
-instance Data.ProtoLens.Field.HasField UtxoLease "outpoint" Proto.Lnrpc.Ln.OutPoint where
+instance Data.ProtoLens.Field.HasField UtxoLease "outpoint" Proto.Lnrpc.Ln0.OutPoint where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
            _UtxoLease'outpoint (\ x__ y__ -> x__ {_UtxoLease'outpoint = y__}))
         (Data.ProtoLens.maybeLens Data.ProtoLens.defMessage)
-instance Data.ProtoLens.Field.HasField UtxoLease "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln.OutPoint) where
+instance Data.ProtoLens.Field.HasField UtxoLease "maybe'outpoint" (Prelude.Maybe Proto.Lnrpc.Ln0.OutPoint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -7611,7 +7611,7 @@ instance Data.ProtoLens.Message UtxoLease where
           = Data.ProtoLens.FieldDescriptor
               "outpoint"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln.OutPoint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln0.OutPoint)
               (Data.ProtoLens.OptionalField
                  (Data.ProtoLens.Field.field @"maybe'outpoint")) ::
               Data.ProtoLens.FieldDescriptor UtxoLease
@@ -8062,7 +8062,7 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl WalletKit "finalizePsbt" whe
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\
-    \\EMwalletrpc/walletkit.proto\DC2\twalletrpc\SUB\SIlightning.proto\SUB\SOlnrpc/ln.proto\SUB\DC4signrpc/signer.proto\"h\n\
+    \\EMwalletrpc/walletkit.proto\DC2\twalletrpc\SUB\SIlightning.proto\SUB\SIlnrpc/ln0.proto\SUB\DC4signrpc/signer.proto\"h\n\
     \\DC2ListUnspentRequest\DC2\ESC\n\
     \\tmin_confs\CAN\SOH \SOH(\ENQR\bminConfs\DC2\ESC\n\
     \\tmax_confs\CAN\STX \SOH(\ENQR\bmaxConfs\DC2\CAN\n\
@@ -8272,7 +8272,7 @@ packedFileDescriptor
     \\t\n\
     \\STX\ETX\NUL\DC2\ETX\STX\NUL\EM\n\
     \\t\n\
-    \\STX\ETX\SOH\DC2\ETX\ETX\NUL\CAN\n\
+    \\STX\ETX\SOH\DC2\ETX\ETX\NUL\EM\n\
     \\t\n\
     \\STX\ETX\STX\DC2\ETX\EOT\NUL\RS\n\
     \\b\n\

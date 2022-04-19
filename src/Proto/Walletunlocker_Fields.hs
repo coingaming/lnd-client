@@ -27,7 +27,7 @@ import qualified Data.ProtoLens.Runtime.Data.Vector as Data.Vector
 import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Generic
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
-import qualified Proto.Lnrpc.Ln
+import qualified Proto.Lnrpc.Ln1
 account ::
   forall f s a.
   (Prelude.Functor f, Data.ProtoLens.Field.HasField s "account" a) =>

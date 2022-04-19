@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "lnrpc/ln.proto";
+import "lnrpc/ln1.proto";
 
 package lnrpc;
 

@@ -10,7 +10,7 @@ where
 import Data.ProtoLens.Message
 import LndClient.Data.Type
 import LndClient.Import.External
-import qualified Proto.Lnrpc.Ln as LnGrpc
+import qualified Proto.Lnrpc.Ln0 as LnGrpc
 
 class ToGrpc a b where
   toGrpc :: a -> Either LndError b
