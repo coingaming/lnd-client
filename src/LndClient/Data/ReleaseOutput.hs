@@ -9,7 +9,7 @@ where
 import Data.ProtoLens.Message
 import LndClient.Data.OutPoint
 import LndClient.Import
-import qualified Proto.Lnrpc.Ln as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
 import qualified Proto.Walletrpc.Walletkit as W
 import qualified Proto.Walletrpc.Walletkit_Fields as W
 

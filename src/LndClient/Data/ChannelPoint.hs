@@ -12,8 +12,8 @@ import qualified Data.ByteString.Char8 as C8 (split)
 import Data.ProtoLens.Message
 import qualified Data.Text as TS (unpack)
 import LndClient.Import
-import qualified Proto.Lnrpc.Ln as LnGRPC
-import qualified Proto.Lnrpc.Ln_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data ChannelPoint = ChannelPoint
   { fundingTxId :: TxId 'Funding,

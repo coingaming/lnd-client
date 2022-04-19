@@ -10,8 +10,8 @@ import LndClient.Data.ForceClosedChannel
 import LndClient.Data.PendingOpenChannel
 import LndClient.Data.WaitingCloseChannel
 import LndClient.Import
-import qualified Proto.Lnrpc.Ln as LnGRPC
-import qualified Proto.Lnrpc.Ln_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data PendingChannelsResponse = PendingChannelsResponse
   { totalLimboBalance :: MSat,

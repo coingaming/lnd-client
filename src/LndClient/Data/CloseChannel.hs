@@ -15,8 +15,8 @@ import LndClient.Data.ChannelPoint
 import LndClient.Import
 import qualified Proto.Lightning as LnGRPC
 import qualified Proto.Lightning_Fields as LnGRPC
-import qualified Proto.Lnrpc.Ln as LnGRPC0
-import qualified Proto.Lnrpc.Ln_Fields as LnGRPC0
+import qualified Proto.Lnrpc.Ln0 as LnGRPC0
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC0
 
 data CloseChannelRequest = CloseChannelRequest
   { channelPoint :: ChannelPoint,

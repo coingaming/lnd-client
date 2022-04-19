@@ -43,5 +43,5 @@ export NIX_WITH_SHELL_HOOK="true"
 
 - We are using lnd version 0.14.1-beta
 - Run `./script/update-protobuf.sh` (This will download latest proto files from github, so make sure that lnd version is consistent with latest protobufs)
-- Manually split `lightning.proto` into 2 smaller files, because at the moment it's way too big and GHC-8.10.7 requires too much RAM to compile it. The issue might disappear with GHC-9.X.X.
+- Manually split `lightning.proto` into 3 smaller files, because at the single file is way too big and GHC-8.10.7 requires too much RAM to compile it. The issue might disappear with GHC-9.X.X.
 - Run `./script/generate-protoc.sh` (This will generate haskell types and instances for downloaded protos)

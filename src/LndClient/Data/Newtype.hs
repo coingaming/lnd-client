@@ -44,8 +44,8 @@ import LndClient.Import.External
 import LndClient.Util
 import qualified Proto.Invoicesrpc.Invoices as IGrpc
 import qualified Proto.Invoicesrpc.Invoices_Fields as IGrpc
-import qualified Proto.Lnrpc.Ln as LnGrpc
-import qualified Proto.Lnrpc.Ln_Fields as LnGrpc
+import qualified Proto.Lnrpc.Ln1 as LnGrpc
+import qualified Proto.Lnrpc.Ln1_Fields as LnGrpc
 
 newtype ChanId = ChanId Word64
   deriving newtype

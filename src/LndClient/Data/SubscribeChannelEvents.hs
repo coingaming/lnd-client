@@ -11,8 +11,8 @@ import LndClient.Data.Channel
 import LndClient.Data.ChannelPoint
 import LndClient.Data.CloseChannel
 import LndClient.Import
-import qualified Proto.Lnrpc.Ln as LnGRPC
-import qualified Proto.Lnrpc.Ln_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data ChannelEventUpdate = ChannelEventUpdate
   { channelEvent :: UpdateChannel,

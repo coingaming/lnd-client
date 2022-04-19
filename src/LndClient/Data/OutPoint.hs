@@ -2,8 +2,8 @@ module LndClient.Data.OutPoint (OutPoint (..)) where
 
 import Data.ProtoLens.Message
 import LndClient.Import
-import qualified Proto.Lnrpc.Ln as LnGRPC
-import qualified Proto.Lnrpc.Ln_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data OutPoint = OutPoint
   { txid :: ByteString,

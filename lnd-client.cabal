@@ -99,8 +99,10 @@ library
       Proto.Lightning_Fields
       Proto.Lnclipb.Lncli
       Proto.Lnclipb.Lncli_Fields
-      Proto.Lnrpc.Ln
-      Proto.Lnrpc.Ln_Fields
+      Proto.Lnrpc.Ln0
+      Proto.Lnrpc.Ln0_Fields
+      Proto.Lnrpc.Ln1
+      Proto.Lnrpc.Ln1_Fields
       Proto.Routerrpc.Router
       Proto.Routerrpc.Router_Fields
       Proto.Signrpc.Signer
@@ -481,8 +483,10 @@ test-suite lnd-client-test
         Proto.Lightning_Fields
         Proto.Lnclipb.Lncli
         Proto.Lnclipb.Lncli_Fields
-        Proto.Lnrpc.Ln
-        Proto.Lnrpc.Ln_Fields
+        Proto.Lnrpc.Ln0
+        Proto.Lnrpc.Ln0_Fields
+        Proto.Lnrpc.Ln1
+        Proto.Lnrpc.Ln1_Fields
         Proto.Routerrpc.Router
         Proto.Routerrpc.Router_Fields
         Proto.Signrpc.Signer
