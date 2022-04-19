@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+
 module LndClient.Data.FinalizePsbt
   ( FinalizePsbtRequest (..),
     FinalizePsbtResponse (..),
@@ -14,7 +15,7 @@ data FinalizePsbtRequest = FinalizePsbtRequest
   { fundedPsbt :: ByteString,
     account :: Text
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out FinalizePsbtRequest
 
@@ -30,7 +31,7 @@ data FinalizePsbtResponse = FinalizePsbtResponse
   { signedPsbt :: ByteString,
     rawFinalTx :: ByteString
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out FinalizePsbtResponse
 

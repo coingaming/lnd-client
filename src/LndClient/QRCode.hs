@@ -26,13 +26,12 @@ import LndClient.Import.External
 newtype QRPixels = QRPixels (Image Pixel8)
 
 newtype QRPngDataUrl = QRPngDataUrl Text
-  deriving (PersistField, PersistFieldSql, Show, Eq)
+  deriving newtype (PersistField, PersistFieldSql, Show, Eq)
 
-data QROpts
-  = QROpts
-      { qrBorder :: Int,
-        qrScale :: Int
-      }
+data QROpts = QROpts
+  { qrBorder :: Int,
+    qrScale :: Int
+  }
 
 qrDefOpts :: QROpts
 qrDefOpts =

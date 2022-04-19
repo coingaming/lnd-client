@@ -15,6 +15,8 @@ import LndClient.Data.ChannelPoint
 import LndClient.Import
 import qualified Proto.Lightning as LnGRPC
 import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC0
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC0
 
 data CloseChannelRequest = CloseChannelRequest
   { channelPoint :: ChannelPoint,
@@ -23,7 +25,7 @@ data CloseChannelRequest = CloseChannelRequest
     satPerByte :: Maybe Int64,
     deliveryAddress :: Maybe Text
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out CloseChannelRequest
 
@@ -31,7 +33,7 @@ data CloseStatusUpdate
   = Pending (PendingUpdate 'Closing)
   | Close ChannelCloseUpdate
   | NothingUpdate
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out CloseStatusUpdate
 
@@ -39,7 +41,7 @@ data ChannelCloseUpdate = ChannelCloseUpdate
   { closingTxid :: TxId 'Closing,
     success :: Bool
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out ChannelCloseUpdate
 
@@ -50,7 +52,7 @@ data ChannelCloseSummary = ChannelCloseSummary
     settledBalance :: MSat,
     closingTxId :: TxId 'Closing
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out ChannelCloseSummary
 
@@ -87,11 +89,11 @@ instance FromGrpc ChannelCloseUpdate LnGRPC.ChannelCloseUpdate where
       <$> fromGrpc (x ^. LnGRPC.closingTxid)
       <*> fromGrpc (x ^. LnGRPC.success)
 
-instance FromGrpc ChannelCloseSummary LnGRPC.ChannelCloseSummary where
+instance FromGrpc ChannelCloseSummary LnGRPC0.ChannelCloseSummary where
   fromGrpc x =
     ChannelCloseSummary
-      <$> fromGrpc (x ^. LnGRPC.remotePubkey)
+      <$> fromGrpc (x ^. LnGRPC0.remotePubkey)
       <*> channelPointParser (x ^. LnGRPC.channelPoint)
-      <*> fromGrpc (x ^. LnGRPC.chanId)
-      <*> fromGrpcSat (x ^. LnGRPC.settledBalance)
-      <*> fromGrpc (x ^. LnGRPC.closingTxHash)
+      <*> fromGrpc (x ^. LnGRPC0.chanId)
+      <*> fromGrpcSat (x ^. LnGRPC0.settledBalance)
+      <*> fromGrpc (x ^. LnGRPC0.closingTxHash)

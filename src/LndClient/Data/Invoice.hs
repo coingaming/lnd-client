@@ -5,8 +5,8 @@ module LndClient.Data.Invoice
 where
 
 import LndClient.Import
-import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln1 as LnGRPC
+import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
 
 data Invoice = Invoice
   { rHash :: RHash,
@@ -20,7 +20,7 @@ data Invoice = Invoice
     addIndex :: AddIndex,
     state :: InvoiceState
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out Invoice
 
@@ -29,7 +29,7 @@ data InvoiceState
   | SETTLED
   | CANCELED
   | ACCEPTED
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out InvoiceState
 

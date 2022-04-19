@@ -14,7 +14,7 @@ data GetInfoResponse = GetInfoResponse
     syncedToChain :: Bool,
     syncedToGraph :: Bool
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out GetInfoResponse
 

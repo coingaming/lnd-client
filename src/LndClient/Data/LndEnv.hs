@@ -54,21 +54,23 @@ import qualified Universum
 import qualified Prelude
 
 newtype LndWalletPassword = LndWalletPassword Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
+  deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
 data LndTlsCert = LndTlsCert ByteString SignedCertificate
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)
 
 newtype LndHexMacaroon = LndHexMacaroon Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
+  deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
 newtype LndHost' = LndHost' Text
-  deriving (PersistField, PersistFieldSql, Eq, FromJSON, IsString, Generic)
+  deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
+  deriving stock (Generic)
 
 instance Out LndHost'
 
 newtype LndPort' = LndPort' Int
-  deriving (PersistField, PersistFieldSql, Eq, Generic)
+  deriving newtype (PersistField, PersistFieldSql, Eq)
+  deriving stock (Generic)
 
 instance Out LndPort'
 
@@ -78,7 +80,7 @@ data LndConfig = LndConfig
     lndConfigTlsEnabled :: Bool,
     lndConfigCompression :: Bool
   }
-  deriving (Show)
+  deriving stock (Show)
 
 data RawConfig = RawConfig
   { rawConfigLndWalletPassword :: LndWalletPassword,
@@ -89,7 +91,7 @@ data RawConfig = RawConfig
     rawConfigLndCipherSeedMnemonic :: Maybe CipherSeedMnemonic,
     rawConfigLndAezeedPassphrase :: Maybe AezeedPassphrase
   }
-  deriving (Eq, Generic)
+  deriving stock (Eq, Generic)
 
 data LndEnv = LndEnv
   { envLndWalletPassword :: LndWalletPassword,

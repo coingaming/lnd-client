@@ -1,6 +1,7 @@
 syntax = "proto3";
 
-import "lightning.proto";
+import "lnrpc/ln0.proto";
+import "lnrpc/ln1.proto";
 
 package invoicesrpc;
 

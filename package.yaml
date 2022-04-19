@@ -29,14 +29,14 @@ dependencies:
 - pretty
 - GenericPretty
 # byte and text
-- bytestring            >= 0.10.8.2 && < 0.10.9
+- bytestring            >= 0.10.8.2 && < 0.10.13
 - base16-bytestring     >= 1.0.1.0 && < 1.0.2
-- base64-bytestring     >= 1.0.0.2 && <  1.0.1
-- text                  >= 1.2.3.1 && < 1.2.4
+- base64-bytestring     >= 1.0.0.2 && < 1.2.1
+- text                  >= 1.2.3.1 && < 1.2.5
 - aeson                 >= 1.4.4.0
 - http-client           >= 0.7.9
 # protobuf and gRPC
-- containers            >= 0.6.0.1 && < 0.6.1
+- containers            >= 0.6.0.1 && < 0.6.6
 - deepseq               >= 1.4.4.0 && < 1.4.5
 # images
 - qrcode-core           >= 0.9 && < 0.9.3
@@ -55,12 +55,12 @@ dependencies:
 - asn1-types            >= 0.3 && < 0.4
 - pem                   >= 0.2.4 && < 0.3
 # bitcoin
-- network-bitcoin       == 1.8.3
+- network-bitcoin       >= 1.8.3
 # general
 - unliftio              >= 0.2.12
 - extra                 >= 1.6.18 && < 1.6.20
 - scientific            >= 0.3.6.2 && < 0.3.7
-- template-haskell      >= 2.14.0.0 && < 2.14.1
+- template-haskell      >= 2.14.0.0 && < 2.17
 - vector
 # protobuf
 - microlens             >= 0.4.10
@@ -82,6 +82,8 @@ default-extensions:
 - LambdaCase
 - OverloadedStrings
 - ScopedTypeVariables
+- DerivingStrategies
+- GeneralizedNewtypeDeriving
 - DataKinds
 - KindSignatures
 - StrictData
@@ -100,6 +102,17 @@ ghc-options:
 - -Wno-unsafe # Don’t use Safe Haskell warnings
 - -Wno-safe # Don’t use Safe Haskell warnings
 - -Wno-missing-local-signatures # Warning for polymorphic local bindings; nothing wrong with those.
+when:
+  - condition: impl(ghc >= 8.10.7)
+    ghc-options:
+    #
+    # TODO : remove -Wno-unused-packages flag somehow!!!
+    #
+    - -Wno-unused-packages
+    - -Wno-missing-safe-haskell-mode
+    - -Wno-prepositive-qualified-module
+    - -fenable-th-splice-warnings
+    - -fprint-potential-instances
 
 flags:
   ghcid:
@@ -125,10 +138,16 @@ executables:
     ghc-options:
     - -main-is LndClient.Main
     - -O2
+    - -optc-O3
+    - -funfolding-use-threshold=16
     - -threaded
+    - -rtsopts
+    - "\"-with-rtsopts=-N -s -p -h -xt\""
     - -prof
     - -fprof-auto
-    - "\"-with-rtsopts=-N -s -p -h -xt\""
+    - -optl-fuse-ld=gold
+    ld-options:
+    - -fuse-ld=gold
     dependencies:
     - lnd-client
     - lnd-client-tkit
@@ -139,9 +158,15 @@ tests:
     source-dirs:
     - test
     ghc-options:
+    - -O2
+    - -optc-O3
+    - -funfolding-use-threshold=16
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -optl-fuse-ld=gold
+    ld-options:
+    - -fuse-ld=gold
     dependencies:
     - hspec >= 2.7.1 && < 2.7.2
     when:

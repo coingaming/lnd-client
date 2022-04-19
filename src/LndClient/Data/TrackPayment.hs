@@ -14,7 +14,7 @@ data TrackPaymentRequest = TrackPaymentRequest
   { paymentHash :: RHash,
     noInflightUpdates :: Bool
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out TrackPaymentRequest
 

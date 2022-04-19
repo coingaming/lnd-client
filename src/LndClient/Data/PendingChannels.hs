@@ -10,8 +10,8 @@ import LndClient.Data.ForceClosedChannel
 import LndClient.Data.PendingOpenChannel
 import LndClient.Data.WaitingCloseChannel
 import LndClient.Import
-import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data PendingChannelsResponse = PendingChannelsResponse
   { totalLimboBalance :: MSat,
@@ -20,7 +20,7 @@ data PendingChannelsResponse = PendingChannelsResponse
     pendingForceClosingChannels :: [ForceClosedChannel],
     waitingCloseChannels :: [WaitingCloseChannel]
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out PendingChannelsResponse
 

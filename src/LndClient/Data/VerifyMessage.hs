@@ -17,12 +17,13 @@ data VerifyMessageRequest = VerifyMessageRequest
     signature :: ByteString,
     pubkey :: ByteString
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out VerifyMessageRequest
 
 newtype VerifyMessageResponse = VerifyMessageResponse Bool
-  deriving (Eq, Show, Generic)
+  deriving newtype (Eq, Show)
+  deriving stock (Generic)
 
 instance Out VerifyMessageResponse
 
@@ -33,7 +34,7 @@ instance ToGrpc VerifyMessageRequest LnGRPC.VerifyMessageReq where
       <*> toGrpc (signature x)
       <*> toGrpc (pubkey x)
     where
-      msg gMsg gSignature gPubKey=
+      msg gMsg gSignature gPubKey =
         defMessage
           & LnGRPC.msg .~ gMsg
           & LnGRPC.signature .~ gSignature

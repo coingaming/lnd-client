@@ -4,15 +4,15 @@ module LndClient.Data.PayReq
 where
 
 import LndClient.Import
-import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln1 as LnGRPC
+import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
 
 data PayReq = PayReq
   { paymentHash :: RHash,
     numMsat :: MSat,
     expiry :: Seconds
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out PayReq
 

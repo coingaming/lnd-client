@@ -5,14 +5,14 @@ where
 
 import LndClient.Data.PendingChannel
 import LndClient.Import
-import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data WaitingCloseChannel = WaitingCloseChannel
   { channel :: PendingChannel,
     limboBalance :: MSat
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out WaitingCloseChannel
 

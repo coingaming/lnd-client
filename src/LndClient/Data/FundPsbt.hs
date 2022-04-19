@@ -15,7 +15,7 @@ data TxTemplate = TxTemplate
   { inputs :: [OutPoint],
     outputs :: Map Text MSat
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out TxTemplate
 
@@ -25,7 +25,7 @@ instance ToGrpc TxTemplate W.FundPsbtRequest'Template where
       msg i o = defMessage & W.inputs .~ i & W.outputs .~ o
 
 data Fee = TargetConf Word32 | SatPerVbyte Word64
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out Fee
 
@@ -36,7 +36,7 @@ data FundPsbtRequest = FundPsbtRequest {
     spendUnconfirmed :: Bool,
     fee :: Fee
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out FundPsbtRequest
 
@@ -59,7 +59,7 @@ data UtxoLease = UtxoLease
     outpoint :: OutPoint,
     expiration :: Word64
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out UtxoLease
 
@@ -75,7 +75,7 @@ data FundPsbtResponse = FundPsbtResponse
     changeOutputIndex :: Int32,
     lockedUtxos :: [UtxoLease]
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out FundPsbtResponse
 

@@ -40,7 +40,8 @@ import qualified Data.ProtoLens.Runtime.Data.Vector as Data.Vector
 import qualified Data.ProtoLens.Runtime.Data.Vector.Generic as Data.Vector.Generic
 import qualified Data.ProtoLens.Runtime.Data.Vector.Unboxed as Data.Vector.Unboxed
 import qualified Data.ProtoLens.Runtime.Text.Read as Text.Read
-import qualified Proto.Lightning
+import qualified Proto.Lnrpc.Ln0
+import qualified Proto.Lnrpc.Ln1
 {- | Fields :
      
          * 'Proto.Invoicesrpc.Invoices_Fields.memo' @:: Lens' AddHoldInvoiceRequest Data.Text.Text@
@@ -51,8 +52,8 @@ import qualified Proto.Lightning
          * 'Proto.Invoicesrpc.Invoices_Fields.expiry' @:: Lens' AddHoldInvoiceRequest Data.Int.Int64@
          * 'Proto.Invoicesrpc.Invoices_Fields.fallbackAddr' @:: Lens' AddHoldInvoiceRequest Data.Text.Text@
          * 'Proto.Invoicesrpc.Invoices_Fields.cltvExpiry' @:: Lens' AddHoldInvoiceRequest Data.Word.Word64@
-         * 'Proto.Invoicesrpc.Invoices_Fields.routeHints' @:: Lens' AddHoldInvoiceRequest [Proto.Lightning.RouteHint]@
-         * 'Proto.Invoicesrpc.Invoices_Fields.vec'routeHints' @:: Lens' AddHoldInvoiceRequest (Data.Vector.Vector Proto.Lightning.RouteHint)@
+         * 'Proto.Invoicesrpc.Invoices_Fields.routeHints' @:: Lens' AddHoldInvoiceRequest [Proto.Lnrpc.Ln0.RouteHint]@
+         * 'Proto.Invoicesrpc.Invoices_Fields.vec'routeHints' @:: Lens' AddHoldInvoiceRequest (Data.Vector.Vector Proto.Lnrpc.Ln0.RouteHint)@
          * 'Proto.Invoicesrpc.Invoices_Fields.private' @:: Lens' AddHoldInvoiceRequest Prelude.Bool@ -}
 data AddHoldInvoiceRequest
   = AddHoldInvoiceRequest'_constructor {_AddHoldInvoiceRequest'memo :: !Data.Text.Text,
@@ -63,7 +64,7 @@ data AddHoldInvoiceRequest
                                         _AddHoldInvoiceRequest'expiry :: !Data.Int.Int64,
                                         _AddHoldInvoiceRequest'fallbackAddr :: !Data.Text.Text,
                                         _AddHoldInvoiceRequest'cltvExpiry :: !Data.Word.Word64,
-                                        _AddHoldInvoiceRequest'routeHints :: !(Data.Vector.Vector Proto.Lightning.RouteHint),
+                                        _AddHoldInvoiceRequest'routeHints :: !(Data.Vector.Vector Proto.Lnrpc.Ln0.RouteHint),
                                         _AddHoldInvoiceRequest'private :: !Prelude.Bool,
                                         _AddHoldInvoiceRequest'_unknownFields :: !Data.ProtoLens.FieldSet}
   deriving stock (Prelude.Eq, Prelude.Ord, GHC.Generics.Generic)
@@ -130,7 +131,7 @@ instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "cltvExpiry" Data.W
            _AddHoldInvoiceRequest'cltvExpiry
            (\ x__ y__ -> x__ {_AddHoldInvoiceRequest'cltvExpiry = y__}))
         Prelude.id
-instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "routeHints" [Proto.Lightning.RouteHint] where
+instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "routeHints" [Proto.Lnrpc.Ln0.RouteHint] where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -139,7 +140,7 @@ instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "routeHints" [Proto
         (Lens.Family2.Unchecked.lens
            Data.Vector.Generic.toList
            (\ _ y__ -> Data.Vector.Generic.fromList y__))
-instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "vec'routeHints" (Data.Vector.Vector Proto.Lightning.RouteHint) where
+instance Data.ProtoLens.Field.HasField AddHoldInvoiceRequest "vec'routeHints" (Data.Vector.Vector Proto.Lnrpc.Ln0.RouteHint) where
   fieldOf _
     = (Prelude..)
         (Lens.Family2.Unchecked.lens
@@ -247,7 +248,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
           = Data.ProtoLens.FieldDescriptor
               "route_hints"
               (Data.ProtoLens.MessageField Data.ProtoLens.MessageType ::
-                 Data.ProtoLens.FieldTypeDescriptor Proto.Lightning.RouteHint)
+                 Data.ProtoLens.FieldTypeDescriptor Proto.Lnrpc.Ln0.RouteHint)
               (Data.ProtoLens.RepeatedField
                  Data.ProtoLens.Unpacked
                  (Data.ProtoLens.Field.field @"routeHints")) ::
@@ -293,7 +294,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
     = let
         loop ::
           AddHoldInvoiceRequest
-          -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld Proto.Lightning.RouteHint
+          -> Data.ProtoLens.Encoding.Growing.Growing Data.Vector.Vector Data.ProtoLens.Encoding.Growing.RealWorld Proto.Lnrpc.Ln0.RouteHint
              -> Data.ProtoLens.Encoding.Bytes.Parser AddHoldInvoiceRequest
         loop x mutable'routeHints
           = do end <- Data.ProtoLens.Encoding.Bytes.atEnd
@@ -312,11 +313,9 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
-                              (Data.ProtoLens.Field.field @"vec'routeHints")
-                              frozen'routeHints
+                              (Data.ProtoLens.Field.field @"vec'routeHints") frozen'routeHints
                               x))
                else
                    do tag <- Data.ProtoLens.Encoding.Bytes.getVarInt
@@ -449,8 +448,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              ((Data.Monoid.<>)
                 (let _v = Lens.Family2.view (Data.ProtoLens.Field.field @"hash") _x
                  in
@@ -514,8 +512,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                    (Data.Monoid.<>)
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt 40)
                                      ((Prelude..)
-                                        Data.ProtoLens.Encoding.Bytes.putVarInt
-                                        Prelude.fromIntegral
+                                        Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral
                                         _v))
                             ((Data.Monoid.<>)
                                (let
@@ -535,8 +532,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                                       (Prelude.fromIntegral
                                                          (Data.ByteString.length bs)))
                                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                                           Data.Text.Encoding.encodeUtf8
-                                           _v))
+                                           Data.Text.Encoding.encodeUtf8 _v))
                                ((Data.Monoid.<>)
                                   (let
                                      _v
@@ -562,8 +558,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                                                  (Data.ByteString.length bs)))
                                                            (Data.ProtoLens.Encoding.Bytes.putBytes
                                                               bs))
-                                                   Data.ProtoLens.encodeMessage
-                                                   _v))
+                                                   Data.ProtoLens.encodeMessage _v))
                                         (Lens.Family2.view
                                            (Data.ProtoLens.Field.field @"vec'routeHints") _x))
                                      ((Data.Monoid.<>)
@@ -579,8 +574,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceRequest where
                                                  (Data.ProtoLens.Encoding.Bytes.putVarInt 72)
                                                  ((Prelude..)
                                                     Data.ProtoLens.Encoding.Bytes.putVarInt
-                                                    (\ b -> if b then 1 else 0)
-                                                    _v))
+                                                    (\ b -> if b then 1 else 0) _v))
                                         (Data.ProtoLens.Encoding.Wire.buildFieldSet
                                            (Lens.Family2.view
                                               Data.ProtoLens.unknownFields _x)))))))))))
@@ -779,8 +773,7 @@ instance Data.ProtoLens.Message AddHoldInvoiceResp where
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              ((Data.Monoid.<>)
                 (let
                    _v = Lens.Family2.view (Data.ProtoLens.Field.field @"addIndex") _x
@@ -1275,8 +1268,7 @@ instance Data.ProtoLens.Message LookupInvoiceMsg where
                       ((Prelude..)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putVarInt Prelude.fromIntegral)
-                         Prelude.fromEnum
-                         _v))
+                         Prelude.fromEnum _v))
              ((Data.Monoid.<>)
                 (case
                      Lens.Family2.view
@@ -1397,8 +1389,7 @@ instance Prelude.Enum LookupModifier where
            ((Prelude.++)
               "toEnum: unknown value for enum LookupModifier: "
               (Prelude.show k__)))
-        Prelude.id
-        (Data.ProtoLens.maybeToEnum k__)
+        Prelude.id (Data.ProtoLens.maybeToEnum k__)
   fromEnum DEFAULT = 0
   fromEnum HTLC_SET_ONLY = 1
   fromEnum HTLC_SET_BLANK = 2
@@ -1747,32 +1738,32 @@ instance Data.ProtoLens.Service.Types.Service Invoices where
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "subscribeSingleInvoice" where
   type MethodName Invoices "subscribeSingleInvoice" = "SubscribeSingleInvoice"
   type MethodInput Invoices "subscribeSingleInvoice" = SubscribeSingleInvoiceRequest
-  type MethodOutput Invoices "subscribeSingleInvoice" = Proto.Lightning.Invoice
-  type MethodStreamingType Invoices "subscribeSingleInvoice" =  'Data.ProtoLens.Service.Types.ServerStreaming
+  type MethodOutput Invoices "subscribeSingleInvoice" = Proto.Lnrpc.Ln1.Invoice
+  type MethodStreamingType Invoices "subscribeSingleInvoice" = 'Data.ProtoLens.Service.Types.ServerStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "cancelInvoice" where
   type MethodName Invoices "cancelInvoice" = "CancelInvoice"
   type MethodInput Invoices "cancelInvoice" = CancelInvoiceMsg
   type MethodOutput Invoices "cancelInvoice" = CancelInvoiceResp
-  type MethodStreamingType Invoices "cancelInvoice" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Invoices "cancelInvoice" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "addHoldInvoice" where
   type MethodName Invoices "addHoldInvoice" = "AddHoldInvoice"
   type MethodInput Invoices "addHoldInvoice" = AddHoldInvoiceRequest
   type MethodOutput Invoices "addHoldInvoice" = AddHoldInvoiceResp
-  type MethodStreamingType Invoices "addHoldInvoice" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Invoices "addHoldInvoice" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "settleInvoice" where
   type MethodName Invoices "settleInvoice" = "SettleInvoice"
   type MethodInput Invoices "settleInvoice" = SettleInvoiceMsg
   type MethodOutput Invoices "settleInvoice" = SettleInvoiceResp
-  type MethodStreamingType Invoices "settleInvoice" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Invoices "settleInvoice" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Invoices "lookupInvoiceV2" where
   type MethodName Invoices "lookupInvoiceV2" = "LookupInvoiceV2"
   type MethodInput Invoices "lookupInvoiceV2" = LookupInvoiceMsg
-  type MethodOutput Invoices "lookupInvoiceV2" = Proto.Lightning.Invoice
-  type MethodStreamingType Invoices "lookupInvoiceV2" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodOutput Invoices "lookupInvoiceV2" = Proto.Lnrpc.Ln1.Invoice
+  type MethodStreamingType Invoices "lookupInvoiceV2" = 'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\
-    \\SUBinvoicesrpc/invoices.proto\DC2\vinvoicesrpc\SUB\SIlightning.proto\"5\n\
+    \\SUBinvoicesrpc/invoices.proto\DC2\vinvoicesrpc\SUB\SIlnrpc/ln0.proto\SUB\SIlnrpc/ln1.proto\"5\n\
     \\DLECancelInvoiceMsg\DC2!\n\
     \\fpayment_hash\CAN\SOH \SOH(\fR\vpaymentHash\"\DC3\n\
     \\DC1CancelInvoiceResp\"\202\STX\n\
@@ -1815,385 +1806,385 @@ packedFileDescriptor
     \\rCancelInvoice\DC2\GS.invoicesrpc.CancelInvoiceMsg\SUB\RS.invoicesrpc.CancelInvoiceResp\DC2U\n\
     \\SOAddHoldInvoice\DC2\".invoicesrpc.AddHoldInvoiceRequest\SUB\US.invoicesrpc.AddHoldInvoiceResp\DC2N\n\
     \\rSettleInvoice\DC2\GS.invoicesrpc.SettleInvoiceMsg\SUB\RS.invoicesrpc.SettleInvoiceResp\DC2@\n\
-    \\SILookupInvoiceV2\DC2\GS.invoicesrpc.LookupInvoiceMsg\SUB\SO.lnrpc.InvoiceB3Z1github.com/lightningnetwork/lnd/lnrpc/invoicesrpcJ\182'\n\
-    \\a\DC2\ENQ\NUL\NUL\171\SOH\SOH\n\
+    \\SILookupInvoiceV2\DC2\GS.invoicesrpc.LookupInvoiceMsg\SUB\SO.lnrpc.InvoiceB3Z1github.com/lightningnetwork/lnd/lnrpc/invoicesrpcJ\193'\n\
+    \\a\DC2\ENQ\NUL\NUL\172\SOH\SOH\n\
     \\b\n\
     \\SOH\f\DC2\ETX\NUL\NUL\DC2\n\
     \\t\n\
     \\STX\ETX\NUL\DC2\ETX\STX\NUL\EM\n\
-    \\b\n\
-    \\SOH\STX\DC2\ETX\EOT\NUL\DC4\n\
-    \\b\n\
-    \\SOH\b\DC2\ETX\ACK\NULH\n\
     \\t\n\
-    \\STX\b\v\DC2\ETX\ACK\NULH\n\
+    \\STX\ETX\SOH\DC2\ETX\ETX\NUL\EM\n\
+    \\b\n\
+    \\SOH\STX\DC2\ETX\ENQ\NUL\DC4\n\
+    \\b\n\
+    \\SOH\b\DC2\ETX\a\NULH\n\
+    \\t\n\
+    \\STX\b\v\DC2\ETX\a\NULH\n\
     \d\n\
-    \\STX\ACK\NUL\DC2\EOT\n\
-    \\NUL+\SOH\SUBX Invoices is a service that can be used to create, accept, settle and cancel\n\
+    \\STX\ACK\NUL\DC2\EOT\v\NUL,\SOH\SUBX Invoices is a service that can be used to create, accept, settle and cancel\n\
     \ invoices.\n\
     \\n\
     \\n\
     \\n\
-    \\ETX\ACK\NUL\SOH\DC2\ETX\n\
-    \\b\DLE\n\
+    \\ETX\ACK\NUL\SOH\DC2\ETX\v\b\DLE\n\
     \\215\SOH\n\
-    \\EOT\ACK\NUL\STX\NUL\DC2\EOT\DLE\EOT\DC1'\SUB\200\SOH\n\
+    \\EOT\ACK\NUL\STX\NUL\DC2\EOT\DC1\EOT\DC2'\SUB\200\SOH\n\
     \SubscribeSingleInvoice returns a uni-directional stream (server -> client)\n\
     \to notify the client of state transitions of the specified invoice.\n\
     \Initially the current invoice state is always sent out.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX\DLE\b\RS\n\
+    \\ENQ\ACK\NUL\STX\NUL\SOH\DC2\ETX\DC1\b\RS\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX\DLE =\n\
+    \\ENQ\ACK\NUL\STX\NUL\STX\DC2\ETX\DC1 =\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\ACK\DC2\ETX\DC1\DC1\ETB\n\
+    \\ENQ\ACK\NUL\STX\NUL\ACK\DC2\ETX\DC2\DC1\ETB\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX\DC1\CAN%\n\
+    \\ENQ\ACK\NUL\STX\NUL\ETX\DC2\ETX\DC2\CAN%\n\
     \\172\SOH\n\
-    \\EOT\ACK\NUL\STX\SOH\DC2\ETX\CAN\EOTE\SUB\158\SOH\n\
+    \\EOT\ACK\NUL\STX\SOH\DC2\ETX\EM\EOTE\SUB\158\SOH\n\
     \CancelInvoice cancels a currently open invoice. If the invoice is already\n\
     \canceled, this call will succeed. If the invoice is already settled, it will\n\
     \fail.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX\CAN\b\NAK\n\
+    \\ENQ\ACK\NUL\STX\SOH\SOH\DC2\ETX\EM\b\NAK\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX\CAN\ETB'\n\
+    \\ENQ\ACK\NUL\STX\SOH\STX\DC2\ETX\EM\ETB'\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX\CAN2C\n\
+    \\ENQ\ACK\NUL\STX\SOH\ETX\DC2\ETX\EM2C\n\
     \n\n\
-    \\EOT\ACK\NUL\STX\STX\DC2\ETX\RS\EOTL\SUBa\n\
+    \\EOT\ACK\NUL\STX\STX\DC2\ETX\US\EOTL\SUBa\n\
     \AddHoldInvoice creates a hold invoice. It ties the invoice to the hash\n\
     \supplied in the request.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX\RS\b\SYN\n\
+    \\ENQ\ACK\NUL\STX\STX\SOH\DC2\ETX\US\b\SYN\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX\RS\CAN-\n\
+    \\ENQ\ACK\NUL\STX\STX\STX\DC2\ETX\US\CAN-\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX\RS8J\n\
+    \\ENQ\ACK\NUL\STX\STX\ETX\DC2\ETX\US8J\n\
     \t\n\
-    \\EOT\ACK\NUL\STX\ETX\DC2\ETX$\EOTE\SUBg\n\
+    \\EOT\ACK\NUL\STX\ETX\DC2\ETX%\EOTE\SUBg\n\
     \SettleInvoice settles an accepted invoice. If the invoice is already\n\
     \settled, this call will succeed.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETX$\b\NAK\n\
+    \\ENQ\ACK\NUL\STX\ETX\SOH\DC2\ETX%\b\NAK\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETX$\ETB'\n\
+    \\ENQ\ACK\NUL\STX\ETX\STX\DC2\ETX%\ETB'\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETX$2C\n\
+    \\ENQ\ACK\NUL\STX\ETX\ETX\DC2\ETX%2C\n\
     \\150\SOH\n\
-    \\EOT\ACK\NUL\STX\EOT\DC2\ETX*\EOTC\SUB\136\SOH\n\
+    \\EOT\ACK\NUL\STX\EOT\DC2\ETX+\EOTC\SUB\136\SOH\n\
     \LookupInvoiceV2 attempts to look up at invoice. An invoice can be refrenced\n\
     \using either its payment hash, payment address, or set ID.\n\
     \\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\EOT\SOH\DC2\ETX*\b\ETB\n\
+    \\ENQ\ACK\NUL\STX\EOT\SOH\DC2\ETX+\b\ETB\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\EOT\STX\DC2\ETX*\EM)\n\
+    \\ENQ\ACK\NUL\STX\EOT\STX\DC2\ETX+\EM)\n\
     \\f\n\
-    \\ENQ\ACK\NUL\STX\EOT\ETX\DC2\ETX*4A\n\
+    \\ENQ\ACK\NUL\STX\EOT\ETX\DC2\ETX+4A\n\
     \\n\
     \\n\
-    \\STX\EOT\NUL\DC2\EOT-\NUL0\SOH\n\
+    \\STX\EOT\NUL\DC2\EOT.\NUL1\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\NUL\SOH\DC2\ETX-\b\CAN\n\
+    \\ETX\EOT\NUL\SOH\DC2\ETX.\b\CAN\n\
     \B\n\
-    \\EOT\EOT\NUL\STX\NUL\DC2\ETX/\EOT\ESC\SUB5 Hash corresponding to the (hold) invoice to cancel.\n\
+    \\EOT\EOT\NUL\STX\NUL\DC2\ETX0\EOT\ESC\SUB5 Hash corresponding to the (hold) invoice to cancel.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETX/\EOT\t\n\
+    \\ENQ\EOT\NUL\STX\NUL\ENQ\DC2\ETX0\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\ETX/\n\
+    \\ENQ\EOT\NUL\STX\NUL\SOH\DC2\ETX0\n\
     \\SYN\n\
     \\f\n\
-    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\ETX/\EM\SUB\n\
+    \\ENQ\EOT\NUL\STX\NUL\ETX\DC2\ETX0\EM\SUB\n\
     \\n\
     \\n\
-    \\STX\EOT\SOH\DC2\EOT1\NUL2\SOH\n\
+    \\STX\EOT\SOH\DC2\EOT2\NUL3\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\SOH\SOH\DC2\ETX1\b\EM\n\
+    \\ETX\EOT\SOH\SOH\DC2\ETX2\b\EM\n\
     \\n\
     \\n\
-    \\STX\EOT\STX\DC2\EOT4\NULf\SOH\n\
+    \\STX\EOT\STX\DC2\EOT5\NULg\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\STX\SOH\DC2\ETX4\b\GS\n\
+    \\ETX\EOT\STX\SOH\DC2\ETX5\b\GS\n\
     \\252\SOH\n\
-    \\EOT\EOT\STX\STX\NUL\DC2\ETX;\EOT\DC4\SUB\238\SOH\n\
+    \\EOT\EOT\STX\STX\NUL\DC2\ETX<\EOT\DC4\SUB\238\SOH\n\
     \An optional memo to attach along with the invoice. Used for record keeping\n\
     \purposes for the invoice's creator, and will also be set in the description\n\
     \field of the encoded payment request if the description_hash field is not\n\
     \being used.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETX;\EOT\n\
+    \\ENQ\EOT\STX\STX\NUL\ENQ\DC2\ETX<\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\ETX;\v\SI\n\
+    \\ENQ\EOT\STX\STX\NUL\SOH\DC2\ETX<\v\SI\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\ETX;\DC2\DC3\n\
+    \\ENQ\EOT\STX\STX\NUL\ETX\DC2\ETX<\DC2\DC3\n\
     \'\n\
-    \\EOT\EOT\STX\STX\SOH\DC2\ETX>\EOT\DC3\SUB\SUB The hash of the preimage\n\
+    \\EOT\EOT\STX\STX\SOH\DC2\ETX?\EOT\DC3\SUB\SUB The hash of the preimage\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETX>\EOT\t\n\
+    \\ENQ\EOT\STX\STX\SOH\ENQ\DC2\ETX?\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\ETX>\n\
+    \\ENQ\EOT\STX\STX\SOH\SOH\DC2\ETX?\n\
     \\SO\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\ETX>\DC1\DC2\n\
+    \\ENQ\EOT\STX\STX\SOH\ETX\DC2\ETX?\DC1\DC2\n\
     \m\n\
-    \\EOT\EOT\STX\STX\STX\DC2\ETXE\EOT\DC4\SUB`\n\
+    \\EOT\EOT\STX\STX\STX\DC2\ETXF\EOT\DC4\SUB`\n\
     \The value of this invoice in satoshis\n\
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETXE\EOT\t\n\
+    \\ENQ\EOT\STX\STX\STX\ENQ\DC2\ETXF\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\SOH\DC2\ETXE\n\
+    \\ENQ\EOT\STX\STX\STX\SOH\DC2\ETXF\n\
     \\SI\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\STX\ETX\DC2\ETXE\DC2\DC3\n\
+    \\ENQ\EOT\STX\STX\STX\ETX\DC2\ETXF\DC2\DC3\n\
     \r\n\
-    \\EOT\EOT\STX\STX\ETX\DC2\ETXL\EOT\SUB\SUBe\n\
+    \\EOT\EOT\STX\STX\ETX\DC2\ETXM\EOT\SUB\SUBe\n\
     \The value of this invoice in millisatoshis\n\
     \\n\
     \The fields value and value_msat are mutually exclusive.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\ETXL\EOT\t\n\
+    \\ENQ\EOT\STX\STX\ETX\ENQ\DC2\ETXM\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ETX\SOH\DC2\ETXL\n\
+    \\ENQ\EOT\STX\STX\ETX\SOH\DC2\ETXM\n\
     \\DC4\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ETX\ETX\DC2\ETXL\ETB\EM\n\
+    \\ENQ\EOT\STX\STX\ETX\ETX\DC2\ETXM\ETB\EM\n\
     \\194\SOH\n\
-    \\EOT\EOT\STX\STX\EOT\DC2\ETXS\EOT\US\SUB\180\SOH\n\
+    \\EOT\EOT\STX\STX\EOT\DC2\ETXT\EOT\US\SUB\180\SOH\n\
     \Hash (SHA-256) of a description of the payment. Used if the description of\n\
     \payment (memo) is too long to naturally fit within the description field\n\
     \of an encoded payment request.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\EOT\ENQ\DC2\ETXS\EOT\t\n\
+    \\ENQ\EOT\STX\STX\EOT\ENQ\DC2\ETXT\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\EOT\SOH\DC2\ETXS\n\
+    \\ENQ\EOT\STX\STX\EOT\SOH\DC2\ETXT\n\
     \\SUB\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\EOT\ETX\DC2\ETXS\GS\RS\n\
+    \\ENQ\EOT\STX\STX\EOT\ETX\DC2\ETXT\GS\RS\n\
     \P\n\
-    \\EOT\EOT\STX\STX\ENQ\DC2\ETXV\EOT\NAK\SUBC Payment request expiry time in seconds. Default is 3600 (1 hour).\n\
+    \\EOT\EOT\STX\STX\ENQ\DC2\ETXW\EOT\NAK\SUBC Payment request expiry time in seconds. Default is 3600 (1 hour).\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\ETXV\EOT\t\n\
+    \\ENQ\EOT\STX\STX\ENQ\ENQ\DC2\ETXW\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ENQ\SOH\DC2\ETXV\n\
+    \\ENQ\EOT\STX\STX\ENQ\SOH\DC2\ETXW\n\
     \\DLE\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ENQ\ETX\DC2\ETXV\DC3\DC4\n\
+    \\ENQ\EOT\STX\STX\ENQ\ETX\DC2\ETXW\DC3\DC4\n\
     \)\n\
-    \\EOT\EOT\STX\STX\ACK\DC2\ETXY\EOT\GS\SUB\FS Fallback on-chain address.\n\
+    \\EOT\EOT\STX\STX\ACK\DC2\ETXZ\EOT\GS\SUB\FS Fallback on-chain address.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ACK\ENQ\DC2\ETXY\EOT\n\
+    \\ENQ\EOT\STX\STX\ACK\ENQ\DC2\ETXZ\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ACK\SOH\DC2\ETXY\v\CAN\n\
+    \\ENQ\EOT\STX\STX\ACK\SOH\DC2\ETXZ\v\CAN\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\ACK\ETX\DC2\ETXY\ESC\FS\n\
+    \\ENQ\EOT\STX\STX\ACK\ETX\DC2\ETXZ\ESC\FS\n\
     \T\n\
-    \\EOT\EOT\STX\STX\a\DC2\ETX\\\EOT\ESC\SUBG Delta to use for the time-lock of the CLTV extended to the final hop.\n\
+    \\EOT\EOT\STX\STX\a\DC2\ETX]\EOT\ESC\SUBG Delta to use for the time-lock of the CLTV extended to the final hop.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\a\ENQ\DC2\ETX\\\EOT\n\
+    \\ENQ\EOT\STX\STX\a\ENQ\DC2\ETX]\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\a\SOH\DC2\ETX\\\v\SYN\n\
+    \\ENQ\EOT\STX\STX\a\SOH\DC2\ETX]\v\SYN\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\a\ETX\DC2\ETX\\\EM\SUB\n\
+    \\ENQ\EOT\STX\STX\a\ETX\DC2\ETX]\EM\SUB\n\
     \n\n\
-    \\EOT\EOT\STX\STX\b\DC2\ETXb\EOT-\SUBa\n\
+    \\EOT\EOT\STX\STX\b\DC2\ETXc\EOT-\SUBa\n\
     \Route hints that can each be individually used to assist in reaching the\n\
     \invoice's destination.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\EOT\DC2\ETXb\EOT\f\n\
+    \\ENQ\EOT\STX\STX\b\EOT\DC2\ETXc\EOT\f\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\ACK\DC2\ETXb\r\FS\n\
+    \\ENQ\EOT\STX\STX\b\ACK\DC2\ETXc\r\FS\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\SOH\DC2\ETXb\GS(\n\
+    \\ENQ\EOT\STX\STX\b\SOH\DC2\ETXc\GS(\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\b\ETX\DC2\ETXb+,\n\
+    \\ENQ\EOT\STX\STX\b\ETX\DC2\ETXc+,\n\
     \V\n\
-    \\EOT\EOT\STX\STX\t\DC2\ETXe\EOT\NAK\SUBI Whether this invoice should include routing hints for private channels.\n\
+    \\EOT\EOT\STX\STX\t\DC2\ETXf\EOT\NAK\SUBI Whether this invoice should include routing hints for private channels.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\t\ENQ\DC2\ETXe\EOT\b\n\
+    \\ENQ\EOT\STX\STX\t\ENQ\DC2\ETXf\EOT\b\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\t\SOH\DC2\ETXe\t\DLE\n\
+    \\ENQ\EOT\STX\STX\t\SOH\DC2\ETXf\t\DLE\n\
     \\f\n\
-    \\ENQ\EOT\STX\STX\t\ETX\DC2\ETXe\DC3\DC4\n\
+    \\ENQ\EOT\STX\STX\t\ETX\DC2\ETXf\DC3\DC4\n\
     \\n\
     \\n\
-    \\STX\EOT\ETX\DC2\EOTh\NUL~\SOH\n\
+    \\STX\EOT\ETX\DC2\EOTi\NUL\DEL\SOH\n\
     \\n\
     \\n\
-    \\ETX\EOT\ETX\SOH\DC2\ETXh\b\SUB\n\
+    \\ETX\EOT\ETX\SOH\DC2\ETXi\b\SUB\n\
     \\187\SOH\n\
-    \\EOT\EOT\ETX\STX\NUL\DC2\ETXn\EOT\US\SUB\173\SOH\n\
+    \\EOT\EOT\ETX\STX\NUL\DC2\ETXo\EOT\US\SUB\173\SOH\n\
     \A bare-bones invoice for a payment within the Lightning Network. With the\n\
     \details of the invoice, the sender has all the data necessary to send a\n\
     \payment to the recipient.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\ETXn\EOT\n\
+    \\ENQ\EOT\ETX\STX\NUL\ENQ\DC2\ETXo\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\ETXn\v\SUB\n\
+    \\ENQ\EOT\ETX\STX\NUL\SOH\DC2\ETXo\v\SUB\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\ETXn\GS\RS\n\
+    \\ENQ\EOT\ETX\STX\NUL\ETX\DC2\ETXo\GS\RS\n\
     \\149\STX\n\
-    \\EOT\EOT\ETX\STX\SOH\DC2\ETXv\EOT\EM\SUB\135\STX\n\
+    \\EOT\EOT\ETX\STX\SOH\DC2\ETXw\EOT\EM\SUB\135\STX\n\
     \The \"add\" index of this invoice. Each newly created invoice will increment\n\
     \this index making it monotonically increasing. Callers to the\n\
     \SubscribeInvoices call can use this to instantly get notified of all added\n\
     \invoices with an add_index greater than this one.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\SOH\ENQ\DC2\ETXv\EOT\n\
+    \\ENQ\EOT\ETX\STX\SOH\ENQ\DC2\ETXw\EOT\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\SOH\SOH\DC2\ETXv\v\DC4\n\
+    \\ENQ\EOT\ETX\STX\SOH\SOH\DC2\ETXw\v\DC4\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\SOH\ETX\DC2\ETXv\ETB\CAN\n\
+    \\ENQ\EOT\ETX\STX\SOH\ETX\DC2\ETXw\ETB\CAN\n\
     \\162\SOH\n\
-    \\EOT\EOT\ETX\STX\STX\DC2\ETX}\EOT\ESC\SUB\148\SOH\n\
+    \\EOT\EOT\ETX\STX\STX\DC2\ETX~\EOT\ESC\SUB\148\SOH\n\
     \The payment address of the generated invoice. This value should be used\n\
     \in all payments for this invoice as we require it for end to end\n\
     \security.\n\
     \\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\STX\ENQ\DC2\ETX}\EOT\t\n\
+    \\ENQ\EOT\ETX\STX\STX\ENQ\DC2\ETX~\EOT\t\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\STX\SOH\DC2\ETX}\n\
+    \\ENQ\EOT\ETX\STX\STX\SOH\DC2\ETX~\n\
     \\SYN\n\
     \\f\n\
-    \\ENQ\EOT\ETX\STX\STX\ETX\DC2\ETX}\EM\SUB\n\
+    \\ENQ\EOT\ETX\STX\STX\ETX\DC2\ETX~\EM\SUB\n\
     \\f\n\
-    \\STX\EOT\EOT\DC2\ACK\128\SOH\NUL\132\SOH\SOH\n\
+    \\STX\EOT\EOT\DC2\ACK\129\SOH\NUL\133\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\EOT\SOH\DC2\EOT\128\SOH\b\CAN\n\
+    \\ETX\EOT\EOT\SOH\DC2\EOT\129\SOH\b\CAN\n\
     \`\n\
-    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\131\SOH\EOT\ETB\SUBR Externally discovered pre-image that should be used to settle the hold\n\
+    \\EOT\EOT\EOT\STX\NUL\DC2\EOT\132\SOH\EOT\ETB\SUBR Externally discovered pre-image that should be used to settle the hold\n\
     \ invoice.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\131\SOH\EOT\t\n\
+    \\ENQ\EOT\EOT\STX\NUL\ENQ\DC2\EOT\132\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\131\SOH\n\
+    \\ENQ\EOT\EOT\STX\NUL\SOH\DC2\EOT\132\SOH\n\
     \\DC2\n\
     \\r\n\
-    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\131\SOH\NAK\SYN\n\
+    \\ENQ\EOT\EOT\STX\NUL\ETX\DC2\EOT\132\SOH\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT\ENQ\DC2\ACK\134\SOH\NUL\135\SOH\SOH\n\
+    \\STX\EOT\ENQ\DC2\ACK\135\SOH\NUL\136\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\ENQ\SOH\DC2\EOT\134\SOH\b\EM\n\
+    \\ETX\EOT\ENQ\SOH\DC2\EOT\135\SOH\b\EM\n\
     \\f\n\
-    \\STX\EOT\ACK\DC2\ACK\137\SOH\NUL\142\SOH\SOH\n\
+    \\STX\EOT\ACK\DC2\ACK\138\SOH\NUL\143\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\ACK\SOH\DC2\EOT\137\SOH\b%\n\
+    \\ETX\EOT\ACK\SOH\DC2\EOT\138\SOH\b%\n\
     \\v\n\
-    \\ETX\EOT\ACK\t\DC2\EOT\138\SOH\EOT\SI\n\
+    \\ETX\EOT\ACK\t\DC2\EOT\139\SOH\EOT\SI\n\
     \\f\n\
-    \\EOT\EOT\ACK\t\NUL\DC2\EOT\138\SOH\r\SO\n\
+    \\EOT\EOT\ACK\t\NUL\DC2\EOT\139\SOH\r\SO\n\
     \\r\n\
-    \\ENQ\EOT\ACK\t\NUL\SOH\DC2\EOT\138\SOH\r\SO\n\
+    \\ENQ\EOT\ACK\t\NUL\SOH\DC2\EOT\139\SOH\r\SO\n\
     \\r\n\
-    \\ENQ\EOT\ACK\t\NUL\STX\DC2\EOT\138\SOH\r\SO\n\
+    \\ENQ\EOT\ACK\t\NUL\STX\DC2\EOT\139\SOH\r\SO\n\
     \I\n\
-    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\141\SOH\EOT\NAK\SUB; Hash corresponding to the (hold) invoice to subscribe to.\n\
+    \\EOT\EOT\ACK\STX\NUL\DC2\EOT\142\SOH\EOT\NAK\SUB; Hash corresponding to the (hold) invoice to subscribe to.\n\
     \\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\141\SOH\EOT\t\n\
+    \\ENQ\EOT\ACK\STX\NUL\ENQ\DC2\EOT\142\SOH\EOT\t\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\141\SOH\n\
+    \\ENQ\EOT\ACK\STX\NUL\SOH\DC2\EOT\142\SOH\n\
     \\DLE\n\
     \\r\n\
-    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\141\SOH\DC3\DC4\n\
+    \\ENQ\EOT\ACK\STX\NUL\ETX\DC2\EOT\142\SOH\DC3\DC4\n\
     \\f\n\
-    \\STX\ENQ\NUL\DC2\ACK\144\SOH\NUL\161\SOH\SOH\n\
+    \\STX\ENQ\NUL\DC2\ACK\145\SOH\NUL\162\SOH\SOH\n\
     \\v\n\
-    \\ETX\ENQ\NUL\SOH\DC2\EOT\144\SOH\ENQ\DC3\n\
+    \\ETX\ENQ\NUL\SOH\DC2\EOT\145\SOH\ENQ\DC3\n\
     \M\n\
-    \\EOT\ENQ\NUL\STX\NUL\DC2\EOT\146\SOH\EOT\DLE\SUB? The default look up modifier, no look up behavior is changed.\n\
+    \\EOT\ENQ\NUL\STX\NUL\DC2\EOT\147\SOH\EOT\DLE\SUB? The default look up modifier, no look up behavior is changed.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\NUL\SOH\DC2\EOT\146\SOH\EOT\v\n\
+    \\ENQ\ENQ\NUL\STX\NUL\SOH\DC2\EOT\147\SOH\EOT\v\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\NUL\STX\DC2\EOT\146\SOH\SO\SI\n\
+    \\ENQ\ENQ\NUL\STX\NUL\STX\DC2\EOT\147\SOH\SO\SI\n\
     \\144\SOH\n\
-    \\EOT\ENQ\NUL\STX\SOH\DC2\EOT\152\SOH\EOT\SYN\SUB\129\SOH\n\
+    \\EOT\ENQ\NUL\STX\SOH\DC2\EOT\153\SOH\EOT\SYN\SUB\129\SOH\n\
     \Indicates that when a look up is done based on a set_id, then only that set\n\
     \of HTLCs related to that set ID should be returned.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\SOH\SOH\DC2\EOT\152\SOH\EOT\DC1\n\
+    \\ENQ\ENQ\NUL\STX\SOH\SOH\DC2\EOT\153\SOH\EOT\DC1\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\SOH\STX\DC2\EOT\152\SOH\DC4\NAK\n\
+    \\ENQ\ENQ\NUL\STX\SOH\STX\DC2\EOT\153\SOH\DC4\NAK\n\
     \\170\STX\n\
-    \\EOT\ENQ\NUL\STX\STX\DC2\EOT\160\SOH\EOT\ETB\SUB\155\STX\n\
+    \\EOT\ENQ\NUL\STX\STX\DC2\EOT\161\SOH\EOT\ETB\SUB\155\STX\n\
     \Indicates that when a look up is done using a payment_addr, then no HTLCs\n\
     \related to the payment_addr should be returned. This is useful when one\n\
     \wants to be able to obtain the set of associated setIDs with a given\n\
     \invoice, then look up the sub-invoices \"projected\" by that set ID.\n\
     \\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\STX\SOH\DC2\EOT\160\SOH\EOT\DC2\n\
+    \\ENQ\ENQ\NUL\STX\STX\SOH\DC2\EOT\161\SOH\EOT\DC2\n\
     \\r\n\
-    \\ENQ\ENQ\NUL\STX\STX\STX\DC2\EOT\160\SOH\NAK\SYN\n\
+    \\ENQ\ENQ\NUL\STX\STX\STX\DC2\EOT\161\SOH\NAK\SYN\n\
     \\f\n\
-    \\STX\EOT\a\DC2\ACK\163\SOH\NUL\171\SOH\SOH\n\
+    \\STX\EOT\a\DC2\ACK\164\SOH\NUL\172\SOH\SOH\n\
     \\v\n\
-    \\ETX\EOT\a\SOH\DC2\EOT\163\SOH\b\CAN\n\
+    \\ETX\EOT\a\SOH\DC2\EOT\164\SOH\b\CAN\n\
     \\SO\n\
-    \\EOT\EOT\a\b\NUL\DC2\ACK\164\SOH\EOT\168\SOH\ENQ\n\
+    \\EOT\EOT\a\b\NUL\DC2\ACK\165\SOH\EOT\169\SOH\ENQ\n\
     \\r\n\
-    \\ENQ\EOT\a\b\NUL\SOH\DC2\EOT\164\SOH\n\
+    \\ENQ\EOT\a\b\NUL\SOH\DC2\EOT\165\SOH\n\
     \\NAK\n\
     \\f\n\
-    \\EOT\EOT\a\STX\NUL\DC2\EOT\165\SOH\b\US\n\
+    \\EOT\EOT\a\STX\NUL\DC2\EOT\166\SOH\b\US\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\165\SOH\b\r\n\
+    \\ENQ\EOT\a\STX\NUL\ENQ\DC2\EOT\166\SOH\b\r\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\SOH\DC2\EOT\165\SOH\SO\SUB\n\
+    \\ENQ\EOT\a\STX\NUL\SOH\DC2\EOT\166\SOH\SO\SUB\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\NUL\ETX\DC2\EOT\165\SOH\GS\RS\n\
+    \\ENQ\EOT\a\STX\NUL\ETX\DC2\EOT\166\SOH\GS\RS\n\
     \\f\n\
-    \\EOT\EOT\a\STX\SOH\DC2\EOT\166\SOH\b\US\n\
+    \\EOT\EOT\a\STX\SOH\DC2\EOT\167\SOH\b\US\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\SOH\ENQ\DC2\EOT\166\SOH\b\r\n\
+    \\ENQ\EOT\a\STX\SOH\ENQ\DC2\EOT\167\SOH\b\r\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\SOH\SOH\DC2\EOT\166\SOH\SO\SUB\n\
+    \\ENQ\EOT\a\STX\SOH\SOH\DC2\EOT\167\SOH\SO\SUB\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\SOH\ETX\DC2\EOT\166\SOH\GS\RS\n\
+    \\ENQ\EOT\a\STX\SOH\ETX\DC2\EOT\167\SOH\GS\RS\n\
     \\f\n\
-    \\EOT\EOT\a\STX\STX\DC2\EOT\167\SOH\b\EM\n\
+    \\EOT\EOT\a\STX\STX\DC2\EOT\168\SOH\b\EM\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\STX\ENQ\DC2\EOT\167\SOH\b\r\n\
+    \\ENQ\EOT\a\STX\STX\ENQ\DC2\EOT\168\SOH\b\r\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\STX\SOH\DC2\EOT\167\SOH\SO\DC4\n\
+    \\ENQ\EOT\a\STX\STX\SOH\DC2\EOT\168\SOH\SO\DC4\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\STX\ETX\DC2\EOT\167\SOH\ETB\CAN\n\
+    \\ENQ\EOT\a\STX\STX\ETX\DC2\EOT\168\SOH\ETB\CAN\n\
     \\f\n\
-    \\EOT\EOT\a\STX\ETX\DC2\EOT\170\SOH\EOT'\n\
+    \\EOT\EOT\a\STX\ETX\DC2\EOT\171\SOH\EOT'\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\ETX\ACK\DC2\EOT\170\SOH\EOT\DC2\n\
+    \\ENQ\EOT\a\STX\ETX\ACK\DC2\EOT\171\SOH\EOT\DC2\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\ETX\SOH\DC2\EOT\170\SOH\DC3\"\n\
+    \\ENQ\EOT\a\STX\ETX\SOH\DC2\EOT\171\SOH\DC3\"\n\
     \\r\n\
-    \\ENQ\EOT\a\STX\ETX\ETX\DC2\EOT\170\SOH%&b\ACKproto3"
+    \\ENQ\EOT\a\STX\ETX\ETX\DC2\EOT\171\SOH%&b\ACKproto3"

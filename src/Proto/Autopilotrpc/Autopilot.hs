@@ -137,8 +137,7 @@ instance Data.ProtoLens.Message ModifyStatusRequest where
                     (Data.Monoid.<>)
                       (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
                       ((Prelude..)
-                         Data.ProtoLens.Encoding.Bytes.putVarInt
-                         (\ b -> if b then 1 else 0)
+                         Data.ProtoLens.Encoding.Bytes.putVarInt (\ b -> if b then 1 else 0)
                          _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
@@ -318,8 +317,7 @@ instance Data.ProtoLens.Message QueryScoresRequest where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'pubkeys") frozen'pubkeys x))
                else
@@ -374,8 +372,7 @@ instance Data.ProtoLens.Message QueryScoresRequest where
                                    (Data.ProtoLens.Encoding.Bytes.putVarInt
                                       (Prelude.fromIntegral (Data.ByteString.length bs)))
                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                           Data.Text.Encoding.encodeUtf8
-                           _v))
+                           Data.Text.Encoding.encodeUtf8 _v))
                 (Lens.Family2.view (Data.ProtoLens.Field.field @"vec'pubkeys") _x))
              ((Data.Monoid.<>)
                 (let
@@ -389,8 +386,7 @@ instance Data.ProtoLens.Message QueryScoresRequest where
                        (Data.Monoid.<>)
                          (Data.ProtoLens.Encoding.Bytes.putVarInt 16)
                          ((Prelude..)
-                            Data.ProtoLens.Encoding.Bytes.putVarInt
-                            (\ b -> if b then 1 else 0)
+                            Data.ProtoLens.Encoding.Bytes.putVarInt (\ b -> if b then 1 else 0)
                             _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
@@ -491,8 +487,7 @@ instance Data.ProtoLens.Message QueryScoresResponse where
                                   (Prelude.show (missing :: [Prelude.String]))))
                       Prelude.return
                         (Lens.Family2.over
-                           Data.ProtoLens.unknownFields
-                           (\ !t -> Prelude.reverse t)
+                           Data.ProtoLens.unknownFields (\ !t -> Prelude.reverse t)
                            (Lens.Family2.set
                               (Data.ProtoLens.Field.field @"vec'results") frozen'results x))
                else
@@ -534,8 +529,7 @@ instance Data.ProtoLens.Message QueryScoresResponse where
                                    (Data.ProtoLens.Encoding.Bytes.putVarInt
                                       (Prelude.fromIntegral (Data.ByteString.length bs)))
                                    (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                           Data.ProtoLens.encodeMessage
-                           _v))
+                           Data.ProtoLens.encodeMessage _v))
                 (Lens.Family2.view (Data.ProtoLens.Field.field @"vec'results") _x))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
@@ -676,8 +670,7 @@ instance Data.ProtoLens.Message QueryScoresResponse'HeuristicResult where
                                    loop
                                      (Lens.Family2.over
                                         (Data.ProtoLens.Field.field @"scores")
-                                        (\ !t -> Data.Map.insert key value t)
-                                        x))
+                                        (\ !t -> Data.Map.insert key value t) x))
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -704,8 +697,7 @@ instance Data.ProtoLens.Message QueryScoresResponse'HeuristicResult where
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              ((Data.Monoid.<>)
                 (Data.Monoid.mconcat
                    (Prelude.map
@@ -720,11 +712,9 @@ instance Data.ProtoLens.Message QueryScoresResponse'HeuristicResult where
                                          (Data.ProtoLens.Encoding.Bytes.putBytes bs))
                                  Data.ProtoLens.encodeMessage
                                  (Lens.Family2.set
-                                    (Data.ProtoLens.Field.field @"key")
-                                    (Prelude.fst _v)
+                                    (Data.ProtoLens.Field.field @"key") (Prelude.fst _v)
                                     (Lens.Family2.set
-                                       (Data.ProtoLens.Field.field @"value")
-                                       (Prelude.snd _v)
+                                       (Data.ProtoLens.Field.field @"value") (Prelude.snd _v)
                                        (Data.ProtoLens.defMessage ::
                                           QueryScoresResponse'HeuristicResult'ScoresEntry)))))
                       (Data.Map.toList
@@ -884,8 +874,7 @@ instance Data.ProtoLens.Message QueryScoresResponse'HeuristicResult'ScoresEntry 
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              ((Data.Monoid.<>)
                 (let
                    _v = Lens.Family2.view (Data.ProtoLens.Field.field @"value") _x
@@ -897,8 +886,7 @@ instance Data.ProtoLens.Message QueryScoresResponse'HeuristicResult'ScoresEntry 
                          (Data.ProtoLens.Encoding.Bytes.putVarInt 17)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putFixed64
-                            Data.ProtoLens.Encoding.Bytes.doubleToWord
-                            _v))
+                            Data.ProtoLens.Encoding.Bytes.doubleToWord _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData QueryScoresResponse'HeuristicResult'ScoresEntry where
@@ -1038,8 +1026,7 @@ instance Data.ProtoLens.Message SetScoresRequest where
                                    loop
                                      (Lens.Family2.over
                                         (Data.ProtoLens.Field.field @"scores")
-                                        (\ !t -> Data.Map.insert key value t)
-                                        x))
+                                        (\ !t -> Data.Map.insert key value t) x))
                         wire
                           -> do !y <- Data.ProtoLens.Encoding.Wire.parseTaggedValueFromWire
                                         wire
@@ -1066,8 +1053,7 @@ instance Data.ProtoLens.Message SetScoresRequest where
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              ((Data.Monoid.<>)
                 (Data.Monoid.mconcat
                    (Prelude.map
@@ -1082,11 +1068,9 @@ instance Data.ProtoLens.Message SetScoresRequest where
                                          (Data.ProtoLens.Encoding.Bytes.putBytes bs))
                                  Data.ProtoLens.encodeMessage
                                  (Lens.Family2.set
-                                    (Data.ProtoLens.Field.field @"key")
-                                    (Prelude.fst _v)
+                                    (Data.ProtoLens.Field.field @"key") (Prelude.fst _v)
                                     (Lens.Family2.set
-                                       (Data.ProtoLens.Field.field @"value")
-                                       (Prelude.snd _v)
+                                       (Data.ProtoLens.Field.field @"value") (Prelude.snd _v)
                                        (Data.ProtoLens.defMessage ::
                                           SetScoresRequest'ScoresEntry)))))
                       (Data.Map.toList
@@ -1239,8 +1223,7 @@ instance Data.ProtoLens.Message SetScoresRequest'ScoresEntry where
                                  (Data.ProtoLens.Encoding.Bytes.putVarInt
                                     (Prelude.fromIntegral (Data.ByteString.length bs)))
                                  (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                         Data.Text.Encoding.encodeUtf8
-                         _v))
+                         Data.Text.Encoding.encodeUtf8 _v))
              ((Data.Monoid.<>)
                 (let
                    _v = Lens.Family2.view (Data.ProtoLens.Field.field @"value") _x
@@ -1252,8 +1235,7 @@ instance Data.ProtoLens.Message SetScoresRequest'ScoresEntry where
                          (Data.ProtoLens.Encoding.Bytes.putVarInt 17)
                          ((Prelude..)
                             Data.ProtoLens.Encoding.Bytes.putFixed64
-                            Data.ProtoLens.Encoding.Bytes.doubleToWord
-                            _v))
+                            Data.ProtoLens.Encoding.Bytes.doubleToWord _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData SetScoresRequest'ScoresEntry where
@@ -1494,8 +1476,7 @@ instance Data.ProtoLens.Message StatusResponse where
                     (Data.Monoid.<>)
                       (Data.ProtoLens.Encoding.Bytes.putVarInt 8)
                       ((Prelude..)
-                         Data.ProtoLens.Encoding.Bytes.putVarInt
-                         (\ b -> if b then 1 else 0)
+                         Data.ProtoLens.Encoding.Bytes.putVarInt (\ b -> if b then 1 else 0)
                          _v))
              (Data.ProtoLens.Encoding.Wire.buildFieldSet
                 (Lens.Family2.view Data.ProtoLens.unknownFields _x))
@@ -1524,22 +1505,22 @@ instance Data.ProtoLens.Service.Types.HasMethodImpl Autopilot "status" where
   type MethodName Autopilot "status" = "Status"
   type MethodInput Autopilot "status" = StatusRequest
   type MethodOutput Autopilot "status" = StatusResponse
-  type MethodStreamingType Autopilot "status" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Autopilot "status" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Autopilot "modifyStatus" where
   type MethodName Autopilot "modifyStatus" = "ModifyStatus"
   type MethodInput Autopilot "modifyStatus" = ModifyStatusRequest
   type MethodOutput Autopilot "modifyStatus" = ModifyStatusResponse
-  type MethodStreamingType Autopilot "modifyStatus" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Autopilot "modifyStatus" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Autopilot "queryScores" where
   type MethodName Autopilot "queryScores" = "QueryScores"
   type MethodInput Autopilot "queryScores" = QueryScoresRequest
   type MethodOutput Autopilot "queryScores" = QueryScoresResponse
-  type MethodStreamingType Autopilot "queryScores" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Autopilot "queryScores" = 'Data.ProtoLens.Service.Types.NonStreaming
 instance Data.ProtoLens.Service.Types.HasMethodImpl Autopilot "setScores" where
   type MethodName Autopilot "setScores" = "SetScores"
   type MethodInput Autopilot "setScores" = SetScoresRequest
   type MethodOutput Autopilot "setScores" = SetScoresResponse
-  type MethodStreamingType Autopilot "setScores" =  'Data.ProtoLens.Service.Types.NonStreaming
+  type MethodStreamingType Autopilot "setScores" = 'Data.ProtoLens.Service.Types.NonStreaming
 packedFileDescriptor :: Data.ByteString.ByteString
 packedFileDescriptor
   = "\n\

@@ -182,8 +182,7 @@ instance Data.ProtoLens.Message VersionResponse where
                                   (Data.ProtoLens.Encoding.Bytes.putVarInt
                                      (Prelude.fromIntegral (Data.ByteString.length bs)))
                                   (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                          Data.ProtoLens.encodeMessage
-                          _v))
+                          Data.ProtoLens.encodeMessage _v))
              ((Data.Monoid.<>)
                 (case
                      Lens.Family2.view (Data.ProtoLens.Field.field @"maybe'lnd") _x
@@ -198,8 +197,7 @@ instance Data.ProtoLens.Message VersionResponse where
                                      (Data.ProtoLens.Encoding.Bytes.putVarInt
                                         (Prelude.fromIntegral (Data.ByteString.length bs)))
                                      (Data.ProtoLens.Encoding.Bytes.putBytes bs))
-                             Data.ProtoLens.encodeMessage
-                             _v))
+                             Data.ProtoLens.encodeMessage _v))
                 (Data.ProtoLens.Encoding.Wire.buildFieldSet
                    (Lens.Family2.view Data.ProtoLens.unknownFields _x)))
 instance Control.DeepSeq.NFData VersionResponse where

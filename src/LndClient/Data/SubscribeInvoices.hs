@@ -7,14 +7,14 @@ where
 
 import Data.ProtoLens.Message
 import LndClient.Import
-import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln1 as LnGRPC
+import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
 
 data SubscribeInvoicesRequest = SubscribeInvoicesRequest
   { addIndex :: Maybe AddIndex,
     settleIndex :: Maybe SettleIndex
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out SubscribeInvoicesRequest
 

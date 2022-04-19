@@ -11,14 +11,14 @@ import LndClient.Data.Channel
 import LndClient.Data.ChannelPoint
 import LndClient.Data.CloseChannel
 import LndClient.Import
-import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data ChannelEventUpdate = ChannelEventUpdate
   { channelEvent :: UpdateChannel,
     eventType :: UpdateType
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out ChannelEventUpdate
 
@@ -29,7 +29,7 @@ data UpdateChannel
   | ChannelEventUpdateChannelInactiveChannel ChannelPoint
   | ChannelEventUpdateChannelPendingOpenChannel (PendingUpdate 'Funding)
   | ChannelEventUpdateChannelFullyResolved ChannelPoint
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out UpdateChannel
 
@@ -40,7 +40,7 @@ data UpdateType
   | INACTIVE_CHANNEL
   | PENDING_OPEN_CHANNEL
   | FULLY_RESOLVED_CHANNEL
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out UpdateType
 

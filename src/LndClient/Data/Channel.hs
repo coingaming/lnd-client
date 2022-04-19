@@ -13,7 +13,8 @@ import LndClient.Data.ChannelPoint
 import LndClient.Data.Newtype
 import LndClient.Import
 import qualified Proto.Lightning as LnGRPC
-import qualified Proto.Lightning_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln0 as LnGRPC
+import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data Channel = Channel
   { remotePubkey :: NodePubKey,
@@ -29,7 +30,7 @@ data Channel = Channel
     totalSatoshisReceived :: MSat,
     numUpdates :: Word64
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out Channel
 
@@ -37,7 +38,7 @@ data PendingUpdate (a :: TxKind) = PendingUpdate
   { txid :: TxId a,
     outputIndex :: Vout a
   }
-  deriving (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out (PendingUpdate a)
 

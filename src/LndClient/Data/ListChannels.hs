@@ -19,7 +19,7 @@ data ListChannelsRequest = ListChannelsRequest
     privateOnly :: Bool,
     peer :: Maybe NodePubKey
   }
-  deriving (Generic, Show)
+  deriving stock (Generic, Show)
 
 instance Out ListChannelsRequest
 

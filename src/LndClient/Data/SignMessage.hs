@@ -4,7 +4,7 @@
 module LndClient.Data.SignMessage
   ( SignMessageRequest (..),
     SignMessageResponse (..),
-    KeyLocator (..)
+    KeyLocator (..),
   )
 where
 
@@ -19,12 +19,13 @@ data SignMessageRequest = SignMessageRequest
     doubleHash :: Bool,
     compactSig :: Bool
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out SignMessageRequest
 
 newtype SignMessageResponse = SignMessageResponse ByteString
-  deriving (Eq, Show, Generic)
+  deriving newtype (Eq, Show)
+  deriving stock (Generic)
 
 instance Out SignMessageResponse
 
@@ -50,7 +51,7 @@ data KeyLocator = KeyLocator
   { keyFamily :: Int32,
     keyIndex :: Int32
   }
-  deriving (Eq, Show, Generic)
+  deriving stock (Eq, Show, Generic)
 
 instance Out KeyLocator
 
