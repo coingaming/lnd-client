@@ -56,9 +56,18 @@ spec = do
     withEnv $ do
       lnd <- getLndEnv Bob
       x0 <- liftLndResult =<< addInvoice lnd addInvoiceRequest
+      GetInfoResponse pub _ _ <- liftLndResult =<< getInfo lnd
       x1 <-
         liftLndResult
           =<< decodePayReq lnd (AddInvoice.paymentRequest x0)
+      liftIO $
+        x1
+          `shouldBe` PayReq
+            { PayReq.destination = pub,
+              PayReq.paymentHash = AddInvoice.rHash x0,
+              PayReq.numMsat = AddInvoice.valueMsat addInvoiceRequest,
+              PayReq.expiry = Seconds 1000
+            }
       liftIO $ do
         PayReq.paymentHash x1
           `shouldBe` AddInvoice.rHash x0

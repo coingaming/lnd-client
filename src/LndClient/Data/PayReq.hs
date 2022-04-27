@@ -8,7 +8,8 @@ import qualified Proto.Lnrpc.Ln1 as LnGRPC
 import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
 
 data PayReq = PayReq
-  { paymentHash :: RHash,
+  { destination :: NodePubKey,
+    paymentHash :: RHash,
     numMsat :: MSat,
     expiry :: Seconds
   }
@@ -19,6 +20,7 @@ instance Out PayReq
 instance FromGrpc PayReq LnGRPC.PayReq where
   fromGrpc x =
     PayReq
-      <$> fromGrpc (x ^. LnGRPC.paymentHash)
+      <$> fromGrpc (x ^. LnGRPC.destination)
+      <*> fromGrpc (x ^. LnGRPC.paymentHash)
       <*> fromGrpcMSat (x ^. LnGRPC.numMsat)
       <*> fromGrpc (x ^. LnGRPC.expiry)
