@@ -178,6 +178,7 @@ library
     , stm >=2.5.0.0 && <2.5.1
     , template-haskell >=2.14.0.0 && <2.17
     , text >=1.2.3.1 && <1.2.5
+    , time
     , tls
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum ==1.5.0.*
@@ -252,6 +253,7 @@ library lnd-client-tkit
     , stm >=2.5.0.0 && <2.5.1
     , template-haskell >=2.14.0.0 && <2.17
     , text >=1.2.3.1 && <1.2.5
+    , time
     , tls
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum ==1.5.0.*
@@ -327,6 +329,7 @@ executable lnd-client-prof
     , stm >=2.5.0.0 && <2.5.1
     , template-haskell >=2.14.0.0 && <2.17
     , text >=1.2.3.1 && <1.2.5
+    , time
     , tls
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum ==1.5.0.*
@@ -404,6 +407,7 @@ test-suite lnd-client-test
     , stm >=2.5.0.0 && <2.5.1
     , template-haskell >=2.14.0.0 && <2.17
     , text >=1.2.3.1 && <1.2.5
+    , time
     , tls
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum ==1.5.0.*
