@@ -28,7 +28,7 @@ import LndClient.Data.ListInvoices as ListInvoices
     ListInvoiceResponse (..),
   )
 import LndClient.Data.OpenChannel (OpenChannelRequest (..))
-import LndClient.Data.PayReq as PayReq (PayReq (..))
+import qualified LndClient.Data.PayReq as PayReq
 import LndClient.Data.Payment as Payment (Payment (..), PaymentStatus (..))
 import LndClient.Data.PendingChannels (PendingChannelsResponse (..))
 import LndClient.Data.SendPayment (SendPaymentRequest (..))
@@ -60,13 +60,24 @@ spec = do
       x1 <-
         liftLndResult
           =<< decodePayReq lnd (AddInvoice.paymentRequest x0)
+      ct <- liftIO getCurrentTime
+      let dt =
+            picosecondsToDiffTime
+              . (* 1000000000000)
+              . (`div` 1000000000000)
+              . diffTimeToPicoseconds
+              $ utctDayTime ct
+      let expSec = Seconds 1000
+      let utc = ct {utctDayTime = dt}
       liftIO $
         x1
-          `shouldBe` PayReq
+          `shouldBe` PayReq.PayReq
             { PayReq.destination = pub,
               PayReq.paymentHash = AddInvoice.rHash x0,
               PayReq.numMsat = AddInvoice.valueMsat addInvoiceRequest,
-              PayReq.expiry = Seconds 1000
+              PayReq.expiry = Seconds 1000,
+              PayReq.timestamp = ct {utctDayTime = dt},
+              PayReq.expiresAt = PayReq.addSeconds expSec utc
             }
       liftIO $ do
         PayReq.paymentHash x1

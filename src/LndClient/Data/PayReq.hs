@@ -1,8 +1,11 @@
 module LndClient.Data.PayReq
   ( PayReq (..),
+    addSeconds,
   )
 where
 
+import Data.Time.Clock (addUTCTime)
+import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import LndClient.Import
 import qualified Proto.Lnrpc.Ln1 as LnGRPC
 import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
@@ -11,16 +14,49 @@ data PayReq = PayReq
   { destination :: NodePubKey,
     paymentHash :: RHash,
     numMsat :: MSat,
-    expiry :: Seconds
+    expiry :: Seconds,
+    timestamp :: UTCTime,
+    expiresAt :: UTCTime
   }
   deriving stock (Eq, Show, Generic)
 
 instance Out PayReq
 
 instance FromGrpc PayReq LnGRPC.PayReq where
-  fromGrpc x =
-    PayReq
-      <$> fromGrpc (x ^. LnGRPC.destination)
-      <*> fromGrpc (x ^. LnGRPC.paymentHash)
-      <*> fromGrpcMSat (x ^. LnGRPC.numMsat)
-      <*> fromGrpc (x ^. LnGRPC.expiry)
+  fromGrpc x = do
+    dest <- fromGrpc (x ^. LnGRPC.destination)
+    hash <- fromGrpc (x ^. LnGRPC.paymentHash)
+    msat <- fromGrpcMSat (x ^. LnGRPC.numMsat)
+    expSec <- fromGrpc (x ^. LnGRPC.expiry)
+    let createdAt = secToUtcTime $ x ^. LnGRPC.timestamp
+    pure
+      PayReq
+        { destination = dest,
+          paymentHash = hash,
+          numMsat = msat,
+          expiry = expSec,
+          timestamp = createdAt,
+          expiresAt = addSeconds expSec createdAt
+        }
+
+addSeconds :: Seconds -> UTCTime -> UTCTime
+addSeconds =
+  addUTCTime
+    . fromRational
+    . toRational
+    . secondsToDiffTime
+    . fromIntegral
+
+secToUtcTime :: Int64 -> UTCTime
+secToUtcTime x =
+  addUTCTime
+    ( fromRational
+        . toRational
+        . secondsToDiffTime
+        $ fromIntegral x
+    )
+    epoch
+
+epoch :: UTCTime
+epoch =
+  posixSecondsToUTCTime 0

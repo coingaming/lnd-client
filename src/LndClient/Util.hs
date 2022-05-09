@@ -23,10 +23,10 @@ import qualified Control.Concurrent.Thread.Delay as Delay (delay)
 import Control.Exception hiding (Handler, catches)
 import qualified Data.ByteString as BS (reverse)
 import qualified Data.ByteString.Base16 as B16 (decode, encode)
+import qualified Data.ByteString.Base64 as B64
+import qualified Data.Text.Encoding as T
 import LndClient.Data.Type
 import LndClient.Import.External
-import qualified Data.Text.Encoding as T
-import qualified Data.ByteString.Base64 as B64
 
 newtype MicroSecondsDelay = MicroSecondsDelay Int
 
@@ -38,7 +38,6 @@ txIdParser xr =
 
 txIdHex :: ByteString -> Text
 txIdHex = decodeUtf8 . BS.reverse . B16.encode
-
 
 psbtBtcCli :: ByteString -> Text
 psbtBtcCli x = T.decodeUtf8 $ B64.encode x

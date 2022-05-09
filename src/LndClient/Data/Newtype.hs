@@ -138,7 +138,18 @@ newtype AezeedPassphrase = AezeedPassphrase Text
   deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON)
 
 newtype Seconds = Seconds Word64
-  deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON, Show)
+  deriving newtype
+    ( PersistField,
+      PersistFieldSql,
+      Eq,
+      Ord,
+      FromJSON,
+      Show,
+      Num,
+      Real,
+      Enum,
+      Integral
+    )
   deriving stock (Generic)
 
 instance Out Seconds
