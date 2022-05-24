@@ -190,7 +190,8 @@ spec = do
                   remoteCsvDelay = Nothing,
                   minConfs = Nothing,
                   spendUnconfirmed = Nothing,
-                  closeAddress = Nothing
+                  closeAddress = Nothing,
+                  fundingShim = Nothing
                 }
         cp <- liftLndResult =<< openChannelSync alice openChannelRequest
         res <- receiveActiveChannel proxyOwner cp chan
@@ -356,7 +357,8 @@ spec = do
                 remoteCsvDelay = Nothing,
                 minConfs = Nothing,
                 spendUnconfirmed = Nothing,
-                closeAddress = Nothing
+                closeAddress = Nothing,
+                fundingShim = Nothing
               }
       a <-
         spawnLink $
@@ -432,7 +434,8 @@ spec = do
                 remoteCsvDelay = Nothing,
                 minConfs = Nothing,
                 spendUnconfirmed = Nothing,
-                closeAddress = Nothing
+                closeAddress = Nothing,
+                fundingShim = Nothing
               }
       _ <-
         liftLndResult

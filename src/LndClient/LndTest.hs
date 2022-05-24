@@ -499,7 +499,8 @@ setupOneChannel ownerFrom ownerTo = do
             OpenChannel.remoteCsvDelay = Nothing,
             OpenChannel.minConfs = Nothing,
             OpenChannel.spendUnconfirmed = Nothing,
-            OpenChannel.closeAddress = Nothing
+            OpenChannel.closeAddress = Nothing,
+            OpenChannel.fundingShim = Nothing
           }
   cp <-
     liftLndResult
