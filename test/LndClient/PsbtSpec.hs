@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module LndClient.PsbtSpec
   ( spec,
@@ -9,8 +9,6 @@ where
 import qualified Data.Map as M
 import qualified LndClient.Data.FinalizePsbt as FNP
 import qualified LndClient.Data.FundPsbt as FP
--- import qualified Control.Concurrent.Async as Async
-
 import qualified LndClient.Data.FundingPsbtFinalize as FPF
 import qualified LndClient.Data.FundingPsbtVerify as FSS
 import qualified LndClient.Data.FundingStateStep as FSS
@@ -109,24 +107,23 @@ openChannelPsbt lndEnv toPubKey locFundAmt = do
   where
     fundStep pcid chan = do
       upd <- T.atomically $ T.readTChan chan
-      traceShowM ("Got update" :: Text)
-      traceShowM upd
+      $(logTM) DebugS $ logStr $ "Got chan status update" <> inspect upd
       case upd of
         OpenStatusUpdate _ (Just (OpenStatusUpdatePsbtFund (ReadyForPsbtFunding faddr famt _))) -> do
+          $(logTM) DebugS $ logStr $ "Chan ready for funding at addr:" <> inspect faddr <> " with amt:" <> inspect famt
           psbtResp <- fundPsbtToAddr faddr famt
           let psbt' = Psbt $ FP.fundedPsbt psbtResp
           void $ liftLndResult =<< fundingStateStep lndEnv (psbtVerifyReq pcid psbt')
           sPsbtResp <- signPsbt psbtResp
+          $(logTM) DebugS $ logStr $ "Used psbt for funding:" <> inspect sPsbtResp
           void $ liftLndResult =<< fundingStateStep lndEnv (psbtFinalizeReq pcid (Psbt $ FNP.signedPsbt sPsbtResp))
           fundStep pcid chan
         OpenStatusUpdate _ (Just (OpenStatusUpdateChanPending p)) -> do
-          traceShowM ("Chan pending" :: Text)
-          traceShowM p
+          $(logTM) DebugS $ logStr $ "Chan is pending... mining..." <> inspect p
           mine 3 Bob
           fundStep pcid chan
         OpenStatusUpdate _ (Just (OpenStatusUpdateChanOpen (ChannelOpenUpdate cp))) -> do
-          traceShowM ("Chan open" :: Text)
-          traceShowM cp
+          $(logTM) DebugS $ logStr $ "Chan is open" <> inspect cp
           pure (Right cp)
         _ -> pure (Left "Unexpected update")
 
