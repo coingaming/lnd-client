@@ -11,6 +11,7 @@ module LndClient.Data.Newtype
     MSat (..),
     toGrpcSat,
     toGrpcMSat,
+    toGrpcMaybe,
     fromGrpcSat,
     fromGrpcMSat,
     CipherSeedMnemonic (..),
@@ -30,7 +31,8 @@ module LndClient.Data.Newtype
     Vout (..),
     ChanId (..),
     PendingChannelId (..),
-    Psbt (..)
+    Psbt (..),
+    RawTx (..)
   )
 where
 
@@ -61,6 +63,12 @@ newtype Psbt = Psbt ByteString
   deriving stock (Generic)
 
 instance Out Psbt
+
+newtype RawTx = RawTx ByteString
+  deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving stock (Generic)
+
+instance Out RawTx
 
 newtype ChanId = ChanId Word64
   deriving newtype
@@ -223,6 +231,9 @@ instance ToGrpc PendingChannelId ByteString where
 instance ToGrpc Psbt ByteString where
   toGrpc = Right . coerce
 
+instance ToGrpc RawTx ByteString where
+  toGrpc = Right . coerce
+
 instance ToGrpc AddIndex Word64 where
   toGrpc = Right . coerce
 
@@ -356,6 +367,10 @@ toGrpcMSat x =
   maybeToRight
     (ToGrpcError "MSat overflow")
     $ safeFromIntegral (coerce x :: Word64)
+
+toGrpcMaybe :: (ToGrpc a b) => Maybe a -> Either LndError (Maybe b)
+toGrpcMaybe (Just fs) = Just <$> toGrpc fs
+toGrpcMaybe Nothing = Right Nothing
 
 fromGrpcMSat :: (Integral a) => a -> Either LndError MSat
 fromGrpcMSat x =

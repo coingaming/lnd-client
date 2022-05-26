@@ -12,7 +12,6 @@ import LndClient.Data.ChannelPoint
 import LndClient.Import
 import qualified Proto.Lightning as LnGRPC
 import qualified Proto.Lightning_Fields as LnGRPC
-import qualified Proto.Lnrpc.Ln0 as L
 import LndClient.Data.PsbtShim
 
 data OpenChannelRequest = OpenChannelRequest
@@ -89,10 +88,6 @@ instance FromGrpc ReadyForPsbtFunding LnGRPC.ReadyForPsbtFunding where
       <*> fromGrpcSat (x ^. LnGRPC.fundingAmount)
       <*> fromGrpc (x ^. LnGRPC.psbt)
 
-toGrpcFundingShim :: Maybe PsbtShim -> Either LndError (Maybe L.FundingShim)
-toGrpcFundingShim (Just fs) = Just <$> toGrpc fs
-toGrpcFundingShim Nothing = Right Nothing
-
 instance ToGrpc OpenChannelRequest LnGRPC.OpenChannelRequest where
   toGrpc x =
     msg
@@ -107,7 +102,7 @@ instance ToGrpc OpenChannelRequest LnGRPC.OpenChannelRequest where
       <*> toGrpc (minConfs x)
       <*> toGrpc (spendUnconfirmed x)
       <*> toGrpc (closeAddress x)
-      <*> toGrpcFundingShim (fundingShim x)
+      <*> toGrpcMaybe (fundingShim x)
     where
       msg gNodePubKey gLocalFindingAmount gPushSat gTargetConf gSatPerByte gPrivate gMinHtlcMsat gRemoteCsvDelay gMinConfs gSpendUnconfirmed gCloseAddress gFundingShim=
         defMessage

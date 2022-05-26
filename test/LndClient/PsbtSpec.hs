@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module LndClient.PsbtSpec
   ( spec,
   )
@@ -11,11 +12,15 @@ import qualified LndClient.Data.NewAddress as NA
 import qualified LndClient.Data.OutPoint as OP
 import qualified LndClient.Data.PublishTransaction as PT
 import qualified LndClient.Data.SendCoins as SC
+import qualified LndClient.Data.PsbtShim as PS
+import LndClient.Data.GetInfo (GetInfoResponse (..))
+-- import qualified Control.Concurrent.Async as Async
 import LndClient.Import
 import LndClient.LndTest
 import LndClient.RPC.Katip
 import LndClient.TestApp
 import Test.Hspec
+import LndClient.Data.OpenChannel
 
 genAddr :: (KatipContext f, MonadUnliftIO f) => LndEnv -> f Text
 genAddr lnd =
@@ -28,7 +33,7 @@ findUtxosByTxId lnd txid' = do
   pure $ filter (\u -> txid' == OP.txid (LU.outpoint u)) utxos
 
 spec :: Spec
-spec =
+spec = do
   it "fundPsbt" $
     withEnv $ do
       lndBob <- getLndEnv Bob
@@ -58,3 +63,36 @@ spec =
           =<< publishTransaction lndAlice (PT.PublishTransactionRequest txPsbt "hehe")
       mine 1 Bob
       liftIO $ shouldBe (PT.publishError res) ""
+  it "openChannel with psbt" $ withEnv $ do
+    bob <- getLndEnv Bob
+    alice <- getLndEnv Alice
+    GetInfoResponse bobPubKey _ _ <- liftLndResult =<< getInfo bob
+    pcid <- newPendingChanId
+    let psbtShim = PS.PsbtShim {
+      PS.pendingChanId = pcid,
+      PS.basePsbt = Nothing,
+      PS.noPublish = False
+    }
+    let openChannelRequest = OpenChannelRequest {
+      nodePubkey = bobPubKey,
+      localFundingAmount = MSat 26660000,
+      pushMSat = Nothing,
+      targetConf = Nothing,
+      mSatPerByte = Nothing,
+      private = Nothing,
+      minHtlcMsat = Nothing,
+      remoteCsvDelay = Nothing,
+      minConfs = Nothing,
+      spendUnconfirmed = Nothing,
+      closeAddress = Nothing,
+      fundingShim = Just psbtShim
+    }
+    _a <- liftLndResult =<< openChannel traceShowM alice openChannelRequest
+    liftIO $ do
+      shouldBe True True
+
+
+
+
+
+

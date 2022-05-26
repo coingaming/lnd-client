@@ -21,11 +21,17 @@ data PsbtShim = PsbtShim
 
 instance Out PsbtShim
 
+toBasePsbt :: Maybe Psbt -> Either LndError ByteString
+toBasePsbt = maybe (Right "") toGrpc
+
+instance ToGrpc PsbtShim L.PsbtShim where
+  toGrpc x = msg <$> toGrpc (pendingChanId x) <*> toBasePsbt (basePsbt x) <*> pure (noPublish x)
+    where
+      msg pchid bp np = defMessage & L.pendingChanId .~ pchid & L.basePsbt .~ bp & L.noPublish .~ np
+
 instance ToGrpc PsbtShim L.FundingShim where
   toGrpc x = msg <$> toGrpc (pendingChanId x) <*> toBasePsbt (basePsbt x) <*> pure (noPublish x)
     where
-      toBasePsbt :: Maybe Psbt -> Either LndError ByteString
-      toBasePsbt = maybe (Right "") toGrpc
       msg pchid bp np =
         defMessage
           & L.maybe'psbtShim ?~
