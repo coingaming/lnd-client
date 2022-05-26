@@ -3,6 +3,9 @@
 module LndClient.Data.OpenChannel
   ( OpenChannelRequest (..),
     OpenStatusUpdate (..),
+    OpenStatusUpdate' (..),
+    ReadyForPsbtFunding (..),
+    ChannelOpenUpdate (..)
   )
 where
 
