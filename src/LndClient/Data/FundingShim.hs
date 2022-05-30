@@ -9,25 +9,13 @@ import qualified LndClient.Data.PsbtShim as PS
 import LndClient.Import
 import qualified Proto.Lnrpc.Ln0 as L
 import qualified Proto.Lnrpc.Ln0_Fields as L
-
-data KeyLocator = KeyLocator
-  { keyFamily :: Int32,
-    keyIndex :: Int32
-  }
-  deriving stock (Eq, Ord, Show, Generic)
-
-instance ToGrpc KeyLocator L.KeyLocator where
-  toGrpc x = pure $ msg (keyFamily x) (keyIndex x)
-    where
-      msg f i = defMessage & L.keyFamily .~ f & L.keyIndex .~ i
-
-instance Out KeyLocator
+import qualified LndClient.Data.SignMessage as KL
 
 data KeyDescriptor = KeyDescriptor
   { rawKeyBytes :: ByteString,
-    keyLoc :: KeyLocator
+    keyLoc :: KL.KeyLocator
   }
-  deriving stock (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Show, Ord, Generic)
 
 instance ToGrpc KeyDescriptor L.KeyDescriptor where
   toGrpc x = msg <$> toGrpc (rawKeyBytes x) <*> toGrpc (keyLoc x)
@@ -40,11 +28,11 @@ data ChanPointShim = ChanPointShim
   { amt :: MSat,
     chanPoint :: Maybe ChannelPoint,
     localKey :: Maybe KeyDescriptor,
-    remoteKey :: ByteString,
+    remoteKey :: NodePubKey,
     pendingChanId :: PendingChannelId,
     thawHeight :: Word32
   }
-  deriving stock (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Show, Ord, Generic)
 
 instance ToGrpc ChanPointShim L.ChanPointShim where
   toGrpc x =
@@ -70,7 +58,7 @@ instance Out ChanPointShim
 data FundingShim
   = FundingShim'ChanPointShim ChanPointShim
   | FundingShim'PsbtShim PS.PsbtShim
-  deriving stock (Eq, Ord, Show, Generic)
+  deriving stock (Eq, Show, Ord, Generic)
 
 instance Out FundingShim
 
