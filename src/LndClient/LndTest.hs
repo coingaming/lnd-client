@@ -196,18 +196,19 @@ walletAddress owner = do
 
 lazyMineInitialCoins :: forall m owner. LndTest m owner => Proxy owner -> m ()
 lazyMineInitialCoins = const $ do
-  mapM_ (liftLndResult <=< Lnd.lazyInitWallet <=< getLndEnv) xs
-  bc <- getBtcClient someone
+  mapM_ (liftLndResult <=< Lnd.lazyInitWallet <=< getLndEnv) owners
+  bc <- getBtcClient (minBound :: owner)
   h <- liftIO $ Btc.getBlockCount bc
-  -- reward coins are spendable only after 100 blocks
-  when (h < 101 + numOwners) $ do
-    mapM_ (mine 1) xs
-    mine 101 someone
+  -- Reward coins are spendable only after 100 blocks,
+  -- mine additional 100 blocks per owner to ensure everybody
+  -- has coins to spend.
+  when (h < fromIntegral (length owners * blocksPerOwner)) $ do
+    mapM_ (mine blocksPerOwner) owners
   where
-    xs = enumerate :: [owner]
-    someone = minBound :: owner
-    numOwners :: Integer
-    numOwners = fromIntegral $ length xs
+    owners :: [owner]
+    owners = enumerate
+    blocksPerOwner :: Int
+    blocksPerOwner = 200
 
 lazyConnectNodes :: forall m owner. LndTest m owner => Proxy owner -> m ()
 lazyConnectNodes = const $ mapM_ this uniquePairs
