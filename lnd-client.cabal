@@ -1,6 +1,6 @@
 cabal-version: 2.0
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
@@ -121,6 +121,8 @@ library
       Proto.Wtclientrpc.Wtclient_Fields
   other-modules:
       Paths_lnd_client
+  autogen-modules:
+      Paths_lnd_client
   hs-source-dirs:
       src
   default-extensions:
@@ -195,6 +197,8 @@ library lnd-client-tkit
       LndClient.TestApp
   other-modules:
       Paths_lnd_client
+  autogen-modules:
+      Paths_lnd_client
   hs-source-dirs:
       tkit
   default-extensions:
@@ -268,6 +272,8 @@ library lnd-client-tkit
 executable lnd-client-prof
   main-is: LndClient/Main.hs
   other-modules:
+      Paths_lnd_client
+  autogen-modules:
       Paths_lnd_client
   hs-source-dirs:
       prof
@@ -347,6 +353,8 @@ test-suite lnd-client-test
   other-modules:
       LndClient.PsbtSpec
       LndClient.RPCSpec
+      Paths_lnd_client
+  autogen-modules:
       Paths_lnd_client
   hs-source-dirs:
       test
