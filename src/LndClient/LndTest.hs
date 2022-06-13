@@ -130,8 +130,8 @@ withTestEnv ::
   ) =>
   LndEnv ->
   NodeLocation ->
-  (TestEnv -> KatipContextT m ()) ->
-  KatipContextT m ()
+  (TestEnv -> KatipContextT m a) ->
+  KatipContextT m a
 withTestEnv lnd loc action =
   withChannelWatcher lnd $ \cw ->
     withInvoiceWatcher lnd $ \iw ->
