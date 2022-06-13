@@ -57,6 +57,7 @@ import qualified LndClient.Data.VerifyMessage as VM
   ( VerifyMessageRequest (..),
     VerifyMessageResponse (..),
   )
+import qualified LndClient.Data.FundingStateStep as FSS
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
@@ -581,6 +582,18 @@ mkRpc k = do
         . $(grpcRetry)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Signer "verifyMessage")
+          env
+
+    fundingStateStep ::
+      $(tcc m) =>
+      LndEnv ->
+      FSS.FundingStateStepRequest ->
+      $(pure m) (Either LndError ())
+    fundingStateStep env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.Lightning "fundingStateStep")
           env
     |]
   where

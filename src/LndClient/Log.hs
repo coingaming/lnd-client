@@ -56,6 +56,7 @@ type family SecretRpc (t :: GHC.Symbol) :: GHC.Nat where
   SecretRpc "listInvoices" = 0
   SecretRpc "signMessage" = 0
   SecretRpc "verifyMessage" = 0
+  SecretRpc "fundingStateStep" = 0
 --
 -- Sub
 --

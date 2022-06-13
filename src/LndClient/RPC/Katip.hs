@@ -50,6 +50,7 @@ module LndClient.RPC.Katip
     subscribeSingleInvoiceChan,
     signMessage,
     verifyMessage,
+    fundingStateStep,
     trackPaymentSync,
     catchWalletLock,
   )

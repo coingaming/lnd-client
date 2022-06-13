@@ -11,6 +11,7 @@ module LndClient.Data.Newtype
     MSat (..),
     toGrpcSat,
     toGrpcMSat,
+    toGrpcMaybe,
     fromGrpcSat,
     fromGrpcMSat,
     CipherSeedMnemonic (..),
@@ -21,6 +22,7 @@ module LndClient.Data.Newtype
     GrpcTimeoutSeconds,
     newRHash,
     newRPreimage,
+    newPendingChanId,
     newGrpcTimeout,
     unGrpcTimeout,
     defaultSyncGrpcTimeout,
@@ -28,6 +30,9 @@ module LndClient.Data.Newtype
     TxId (..),
     Vout (..),
     ChanId (..),
+    PendingChannelId (..),
+    Psbt (..),
+    RawTx (..)
   )
 where
 
@@ -46,6 +51,24 @@ import qualified Proto.Invoicesrpc.Invoices as IGrpc
 import qualified Proto.Invoicesrpc.Invoices_Fields as IGrpc
 import qualified Proto.Lnrpc.Ln1 as LnGrpc
 import qualified Proto.Lnrpc.Ln1_Fields as LnGrpc
+
+newtype PendingChannelId = PendingChannelId ByteString
+  deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving stock (Generic)
+
+instance Out PendingChannelId
+
+newtype Psbt = Psbt ByteString
+  deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving stock (Generic)
+
+instance Out Psbt
+
+newtype RawTx = RawTx ByteString
+  deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
+  deriving stock (Generic)
+
+instance Out RawTx
 
 newtype ChanId = ChanId Word64
   deriving newtype
@@ -202,6 +225,15 @@ instance ToGrpc (Vout a) Word32 where
 instance ToGrpc ChanId Word64 where
   toGrpc = Right . coerce
 
+instance ToGrpc PendingChannelId ByteString where
+  toGrpc = Right . coerce
+
+instance ToGrpc Psbt ByteString where
+  toGrpc = Right . coerce
+
+instance ToGrpc RawTx ByteString where
+  toGrpc = Right . coerce
+
 instance ToGrpc AddIndex Word64 where
   toGrpc = Right . coerce
 
@@ -216,6 +248,9 @@ instance FromGrpc RHash ByteString where
 
 instance FromGrpc RPreimage ByteString where
   fromGrpc = Right . RPreimage
+
+instance FromGrpc Psbt ByteString where
+  fromGrpc = Right . Psbt
 
 instance FromGrpc AddIndex Word64 where
   fromGrpc = Right . AddIndex
@@ -295,6 +330,10 @@ newRHash = RHash . SHA256.hash . coerce
 newRPreimage :: MonadIO m => m RPreimage
 newRPreimage = RPreimage <$> liftIO (getRandomBytes 32)
 
+
+newPendingChanId :: MonadIO m => m PendingChannelId
+newPendingChanId = PendingChannelId <$> liftIO (getRandomBytes 32)
+
 newGrpcTimeout :: Int -> Maybe GrpcTimeoutSeconds
 newGrpcTimeout x =
   if x > 0
@@ -328,6 +367,10 @@ toGrpcMSat x =
   maybeToRight
     (ToGrpcError "MSat overflow")
     $ safeFromIntegral (coerce x :: Word64)
+
+toGrpcMaybe :: (ToGrpc a b) => Maybe a -> Either LndError (Maybe b)
+toGrpcMaybe (Just fs) = Just <$> toGrpc fs
+toGrpcMaybe Nothing = Right Nothing
 
 fromGrpcMSat :: (Integral a) => a -> Either LndError MSat
 fromGrpcMSat x =

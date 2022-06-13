@@ -63,7 +63,7 @@ export LND_CLIENT_ENV_DATA="
                   ],
     \"lnd_aezeed_passphrase\":\"developer\",
     \"lnd_sync_grpc_timeout_seconds\":59,
-    \"lnd_log_severity\":\"emergency\"
+    \"lnd_log_severity\":\"debug\"
 }
 "
 
