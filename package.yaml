@@ -13,7 +13,7 @@ extra-source-files:
 - README.md
 - ChangeLog.md
 
-deps: &deps
+_deps: &deps
   dependencies:
   # foundation
   - base
@@ -68,6 +68,20 @@ deps: &deps
   - containers            >= 0.6.0.1 && < 0.6.6
   - template-haskell      >= 2.14.0.0 && < 2.19
 
+_ghcid: &ghcid
+  when:
+    - condition: flag(ghcid)
+      then:
+        <<: *deps
+        source-dirs:
+        - src
+        - tkit
+        ghc-options:
+        - -Wno-unused-packages
+      else:
+        dependencies:
+        - lnd-client
+        - lnd-client-tkit
 
 default-extensions:
 - NoImplicitPrelude
@@ -145,6 +159,7 @@ executables:
     - base
     - lnd-client
     - lnd-client-tkit
+    <<: *ghcid
 
 tests:
   lnd-client-test:
@@ -166,16 +181,4 @@ tests:
     - async
     - containers
     - hspec
-    when:
-      - condition: flag(ghcid)
-        then:
-          <<: *deps
-          source-dirs:
-          - src
-          - tkit
-          ghc-options:
-          - -Wno-unused-packages
-        else:
-          dependencies:
-          - lnd-client
-          - lnd-client-tkit
+    <<: *ghcid
