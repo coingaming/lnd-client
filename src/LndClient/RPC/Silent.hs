@@ -48,6 +48,7 @@ module LndClient.RPC.Silent
     subscribeSingleInvoiceChan,
     signMessage,
     verifyMessage,
+    fundingStateStep,
     trackPaymentSync,
     catchWalletLock,
   )

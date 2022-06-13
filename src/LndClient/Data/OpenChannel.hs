@@ -3,6 +3,9 @@
 module LndClient.Data.OpenChannel
   ( OpenChannelRequest (..),
     OpenStatusUpdate (..),
+    OpenStatusUpdate' (..),
+    ReadyForPsbtFunding (..),
+    ChannelOpenUpdate (..)
   )
 where
 
@@ -12,6 +15,7 @@ import LndClient.Data.ChannelPoint
 import LndClient.Import
 import qualified Proto.Lightning as LnGRPC
 import qualified Proto.Lightning_Fields as LnGRPC
+import LndClient.Data.PsbtShim
 
 data OpenChannelRequest = OpenChannelRequest
   { nodePubkey :: NodePubKey,
@@ -24,7 +28,8 @@ data OpenChannelRequest = OpenChannelRequest
     remoteCsvDelay :: Maybe Word32,
     minConfs :: Maybe Int32,
     spendUnconfirmed :: Maybe Bool,
-    closeAddress :: Maybe Text
+    closeAddress :: Maybe Text,
+    fundingShim :: Maybe PsbtShim
   }
   deriving stock (Eq, Show, Generic)
 
@@ -55,7 +60,7 @@ instance Out ChannelOpenUpdate
 data ReadyForPsbtFunding = ReadyForPsbtFunding
   { fundingAddress :: Text,
     fundingAmount :: MSat,
-    psbt :: ByteString
+    psbt :: Psbt
   }
   deriving stock (Eq, Show, Generic)
 
@@ -100,8 +105,9 @@ instance ToGrpc OpenChannelRequest LnGRPC.OpenChannelRequest where
       <*> toGrpc (minConfs x)
       <*> toGrpc (spendUnconfirmed x)
       <*> toGrpc (closeAddress x)
+      <*> toGrpcMaybe (fundingShim x)
     where
-      msg gNodePubKey gLocalFindingAmount gPushSat gTargetConf gSatPerByte gPrivate gMinHtlcMsat gRemoteCsvDelay gMinConfs gSpendUnconfirmed gCloseAddress =
+      msg gNodePubKey gLocalFindingAmount gPushSat gTargetConf gSatPerByte gPrivate gMinHtlcMsat gRemoteCsvDelay gMinConfs gSpendUnconfirmed gCloseAddress gFundingShim=
         defMessage
           & LnGRPC.nodePubkey .~ gNodePubKey
           & LnGRPC.localFundingAmount .~ gLocalFindingAmount
@@ -114,3 +120,4 @@ instance ToGrpc OpenChannelRequest LnGRPC.OpenChannelRequest where
           & LnGRPC.minConfs .~ gMinConfs
           & LnGRPC.spendUnconfirmed .~ gSpendUnconfirmed
           & LnGRPC.closeAddress .~ gCloseAddress
+          & LnGRPC.maybe'fundingShim .~ gFundingShim

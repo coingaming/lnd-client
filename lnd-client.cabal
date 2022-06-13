@@ -42,6 +42,11 @@ library
       LndClient.Data.ClosedChannels
       LndClient.Data.FinalizePsbt
       LndClient.Data.ForceClosedChannel
+      LndClient.Data.FundingPsbtFinalize
+      LndClient.Data.FundingPsbtVerify
+      LndClient.Data.FundingShim
+      LndClient.Data.FundingShimCancel
+      LndClient.Data.FundingStateStep
       LndClient.Data.FundPsbt
       LndClient.Data.GetInfo
       LndClient.Data.HtlcEvent
@@ -64,6 +69,7 @@ library
       LndClient.Data.PendingChannel
       LndClient.Data.PendingChannels
       LndClient.Data.PendingOpenChannel
+      LndClient.Data.PsbtShim
       LndClient.Data.PublishTransaction
       LndClient.Data.ReleaseOutput
       LndClient.Data.SendCoins
@@ -438,6 +444,11 @@ test-suite lnd-client-test
         LndClient.Data.ClosedChannels
         LndClient.Data.FinalizePsbt
         LndClient.Data.ForceClosedChannel
+        LndClient.Data.FundingPsbtFinalize
+        LndClient.Data.FundingPsbtVerify
+        LndClient.Data.FundingShim
+        LndClient.Data.FundingShimCancel
+        LndClient.Data.FundingStateStep
         LndClient.Data.FundPsbt
         LndClient.Data.GetInfo
         LndClient.Data.HtlcEvent
@@ -460,6 +471,7 @@ test-suite lnd-client-test
         LndClient.Data.PendingChannel
         LndClient.Data.PendingChannels
         LndClient.Data.PendingOpenChannel
+        LndClient.Data.PsbtShim
         LndClient.Data.PublishTransaction
         LndClient.Data.ReleaseOutput
         LndClient.Data.SendCoins
