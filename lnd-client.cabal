@@ -167,8 +167,8 @@ library
     , persistent >=2.11.0.2
     , proto-lens >=0.7.0
     , proto-lens-runtime >=0.7.0
-    , qrcode-core >=0.9 && <0.9.3
-    , qrcode-juicypixels ==0.8.0.*
+    , qrcode-core ==0.9.*
+    , qrcode-juicypixels >=0.8.0 && <0.9
     , scientific >=0.3.6.2 && <0.3.7
     , stm >=2.5.0.0 && <2.5.1
     , template-haskell >=2.14.0.0 && <2.19
@@ -403,8 +403,8 @@ test-suite lnd-client-test
       , persistent >=2.11.0.2
       , proto-lens >=0.7.0
       , proto-lens-runtime >=0.7.0
-      , qrcode-core >=0.9 && <0.9.3
-      , qrcode-juicypixels ==0.8.0.*
+      , qrcode-core ==0.9.*
+      , qrcode-juicypixels >=0.8.0 && <0.9
       , scientific >=0.3.6.2 && <0.3.7
       , stm >=2.5.0.0 && <2.5.1
       , template-haskell >=2.14.0.0 && <2.19
