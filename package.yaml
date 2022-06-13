@@ -157,6 +157,7 @@ executables:
     - -fuse-ld=gold
     dependencies:
     - base
+    - async
     - lnd-client
     - lnd-client-tkit
     <<: *ghcid
@@ -179,6 +180,7 @@ tests:
     dependencies:
     - base
     - async
+    - unliftio
     - containers
     - hspec
     <<: *ghcid
