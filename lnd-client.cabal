@@ -1,6 +1,6 @@
 cabal-version: 2.0
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.34.6.
 --
 -- see: https://github.com/sol/hpack
 
@@ -13,7 +13,7 @@ homepage:       https://github.com/coingaming/lnd-client#readme
 bug-reports:    https://github.com/coingaming/lnd-client/issues
 author:         Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <21it@protonmail.com>, Artem Markov <drownbes@gmail.com>
 maintainer:     Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <21it@protonmail.com>, Artem Markov <drownbes@gmail.com>
-copyright:      2021 Coingaming <hello@coingaming.io>
+copyright:      2022 Coingaming <hello@coingaming.io>
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -121,6 +121,8 @@ library
       Proto.Wtclientrpc.Wtclient_Fields
   other-modules:
       Paths_lnd_client
+  autogen-modules:
+      Paths_lnd_client
   hs-source-dirs:
       src
   default-extensions:
@@ -141,59 +143,53 @@ library
       GenericPretty
     , JuicyPixels >=3.3.3 && <3.4
     , aeson >=1.4.4.0
-    , asn1-encoding >=0.9.6 && <0.10
-    , asn1-types ==0.3.*
-    , async ==2.2.2.*
+    , async >=2.2.2 && <2.3
     , base
     , base16-bytestring >=1.0.1.0 && <1.0.2
     , base64-bytestring >=1.0.0.2 && <1.2.1
     , bytestring >=0.10.8.2 && <0.10.13
-    , chronos >=1.0.7 && <1.1
+    , chronos >=1.0.7 && <1.2
     , containers >=0.6.0.1 && <0.6.6
-    , cryptohash-sha256 >=0.11.101.0 && <0.11.102
-    , cryptonite >=0.25 && <0.29
-    , deepseq >=1.4.4.0 && <1.4.5
+    , cryptohash-sha256 >=0.11.101.0 && <0.12
+    , cryptonite >=0.25 && <0.31
     , envparse ==0.4.1.*
-    , extra >=1.6.18 && <1.6.20
+    , extra >=1.6.18 && <1.8
     , generic-pretty-instances
-    , http-client >=0.7.9
     , http2 >=3.0.3
     , http2-client
     , http2-client-grpc >=0.8.0.0
     , http2-grpc-proto-lens >=0.1.0.0
     , http2-grpc-types >=0.5.0.0
-    , katip >=0.8.3.0 && <0.8.5
+    , katip >=0.8.3.0 && <0.9
     , microlens >=0.4.10
     , network-bitcoin >=1.8.3
     , pem >=0.2.4 && <0.3
     , persistent >=2.11.0.2
-    , persistent-template >=2.9
-    , pretty
-    , pretty-simple
     , proto-lens >=0.7.0
     , proto-lens-runtime >=0.7.0
     , qrcode-core >=0.9 && <0.9.3
     , qrcode-juicypixels ==0.8.0.*
     , scientific >=0.3.6.2 && <0.3.7
     , stm >=2.5.0.0 && <2.5.1
-    , template-haskell >=2.14.0.0 && <2.17
-    , text >=1.2.3.1 && <1.2.5
+    , template-haskell >=2.14.0.0 && <2.19
+    , text >=1.2.3.1 && <2.1
     , time
     , tls
     , unbounded-delays >=0.1.1.0 && <0.1.2
-    , universum ==1.5.0.*
+    , universum >=1.5.0 && <1.8
     , unliftio >=0.2.12
-    , vector
     , x509 ==1.7.5.*
     , x509-store
   if impl(ghc >= 8.10.7)
-    ghc-options: -Wno-unused-packages -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -fenable-th-splice-warnings -fprint-potential-instances
+    ghc-options: -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -fenable-th-splice-warnings -fprint-potential-instances
   default-language: Haskell2010
 
 library lnd-client-tkit
   exposed-modules:
       LndClient.TestApp
   other-modules:
+      Paths_lnd_client
+  autogen-modules:
       Paths_lnd_client
   hs-source-dirs:
       tkit
@@ -212,62 +208,19 @@ library lnd-client-tkit
       TypeOperators
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures
   build-depends:
-      GenericPretty
-    , JuicyPixels >=3.3.3 && <3.4
-    , aeson >=1.4.4.0
-    , asn1-encoding >=0.9.6 && <0.10
-    , asn1-types ==0.3.*
-    , async ==2.2.2.*
-    , base
-    , base16-bytestring >=1.0.1.0 && <1.0.2
-    , base64-bytestring >=1.0.0.2 && <1.2.1
-    , bytestring >=0.10.8.2 && <0.10.13
-    , chronos >=1.0.7 && <1.1
-    , containers >=0.6.0.1 && <0.6.6
-    , cryptohash-sha256 >=0.11.101.0 && <0.11.102
-    , cryptonite >=0.25 && <0.29
-    , deepseq >=1.4.4.0 && <1.4.5
-    , envparse ==0.4.1.*
-    , extra >=1.6.18 && <1.6.20
-    , generic-pretty-instances
-    , http-client >=0.7.9
-    , http2 >=3.0.3
-    , http2-client
-    , http2-client-grpc >=0.8.0.0
-    , http2-grpc-proto-lens >=0.1.0.0
-    , http2-grpc-types >=0.5.0.0
-    , katip >=0.8.3.0 && <0.8.5
+      base
+    , http2-client-grpc
     , lnd-client
-    , microlens >=0.4.10
-    , network-bitcoin >=1.8.3
-    , pem >=0.2.4 && <0.3
-    , persistent >=2.11.0.2
-    , persistent-template >=2.9
-    , pretty
-    , pretty-simple
-    , proto-lens >=0.7.0
-    , proto-lens-runtime >=0.7.0
-    , qrcode-core >=0.9 && <0.9.3
-    , qrcode-juicypixels ==0.8.0.*
-    , scientific >=0.3.6.2 && <0.3.7
-    , stm >=2.5.0.0 && <2.5.1
-    , template-haskell >=2.14.0.0 && <2.17
-    , text >=1.2.3.1 && <1.2.5
-    , time
-    , tls
-    , unbounded-delays >=0.1.1.0 && <0.1.2
-    , universum ==1.5.0.*
-    , unliftio >=0.2.12
-    , vector
-    , x509 ==1.7.5.*
-    , x509-store
+    , network-bitcoin
   if impl(ghc >= 8.10.7)
-    ghc-options: -Wno-unused-packages -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -fenable-th-splice-warnings -fprint-potential-instances
+    ghc-options: -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -fenable-th-splice-warnings -fprint-potential-instances
   default-language: Haskell2010
 
 executable lnd-client-prof
   main-is: LndClient/Main.hs
   other-modules:
+      Paths_lnd_client
+  autogen-modules:
       Paths_lnd_client
   hs-source-dirs:
       prof
@@ -287,58 +240,11 @@ executable lnd-client-prof
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -main-is LndClient.Main -O2 -optc-O3 -funfolding-use-threshold=16 -threaded -rtsopts "-with-rtsopts=-N -s -p -h -xt" -prof -fprof-auto -optl-fuse-ld=gold
   ld-options: -fuse-ld=gold
   build-depends:
-      GenericPretty
-    , JuicyPixels >=3.3.3 && <3.4
-    , aeson >=1.4.4.0
-    , asn1-encoding >=0.9.6 && <0.10
-    , asn1-types ==0.3.*
-    , async ==2.2.2.*
-    , base
-    , base16-bytestring >=1.0.1.0 && <1.0.2
-    , base64-bytestring >=1.0.0.2 && <1.2.1
-    , bytestring >=0.10.8.2 && <0.10.13
-    , chronos >=1.0.7 && <1.1
-    , containers >=0.6.0.1 && <0.6.6
-    , cryptohash-sha256 >=0.11.101.0 && <0.11.102
-    , cryptonite >=0.25 && <0.29
-    , deepseq >=1.4.4.0 && <1.4.5
-    , envparse ==0.4.1.*
-    , extra >=1.6.18 && <1.6.20
-    , generic-pretty-instances
-    , http-client >=0.7.9
-    , http2 >=3.0.3
-    , http2-client
-    , http2-client-grpc >=0.8.0.0
-    , http2-grpc-proto-lens >=0.1.0.0
-    , http2-grpc-types >=0.5.0.0
-    , katip >=0.8.3.0 && <0.8.5
+      base
     , lnd-client
     , lnd-client-tkit
-    , microlens >=0.4.10
-    , network-bitcoin >=1.8.3
-    , pem >=0.2.4 && <0.3
-    , persistent >=2.11.0.2
-    , persistent-template >=2.9
-    , pretty
-    , pretty-simple
-    , proto-lens >=0.7.0
-    , proto-lens-runtime >=0.7.0
-    , qrcode-core >=0.9 && <0.9.3
-    , qrcode-juicypixels ==0.8.0.*
-    , scientific >=0.3.6.2 && <0.3.7
-    , stm >=2.5.0.0 && <2.5.1
-    , template-haskell >=2.14.0.0 && <2.17
-    , text >=1.2.3.1 && <1.2.5
-    , time
-    , tls
-    , unbounded-delays >=0.1.1.0 && <0.1.2
-    , universum ==1.5.0.*
-    , unliftio >=0.2.12
-    , vector
-    , x509 ==1.7.5.*
-    , x509-store
   if impl(ghc >= 8.10.7)
-    ghc-options: -Wno-unused-packages -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -fenable-th-splice-warnings -fprint-potential-instances
+    ghc-options: -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -fenable-th-splice-warnings -fprint-potential-instances
   default-language: Haskell2010
 
 test-suite lnd-client-test
@@ -347,6 +253,8 @@ test-suite lnd-client-test
   other-modules:
       LndClient.PsbtSpec
       LndClient.RPCSpec
+      Paths_lnd_client
+  autogen-modules:
       Paths_lnd_client
   hs-source-dirs:
       test
@@ -366,57 +274,12 @@ test-suite lnd-client-test
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -O2 -optc-O3 -funfolding-use-threshold=16 -threaded -rtsopts -with-rtsopts=-N -optl-fuse-ld=gold
   ld-options: -fuse-ld=gold
   build-depends:
-      GenericPretty
-    , JuicyPixels >=3.3.3 && <3.4
-    , aeson >=1.4.4.0
-    , asn1-encoding >=0.9.6 && <0.10
-    , asn1-types ==0.3.*
-    , async ==2.2.2.*
+      async
     , base
-    , base16-bytestring >=1.0.1.0 && <1.0.2
-    , base64-bytestring >=1.0.0.2 && <1.2.1
-    , bytestring >=0.10.8.2 && <0.10.13
-    , chronos >=1.0.7 && <1.1
-    , containers >=0.6.0.1 && <0.6.6
-    , cryptohash-sha256 >=0.11.101.0 && <0.11.102
-    , cryptonite >=0.25 && <0.29
-    , deepseq >=1.4.4.0 && <1.4.5
-    , envparse ==0.4.1.*
-    , extra >=1.6.18 && <1.6.20
-    , generic-pretty-instances
-    , hspec ==2.7.1.*
-    , http-client >=0.7.9
-    , http2 >=3.0.3
-    , http2-client
-    , http2-client-grpc >=0.8.0.0
-    , http2-grpc-proto-lens >=0.1.0.0
-    , http2-grpc-types >=0.5.0.0
-    , katip >=0.8.3.0 && <0.8.5
-    , microlens >=0.4.10
-    , network-bitcoin >=1.8.3
-    , pem >=0.2.4 && <0.3
-    , persistent >=2.11.0.2
-    , persistent-template >=2.9
-    , pretty
-    , pretty-simple
-    , proto-lens >=0.7.0
-    , proto-lens-runtime >=0.7.0
-    , qrcode-core >=0.9 && <0.9.3
-    , qrcode-juicypixels ==0.8.0.*
-    , scientific >=0.3.6.2 && <0.3.7
-    , stm >=2.5.0.0 && <2.5.1
-    , template-haskell >=2.14.0.0 && <2.17
-    , text >=1.2.3.1 && <1.2.5
-    , time
-    , tls
-    , unbounded-delays >=0.1.1.0 && <0.1.2
-    , universum ==1.5.0.*
-    , unliftio >=0.2.12
-    , vector
-    , x509 ==1.7.5.*
-    , x509-store
+    , containers
+    , hspec
   if impl(ghc >= 8.10.7)
-    ghc-options: -Wno-unused-packages -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -fenable-th-splice-warnings -fprint-potential-instances
+    ghc-options: -Wno-missing-safe-haskell-mode -Wno-prepositive-qualified-module -fenable-th-splice-warnings -fprint-potential-instances
   if flag(ghcid)
     other-modules:
         LndClient
@@ -511,6 +374,48 @@ test-suite lnd-client-test
     hs-source-dirs:
         src
         tkit
+    ghc-options: -Wno-unused-packages
+    build-depends:
+        GenericPretty
+      , JuicyPixels >=3.3.3 && <3.4
+      , aeson >=1.4.4.0
+      , async >=2.2.2 && <2.3
+      , base
+      , base16-bytestring >=1.0.1.0 && <1.0.2
+      , base64-bytestring >=1.0.0.2 && <1.2.1
+      , bytestring >=0.10.8.2 && <0.10.13
+      , chronos >=1.0.7 && <1.2
+      , containers >=0.6.0.1 && <0.6.6
+      , cryptohash-sha256 >=0.11.101.0 && <0.12
+      , cryptonite >=0.25 && <0.31
+      , envparse ==0.4.1.*
+      , extra >=1.6.18 && <1.8
+      , generic-pretty-instances
+      , http2 >=3.0.3
+      , http2-client
+      , http2-client-grpc >=0.8.0.0
+      , http2-grpc-proto-lens >=0.1.0.0
+      , http2-grpc-types >=0.5.0.0
+      , katip >=0.8.3.0 && <0.9
+      , microlens >=0.4.10
+      , network-bitcoin >=1.8.3
+      , pem >=0.2.4 && <0.3
+      , persistent >=2.11.0.2
+      , proto-lens >=0.7.0
+      , proto-lens-runtime >=0.7.0
+      , qrcode-core >=0.9 && <0.9.3
+      , qrcode-juicypixels ==0.8.0.*
+      , scientific >=0.3.6.2 && <0.3.7
+      , stm >=2.5.0.0 && <2.5.1
+      , template-haskell >=2.14.0.0 && <2.19
+      , text >=1.2.3.1 && <2.1
+      , time
+      , tls
+      , unbounded-delays >=0.1.1.0 && <0.1.2
+      , universum >=1.5.0 && <1.8
+      , unliftio >=0.2.12
+      , x509 ==1.7.5.*
+      , x509-store
   else
     build-depends:
         lnd-client

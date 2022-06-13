@@ -8,12 +8,14 @@ let
   header = import ./nix/header.nix;
   haskellPackages = header.haskellPackages;
   pkgs = header.pkgs;
+  nixPkgsLegacy = header.nixPkgsLegacy;
   lnd = import ./nix/lnd.nix { inherit pkgs; };
   proto-lens-protoc = import ./nix/proto-lens-protoc.nix;
 in
 project.shellFor {
   withHoogle = true;
-  buildInputs = extraBuildInputs ++ [
+  buildInputs = [
+    nixPkgsLegacy.cabal-install
     haskellPackages.hspec-discover
     haskellPackages.fswatcher
     haskellPackages.hpack
@@ -27,11 +29,10 @@ project.shellFor {
     lnd
     pkgs.protobuf
     proto-lens-protoc
-  ];
+  ] ++ extraBuildInputs;
   tools = {
+    hlint = "latest";
     ghcid = "latest";
-    cabal = "3.2.0.0";
-    hlint = "3.2.7";
     haskell-language-server = "latest";
   };
   shellHook =

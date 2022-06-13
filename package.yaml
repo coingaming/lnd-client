@@ -4,7 +4,7 @@ github:              "coingaming/lnd-client"
 license:             BSD3
 author:              "Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <21it@protonmail.com>, Artem Markov <drownbes@gmail.com>"
 maintainer:          "Mikhail Prushinskiy <mprushinsky@gmail.com>, Ilja Tkachuk <21it@protonmail.com>, Artem Markov <drownbes@gmail.com>"
-copyright:           "2021 Coingaming <hello@coingaming.io>"
+copyright:           "2022 Coingaming <hello@coingaming.io>"
 synopsis:            Lightning Network Daemon (LND) client library for Haskell
 category:            Lightning, Bitcoin, Finance, Network, Payments
 description:         You can find documentation at <https://hackage.haskell.org/package/lnd-client>
@@ -13,68 +13,60 @@ extra-source-files:
 - README.md
 - ChangeLog.md
 
-dependencies:
-# foundation
-- base                  #>= 4.7 && < 5
-- universum             >= 1.5.0 && < 1.5.1
-# time
-- time
-- chronos               >= 1.0.7 && < 1.1
-- unbounded-delays      >= 0.1.1.0 && < 0.1.2
-# storage
-- persistent            >= 2.11.0.2
-- persistent-template   >= 2.9
-# logging
-- katip                 >= 0.8.3.0 && < 0.8.5
-- pretty-simple
-- pretty
-- GenericPretty
-# byte and text
-- bytestring            >= 0.10.8.2 && < 0.10.13
-- base16-bytestring     >= 1.0.1.0 && < 1.0.2
-- base64-bytestring     >= 1.0.0.2 && < 1.2.1
-- text                  >= 1.2.3.1 && < 1.2.5
-- aeson                 >= 1.4.4.0
-- http-client           >= 0.7.9
-# protobuf and gRPC
-- containers            >= 0.6.0.1 && < 0.6.6
-- deepseq               >= 1.4.4.0 && < 1.4.5
-# images
-- qrcode-core           >= 0.9 && < 0.9.3
-- qrcode-juicypixels    >= 0.8.0 && < 0.8.1
-- JuicyPixels           >= 3.3.3 && < 3.4
-# system and threading
-- envparse              >= 0.4.1 && < 0.4.2
-- async                 >= 2.2.2 && < 2.2.3
-- stm                   >= 2.5.0.0 && < 2.5.1
-# crypto
-- cryptonite            >= 0.25 && < 0.29
-- cryptohash-sha256     >= 0.11.101.0 && < 0.11.102
-- x509                  >= 1.7.5 && < 1.7.6
-- x509-store
-- asn1-encoding         >= 0.9.6 && < 0.10
-- asn1-types            >= 0.3 && < 0.4
-- pem                   >= 0.2.4 && < 0.3
-# bitcoin
-- network-bitcoin       >= 1.8.3
-# general
-- unliftio              >= 0.2.12
-- extra                 >= 1.6.18 && < 1.6.20
-- scientific            >= 0.3.6.2 && < 0.3.7
-- template-haskell      >= 2.14.0.0 && < 2.17
-- vector
-# protobuf
-- microlens             >= 0.4.10
-- proto-lens-runtime    >= 0.7.0
-# proto-lens-grpc
-- http2-grpc-proto-lens >= 0.1.0.0
-- http2-client
-- http2-client-grpc     >= 0.8.0.0
-- http2-grpc-types      >= 0.5.0.0
-- http2                 >= 3.0.3
-- tls
-- generic-pretty-instances
-- proto-lens            >= 0.7.0
+deps: &deps
+  dependencies:
+  # foundation
+  - base
+  - universum             >= 1.5.0 && < 1.8
+  # time
+  - time
+  - chronos               >= 1.0.7 && < 1.2
+  - unbounded-delays      >= 0.1.1.0 && < 0.1.2
+  # storage
+  - persistent            >= 2.11.0.2
+  # logging
+  - katip                 >= 0.8.3.0 && < 0.9
+  - GenericPretty
+  - generic-pretty-instances
+  # byte and text
+  - bytestring            >= 0.10.8.2 && < 0.10.13
+  - base16-bytestring     >= 1.0.1.0 && < 1.0.2
+  - base64-bytestring     >= 1.0.0.2 && < 1.2.1
+  - text                  >= 1.2.3.1 && < 2.1
+  - aeson                 >= 1.4.4.0
+  # images
+  - qrcode-core           >= 0.9 && < 0.9.3
+  - qrcode-juicypixels    >= 0.8.0 && < 0.8.1
+  - JuicyPixels           >= 3.3.3 && < 3.4
+  # system and threading
+  - envparse              >= 0.4.1 && < 0.4.2
+  - async                 >= 2.2.2 && < 2.3
+  - stm                   >= 2.5.0.0 && < 2.5.1
+  # crypto
+  - cryptonite            >= 0.25 && < 0.31
+  - cryptohash-sha256     >= 0.11.101.0 && < 0.12
+  - x509                  >= 1.7.5 && < 1.7.6
+  - x509-store
+  - pem                   >= 0.2.4 && < 0.3
+  # bitcoin
+  - network-bitcoin       >= 1.8.3
+  # protobuf
+  - microlens             >= 0.4.10
+  - proto-lens            >= 0.7.0
+  - proto-lens-runtime    >= 0.7.0
+  # grpc
+  - http2-grpc-proto-lens >= 0.1.0.0
+  - http2-client
+  - http2-client-grpc     >= 0.8.0.0
+  - http2-grpc-types      >= 0.5.0.0
+  - http2                 >= 3.0.3
+  - tls
+  # general
+  - unliftio              >= 0.2.12
+  - extra                 >= 1.6.18 && < 1.8
+  - scientific            >= 0.3.6.2 && < 0.3.7
+  - containers            >= 0.6.0.1 && < 0.6.6
+  - template-haskell      >= 2.14.0.0 && < 2.19
 
 
 default-extensions:
@@ -106,10 +98,6 @@ ghc-options:
 when:
   - condition: impl(ghc >= 8.10.7)
     ghc-options:
-    #
-    # TODO : remove -Wno-unused-packages flag somehow!!!
-    #
-    - -Wno-unused-packages
     - -Wno-missing-safe-haskell-mode
     - -Wno-prepositive-qualified-module
     - -fenable-th-splice-warnings
@@ -121,6 +109,7 @@ flags:
     default: false
 
 library:
+  <<: *deps
   source-dirs:
   - src
 
@@ -129,6 +118,9 @@ internal-libraries:
     source-dirs:
     - tkit
     dependencies:
+    - base
+    - network-bitcoin
+    - http2-client-grpc
     - lnd-client
 
 executables:
@@ -150,6 +142,7 @@ executables:
     ld-options:
     - -fuse-ld=gold
     dependencies:
+    - base
     - lnd-client
     - lnd-client-tkit
 
@@ -169,13 +162,19 @@ tests:
     ld-options:
     - -fuse-ld=gold
     dependencies:
-    - hspec >= 2.7.1 && < 2.7.2
+    - base
+    - async
+    - containers
+    - hspec
     when:
       - condition: flag(ghcid)
         then:
+          <<: *deps
           source-dirs:
           - src
           - tkit
+          ghc-options:
+          - -Wno-unused-packages
         else:
           dependencies:
           - lnd-client
