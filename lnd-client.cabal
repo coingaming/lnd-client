@@ -145,9 +145,9 @@ library
     , aeson >=1.4.4.0
     , async >=2.2.2 && <2.3
     , base
-    , base16-bytestring >=1.0.1.0 && <1.0.2
-    , base64-bytestring >=1.0.0.2 && <1.2.1
-    , bytestring >=0.10.8.2 && <0.10.13
+    , base16-bytestring >=1.0.1.0 && <1.1
+    , base64-bytestring >=1.0.0.2 && <1.3
+    , bytestring >=0.10.8.2 && <0.13
     , chronos >=1.0.7 && <1.2
     , containers >=0.6.0.1 && <0.6.6
     , cryptohash-sha256 >=0.11.101.0 && <0.12
@@ -381,9 +381,9 @@ test-suite lnd-client-test
       , aeson >=1.4.4.0
       , async >=2.2.2 && <2.3
       , base
-      , base16-bytestring >=1.0.1.0 && <1.0.2
-      , base64-bytestring >=1.0.0.2 && <1.2.1
-      , bytestring >=0.10.8.2 && <0.10.13
+      , base16-bytestring >=1.0.1.0 && <1.1
+      , base64-bytestring >=1.0.0.2 && <1.3
+      , bytestring >=0.10.8.2 && <0.13
       , chronos >=1.0.7 && <1.2
       , containers >=0.6.0.1 && <0.6.6
       , cryptohash-sha256 >=0.11.101.0 && <0.12
