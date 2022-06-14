@@ -10,7 +10,7 @@ in pkgs.haskell-nix.project {
     name = "lnd-client";
     src = ./.;
   };
-  compiler-nix-name = "ghc8107";
+  compiler-nix-name = "ghc902";
   modules = [{
     enableLibraryProfiling = profile;
     packages.lnd-client.components.library.doCoverage = true;

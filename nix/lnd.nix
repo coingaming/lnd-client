@@ -1,7 +1,7 @@
 { pkgs } :
 let
   callPackage = pkgs.callPackage;
-  lndnix = "${pkgs.path}/pkgs/applications/blockchains/lnd.nix";
+  lndnix = "${pkgs.path}/pkgs/applications/blockchains/lnd/default.nix";
   version = "0.14.0-beta";
   src = pkgs.fetchFromGitHub {
     owner = "lightningnetwork";

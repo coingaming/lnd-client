@@ -7,7 +7,7 @@ module LndClient.RPC.TH
   )
 where
 
-import Language.Haskell.TH.Syntax
+import Language.Haskell.TH.Syntax as TH
 import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.Channel (Channel (..))
@@ -597,15 +597,28 @@ mkRpc k = do
           env
     |]
   where
+    tcc :: TH.Type -> Q TH.Type
     tcc m = case k of
-      RpcSilent -> [t|(MonadUnliftIO $(pure m))|]
-      RpcKatip -> [t|(KatipContext $(pure m), MonadUnliftIO $(pure m))|]
+      RpcSilent ->
+        [t|
+          ( MonadUnliftIO $(pure m)
+          )
+          |]
+      RpcKatip ->
+        [t|
+          ( KatipContext $(pure m),
+            MonadUnliftIO $(pure m)
+          )
+          |]
+    grpcRetry :: Q Exp
     grpcRetry = case k of
       RpcSilent -> [e|retrySilent|]
       RpcKatip -> [e|retryKatip|]
+    grpcSync :: Q Exp
     grpcSync = case k of
       RpcSilent -> [e|grpcSyncSilent|]
       RpcKatip -> [e|grpcSyncKatip|]
+    grpcSubscribe :: Q Exp
     grpcSubscribe = case k of
       RpcSilent -> [e|grpcSubscribeSilent|]
       RpcKatip -> [e|grpcSubscribeKatip|]
