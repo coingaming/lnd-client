@@ -412,6 +412,7 @@ test-suite lnd-client-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      LndClient.ChanBakSpec
       LndClient.PsbtSpec
       LndClient.RPCSpec
       Paths_lnd_client
