@@ -51,6 +51,9 @@ module LndClient.RPC.Silent
     fundingStateStep,
     trackPaymentSync,
     catchWalletLock,
+    exportAllChannelBackups,
+    exportChannelBackup,
+    restoreChannelBackups,
   )
 where
 
@@ -62,11 +65,11 @@ import LndClient.Data.CloseChannel as CloseChannel
   ( CloseChannelRequest (..),
     CloseStatusUpdate (..),
   )
-import LndClient.Data.Payment as Payment
-import LndClient.Data.TrackPayment as TrackPayment
 import LndClient.Data.Invoice as Invoice (Invoice (..))
 import LndClient.Data.ListChannels as ListChannels (ListChannelsRequest (..))
+import LndClient.Data.Payment as Payment
 import LndClient.Data.Peer (ConnectPeerRequest (..))
+import LndClient.Data.TrackPayment as TrackPayment
 import LndClient.Import
 import LndClient.RPC.TH
 import LndClient.Util as Util
@@ -161,7 +164,7 @@ closeChannelSync env conn req = do
       upd <- tryTakeMVar mVar0
       case upd of
         Just res -> return $ Right res
-        Nothing -> closeChannelRecursive mVar0 (n -1)
+        Nothing -> closeChannelRecursive mVar0 (n - 1)
 
 trackPaymentSync ::
   (MonadUnliftIO m) =>
@@ -171,11 +174,12 @@ trackPaymentSync ::
 trackPaymentSync env req = do
   mVar <- newEmptyMVar
   withSpawnLink
-      (trackPaymentV2
+    ( trackPaymentV2
         (void . tryPutMVar mVar)
         env
-        req)
-      (const $ waitTrackResult mVar 10)
+        req
+    )
+    (const $ waitTrackResult mVar 10)
   where
     waitTrackResult _ (0 :: Int) = return $ Left $ LndError "Track Payment timeout expired"
     waitTrackResult mVar0 n = do
@@ -183,7 +187,7 @@ trackPaymentSync env req = do
       upd <- tryTakeMVar mVar0
       case upd of
         Just res -> return $ Right res
-        Nothing -> waitTrackResult mVar0 (n-1)
+        Nothing -> waitTrackResult mVar0 (n - 1)
 
 catchWalletLock ::
   forall m a.

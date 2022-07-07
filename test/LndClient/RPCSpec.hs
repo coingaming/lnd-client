@@ -56,11 +56,11 @@ spec = do
     withEnv $ do
       lnd <- getLndEnv Bob
       x0 <- liftLndResult =<< addInvoice lnd addInvoiceRequest
+      ct <- liftIO getCurrentTime
       GetInfoResponse pub _ _ <- liftLndResult =<< getInfo lnd
       x1 <-
         liftLndResult
           =<< decodePayReq lnd (AddInvoice.paymentRequest x0)
-      ct <- liftIO getCurrentTime
       let dt =
             picosecondsToDiffTime
               . (* 1000000000000)

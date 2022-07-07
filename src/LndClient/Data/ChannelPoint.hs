@@ -14,6 +14,8 @@ import qualified Data.Text as TS (unpack)
 import LndClient.Import
 import qualified Proto.Lnrpc.Ln0 as LnGRPC
 import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
+import qualified Proto.Lnrpc.Ln1 as Ln1
+import qualified Proto.Lnrpc.Ln1_Fields as Ln1
 
 data ChannelPoint = ChannelPoint
   { fundingTxId :: TxId 'Funding,
@@ -39,6 +41,14 @@ instance ToGrpc ChannelPoint LnGRPC.ChannelPoint where
         defMessage
           & LnGRPC.fundingTxidBytes .~ gFundingTxIdBytes
           & LnGRPC.outputIndex .~ gOutputIndex
+
+instance ToGrpc ChannelPoint Ln1.ExportChannelBackupRequest where
+  toGrpc x =
+    msg <$> toGrpc x
+    where
+      msg cp =
+        defMessage
+          & Ln1.chanPoint .~ cp
 
 channelPointParser :: Text -> Either LndError ChannelPoint
 channelPointParser x =
