@@ -53,6 +53,7 @@ module LndClient.RPC.Katip
     fundingStateStep,
     trackPaymentSync,
     catchWalletLock,
+    exportAllChannelBackups,
   )
 where
 
@@ -211,7 +212,7 @@ trackPaymentSync env req = do
       upd <- tryTakeMVar mVar0
       case upd of
         Just res -> return $ Right res
-        Nothing -> waitTrackResult mVar0 (n -1)
+        Nothing -> waitTrackResult mVar0 (n - 1)
 
 catchWalletLock ::
   forall m a.

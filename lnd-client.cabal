@@ -36,6 +36,7 @@ library
       LndClient.Data.AddHodlInvoice
       LndClient.Data.AddInvoice
       LndClient.Data.Channel
+      LndClient.Data.ChannelBackup
       LndClient.Data.ChannelPoint
       LndClient.Data.CloseChannel
       LndClient.Data.ClosedChannel
@@ -144,6 +145,8 @@ library
       StrictData
       DeriveGeneric
       TypeOperators
+      FlexibleContexts
+      FlexibleInstances
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures
   build-depends:
       GenericPretty
@@ -212,6 +215,8 @@ library lnd-client-tkit
       StrictData
       DeriveGeneric
       TypeOperators
+      FlexibleContexts
+      FlexibleInstances
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures
   build-depends:
       base
@@ -243,6 +248,8 @@ executable lnd-client-prof
       StrictData
       DeriveGeneric
       TypeOperators
+      FlexibleContexts
+      FlexibleInstances
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -main-is LndClient.Main -O2 -optc-O3 -funfolding-use-threshold=16 -threaded -rtsopts "-with-rtsopts=-N -s -p -h -xt" -prof -fprof-auto -optl-fuse-ld=gold
   ld-options: -fuse-ld=gold
   build-depends:
@@ -259,6 +266,7 @@ executable lnd-client-prof
         LndClient.Data.AddHodlInvoice
         LndClient.Data.AddInvoice
         LndClient.Data.Channel
+        LndClient.Data.ChannelBackup
         LndClient.Data.ChannelPoint
         LndClient.Data.CloseChannel
         LndClient.Data.ClosedChannel
@@ -424,6 +432,8 @@ test-suite lnd-client-test
       StrictData
       DeriveGeneric
       TypeOperators
+      FlexibleContexts
+      FlexibleInstances
   ghc-options: -Weverything -Werror -Wno-missing-export-lists -Wno-missing-exported-signatures -Wno-missing-import-lists -Wno-missed-specialisations -Wno-all-missed-specialisations -Wno-unsafe -Wno-safe -Wno-missing-local-signatures -O2 -optc-O3 -funfolding-use-threshold=16 -threaded -rtsopts -with-rtsopts=-N -optl-fuse-ld=gold
   ld-options: -fuse-ld=gold
   build-depends:
@@ -441,6 +451,7 @@ test-suite lnd-client-test
         LndClient.Data.AddHodlInvoice
         LndClient.Data.AddInvoice
         LndClient.Data.Channel
+        LndClient.Data.ChannelBackup
         LndClient.Data.ChannelPoint
         LndClient.Data.CloseChannel
         LndClient.Data.ClosedChannel

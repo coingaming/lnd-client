@@ -11,6 +11,7 @@ import Language.Haskell.TH.Syntax as TH
 import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.Channel (Channel (..))
+import qualified LndClient.Data.ChannelBackup as Bak
 import LndClient.Data.ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel
   ( ChannelCloseSummary (..),
@@ -20,6 +21,7 @@ import LndClient.Data.CloseChannel
 import LndClient.Data.ClosedChannels (ClosedChannelsRequest (..))
 import LndClient.Data.FinalizePsbt
 import LndClient.Data.FundPsbt (FundPsbtRequest, FundPsbtResponse)
+import qualified LndClient.Data.FundingStateStep as FSS
 import qualified LndClient.Data.GetInfo as GI
 import LndClient.Data.HtlcEvent (HtlcEvent (..))
 import qualified LndClient.Data.InitWallet as IW
@@ -57,13 +59,13 @@ import qualified LndClient.Data.VerifyMessage as VM
   ( VerifyMessageRequest (..),
     VerifyMessageResponse (..),
   )
-import qualified LndClient.Data.FundingStateStep as FSS
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
 import qualified Proto.Invoicesrpc.Invoices as LnGRPC
 import qualified Proto.Lightning as LnGRPC
 import qualified Proto.Lnrpc.Ln0 as LnGRPC
+import qualified Proto.Lnrpc.Ln1 as LnGRPC
 import qualified Proto.Routerrpc.Router as LnGRPC
 import qualified Proto.Signrpc.Signer as LnGRPC
 import qualified Proto.Walletrpc.Walletkit as LnGRPC
@@ -595,6 +597,18 @@ mkRpc k = do
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "fundingStateStep")
           env
+
+    exportAllChannelBackups ::
+      $(tcc m) =>
+      LndEnv ->
+      $(pure m) (Either LndError [Bak.ChannelBackup])
+    exportAllChannelBackups env =
+      catchWalletLock env
+        . $(grpcRetry)
+        $ $(grpcSync)
+          (RPC :: RPC LnGRPC.Lightning "exportAllChannelBackups")
+          env
+          (defMessage :: LnGRPC.ChanBackupExportRequest)
     |]
   where
     tcc :: TH.Type -> Q TH.Type
