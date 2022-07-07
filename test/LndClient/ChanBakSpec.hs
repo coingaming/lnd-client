@@ -41,3 +41,15 @@ spec = do
         bakB `shouldSatisfy` goodBak
         baksA `shouldSatisfy` goodBaks
         baksB `shouldSatisfy` goodBaks
+  it "restore SUCCEEDED" $
+    withEnv $ do
+      cp <- setupOneChannel Alice Bob
+      alice <- getLndEnv Alice
+      bakA <- liftLndResult =<< exportChannelBackup alice cp
+      liftLndResult =<< restoreChannelBackups alice [bakA]
+      liftIO $ do
+        --
+        -- TODO : verify unconfirmed balance increase
+        -- through walletBalance.
+        --
+        True `shouldBe` True
