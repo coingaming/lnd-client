@@ -54,6 +54,7 @@ module LndClient.RPC.Katip
     trackPaymentSync,
     catchWalletLock,
     exportAllChannelBackups,
+    exportChannelBackup,
   )
 where
 

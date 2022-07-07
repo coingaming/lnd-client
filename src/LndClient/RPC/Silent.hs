@@ -52,6 +52,7 @@ module LndClient.RPC.Silent
     trackPaymentSync,
     catchWalletLock,
     exportAllChannelBackups,
+    exportChannelBackup,
   )
 where
 
