@@ -53,6 +53,7 @@ module LndClient.RPC.Silent
     catchWalletLock,
     exportAllChannelBackups,
     exportChannelBackup,
+    restoreChannelBackups,
   )
 where
 

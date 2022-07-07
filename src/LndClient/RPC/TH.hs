@@ -621,6 +621,18 @@ mkRpc k = do
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "exportChannelBackup")
           env
+
+    restoreChannelBackups ::
+      $(tcc m) =>
+      LndEnv ->
+      [Bak.ChannelBackup] ->
+      $(pure m) (Either LndError ())
+    restoreChannelBackups env =
+      catchWalletLock env
+        . $(grpcRetry)
+        . $(grpcSync)
+          (RPC :: RPC LnGRPC.Lightning "restoreChannelBackups")
+          env
     |]
   where
     tcc :: TH.Type -> Q TH.Type

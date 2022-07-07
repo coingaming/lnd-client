@@ -4,6 +4,7 @@ module LndClient.Data.ChannelBackup
   )
 where
 
+import Data.ProtoLens
 import qualified LndClient.Data.ChannelPoint as Ch
 import LndClient.Import
 import qualified Proto.Lnrpc.Ln1 as Ln1
@@ -49,6 +50,17 @@ instance FromGrpc ChannelBackup Ln1.ChannelBackup where
       <$> fromGrpc (x ^. Ln1.chanPoint)
       <*> fromGrpc (x ^. Ln1.chanBackup)
 
+instance ToGrpc ChannelBackup Ln1.ChannelBackup where
+  toGrpc x =
+    msg
+      <$> toGrpc (chanPoint x)
+      <*> toGrpc (chanBackup x)
+    where
+      msg cp bak =
+        defMessage
+          & Ln1.chanPoint .~ cp
+          & Ln1.chanBackup .~ bak
+
 instance FromGrpc SingleChanBackupBlob ByteString where
   fromGrpc x =
     if null x
@@ -59,3 +71,17 @@ instance FromGrpc SingleChanBackupBlob ByteString where
       else
         Right $
           SingleChanBackupBlob x
+
+instance ToGrpc SingleChanBackupBlob ByteString where
+  toGrpc =
+    Right . unSingleChanBackupBlob
+
+instance ToGrpc [ChannelBackup] Ln1.RestoreChanBackupRequest where
+  toGrpc xs0 = do
+    xs <- mapM toGrpc xs0
+    pure $
+      defMessage
+        & Ln1.chanBackups
+          .~ ( defMessage
+                 & Ln1.chanBackups .~ xs
+             )
