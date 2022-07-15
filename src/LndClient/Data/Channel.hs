@@ -28,7 +28,8 @@ data Channel = Channel
     initiator :: LnInitiator,
     totalSatoshisSent :: MSat,
     totalSatoshisReceived :: MSat,
-    numUpdates :: Word64
+    numUpdates :: Word64,
+    prv :: Bool
   }
   deriving stock (Eq, Ord, Show, Generic)
 
@@ -57,6 +58,7 @@ instance FromGrpc Channel LnGRPC.Channel where
       <*> fromGrpcSat (x ^. LnGRPC.totalSatoshisSent)
       <*> fromGrpcSat (x ^. LnGRPC.totalSatoshisReceived)
       <*> fromGrpc (x ^. LnGRPC.numUpdates)
+      <*> fromGrpc (x ^. LnGRPC.private)
 
 instance FromGrpc [Channel] LnGRPC.ListChannelsResponse where
   fromGrpc x = fromGrpc (x ^. LnGRPC.channels)
