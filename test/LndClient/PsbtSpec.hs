@@ -63,7 +63,7 @@ fundPsbtToAddr fAddr amt = do
   addrAlice <- genAddr lndAlice
   mine 10 Bob
   let bankAmt = amt * 2
-  sendTrx <- liftLndResult =<< sendCoins lndBob (SC.SendCoinsRequest addrAlice bankAmt)
+  sendTrx <- liftLndResult =<< sendCoins lndBob (SC.SendCoinsRequest addrAlice bankAmt False)
   mine 2 Bob
   txid <- liftLndResult $ txIdParser $ SC.txid sendTrx
   utxos <- findUtxosByTxId lndAlice txid
@@ -140,7 +140,7 @@ spec = do
       mine 10 Bob
       let amt = MSat 200000000
       let psbtBackAmt = MSat 100000000
-      sendTrx <- liftLndResult =<< sendCoins lndBob (SC.SendCoinsRequest addrAlice amt)
+      sendTrx <- liftLndResult =<< sendCoins lndBob (SC.SendCoinsRequest addrAlice amt False)
       --print $ "Bob sends to Alice:" ++ show amt ++ " with txid: " ++ show (SC.txid sendTrx)
       mine 2 Bob
       txid <- liftLndResult $ txIdParser $ SC.txid sendTrx
