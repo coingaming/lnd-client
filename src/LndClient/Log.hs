@@ -60,6 +60,7 @@ type family SecretRpc (t :: GHC.Symbol) :: GHC.Nat where
   SecretRpc "exportAllChannelBackups" = 0
   SecretRpc "exportChannelBackup" = 0
   SecretRpc "restoreChannelBackups" = 0
+  SecretRpc "walletBalance" = 0
 --
 -- Sub
 --

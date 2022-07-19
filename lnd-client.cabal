@@ -83,6 +83,7 @@ library
       LndClient.Data.UnlockWallet
       LndClient.Data.VerifyMessage
       LndClient.Data.WaitingCloseChannel
+      LndClient.Data.WalletBalance
       LndClient.Import
       LndClient.Import.External
       LndClient.LndTest
@@ -313,6 +314,7 @@ executable lnd-client-prof
         LndClient.Data.UnlockWallet
         LndClient.Data.VerifyMessage
         LndClient.Data.WaitingCloseChannel
+        LndClient.Data.WalletBalance
         LndClient.Import
         LndClient.Import.External
         LndClient.LndTest
@@ -499,6 +501,7 @@ test-suite lnd-client-test
         LndClient.Data.UnlockWallet
         LndClient.Data.VerifyMessage
         LndClient.Data.WaitingCloseChannel
+        LndClient.Data.WalletBalance
         LndClient.Import
         LndClient.Import.External
         LndClient.LndTest
