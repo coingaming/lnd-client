@@ -38,6 +38,7 @@ import LndClient.Data.SubscribeInvoices
   )
 import qualified LndClient.Data.TrackPayment as TrackPayment
 import LndClient.Data.VerifyMessage
+import qualified LndClient.Data.WalletBalance as Wallet
 import LndClient.Import
 import LndClient.LndTest
 import LndClient.QRCode
@@ -478,6 +479,16 @@ spec = do
         _ <- sendPayment alice req
         tp <- liftLndResult =<< trackPaymentSync alice tpreq
         liftIO $ Payment.state tp `shouldBe` Payment.FAILED
+  it "walletBalance" $
+    withEnv $ do
+      void $ setupOneChannel Alice Bob
+      lnd <- getLndEnv Alice
+      res <- liftLndResult =<< walletBalance lnd
+      print res
+      liftIO $ do
+        Wallet.totalBalance res `shouldSatisfy` (> 0)
+        Wallet.confirmedBalance res `shouldSatisfy` (> 0)
+        Wallet.unconfirmedBalance res `shouldBe` 0
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing

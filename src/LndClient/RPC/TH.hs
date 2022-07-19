@@ -59,6 +59,7 @@ import qualified LndClient.Data.VerifyMessage as VM
   ( VerifyMessageRequest (..),
     VerifyMessageResponse (..),
   )
+import qualified LndClient.Data.WalletBalance as Wallet
 import LndClient.Import
 import LndClient.RPC.Generic
 import Network.GRPC.HTTP2.ProtoLens (RPC (..))
@@ -633,6 +634,18 @@ mkRpc k = do
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "restoreChannelBackups")
           env
+
+    walletBalance ::
+      $(tcc m) =>
+      LndEnv ->
+      $(pure m) (Either LndError Wallet.WalletBalance)
+    walletBalance env =
+      catchWalletLock env
+        . $(grpcRetry)
+        $ $(grpcSync)
+          (RPC :: RPC LnGRPC.Lightning "walletBalance")
+          env
+          (defMessage :: LnGRPC.WalletBalanceRequest)
     |]
   where
     tcc :: TH.Type -> Q TH.Type
