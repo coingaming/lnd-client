@@ -13,7 +13,8 @@ import qualified Proto.Lightning_Fields as LnGRPC
 
 data SendCoinsRequest = SendCoinsRequest
   { addr :: Text,
-    amount :: MSat
+    amount :: MSat,
+    sendAll :: Bool
   }
   deriving stock (Eq, Show, Generic)
 
@@ -32,11 +33,13 @@ instance ToGrpc SendCoinsRequest LnGRPC.SendCoinsRequest where
     msg
       <$> toGrpcSat (amount x)
       <*> toGrpc (addr x)
+      <*> toGrpc (sendAll x)
     where
-      msg gAmt gAddr =
+      msg gAmt gAddr gSendAll=
         defMessage
           & LnGRPC.amount .~ gAmt
           & LnGRPC.addr .~ gAddr
+          & LnGRPC.sendAll .~ gSendAll
 
 instance FromGrpc SendCoinsResponse LnGRPC.SendCoinsResponse where
   fromGrpc x = SendCoinsResponse <$> fromGrpc (x ^. LnGRPC.txid)
