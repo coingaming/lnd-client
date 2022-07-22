@@ -9,8 +9,7 @@ import qualified Proto.Lnrpc.Ln0_Fields as Proto
 
 data WalletBalance = WalletBalance
   { totalBalance :: MSat,
-    confirmedBalance :: MSat,
-    unconfirmedBalance :: MSat
+    confirmedBalance :: MSat
   }
   deriving stock (Eq, Ord, Show, Generic)
 
@@ -21,4 +20,3 @@ instance FromGrpc WalletBalance Proto.WalletBalanceResponse where
     WalletBalance
       <$> fromGrpcMSat (x ^. Proto.totalBalance)
       <*> fromGrpcMSat (x ^. Proto.confirmedBalance)
-      <*> fromGrpcMSat (x ^. Proto.unconfirmedBalance)
