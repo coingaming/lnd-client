@@ -488,7 +488,6 @@ spec = do
       liftIO $ do
         Wallet.totalBalance res `shouldSatisfy` (> 0)
         Wallet.confirmedBalance res `shouldSatisfy` (> 0)
-        Wallet.unconfirmedBalance res `shouldBe` 0
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
