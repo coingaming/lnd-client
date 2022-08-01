@@ -57,7 +57,7 @@ data ChannelCloseSummary = ChannelCloseSummary
 instance Out ChannelCloseSummary
 
 instance FromGrpc [ChannelCloseSummary] LnGRPC.ClosedChannelsResponse where
-  fromGrpc x = sequence $ fromGrpc <$> (x ^. LnGRPC.channels)
+  fromGrpc x = mapM fromGrpc (x ^. LnGRPC.channels)
 
 instance ToGrpc CloseChannelRequest LnGRPC.CloseChannelRequest where
   toGrpc x =

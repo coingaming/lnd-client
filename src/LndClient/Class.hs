@@ -47,7 +47,7 @@ instance (FieldDefault b, FromGrpc a b) => FromGrpc (Maybe a) b where
       else Just <$> fromGrpc x
 
 instance FromGrpc a b => FromGrpc [a] [b] where
-  fromGrpc x = sequence $ fromGrpc <$> x
+  fromGrpc = mapM fromGrpc
 
 instance FromGrpc LnInitiator Bool where
   fromGrpc =

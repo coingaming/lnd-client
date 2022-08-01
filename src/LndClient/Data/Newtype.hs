@@ -32,7 +32,7 @@ module LndClient.Data.Newtype
     ChanId (..),
     PendingChannelId (..),
     Psbt (..),
-    RawTx (..)
+    RawTx (..),
   )
 where
 
@@ -52,13 +52,13 @@ import qualified Proto.Invoicesrpc.Invoices_Fields as IGrpc
 import qualified Proto.Lnrpc.Ln1 as LnGrpc
 import qualified Proto.Lnrpc.Ln1_Fields as LnGrpc
 
-newtype PendingChannelId = PendingChannelId { unPendingChannelId :: ByteString }
+newtype PendingChannelId = PendingChannelId {unPendingChannelId :: ByteString}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
   deriving stock (Generic)
 
 instance Out PendingChannelId
 
-newtype Psbt = Psbt { unPsbt :: ByteString }
+newtype Psbt = Psbt {unPsbt :: ByteString}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
   deriving stock (Generic)
 
@@ -70,7 +70,7 @@ newtype RawTx = RawTx {unRawTx :: ByteString}
 
 instance Out RawTx
 
-newtype ChanId = ChanId { unChanId:: Word64 }
+newtype ChanId = ChanId {unChanId :: Word64}
   deriving newtype
     ( PersistField,
       PersistFieldSql,
@@ -83,61 +83,61 @@ newtype ChanId = ChanId { unChanId:: Word64 }
 
 instance Out ChanId
 
-newtype Vout (a :: TxKind) = Vout { unVout:: Word32 }
+newtype Vout (a :: TxKind) = Vout {unVout :: Word32}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
   deriving stock (Generic)
 
 instance Out (Vout a)
 
-newtype TxId (a :: TxKind) = TxId { unTxId :: ByteString }
+newtype TxId (a :: TxKind) = TxId {unTxId :: ByteString}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
   deriving stock (Generic)
 
 instance Out (TxId a)
 
-newtype NodePubKey = NodePubKey { unNodePubKey :: ByteString }
+newtype NodePubKey = NodePubKey {unNodePubKey :: ByteString}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
   deriving stock (Generic)
 
 instance Out NodePubKey
 
-newtype NodeLocation = NodeLocation { unNodeLocation :: Text }
+newtype NodeLocation = NodeLocation {unNodeLocation :: Text}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
   deriving stock (Generic)
 
 instance Out NodeLocation
 
-newtype AddIndex = AddIndex { unAddIndex :: Word64 }
+newtype AddIndex = AddIndex {unAddIndex :: Word64}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
   deriving stock (Generic)
 
 instance Out AddIndex
 
-newtype SettleIndex = SettleIndex { unSettleIndex :: Word64 }
+newtype SettleIndex = SettleIndex {unSettleIndex :: Word64}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
   deriving stock (Generic)
 
 instance Out SettleIndex
 
-newtype PaymentRequest = PaymentRequest { unPaymentRequest :: Text }
+newtype PaymentRequest = PaymentRequest {unPaymentRequest :: Text}
   deriving newtype (PersistField, PersistFieldSql, Eq, QR.ToText, Show)
   deriving stock (Generic)
 
 instance Out PaymentRequest
 
-newtype RHash = RHash { unRHash :: ByteString }
+newtype RHash = RHash {unRHash :: ByteString}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
   deriving stock (Generic)
 
 instance Out RHash
 
-newtype RPreimage = RPreimage { unRPreimage :: ByteString }
+newtype RPreimage = RPreimage {unRPreimage :: ByteString}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
   deriving stock (Generic)
 
 instance Out RPreimage
 
-newtype MSat = { unMSat :: Word64 }
+newtype MSat = MSat {unMSat :: Word64}
   deriving newtype
     ( PersistField,
       PersistFieldSql,
@@ -154,13 +154,13 @@ newtype MSat = { unMSat :: Word64 }
 
 instance Out MSat
 
-newtype CipherSeedMnemonic = CipherSeedMnemonic { unCipherSeedMnemonic :: [Text] } 
+newtype CipherSeedMnemonic = CipherSeedMnemonic {unCipherSeedMnemonic :: [Text]}
   deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON)
 
-newtype AezeedPassphrase = AezeedPassphrase { unAezeedPassphrase :: Text } 
+newtype AezeedPassphrase = AezeedPassphrase {unAezeedPassphrase :: Text}
   deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON)
 
-newtype Seconds = Seconds { unSeconds :: Word64 }
+newtype Seconds = Seconds {unSeconds :: Word64}
   deriving newtype
     ( PersistField,
       PersistFieldSql,
@@ -177,7 +177,7 @@ newtype Seconds = Seconds { unSeconds :: Word64 }
 
 instance Out Seconds
 
-newtype GrpcTimeoutSeconds = GrpcTimeoutSeconds { unGrpcTimeoutSeconds :: Int }
+newtype GrpcTimeoutSeconds = GrpcTimeoutSeconds {unGrpcTimeoutSeconds :: Int}
   deriving newtype (Eq, Ord, FromJSON, Show)
 
 instance ToGrpc NodePubKey ByteString where
@@ -329,7 +329,6 @@ newRHash = RHash . SHA256.hash . coerce
 
 newRPreimage :: MonadIO m => m RPreimage
 newRPreimage = RPreimage <$> liftIO (getRandomBytes 32)
-
 
 newPendingChanId :: MonadIO m => m PendingChannelId
 newPendingChanId = PendingChannelId <$> liftIO (getRandomBytes 32)

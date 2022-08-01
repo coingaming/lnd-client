@@ -1,8 +1,13 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module LndClient.Data.FundPsbt (
-  FundPsbtRequest (..), FundPsbtResponse (..), TxTemplate (..), Fee(..), UtxoLease(..)
-) where
+module LndClient.Data.FundPsbt
+  ( FundPsbtRequest (..),
+    FundPsbtResponse (..),
+    TxTemplate (..),
+    Fee (..),
+    UtxoLease (..),
+  )
+where
 
 import Data.ProtoLens.Message
 import Lens.Micro
@@ -29,8 +34,8 @@ data Fee = TargetConf Word32 | SatPerVbyte Word64
 
 instance Out Fee
 
-data FundPsbtRequest = FundPsbtRequest {
-    account :: Text,
+data FundPsbtRequest = FundPsbtRequest
+  { account :: Text,
     template :: TxTemplate,
     minConfs :: Int32,
     spendUnconfirmed :: Bool,
@@ -41,9 +46,12 @@ data FundPsbtRequest = FundPsbtRequest {
 instance Out FundPsbtRequest
 
 instance ToGrpc FundPsbtRequest W.FundPsbtRequest where
-  toGrpc x = msg
-    (account x) (spendUnconfirmed x)
-    (feeMap $ fee x) <$> toGrpc (template x)
+  toGrpc x =
+    msg
+      (account x)
+      (spendUnconfirmed x)
+      (feeMap $ fee x)
+      <$> toGrpc (template x)
     where
       feeMap (TargetConf n) = W.FundPsbtRequest'TargetConf n
       feeMap (SatPerVbyte n) = W.FundPsbtRequest'SatPerVbyte n

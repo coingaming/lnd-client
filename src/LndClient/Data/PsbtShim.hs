@@ -6,11 +6,11 @@ module LndClient.Data.PsbtShim
 where
 
 import Data.ProtoLens.Message
+import Lens.Micro
 import LndClient.Data.Newtype
 import LndClient.Import
 import qualified Proto.Lnrpc.Ln0 as L
 import qualified Proto.Lnrpc.Ln0_Fields as L
-import Lens.Micro
 
 data PsbtShim = PsbtShim
   { pendingChanId :: PendingChannelId,
@@ -34,5 +34,5 @@ instance ToGrpc PsbtShim L.FundingShim where
     where
       msg pchid bp np =
         defMessage
-          & L.maybe'psbtShim ?~
-            (defMessage & L.pendingChanId .~ pchid & L.basePsbt .~ bp & L.noPublish .~ np)
+          & L.maybe'psbtShim
+            ?~ (defMessage & L.pendingChanId .~ pchid & L.basePsbt .~ bp & L.noPublish .~ np)

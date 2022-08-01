@@ -94,11 +94,11 @@ import qualified Network.Bitcoin as Btc (Client, getClient)
 import qualified Network.Bitcoin.BlockChain as Btc (getBlockCount)
 import qualified Network.Bitcoin.Mining as Btc (generateToAddress)
 
-newtype BtcUrl = BtcUrl { unBtcUrl :: String }
+newtype BtcUrl = BtcUrl {unBtcUrl :: String}
 
-newtype BtcLogin = BtcLogin { unBtcLogin :: ByteString }
+newtype BtcLogin = BtcLogin {unBtcLogin :: ByteString}
 
-newtype BtcPassword = BtcPassword { unBtcPassword :: ByteString }
+newtype BtcPassword = BtcPassword {unBtcPassword :: ByteString}
 
 data BtcEnv = BtcEnv
   { btcUrl :: BtcUrl,

@@ -7,6 +7,7 @@ module LndClient.PsbtSpec
 where
 
 import qualified Data.Map as M
+import LndClient.Data.ChannelPoint
 import qualified LndClient.Data.FinalizePsbt as FNP
 import qualified LndClient.Data.FundPsbt as FP
 import qualified LndClient.Data.FundingPsbtFinalize as FPF
@@ -26,7 +27,6 @@ import LndClient.RPC.Katip
 import LndClient.TestApp
 import Test.Hspec
 import qualified UnliftIO.STM as T
-import LndClient.Data.ChannelPoint
 
 genAddr :: (KatipContext f, MonadUnliftIO f) => LndEnv -> f Text
 genAddr lnd =

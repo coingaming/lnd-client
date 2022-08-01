@@ -21,7 +21,7 @@ data VerifyMessageRequest = VerifyMessageRequest
 
 instance Out VerifyMessageRequest
 
-newtype VerifyMessageResponse = VerifyMessageResponse { unVerifyMessageResponse :: Bool  }
+newtype VerifyMessageResponse = VerifyMessageResponse {unVerifyMessageResponse :: Bool}
   deriving newtype (Eq, Show)
   deriving stock (Generic)
 

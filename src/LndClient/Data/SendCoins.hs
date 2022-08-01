@@ -35,7 +35,7 @@ instance ToGrpc SendCoinsRequest LnGRPC.SendCoinsRequest where
       <*> toGrpc (addr x)
       <*> toGrpc (sendAll x)
     where
-      msg gAmt gAddr gSendAll=
+      msg gAmt gAddr gSendAll =
         defMessage
           & LnGRPC.amount .~ gAmt
           & LnGRPC.addr .~ gAddr

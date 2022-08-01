@@ -23,9 +23,9 @@ import Codec.QRCode as QR
 import Codec.QRCode.JuicyPixels (toImage, toPngDataUrlT)
 import LndClient.Import.External
 
-newtype QRPixels = QRPixels { unQRPixels :: Image Pixel8 } 
+newtype QRPixels = QRPixels {unQRPixels :: Image Pixel8}
 
-newtype QRPngDataUrl = QRPngDataUrl { unQRPngDataUrl :: Text }
+newtype QRPngDataUrl = QRPngDataUrl {unQRPngDataUrl :: Text}
   deriving newtype (PersistField, PersistFieldSql, Show, Eq)
 
 data QROpts = QROpts

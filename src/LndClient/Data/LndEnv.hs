@@ -53,22 +53,22 @@ import qualified Network.TLS.Extra.Cipher as TLS
 import qualified Universum
 import qualified Prelude
 
-newtype LndWalletPassword = LndWalletPassword { unLndWalletPassword :: Text }
+newtype LndWalletPassword = LndWalletPassword {unLndWalletPassword :: Text}
   deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
 data LndTlsCert = LndTlsCert ByteString SignedCertificate
   deriving stock (Eq, Show)
 
-newtype LndHexMacaroon = LndHexMacaroon { unLndHexMacaroon :: Text }
+newtype LndHexMacaroon = LndHexMacaroon {unLndHexMacaroon :: Text}
   deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
 
-newtype LndHost' = LndHost' { unLndHost :: Text }
+newtype LndHost' = LndHost' {unLndHost :: Text}
   deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON, IsString)
   deriving stock (Generic)
 
 instance Out LndHost'
 
-newtype LndPort' = LndPort' { unLndPort :: Int }
+newtype LndPort' = LndPort' {unLndPort :: Int}
   deriving newtype (PersistField, PersistFieldSql, Eq)
   deriving stock (Generic)
 
