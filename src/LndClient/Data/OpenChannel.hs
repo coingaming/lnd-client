@@ -51,7 +51,7 @@ data OpenStatusUpdate'
 
 instance Out OpenStatusUpdate'
 
-newtype ChannelOpenUpdate = ChannelOpenUpdate ChannelPoint
+newtype ChannelOpenUpdate = ChannelOpenUpdate { unChannelOpenUpdate :: ChannelPoint }
   deriving newtype (Eq, Show)
   deriving stock (Generic)
 

@@ -46,7 +46,7 @@ data KillSignal
   = KillSignal
   deriving stock (Eq, Ord, Show)
 
-newtype KilledTask req = KilledTask req
+newtype KilledTask req = KilledTask { unKilledTask :: req }
   deriving newtype (Eq, Ord, Show)
 
 data Cmd req

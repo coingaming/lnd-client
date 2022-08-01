@@ -25,7 +25,7 @@ data SignMessageRequest = SignMessageRequest
 
 instance Out SignMessageRequest
 
-newtype SignMessageResponse = SignMessageResponse ByteString
+newtype SignMessageResponse = SignMessageResponse { unSignMessageResponse :: ByteString }
   deriving newtype (Eq, Show)
   deriving stock (Generic)
 
