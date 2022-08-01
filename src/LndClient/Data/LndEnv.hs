@@ -4,12 +4,12 @@
 
 module LndClient.Data.LndEnv
   ( LndEnv (..),
-    RawConfig,
+    RawConfig (..),
     LndWalletPassword (..),
-    LndTlsCert,
+    LndTlsCert(..),
     LndHexMacaroon (..),
     LndHost' (..),
-    LndPort',
+    LndPort' (.. ),
     LndConfig (..),
     newLndEnv,
     readLndEnv,
