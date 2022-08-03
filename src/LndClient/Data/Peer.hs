@@ -66,4 +66,4 @@ instance ToGrpc ConnectPeerRequest LnGRPC.ConnectPeerRequest where
           & LnGRPC.perm .~ gPerm
 
 instance FromGrpc [Peer] LnGRPC.ListPeersResponse where
-  fromGrpc x = sequence $ fromGrpc <$> (x ^. LnGRPC.peers)
+  fromGrpc x = mapM fromGrpc (x ^. LnGRPC.peers)

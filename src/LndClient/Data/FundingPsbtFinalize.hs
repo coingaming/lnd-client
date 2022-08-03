@@ -1,8 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module LndClient.Data.FundingPsbtFinalize
-  (FundingPsbtFinalize (..))
-where
+module LndClient.Data.FundingPsbtFinalize (FundingPsbtFinalize (..)) where
 
 import Data.ProtoLens.Message
 import LndClient.Import
@@ -10,11 +8,11 @@ import qualified Proto.Lnrpc.Ln0 as L
 import qualified Proto.Lnrpc.Ln0_Fields as L
 
 data FundingPsbtFinalize = FundingPsbtFinalize
-  {
-    signedPsbt :: Psbt,
+  { signedPsbt :: Psbt,
     pendingChanId :: PendingChannelId,
     finalRawTx :: RawTx
-  } deriving stock (Eq, Ord, Show, Generic)
+  }
+  deriving stock (Eq, Ord, Show, Generic)
 
 instance Out FundingPsbtFinalize
 

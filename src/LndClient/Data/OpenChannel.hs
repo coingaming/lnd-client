@@ -5,17 +5,17 @@ module LndClient.Data.OpenChannel
     OpenStatusUpdate (..),
     OpenStatusUpdate' (..),
     ReadyForPsbtFunding (..),
-    ChannelOpenUpdate (..)
+    ChannelOpenUpdate (..),
   )
 where
 
 import Data.ProtoLens.Message
 import LndClient.Data.Channel
 import LndClient.Data.ChannelPoint
+import LndClient.Data.PsbtShim
 import LndClient.Import
 import qualified Proto.Lightning as LnGRPC
 import qualified Proto.Lightning_Fields as LnGRPC
-import LndClient.Data.PsbtShim
 
 data OpenChannelRequest = OpenChannelRequest
   { nodePubkey :: NodePubKey,
@@ -51,7 +51,7 @@ data OpenStatusUpdate'
 
 instance Out OpenStatusUpdate'
 
-newtype ChannelOpenUpdate = ChannelOpenUpdate ChannelPoint
+newtype ChannelOpenUpdate = ChannelOpenUpdate {unChannelOpenUpdate :: ChannelPoint}
   deriving newtype (Eq, Show)
   deriving stock (Generic)
 
@@ -107,7 +107,7 @@ instance ToGrpc OpenChannelRequest LnGRPC.OpenChannelRequest where
       <*> toGrpc (closeAddress x)
       <*> toGrpcMaybe (fundingShim x)
     where
-      msg gNodePubKey gLocalFindingAmount gPushSat gTargetConf gSatPerByte gPrivate gMinHtlcMsat gRemoteCsvDelay gMinConfs gSpendUnconfirmed gCloseAddress gFundingShim=
+      msg gNodePubKey gLocalFindingAmount gPushSat gTargetConf gSatPerByte gPrivate gMinHtlcMsat gRemoteCsvDelay gMinConfs gSpendUnconfirmed gCloseAddress gFundingShim =
         defMessage
           & LnGRPC.nodePubkey .~ gNodePubKey
           & LnGRPC.localFundingAmount .~ gLocalFindingAmount

@@ -28,7 +28,7 @@ import qualified Data.Text.Encoding as T
 import LndClient.Data.Type
 import LndClient.Import.External
 
-newtype MicroSecondsDelay = MicroSecondsDelay Int
+newtype MicroSecondsDelay = MicroSecondsDelay {unMicroSecondsDelay :: Int}
 
 txIdParser :: Text -> Either LndError ByteString
 txIdParser xr =

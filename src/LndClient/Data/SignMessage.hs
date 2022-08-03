@@ -10,10 +10,10 @@ where
 
 import Data.ProtoLens.Message
 import LndClient.Import
-import qualified Proto.Signrpc.Signer as LnGRPC
-import qualified Proto.Signrpc.Signer_Fields as LnGRPC
 import qualified Proto.Lnrpc.Ln0 as L
 import qualified Proto.Lnrpc.Ln0_Fields as L
+import qualified Proto.Signrpc.Signer as LnGRPC
+import qualified Proto.Signrpc.Signer_Fields as LnGRPC
 
 data SignMessageRequest = SignMessageRequest
   { message :: ByteString,
@@ -25,7 +25,7 @@ data SignMessageRequest = SignMessageRequest
 
 instance Out SignMessageRequest
 
-newtype SignMessageResponse = SignMessageResponse ByteString
+newtype SignMessageResponse = SignMessageResponse {unSignMessageResponse :: ByteString}
   deriving newtype (Eq, Show)
   deriving stock (Generic)
 
@@ -72,5 +72,3 @@ instance ToGrpc KeyLocator L.KeyLocator where
   toGrpc x = pure $ msg (keyFamily x) (keyIndex x)
     where
       msg f i = defMessage & L.keyFamily .~ f & L.keyIndex .~ i
-
-

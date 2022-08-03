@@ -6,10 +6,10 @@ import Data.ProtoLens.Message
 import Lens.Micro
 import LndClient.Data.ChannelPoint
 import qualified LndClient.Data.PsbtShim as PS
+import qualified LndClient.Data.SignMessage as KL
 import LndClient.Import
 import qualified Proto.Lnrpc.Ln0 as L
 import qualified Proto.Lnrpc.Ln0_Fields as L
-import qualified LndClient.Data.SignMessage as KL
 
 data KeyDescriptor = KeyDescriptor
   { rawKeyBytes :: ByteString,
@@ -63,9 +63,8 @@ data FundingShim
 instance Out FundingShim
 
 instance ToGrpc FundingShim L.FundingShim where
-  toGrpc  x = msg <$> mapShim x
+  toGrpc x = msg <$> mapShim x
     where
       mapShim (FundingShim'ChanPointShim f) = L.FundingShim'ChanPointShim <$> toGrpc f
       mapShim (FundingShim'PsbtShim f) = L.FundingShim'PsbtShim <$> toGrpc f
       msg s = defMessage & L.maybe'shim ?~ s
-

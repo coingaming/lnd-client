@@ -69,10 +69,9 @@ instance FromGrpc UpdateChannel LnGRPC.ChannelEventUpdate'Channel where
 instance FromGrpc ChannelEventUpdate LnGRPC.ChannelEventUpdate where
   fromGrpc x =
     ChannelEventUpdate
-      <$> join
-        ( fromGrpc
-            <$> maybeToEither
-              (FromGrpcError "Empty channelUpdate")
-              (x ^. LnGRPC.maybe'channel)
-        )
+      <$> ( fromGrpc
+              =<< maybeToEither
+                (FromGrpcError "Empty channelUpdate")
+                (x ^. LnGRPC.maybe'channel)
+          )
         <*> fromGrpc (x ^. LnGRPC.type')
