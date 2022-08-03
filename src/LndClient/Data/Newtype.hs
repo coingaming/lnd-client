@@ -340,7 +340,7 @@ newGrpcTimeout x =
     else Nothing
 
 unGrpcTimeout :: GrpcTimeoutSeconds -> Int
-unGrpcTimeout = coerce
+unGrpcTimeout = unGrpcTimeoutSeconds
 
 defaultSyncGrpcTimeout :: GrpcTimeoutSeconds
 defaultSyncGrpcTimeout = GrpcTimeoutSeconds 60
