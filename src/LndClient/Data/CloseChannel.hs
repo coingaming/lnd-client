@@ -49,7 +49,7 @@ data ChannelCloseSummary = ChannelCloseSummary
   { remotePubkey :: NodePubKey,
     chPoint :: ChannelPoint,
     chanId :: ChanId,
-    settledBalance :: MSat,
+    settledBalance :: Msat,
     closingTxId :: TxId 'Closing
   }
   deriving stock (Eq, Ord, Show, Generic)

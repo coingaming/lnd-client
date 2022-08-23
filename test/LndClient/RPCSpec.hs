@@ -137,7 +137,7 @@ spec = do
         =<< receiveInvoice bob rh Invoice.OPEN chan
       alice <- getLndEnv Alice
       let pr = AddInvoice.paymentRequest inv
-      let spr = SendPaymentRequest pr (MSat 1000000) Nothing
+      let spr = SendPaymentRequest pr (Msat 1000000) Nothing
       void $ liftLndResult =<< sendPayment alice spr
       res <- receiveInvoice bob rh Invoice.SETTLED chan
       liftIO $ res `shouldSatisfy` isRight
@@ -149,7 +149,7 @@ spec = do
             AddHodlInvoiceRequest
               { memo = Just "HELLO",
                 hash = newRHash r,
-                valueMsat = MSat 1000000,
+                valueMsat = Msat 1000000,
                 expiry = Just $ Seconds 1000
               }
       x0 <- addHodlInvoice lnd req
@@ -182,8 +182,8 @@ spec = do
         let openChannelRequest =
               OpenChannelRequest
                 { nodePubkey = bobPubKey,
-                  localFundingAmount = MSat 20000000,
-                  pushMSat = Just $ MSat 1000000,
+                  localFundingAmount = Msat 20000000,
+                  pushMSat = Just $ Msat 1000000,
                   targetConf = Nothing,
                   mSatPerByte = Nothing,
                   private = Nothing,
@@ -222,7 +222,7 @@ spec = do
             AddHodlInvoiceRequest
               { memo = Just "HELLO",
                 hash = newRHash r,
-                valueMsat = MSat 1000000,
+                valueMsat = Msat 1000000,
                 expiry = Just $ Seconds 1000
               }
       bob <- getLndEnv Bob
@@ -237,7 +237,7 @@ spec = do
             AddHodlInvoiceRequest
               Nothing
               rh
-              (MSat 1000000)
+              (Msat 1000000)
               Nothing
       bob <- getLndEnv Bob
       q <- getInvoiceTChan Bob
@@ -248,7 +248,7 @@ spec = do
       watchSingleInvoice Bob rh
       liftLndResult
         =<< receiveInvoice bob rh Invoice.OPEN q
-      let spr = SendPaymentRequest pr (MSat 1000000) Nothing
+      let spr = SendPaymentRequest pr (Msat 1000000) Nothing
       alice <- getLndEnv Alice
       withSpawnLink
         (liftLndResult =<< sendPayment alice spr)
@@ -271,7 +271,7 @@ spec = do
       r <- newRPreimage
       let rh = newRHash r
       let hipr =
-            AddHodlInvoiceRequest Nothing rh (MSat 1000000) Nothing
+            AddHodlInvoiceRequest Nothing rh (Msat 1000000) Nothing
       bob <- getLndEnv Bob
       q <- getInvoiceTChan Bob
       qq <- getSingleInvoiceTChan Bob
@@ -279,7 +279,7 @@ spec = do
       watchSingleInvoice Bob rh
       liftLndResult
         =<< receiveInvoice bob rh Invoice.OPEN q
-      let spr = SendPaymentRequest pr (MSat 1000000) Nothing
+      let spr = SendPaymentRequest pr (Msat 1000000) Nothing
       alice <- getLndEnv Alice
       withSpawnLink
         (liftLndResult =<< sendPayment alice spr)
@@ -349,8 +349,8 @@ spec = do
       let openChannelRequest =
             OpenChannelRequest
               { nodePubkey = bobPubKey,
-                localFundingAmount = MSat 20000000,
-                pushMSat = Just $ MSat 1000000,
+                localFundingAmount = Msat 20000000,
+                pushMSat = Just $ Msat 1000000,
                 targetConf = Nothing,
                 mSatPerByte = Nothing,
                 private = Nothing,
@@ -426,8 +426,8 @@ spec = do
       let openChannelRequest =
             OpenChannelRequest
               { nodePubkey = merchantPubKey,
-                localFundingAmount = MSat 200000000,
-                pushMSat = Just $ MSat 10000000,
+                localFundingAmount = Msat 200000000,
+                pushMSat = Just $ Msat 10000000,
                 targetConf = Nothing,
                 mSatPerByte = Nothing,
                 private = Nothing,
@@ -494,6 +494,6 @@ spec = do
     addInvoiceRequest =
       AddInvoiceRequest
         { memo = Just "HELLO",
-          valueMsat = MSat 1000000,
+          valueMsat = Msat 1000000,
           expiry = Just $ Seconds 1000
         }

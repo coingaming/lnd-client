@@ -8,7 +8,7 @@ module LndClient.Data.Newtype
     PaymentRequest (..),
     RHash (..),
     RPreimage (..),
-    MSat (..),
+    Msat (..),
     toGrpcSat,
     toGrpcMSat,
     toGrpcMaybe,
@@ -137,7 +137,7 @@ newtype RPreimage = RPreimage {unRPreimage :: ByteString}
 
 instance Out RPreimage
 
-newtype MSat = MSat {unMSat :: Word64}
+newtype Msat = Msat {unMSat :: Word64}
   deriving newtype
     ( PersistField,
       PersistFieldSql,
@@ -152,7 +152,7 @@ newtype MSat = MSat {unMSat :: Word64}
     ( Generic
     )
 
-instance Out MSat
+instance Out Msat
 
 newtype CipherSeedMnemonic = CipherSeedMnemonic {unCipherSeedMnemonic :: [Text]}
   deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON)
@@ -348,31 +348,31 @@ defaultSyncGrpcTimeout = GrpcTimeoutSeconds 60
 defaultAsyncGrpcTimeout :: GrpcTimeoutSeconds
 defaultAsyncGrpcTimeout = GrpcTimeoutSeconds 3600
 
-toGrpcSat :: (Integral a, Bounded a) => MSat -> Either LndError a
+toGrpcSat :: (Integral a, Bounded a) => Msat -> Either LndError a
 toGrpcSat mSat = do
   let mVal :: Word64 = coerce mSat
   case divMod mVal 1000 of
-    (val, 0) -> maybeToRight (ToGrpcError "MSat overflow") $ safeFromIntegral val
+    (val, 0) -> maybeToRight (ToGrpcError "Msat overflow") $ safeFromIntegral val
     _ -> Left $ ToGrpcError ("Cannot convert " <> inspect mVal <> " to Sat")
 
-fromGrpcSat :: (Integral a) => a -> Either LndError MSat
+fromGrpcSat :: (Integral a) => a -> Either LndError Msat
 fromGrpcSat sat =
   maybeToRight
-    (FromGrpcError ("Cannot convert " <> (inspect . toInteger) sat <> " to MSat"))
-    $ MSat . (1000 *) <$> safeFromIntegral sat
+    (FromGrpcError ("Cannot convert " <> (inspect . toInteger) sat <> " to Msat"))
+    $ Msat . (1000 *) <$> safeFromIntegral sat
 
-toGrpcMSat :: (Integral a, Bounded a) => MSat -> Either LndError a
+toGrpcMSat :: (Integral a, Bounded a) => Msat -> Either LndError a
 toGrpcMSat x =
   maybeToRight
-    (ToGrpcError "MSat overflow")
+    (ToGrpcError "Msat overflow")
     $ safeFromIntegral (coerce x :: Word64)
 
 toGrpcMaybe :: (ToGrpc a b) => Maybe a -> Either LndError (Maybe b)
 toGrpcMaybe (Just fs) = Just <$> toGrpc fs
 toGrpcMaybe Nothing = Right Nothing
 
-fromGrpcMSat :: (Integral a) => a -> Either LndError MSat
+fromGrpcMSat :: (Integral a) => a -> Either LndError Msat
 fromGrpcMSat x =
   maybeToRight
-    (FromGrpcError "MSat overflow")
-    $ MSat <$> safeFromIntegral x
+    (FromGrpcError "Msat overflow")
+    $ Msat <$> safeFromIntegral x

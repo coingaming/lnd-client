@@ -13,7 +13,7 @@ import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
 data PayReq = PayReq
   { destination :: NodePubKey,
     paymentHash :: RHash,
-    numMsat :: MSat,
+    numMsat :: Msat,
     expiry :: Seconds,
     timestamp :: UTCTime,
     expiresAt :: UTCTime

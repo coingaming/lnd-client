@@ -13,7 +13,7 @@ import qualified Proto.Lightning_Fields as LnGRPC
 
 data SendCoinsRequest = SendCoinsRequest
   { addr :: Text,
-    amount :: MSat,
+    amount :: Msat,
     sendAll :: Bool
   }
   deriving stock (Eq, Show, Generic)

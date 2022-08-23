@@ -11,9 +11,9 @@ import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 data PendingOpenChannel = PendingOpenChannel
   { channel :: PendingChannel,
     confirmationHeight :: Word32,
-    commitFee :: MSat,
+    commitFee :: Msat,
     commitWeight :: Int64,
-    feePerKw :: MSat
+    feePerKw :: Msat
   }
   deriving stock (Eq, Show, Generic)
 

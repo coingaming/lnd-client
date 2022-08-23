@@ -32,7 +32,7 @@ instance ToGrpc ListUnspentRequest W.ListUnspentRequest where
 data Utxo = Utxo
   { addressType :: AddressType,
     address :: Text,
-    amountSat :: MSat,
+    amountSat :: Msat,
     pkScript :: Text,
     outpoint :: OutPoint,
     confirmations :: Int64

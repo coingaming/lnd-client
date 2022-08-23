@@ -13,7 +13,7 @@ import qualified Proto.Invoicesrpc.Invoices_Fields as LnGRPC
 data AddHodlInvoiceRequest = AddHodlInvoiceRequest
   { memo :: Maybe Text,
     hash :: RHash,
-    valueMsat :: MSat,
+    valueMsat :: Msat,
     expiry :: Maybe Seconds
   }
   deriving stock (Eq, Show, Generic)

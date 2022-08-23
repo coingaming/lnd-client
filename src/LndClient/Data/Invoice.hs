@@ -10,8 +10,8 @@ import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
 
 data Invoice = Invoice
   { rHash :: RHash,
-    amtPaidMsat :: MSat,
-    valueMsat :: MSat,
+    amtPaidMsat :: Msat,
+    valueMsat :: Msat,
     settled :: Bool,
     settleIndex :: Maybe SettleIndex,
     memo :: Text,

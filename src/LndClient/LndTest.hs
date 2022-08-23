@@ -491,8 +491,8 @@ setupOneChannel ownerFrom ownerTo = do
   let openChannelRequest =
         OpenChannel.OpenChannelRequest
           { OpenChannel.nodePubkey = merchantPubKey,
-            OpenChannel.localFundingAmount = MSat 200000000,
-            OpenChannel.pushMSat = Just $ MSat 10000000,
+            OpenChannel.localFundingAmount = Msat 200000000,
+            OpenChannel.pushMSat = Just $ Msat 10000000,
             OpenChannel.targetConf = Nothing,
             OpenChannel.mSatPerByte = Nothing,
             OpenChannel.private = Nothing,
@@ -516,12 +516,12 @@ setupOneChannel ownerFrom ownerTo = do
   -- remove when LND bug will be fixed
   -- https://github.com/lightningnetwork/lnd/issues/2469
   --
-  () <- sendTestPayment (MSat 1000000) ownerFrom ownerTo
-  () <- sendTestPayment (MSat 1000000) ownerTo ownerFrom
+  () <- sendTestPayment (Msat 1000000) ownerFrom ownerTo
+  () <- sendTestPayment (Msat 1000000) ownerTo ownerFrom
   $(logTM) sev "SetupOneChannel - finished"
   pure cp
 
-sendTestPayment :: LndTest m owner => MSat -> owner -> owner -> m ()
+sendTestPayment :: LndTest m owner => Msat -> owner -> owner -> m ()
 sendTestPayment amt0 sender0 recepient0 = do
   sender <- getLndEnv sender0
   recepient <- getLndEnv recepient0

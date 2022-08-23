@@ -10,7 +10,7 @@ import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data WaitingCloseChannel = WaitingCloseChannel
   { channel :: PendingChannel,
-    limboBalance :: MSat
+    limboBalance :: Msat
   }
   deriving stock (Eq, Show, Generic)
 

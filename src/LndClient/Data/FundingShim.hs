@@ -25,7 +25,7 @@ instance ToGrpc KeyDescriptor L.KeyDescriptor where
 instance Out KeyDescriptor
 
 data ChanPointShim = ChanPointShim
-  { amt :: MSat,
+  { amt :: Msat,
     chanPoint :: Maybe ChannelPoint,
     localKey :: Maybe KeyDescriptor,
     remoteKey :: NodePubKey,

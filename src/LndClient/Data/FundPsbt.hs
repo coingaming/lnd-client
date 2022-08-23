@@ -18,7 +18,7 @@ import qualified Proto.Walletrpc.Walletkit_Fields as W
 
 data TxTemplate = TxTemplate
   { inputs :: [OutPoint],
-    outputs :: Map Text MSat
+    outputs :: Map Text Msat
   }
   deriving stock (Eq, Ord, Show, Generic)
 

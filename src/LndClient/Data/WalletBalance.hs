@@ -8,8 +8,8 @@ import qualified Proto.Lnrpc.Ln0 as Proto
 import qualified Proto.Lnrpc.Ln0_Fields as Proto
 
 data WalletBalance = WalletBalance
-  { totalBalance :: MSat,
-    confirmedBalance :: MSat
+  { totalBalance :: Msat,
+    confirmedBalance :: Msat
   }
   deriving stock (Eq, Ord, Show, Generic)
 

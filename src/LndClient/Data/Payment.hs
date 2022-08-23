@@ -12,7 +12,7 @@ import Text.PrettyPrint.GenericPretty.Import
 data Payment = Payment
   { paymentHash :: RHash,
     paymentPreimage :: RPreimage,
-    valueMsat :: MSat,
+    valueMsat :: Msat,
     state :: PaymentStatus
   }
   deriving stock (Eq, Show, Generic)
