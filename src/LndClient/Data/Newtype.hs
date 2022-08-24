@@ -154,12 +154,9 @@ newtype Msat = Msat {unMsat :: Natural}
     ( Generic
     )
 
--- There will be no overflow errors converting Word64 to Natural, it is OK to use fromIntegral
 instance PersistField Msat where
   toPersistValue =
-    toPersistValue
-      . unsafeFromIntegral @Natural @Word64
-      . unMsat
+    toPersistValue . unsafeFrom @Natural @Word64 . unMsat
   fromPersistValue =
     (Msat . fromIntegral @Word64 @Natural <$>)
       . fromPersistValue

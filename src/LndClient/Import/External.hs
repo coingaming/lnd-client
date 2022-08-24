@@ -85,4 +85,4 @@ import UnliftIO as Import
     catches,
     finally,
   )
-import Witch as Import (From (..), TryFrom (..))
+import Witch as Import (From (..), TryFrom (..), unsafeFrom)
