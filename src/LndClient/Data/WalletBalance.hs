@@ -18,5 +18,5 @@ instance Out WalletBalance
 instance FromGrpc WalletBalance Proto.WalletBalanceResponse where
   fromGrpc x =
     WalletBalance
-      <$> fromGrpcMSat (x ^. Proto.totalBalance)
-      <*> fromGrpcMSat (x ^. Proto.confirmedBalance)
+      <$> tryFromGrpcMSat (x ^. Proto.totalBalance)
+      <*> tryFromGrpcMSat (x ^. Proto.confirmedBalance)

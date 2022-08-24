@@ -16,6 +16,7 @@ module LndClient.Data.Newtype
     toGrpcMaybe,
     fromGrpcSat,
     fromGrpcMSat,
+    tryFromGrpcMSat,
     CipherSeedMnemonic (..),
     AezeedPassphrase (..),
     Seconds (..),
@@ -53,6 +54,7 @@ import qualified Proto.Invoicesrpc.Invoices as IGrpc
 import qualified Proto.Invoicesrpc.Invoices_Fields as IGrpc
 import qualified Proto.Lnrpc.Ln1 as LnGrpc
 import qualified Proto.Lnrpc.Ln1_Fields as LnGrpc
+import qualified Universum (show)
 
 newtype PendingChannelId = PendingChannelId {unPendingChannelId :: ByteString}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
@@ -381,6 +383,10 @@ toGrpcMaybe :: (ToGrpc a b) => Maybe a -> Either LndError (Maybe b)
 toGrpcMaybe (Just fs) = Just <$> toGrpc fs
 toGrpcMaybe Nothing = Right Nothing
 
-fromGrpcMSat :: (Integral a) => a -> Either LndError Msat
+fromGrpcMSat :: forall a. (From a Natural) => a -> Either LndError Msat
 fromGrpcMSat =
-  Right . Msat . fromIntegral
+  Right . Msat . from @a @Natural
+
+tryFromGrpcMSat :: forall a. (TryFrom a Natural, Show a, Typeable a) => a -> Either LndError Msat
+tryFromGrpcMSat x =
+  bimap (ToGrpcError . Universum.show) Msat (tryFrom @a @Natural $ x)
