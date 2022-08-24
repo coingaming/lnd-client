@@ -40,7 +40,7 @@ import Data.Type.Equality as Import
     (:~:) (..),
     type (==),
   )
-import Database.Persist.Class as Import (PersistField)
+import Database.Persist.Class as Import (PersistField (..))
 import Database.Persist.Sql as Import (PersistFieldSql)
 import Database.Persist.TH as Import (derivePersistField)
 import GHC.Generics as Import (Rep (..))

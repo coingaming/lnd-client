@@ -1,6 +1,8 @@
-{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeApplications #-}
 
 module LndClient.Data.Newtype
   ( AddIndex (..),
@@ -137,11 +139,9 @@ newtype RPreimage = RPreimage {unRPreimage :: ByteString}
 
 instance Out RPreimage
 
-newtype Msat = Msat {unMSat :: Word64}
+newtype Msat = Msat {unMsat :: Natural}
   deriving newtype
-    ( PersistField,
-      PersistFieldSql,
-      Eq,
+    ( Eq,
       Num,
       Ord,
       FromJSON,
@@ -151,6 +151,18 @@ newtype Msat = Msat {unMSat :: Word64}
   deriving stock
     ( Generic
     )
+
+-- There will be no overflow errors converting Word64 to Natural, it is OK to use fromIntegral
+instance PersistField Msat where
+  toPersistValue =
+    toPersistValue
+      . unsafeFromIntegral @Natural @Word64
+      . unMsat
+  fromPersistValue =
+    (Msat . fromIntegral @Word64 @Natural <$>)
+      . fromPersistValue
+
+deriving via Word64 instance PersistFieldSql Msat
 
 instance Out Msat
 
@@ -350,29 +362,25 @@ defaultAsyncGrpcTimeout = GrpcTimeoutSeconds 3600
 
 toGrpcSat :: (Integral a, Bounded a) => Msat -> Either LndError a
 toGrpcSat mSat = do
-  let mVal :: Word64 = coerce mSat
+  let mVal = unMsat mSat
   case divMod mVal 1000 of
-    (val, 0) -> maybeToRight (ToGrpcError "Msat overflow") $ safeFromIntegral val
+    (val, 0) -> maybeToRight (ToGrpcError $ "Msat overflow " <> inspect mVal) $ safeFromIntegral val
     _ -> Left $ ToGrpcError ("Cannot convert " <> inspect mVal <> " to Sat")
 
 fromGrpcSat :: (Integral a) => a -> Either LndError Msat
-fromGrpcSat sat =
-  maybeToRight
-    (FromGrpcError ("Cannot convert " <> (inspect . toInteger) sat <> " to Msat"))
-    $ Msat . (1000 *) <$> safeFromIntegral sat
+fromGrpcSat =
+  Right . Msat . (1000 *) . fromIntegral
 
 toGrpcMSat :: (Integral a, Bounded a) => Msat -> Either LndError a
 toGrpcMSat x =
   maybeToRight
     (ToGrpcError "Msat overflow")
-    $ safeFromIntegral (coerce x :: Word64)
+    $ safeFromIntegral (unMsat x)
 
 toGrpcMaybe :: (ToGrpc a b) => Maybe a -> Either LndError (Maybe b)
 toGrpcMaybe (Just fs) = Just <$> toGrpc fs
 toGrpcMaybe Nothing = Right Nothing
 
 fromGrpcMSat :: (Integral a) => a -> Either LndError Msat
-fromGrpcMSat x =
-  maybeToRight
-    (FromGrpcError "Msat overflow")
-    $ Msat <$> safeFromIntegral x
+fromGrpcMSat =
+  Right . Msat . fromIntegral

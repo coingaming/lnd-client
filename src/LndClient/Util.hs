@@ -5,6 +5,7 @@ module LndClient.Util
   ( retrySilent,
     retryKatip,
     safeFromIntegral,
+    unsafeFromIntegral,
     spawnLink,
     withSpawnLink,
     readTChanTimeout,
@@ -27,6 +28,7 @@ import qualified Data.ByteString.Base64 as B64
 import qualified Data.Text.Encoding as T
 import LndClient.Data.Type
 import LndClient.Import.External
+import Universum
 
 newtype MicroSecondsDelay = MicroSecondsDelay {unMicroSecondsDelay :: Int}
 
@@ -86,6 +88,24 @@ safeFromIntegral x =
     intX = fromIntegral x :: Integer
     intMin = fromIntegral (minBound :: b) :: Integer
     intMax = fromIntegral (maxBound :: b) :: Integer
+
+unsafeFromIntegral ::
+  forall a b.
+  ( Integral a,
+    Show a,
+    Integral b,
+    Bounded b
+  ) =>
+  a ->
+  b
+unsafeFromIntegral x =
+  case safeFromIntegral x of
+    Nothing ->
+      error $
+        "Fatal failure, unsafeFromIntegral overflow with "
+          <> Universum.show x
+    Just res ->
+      res
 
 spawnLink :: (MonadUnliftIO m) => m a -> m (Async a)
 spawnLink x =
