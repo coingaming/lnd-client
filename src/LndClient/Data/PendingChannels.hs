@@ -14,7 +14,7 @@ import qualified Proto.Lnrpc.Ln0 as LnGRPC
 import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 
 data PendingChannelsResponse = PendingChannelsResponse
-  { totalLimboBalance :: MSat,
+  { totalLimboBalance :: Msat,
     pendingOpenChannels :: [PendingOpenChannel],
     pendingClosingChannels :: [ClosedChannel],
     pendingForceClosingChannels :: [ForceClosedChannel],

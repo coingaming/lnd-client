@@ -12,7 +12,7 @@ import Text.PrettyPrint.GenericPretty.Import
 data Payment = Payment
   { paymentHash :: RHash,
     paymentPreimage :: RPreimage,
-    valueMsat :: MSat,
+    valueMsat :: Msat,
     state :: PaymentStatus
   }
   deriving stock (Eq, Show, Generic)
@@ -34,7 +34,7 @@ instance FromGrpc Payment LnGRPC.Payment where
       Payment
         <$> fromGrpc (x ^. LnGRPC.paymentHash)
         <*> fromGrpc (x ^. LnGRPC.paymentPreimage)
-        <*> fromGrpcMSat (x ^. LnGRPC.valueMsat)
+        <*> tryFromGrpcMSat (x ^. LnGRPC.valueMsat)
         <*> fromGrpc (x ^. LnGRPC.status)
     if (state res == SUCCEEDED)
       && (newRHash (paymentPreimage res) /= paymentHash res)

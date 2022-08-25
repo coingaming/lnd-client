@@ -11,11 +11,11 @@ import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 data PendingChannel = PendingChannel
   { remoteNodePub :: NodePubKey,
     channelPoint :: ChannelPoint,
-    capacity :: MSat,
-    localBalance :: MSat,
-    remoteBalance :: MSat,
-    localChanReserveSat :: MSat,
-    remoteChanReserveSat :: MSat,
+    capacity :: Msat,
+    localBalance :: Msat,
+    remoteBalance :: Msat,
+    localChanReserveSat :: Msat,
+    remoteChanReserveSat :: Msat,
     initiator :: LnInitiator
   }
   deriving stock (Eq, Show, Generic)

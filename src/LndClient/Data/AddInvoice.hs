@@ -12,7 +12,7 @@ import qualified Proto.Lnrpc.Ln1 as LnGRPC
 import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
 
 data AddInvoiceRequest = AddInvoiceRequest
-  { valueMsat :: MSat,
+  { valueMsat :: Msat,
     memo :: Maybe Text,
     expiry :: Maybe Seconds
   }

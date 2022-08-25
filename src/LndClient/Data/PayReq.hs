@@ -13,7 +13,7 @@ import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
 data PayReq = PayReq
   { destination :: NodePubKey,
     paymentHash :: RHash,
-    numMsat :: MSat,
+    numMsat :: Msat,
     expiry :: Seconds,
     timestamp :: UTCTime,
     expiresAt :: UTCTime
@@ -26,7 +26,7 @@ instance FromGrpc PayReq LnGRPC.PayReq where
   fromGrpc x = do
     dest <- fromGrpc (x ^. LnGRPC.destination)
     hash <- fromGrpc (x ^. LnGRPC.paymentHash)
-    msat <- fromGrpcMSat (x ^. LnGRPC.numMsat)
+    msat <- tryFromGrpcMSat (x ^. LnGRPC.numMsat)
     expSec <- fromGrpc (x ^. LnGRPC.expiry)
     let createdAt = secToUtcTime $ x ^. LnGRPC.timestamp
     pure

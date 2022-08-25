@@ -19,12 +19,12 @@ import qualified Proto.Lightning_Fields as LnGRPC
 
 data OpenChannelRequest = OpenChannelRequest
   { nodePubkey :: NodePubKey,
-    localFundingAmount :: MSat,
-    pushMSat :: Maybe MSat,
+    localFundingAmount :: Msat,
+    pushMSat :: Maybe Msat,
     targetConf :: Maybe Int32,
-    mSatPerByte :: Maybe MSat,
+    mSatPerByte :: Maybe Msat,
     private :: Maybe Bool,
-    minHtlcMsat :: Maybe MSat,
+    minHtlcMsat :: Maybe Msat,
     remoteCsvDelay :: Maybe Word32,
     minConfs :: Maybe Int32,
     spendUnconfirmed :: Maybe Bool,
@@ -59,7 +59,7 @@ instance Out ChannelOpenUpdate
 
 data ReadyForPsbtFunding = ReadyForPsbtFunding
   { fundingAddress :: Text,
-    fundingAmount :: MSat,
+    fundingAmount :: Msat,
     psbt :: Psbt
   }
   deriving stock (Eq, Show, Generic)

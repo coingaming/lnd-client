@@ -11,10 +11,10 @@ import qualified Proto.Lnrpc.Ln0_Fields as LnGRPC
 data ForceClosedChannel = ForceClosedChannel
   { channel :: PendingChannel,
     closingTxid :: TxId 'Closing,
-    limboBalance :: MSat,
+    limboBalance :: Msat,
     maturityHeight :: Word32,
     blocksTilMaturity :: Int32,
-    recoveredBalance :: MSat
+    recoveredBalance :: Msat
   }
   deriving stock (Eq, Show, Generic)
 

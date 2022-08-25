@@ -13,7 +13,7 @@ import qualified Proto.Lightning_Fields as LnGRPC
 
 data SendPaymentRequest = SendPaymentRequest
   { paymentRequest :: PaymentRequest,
-    amt :: MSat,
+    amt :: Msat,
     outgoingChanId :: Maybe ChanId
   }
   deriving stock (Eq, Show, Generic)

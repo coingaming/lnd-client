@@ -56,7 +56,7 @@ psbtFinalizeReq pcid sp =
         FPF.finalRawTx = RawTx ""
       }
 
-fundPsbtToAddr :: LndTest m Owner => Text -> MSat -> m FP.FundPsbtResponse
+fundPsbtToAddr :: LndTest m Owner => Text -> Msat -> m FP.FundPsbtResponse
 fundPsbtToAddr fAddr amt = do
   lndBob <- getLndEnv Bob
   lndAlice <- getLndEnv Alice
@@ -77,7 +77,7 @@ signPsbt psbt' = do
   lndAlice <- getLndEnv Alice
   liftLndResult =<< finalizePsbt lndAlice (FNP.FinalizePsbtRequest (FP.fundedPsbt psbt') "")
 
-openChannelPsbt :: (LndTest m Owner) => LndEnv -> NodePubKey -> MSat -> m (Either Text ChannelPoint)
+openChannelPsbt :: (LndTest m Owner) => LndEnv -> NodePubKey -> Msat -> m (Either Text ChannelPoint)
 openChannelPsbt lndEnv toPubKey locFundAmt = do
   chan <- T.newTChanIO
   pcid <- newPendingChanId
@@ -138,8 +138,8 @@ spec = do
       --print $ "Alice addr: " <> addrAlice
       --print $ "Bob addr: " <> addrBob
       mine 10 Bob
-      let amt = MSat 200000000
-      let psbtBackAmt = MSat 100000000
+      let amt = Msat 200000000
+      let psbtBackAmt = Msat 100000000
       sendTrx <- liftLndResult =<< sendCoins lndBob (SC.SendCoinsRequest addrAlice amt False)
       --print $ "Bob sends to Alice:" ++ show amt ++ " with txid: " ++ show (SC.txid sendTrx)
       mine 2 Bob
@@ -163,5 +163,5 @@ spec = do
       bob <- getLndEnv Bob
       alice <- getLndEnv Alice
       GetInfoResponse bobPubKey _ _ <- liftLndResult =<< getInfo bob
-      cp <- openChannelPsbt alice bobPubKey (MSat 266600000)
+      cp <- openChannelPsbt alice bobPubKey (Msat 266600000)
       liftIO $ shouldSatisfy cp isRight

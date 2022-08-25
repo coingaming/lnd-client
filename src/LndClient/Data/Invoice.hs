@@ -10,8 +10,8 @@ import qualified Proto.Lnrpc.Ln1_Fields as LnGRPC
 
 data Invoice = Invoice
   { rHash :: RHash,
-    amtPaidMsat :: MSat,
-    valueMsat :: MSat,
+    amtPaidMsat :: Msat,
+    valueMsat :: Msat,
     settled :: Bool,
     settleIndex :: Maybe SettleIndex,
     memo :: Text,
@@ -37,8 +37,8 @@ instance FromGrpc Invoice LnGRPC.Invoice where
   fromGrpc x =
     Invoice
       <$> fromGrpc (x ^. LnGRPC.rHash)
-      <*> fromGrpcMSat (x ^. LnGRPC.amtPaidMsat)
-      <*> fromGrpcMSat (x ^. LnGRPC.valueMsat)
+      <*> tryFromGrpcMSat (x ^. LnGRPC.amtPaidMsat)
+      <*> tryFromGrpcMSat (x ^. LnGRPC.valueMsat)
       <*> fromGrpc (x ^. LnGRPC.settled)
       <*> fromGrpc (x ^. LnGRPC.settleIndex)
       <*> fromGrpc (x ^. LnGRPC.memo)

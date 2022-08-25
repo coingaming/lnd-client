@@ -1,6 +1,8 @@
-{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TypeApplications #-}
 
 module LndClient.Data.Newtype
   ( AddIndex (..),
@@ -8,12 +10,13 @@ module LndClient.Data.Newtype
     PaymentRequest (..),
     RHash (..),
     RPreimage (..),
-    MSat (..),
+    Msat (..),
     toGrpcSat,
     toGrpcMSat,
     toGrpcMaybe,
     fromGrpcSat,
     fromGrpcMSat,
+    tryFromGrpcMSat,
     CipherSeedMnemonic (..),
     AezeedPassphrase (..),
     Seconds (..),
@@ -51,6 +54,7 @@ import qualified Proto.Invoicesrpc.Invoices as IGrpc
 import qualified Proto.Invoicesrpc.Invoices_Fields as IGrpc
 import qualified Proto.Lnrpc.Ln1 as LnGrpc
 import qualified Proto.Lnrpc.Ln1_Fields as LnGrpc
+import qualified Universum (show)
 
 newtype PendingChannelId = PendingChannelId {unPendingChannelId :: ByteString}
   deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
@@ -137,11 +141,9 @@ newtype RPreimage = RPreimage {unRPreimage :: ByteString}
 
 instance Out RPreimage
 
-newtype MSat = MSat {unMSat :: Word64}
+newtype Msat = Msat {unMsat :: Natural}
   deriving newtype
-    ( PersistField,
-      PersistFieldSql,
-      Eq,
+    ( Eq,
       Num,
       Ord,
       FromJSON,
@@ -152,7 +154,16 @@ newtype MSat = MSat {unMSat :: Word64}
     ( Generic
     )
 
-instance Out MSat
+instance PersistField Msat where
+  toPersistValue =
+    toPersistValue . unsafeFrom @Natural @Word64 . unMsat
+  fromPersistValue =
+    (Msat . fromIntegral @Word64 @Natural <$>)
+      . fromPersistValue
+
+deriving via Word64 instance PersistFieldSql Msat
+
+instance Out Msat
 
 newtype CipherSeedMnemonic = CipherSeedMnemonic {unCipherSeedMnemonic :: [Text]}
   deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON)
@@ -348,31 +359,31 @@ defaultSyncGrpcTimeout = GrpcTimeoutSeconds 60
 defaultAsyncGrpcTimeout :: GrpcTimeoutSeconds
 defaultAsyncGrpcTimeout = GrpcTimeoutSeconds 3600
 
-toGrpcSat :: (Integral a, Bounded a) => MSat -> Either LndError a
+toGrpcSat :: (Integral a, Bounded a) => Msat -> Either LndError a
 toGrpcSat mSat = do
-  let mVal :: Word64 = coerce mSat
+  let mVal = unMsat mSat
   case divMod mVal 1000 of
-    (val, 0) -> maybeToRight (ToGrpcError "MSat overflow") $ safeFromIntegral val
+    (val, 0) -> maybeToRight (ToGrpcError $ "Msat overflow " <> inspect mVal) $ safeFromIntegral val
     _ -> Left $ ToGrpcError ("Cannot convert " <> inspect mVal <> " to Sat")
 
-fromGrpcSat :: (Integral a) => a -> Either LndError MSat
-fromGrpcSat sat =
-  maybeToRight
-    (FromGrpcError ("Cannot convert " <> (inspect . toInteger) sat <> " to MSat"))
-    $ MSat . (1000 *) <$> safeFromIntegral sat
+fromGrpcSat :: (Integral a) => a -> Either LndError Msat
+fromGrpcSat =
+  Right . Msat . (1000 *) . fromIntegral
 
-toGrpcMSat :: (Integral a, Bounded a) => MSat -> Either LndError a
+toGrpcMSat :: (Integral a, Bounded a) => Msat -> Either LndError a
 toGrpcMSat x =
   maybeToRight
-    (ToGrpcError "MSat overflow")
-    $ safeFromIntegral (coerce x :: Word64)
+    (ToGrpcError "Msat overflow")
+    $ safeFromIntegral (unMsat x)
 
 toGrpcMaybe :: (ToGrpc a b) => Maybe a -> Either LndError (Maybe b)
 toGrpcMaybe (Just fs) = Just <$> toGrpc fs
 toGrpcMaybe Nothing = Right Nothing
 
-fromGrpcMSat :: (Integral a) => a -> Either LndError MSat
-fromGrpcMSat x =
-  maybeToRight
-    (FromGrpcError "MSat overflow")
-    $ MSat <$> safeFromIntegral x
+fromGrpcMSat :: forall a. (From a Natural) => a -> Either LndError Msat
+fromGrpcMSat =
+  Right . Msat . from @a @Natural
+
+tryFromGrpcMSat :: forall a. (TryFrom a Natural, Show a, Typeable a) => a -> Either LndError Msat
+tryFromGrpcMSat x =
+  bimap (ToGrpcError . Universum.show) Msat (tryFrom @a @Natural $ x)
