@@ -74,22 +74,38 @@ newtype RawTx = RawTx {unRawTx :: ByteString}
 
 instance Out RawTx
 
-newtype ChanId = ChanId {unChanId :: Word64}
+newtype ChanId = ChanId {unChanId :: Natural}
   deriving newtype
-    ( PersistField,
-      PersistFieldSql,
-      Eq,
+    ( Eq,
       Ord,
       Show,
       Read
     )
   deriving stock (Generic)
 
+instance PersistField ChanId where
+  toPersistValue =
+    toPersistValue . unsafeFrom @Natural @Word64 . unChanId
+  fromPersistValue =
+    (ChanId . from @Word32 @Natural <$>)
+      . fromPersistValue
+
+deriving via Word64 instance PersistFieldSql ChanId
+
 instance Out ChanId
 
-newtype Vout (a :: TxKind) = Vout {unVout :: Word32}
-  deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show, Read)
+newtype Vout (a :: TxKind) = Vout {unVout :: Natural}
+  deriving newtype (Eq, Ord, Show, Read)
   deriving stock (Generic)
+
+instance PersistField (Vout a) where
+  toPersistValue =
+    toPersistValue . unsafeFrom @Natural @Word32 . unVout
+  fromPersistValue =
+    (Vout . from @Word32 @Natural <$>)
+      . fromPersistValue
+
+deriving via Word32 instance PersistFieldSql (Vout a)
 
 instance Out (Vout a)
 
@@ -111,15 +127,33 @@ newtype NodeLocation = NodeLocation {unNodeLocation :: Text}
 
 instance Out NodeLocation
 
-newtype AddIndex = AddIndex {unAddIndex :: Word64}
-  deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
+newtype AddIndex = AddIndex {unAddIndex :: Natural}
+  deriving newtype (Eq, Ord, Show)
   deriving stock (Generic)
+
+instance PersistField AddIndex where
+  toPersistValue =
+    toPersistValue . unsafeFrom @Natural @Word64 . unAddIndex
+  fromPersistValue =
+    (AddIndex . from @Word64 @Natural <$>)
+      . fromPersistValue
+
+deriving via Word64 instance PersistFieldSql AddIndex
 
 instance Out AddIndex
 
-newtype SettleIndex = SettleIndex {unSettleIndex :: Word64}
-  deriving newtype (PersistField, PersistFieldSql, Eq, Ord, Show)
+newtype SettleIndex = SettleIndex {unSettleIndex :: Natural}
+  deriving newtype (Eq, Ord, Show)
   deriving stock (Generic)
+
+instance PersistField SettleIndex where
+  toPersistValue =
+    toPersistValue . unsafeFrom @Natural @Word64 . unSettleIndex
+  fromPersistValue =
+    (SettleIndex . from @Word64 @Natural <$>)
+      . fromPersistValue
+
+deriving via Word32 instance PersistFieldSql SettleIndex
 
 instance Out SettleIndex
 
@@ -158,7 +192,7 @@ instance PersistField Msat where
   toPersistValue =
     toPersistValue . unsafeFrom @Natural @Word64 . unMsat
   fromPersistValue =
-    (Msat . fromIntegral @Word64 @Natural <$>)
+    (Msat . from @Word64 @Natural <$>)
       . fromPersistValue
 
 deriving via Word64 instance PersistFieldSql Msat
@@ -171,11 +205,9 @@ newtype CipherSeedMnemonic = CipherSeedMnemonic {unCipherSeedMnemonic :: [Text]}
 newtype AezeedPassphrase = AezeedPassphrase {unAezeedPassphrase :: Text}
   deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON)
 
-newtype Seconds = Seconds {unSeconds :: Word64}
+newtype Seconds = Seconds {unSeconds :: Natural}
   deriving newtype
-    ( PersistField,
-      PersistFieldSql,
-      Eq,
+    ( Eq,
       Ord,
       FromJSON,
       Show,
@@ -185,6 +217,15 @@ newtype Seconds = Seconds {unSeconds :: Word64}
       Integral
     )
   deriving stock (Generic)
+
+instance PersistField Seconds where
+  toPersistValue =
+    toPersistValue . unsafeFrom @Natural @Word64 . unSeconds
+  fromPersistValue =
+    (Seconds . from @Word64 @Natural <$>)
+      . fromPersistValue
+
+deriving via Word64 instance PersistFieldSql Seconds
 
 instance Out Seconds
 
@@ -215,7 +256,7 @@ instance FromGrpc (TxId a) Text where
   fromGrpc = (TxId <$>) . txIdParser
 
 instance FromGrpc (Vout a) Word32 where
-  fromGrpc = Right . Vout
+  fromGrpc = Right . Vout . from @Word32 @Natural
 
 instance FromGrpc NodePubKey ByteString where
   fromGrpc = Right . NodePubKey
@@ -231,10 +272,10 @@ instance ToGrpc (TxId a) ByteString where
   toGrpc = Right . coerce
 
 instance ToGrpc (Vout a) Word32 where
-  toGrpc = Right . coerce
+  toGrpc x = first (ToGrpcError . ("Vout overflow: " <>) . Universum.show) (tryFrom @Natural @Word32 $ unVout x)
 
 instance ToGrpc ChanId Word64 where
-  toGrpc = Right . coerce
+  toGrpc x = first (ToGrpcError . ("ChanId overflow: " <>) . Universum.show) (tryFrom @Natural @Word64 $ unChanId x)
 
 instance ToGrpc PendingChannelId ByteString where
   toGrpc = Right . coerce
@@ -246,13 +287,13 @@ instance ToGrpc RawTx ByteString where
   toGrpc = Right . coerce
 
 instance ToGrpc AddIndex Word64 where
-  toGrpc = Right . coerce
+  toGrpc x = first (ToGrpcError . ("AddIndex overflow: " <>) . Universum.show) (tryFrom @Natural @Word64 $ unAddIndex x)
 
 instance ToGrpc SettleIndex Word64 where
-  toGrpc = Right . coerce
+  toGrpc x = first (ToGrpcError . ("SettleIndex overflow: " <>) . Universum.show) (tryFrom @Natural @Word64 $ unSettleIndex x)
 
 instance FromGrpc ChanId Word64 where
-  fromGrpc = Right . coerce
+  fromGrpc = Right . ChanId . from @Word64 @Natural
 
 instance FromGrpc RHash ByteString where
   fromGrpc = Right . RHash
@@ -264,10 +305,10 @@ instance FromGrpc Psbt ByteString where
   fromGrpc = Right . Psbt
 
 instance FromGrpc AddIndex Word64 where
-  fromGrpc = Right . AddIndex
+  fromGrpc = Right . AddIndex . from @Word64 @Natural
 
 instance FromGrpc SettleIndex Word64 where
-  fromGrpc = Right . SettleIndex
+  fromGrpc = Right . SettleIndex . from @Word64 @Natural
 
 instance FromGrpc PaymentRequest Text where
   fromGrpc = Right . PaymentRequest
@@ -276,10 +317,8 @@ instance FromGrpc PaymentRequest IGrpc.AddHoldInvoiceResp where
   fromGrpc x = fromGrpc (x ^. IGrpc.paymentRequest)
 
 instance FromGrpc Seconds Int64 where
-  fromGrpc =
-    (Seconds <$>)
-      . maybeToRight (FromGrpcError "Seconds overflow")
-      . safeFromIntegral
+  fromGrpc x =
+    bimap (ToGrpcError . ("Seconds overflow: " <>) . Universum.show) Seconds (tryFrom @Int64 @Natural $ x)
 
 instance FromGrpc RHash Text where
   fromGrpc x0 =
@@ -298,9 +337,7 @@ instance ToGrpc PaymentRequest Text where
 
 instance ToGrpc Seconds Int64 where
   toGrpc x =
-    maybeToRight
-      (ToGrpcError "Seconds overflow")
-      $ safeFromIntegral (coerce x :: Word64)
+    first (ToGrpcError . ("Seconds overflow: " <>) . Universum.show) (tryFrom @Natural @Int64 $ unSeconds x)
 
 instance ToGrpc CipherSeedMnemonic [Text] where
   toGrpc = Right . coerce
@@ -359,22 +396,20 @@ defaultSyncGrpcTimeout = GrpcTimeoutSeconds 60
 defaultAsyncGrpcTimeout :: GrpcTimeoutSeconds
 defaultAsyncGrpcTimeout = GrpcTimeoutSeconds 3600
 
-toGrpcSat :: (Integral a, Bounded a) => Msat -> Either LndError a
+toGrpcSat :: forall a. (TryFrom Natural a, Typeable a) => Msat -> Either LndError a
 toGrpcSat mSat = do
   let mVal = unMsat mSat
   case divMod mVal 1000 of
-    (val, 0) -> maybeToRight (ToGrpcError $ "Msat overflow " <> inspect mVal) $ safeFromIntegral val
+    (val, 0) -> first (ToGrpcError . ("Msat overflow " <>) . Universum.show) (tryFrom @Natural @a val)
     _ -> Left $ ToGrpcError ("Cannot convert " <> inspect mVal <> " to Sat")
 
-fromGrpcSat :: (Integral a) => a -> Either LndError Msat
-fromGrpcSat =
-  Right . Msat . (1000 *) . fromIntegral
+fromGrpcSat :: forall a. (TryFrom a Natural, Show a, Typeable a) => a -> Either LndError Msat
+fromGrpcSat x =
+  bimap (ToGrpcError . ("Sat overflow: " <>) . Universum.show) (Msat . (1000 *)) (tryFrom @a @Natural $ x)
 
-toGrpcMSat :: (Integral a, Bounded a) => Msat -> Either LndError a
+toGrpcMSat :: forall a. (TryFrom Natural a, Typeable a) => Msat -> Either LndError a
 toGrpcMSat x =
-  maybeToRight
-    (ToGrpcError "Msat overflow")
-    $ safeFromIntegral (unMsat x)
+  first (ToGrpcError . ("Msat overflow: " <>) . Universum.show) (tryFrom @Natural @a $ unMsat x)
 
 toGrpcMaybe :: (ToGrpc a b) => Maybe a -> Either LndError (Maybe b)
 toGrpcMaybe (Just fs) = Just <$> toGrpc fs
@@ -386,4 +421,4 @@ fromGrpcMSat =
 
 tryFromGrpcMSat :: forall a. (TryFrom a Natural, Show a, Typeable a) => a -> Either LndError Msat
 tryFromGrpcMSat x =
-  bimap (ToGrpcError . Universum.show) Msat (tryFrom @a @Natural $ x)
+  bimap (ToGrpcError . ("Msat overflow: " <>) . Universum.show) Msat (tryFrom @a @Natural $ x)

@@ -76,7 +76,7 @@ import Text.PrettyPrint.GenericPretty.Import as Import
     inspectStr,
   )
 import Text.PrettyPrint.GenericPretty.Instance as Import ()
-import Universum as Import hiding (Text, catch, finally, show)
+import Universum as Import hiding (Text, catch, finally, fromIntegral, show)
 import UnliftIO as Import
   ( Handler (..),
     MonadUnliftIO (..),

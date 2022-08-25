@@ -45,7 +45,8 @@ addSeconds =
     . fromRational
     . toRational
     . secondsToDiffTime
-    . fromIntegral
+    . from
+    . unSeconds
 
 secToUtcTime :: Int64 -> UTCTime
 secToUtcTime x =
@@ -53,7 +54,7 @@ secToUtcTime x =
     ( fromRational
         . toRational
         . secondsToDiffTime
-        $ fromIntegral x
+        $ from x
     )
     epoch
 

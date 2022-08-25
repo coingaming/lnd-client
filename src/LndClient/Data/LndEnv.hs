@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications #-}
 
 module LndClient.Data.LndEnv
   ( LndEnv (..),
@@ -41,7 +42,6 @@ import LndClient.Class
 import LndClient.Data.Newtype
 import LndClient.Data.Type
 import LndClient.Import.External as Ex
-import LndClient.Util as U
 import Network.GRPC.Client.Helpers
   ( GrpcClientConfig (..),
     grpcClientConfigSimple,
@@ -197,9 +197,8 @@ unLndTlsCert :: LndTlsCert -> ByteString
 unLndTlsCert (LndTlsCert bs _) = coerce bs
 
 createLndPort :: Word32 -> Either LndError LndPort'
-createLndPort p = do
-  let maybePort :: Maybe Int = U.safeFromIntegral p
-  maybeToRight (LndEnvError "Wrong port") $ LndPort' <$> maybePort
+createLndPort p =
+  bimap (LndEnvError . ("Wrong port " <>) . Universum.show) LndPort' (tryFrom @Word32 @Int p)
 
 readLndEnv :: IO LndEnv
 readLndEnv =

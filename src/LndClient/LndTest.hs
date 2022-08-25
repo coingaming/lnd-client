@@ -202,7 +202,7 @@ lazyMineInitialCoins = const $ do
   -- Reward coins are spendable only after 100 blocks,
   -- mine additional 100 blocks per owner to ensure everybody
   -- has coins to spend.
-  when (h < fromIntegral (length owners * blocksPerOwner)) $ do
+  when (h < from (length owners * blocksPerOwner)) $ do
     mapM_ (mine blocksPerOwner) owners
   where
     owners :: [owner]
