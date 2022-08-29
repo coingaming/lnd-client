@@ -121,9 +121,9 @@ newBtcClient :: MonadIO m => BtcEnv -> m Btc.Client
 newBtcClient x =
   liftIO $
     Btc.getClient
-      (coerce $ btcUrl x)
-      (coerce $ btcLogin x)
-      (coerce $ btcPassword x)
+      (unBtcUrl $ btcUrl x)
+      (unBtcLogin $ btcLogin x)
+      (unBtcPassword $ btcPassword x)
 
 withTestEnv ::
   ( MonadUnliftIO m

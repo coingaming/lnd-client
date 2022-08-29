@@ -25,7 +25,6 @@ import Control.Monad.Extra as Import
     fromMaybeM,
   )
 import Data.Aeson as Import (FromJSON (..), ToJSON, fromJSON)
-import Data.Coerce as Import (coerce)
 import Data.List.Extra as Import (enumerate)
 import Data.Text as Import (Text, pack, unpack)
 import Data.Time.Clock as Import

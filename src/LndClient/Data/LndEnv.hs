@@ -106,7 +106,7 @@ data LndEnv = LndEnv
   }
 
 instance ToGrpc LndWalletPassword ByteString where
-  toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
+  toGrpc x = Right $ encodeUtf8 (unLndWalletPassword x :: Text)
 
 instance FromJSON LndTlsCert where
   parseJSON x =
@@ -194,7 +194,7 @@ createLndTlsCert bs = do
     (decodeSignedCertificate $ Pem.pemContent pem)
 
 unLndTlsCert :: LndTlsCert -> ByteString
-unLndTlsCert (LndTlsCert bs _) = coerce bs
+unLndTlsCert (LndTlsCert bs _) = bs
 
 createLndPort :: Word32 -> Either LndError LndPort'
 createLndPort p =
@@ -244,7 +244,7 @@ newLndEnv pwd (LndTlsCert _ cert) mac (LndHost' host) (LndPort' port) seed aezee
         (grpcClientConfigSimple host_ port_ True)
           { _grpcClientConfigCompression = uncompressed,
             _grpcClientConfigHeaders =
-              [ ("macaroon", encodeUtf8 (coerce mac :: Text))
+              [ ("macaroon", encodeUtf8 (unLndHexMacaroon mac :: Text))
               ],
             _grpcClientConfigTLS =
               Just . selfSignedCertificateValidation [cert] $

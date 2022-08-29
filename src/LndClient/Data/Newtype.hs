@@ -87,7 +87,7 @@ instance PersistField ChanId where
   toPersistValue =
     toPersistValue . unsafeFrom @Natural @Word64 . unChanId
   fromPersistValue =
-    (ChanId . from @Word32 @Natural <$>)
+    (ChanId . from @Word64 @Natural <$>)
       . fromPersistValue
 
 deriving via Word64 instance PersistFieldSql ChanId
@@ -233,17 +233,17 @@ newtype GrpcTimeoutSeconds = GrpcTimeoutSeconds {unGrpcTimeoutSeconds :: Int}
   deriving newtype (Eq, Ord, FromJSON, Show)
 
 instance ToGrpc NodePubKey ByteString where
-  toGrpc = Right . coerce
+  toGrpc = Right . unNodePubKey
 
 instance ToGrpc NodePubKey Text where
   toGrpc =
     first (const $ ToGrpcError "UTF8_DECODE_ERROR")
       . decodeUtf8'
       . B16.encode
-      . coerce
+      . unNodePubKey
 
 instance ToGrpc NodeLocation Text where
-  toGrpc = Right . coerce
+  toGrpc = Right . unNodeLocation
 
 --
 -- TODO : smart constructors for NodePubKey and NodeLocation ???
@@ -269,7 +269,7 @@ instance FromGrpc NodeLocation Text where
   fromGrpc = Right . NodeLocation
 
 instance ToGrpc (TxId a) ByteString where
-  toGrpc = Right . coerce
+  toGrpc = Right . unTxId
 
 instance ToGrpc (Vout a) Word32 where
   toGrpc x = first (ToGrpcError . ("Vout overflow: " <>) . Universum.show) (tryFrom @Natural @Word32 $ unVout x)
@@ -278,13 +278,13 @@ instance ToGrpc ChanId Word64 where
   toGrpc x = first (ToGrpcError . ("ChanId overflow: " <>) . Universum.show) (tryFrom @Natural @Word64 $ unChanId x)
 
 instance ToGrpc PendingChannelId ByteString where
-  toGrpc = Right . coerce
+  toGrpc = Right . unPendingChannelId
 
 instance ToGrpc Psbt ByteString where
-  toGrpc = Right . coerce
+  toGrpc = Right . unPsbt
 
 instance ToGrpc RawTx ByteString where
-  toGrpc = Right . coerce
+  toGrpc = Right . unRawTx
 
 instance ToGrpc AddIndex Word64 where
   toGrpc x = first (ToGrpcError . ("AddIndex overflow: " <>) . Universum.show) (tryFrom @Natural @Word64 $ unAddIndex x)
@@ -333,20 +333,20 @@ instance FromGrpc RPreimage Text where
       Left {} -> Left $ FromGrpcError "NON_HEX_RPREIMAGE"
 
 instance ToGrpc PaymentRequest Text where
-  toGrpc x = Right (coerce x :: Text)
+  toGrpc x = Right (unPaymentRequest x :: Text)
 
 instance ToGrpc Seconds Int64 where
   toGrpc x =
     first (ToGrpcError . ("Seconds overflow: " <>) . Universum.show) (tryFrom @Natural @Int64 $ unSeconds x)
 
 instance ToGrpc CipherSeedMnemonic [Text] where
-  toGrpc = Right . coerce
+  toGrpc = Right . unCipherSeedMnemonic
 
 instance ToGrpc AezeedPassphrase ByteString where
-  toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
+  toGrpc x = Right $ encodeUtf8 (unAezeedPassphrase x :: Text)
 
 instance ToGrpc RHash ByteString where
-  toGrpc = Right . coerce
+  toGrpc = Right . unRHash
 
 instance ToGrpc RHash IGrpc.CancelInvoiceMsg where
   toGrpc x = do
@@ -354,7 +354,7 @@ instance ToGrpc RHash IGrpc.CancelInvoiceMsg where
     Right $ defMessage & IGrpc.paymentHash .~ ph
 
 instance ToGrpc RPreimage ByteString where
-  toGrpc = Right . coerce
+  toGrpc = Right . unRPreimage
 
 instance ToGrpc RPreimage IGrpc.SettleInvoiceMsg where
   toGrpc x = do
@@ -362,10 +362,10 @@ instance ToGrpc RPreimage IGrpc.SettleInvoiceMsg where
     Right $ defMessage & IGrpc.preimage .~ p
 
 instance ToGrpc PaymentRequest LnGrpc.PayReqString where
-  toGrpc x = Right $ defMessage & LnGrpc.payReq .~ coerce x
+  toGrpc x = Right $ defMessage & LnGrpc.payReq .~ unPaymentRequest x
 
 instance ToGrpc RHash LnGrpc.PaymentHash where
-  toGrpc x = Right $ defMessage & LnGrpc.rHash .~ coerce x
+  toGrpc x = Right $ defMessage & LnGrpc.rHash .~ unRHash x
 
 instance ToGrpc RHash IGrpc.SubscribeSingleInvoiceRequest where
   toGrpc x = do
@@ -373,7 +373,7 @@ instance ToGrpc RHash IGrpc.SubscribeSingleInvoiceRequest where
     Right $ defMessage & IGrpc.rHash .~ rh
 
 newRHash :: RPreimage -> RHash
-newRHash = RHash . SHA256.hash . coerce
+newRHash = RHash . SHA256.hash . unRPreimage
 
 newRPreimage :: MonadIO m => m RPreimage
 newRPreimage = RPreimage <$> liftIO (getRandomBytes 32)

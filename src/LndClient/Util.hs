@@ -98,7 +98,7 @@ readTChanTimeout t x = do
   t0 <-
     liftIO
       . TVar.registerDelay
-      $ coerce t
+      $ unMicroSecondsDelay t
   (join <$>)
     . (rightToMaybe <$>)
     . catchAsync
@@ -123,4 +123,4 @@ catchAsync x =
               ]
 
 sleep :: MonadIO m => MicroSecondsDelay -> m ()
-sleep = liftIO . Delay.delay . from @Int . coerce
+sleep = liftIO . Delay.delay . from @Int . unMicroSecondsDelay
