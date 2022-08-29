@@ -1,3 +1,4 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -85,10 +86,9 @@ newtype ChanId = ChanId {unChanId :: Natural}
 
 instance PersistField ChanId where
   toPersistValue =
-    toPersistValue . unsafeFrom @Natural @Word64 . unChanId
+    unsafeToPersistValue @Natural @Word64 unChanId
   fromPersistValue =
-    (ChanId . from @Word64 @Natural <$>)
-      . fromPersistValue
+    safeFromPersistValue @Word64 @Natural ChanId
 
 deriving via Word64 instance PersistFieldSql ChanId
 
@@ -100,10 +100,9 @@ newtype Vout (a :: TxKind) = Vout {unVout :: Natural}
 
 instance PersistField (Vout a) where
   toPersistValue =
-    toPersistValue . unsafeFrom @Natural @Word32 . unVout
+    unsafeToPersistValue @Natural @Word32 unVout
   fromPersistValue =
-    (Vout . from @Word32 @Natural <$>)
-      . fromPersistValue
+    safeFromPersistValue @Word32 @Natural Vout
 
 deriving via Word32 instance PersistFieldSql (Vout a)
 
@@ -133,10 +132,9 @@ newtype AddIndex = AddIndex {unAddIndex :: Natural}
 
 instance PersistField AddIndex where
   toPersistValue =
-    toPersistValue . unsafeFrom @Natural @Word64 . unAddIndex
+    unsafeToPersistValue @Natural @Word64 unAddIndex
   fromPersistValue =
-    (AddIndex . from @Word64 @Natural <$>)
-      . fromPersistValue
+    safeFromPersistValue @Word64 @Natural AddIndex
 
 deriving via Word64 instance PersistFieldSql AddIndex
 
@@ -148,10 +146,9 @@ newtype SettleIndex = SettleIndex {unSettleIndex :: Natural}
 
 instance PersistField SettleIndex where
   toPersistValue =
-    toPersistValue . unsafeFrom @Natural @Word64 . unSettleIndex
+    unsafeToPersistValue @Natural @Word64 unSettleIndex
   fromPersistValue =
-    (SettleIndex . from @Word64 @Natural <$>)
-      . fromPersistValue
+    safeFromPersistValue @Word64 @Natural SettleIndex
 
 deriving via Word32 instance PersistFieldSql SettleIndex
 
@@ -190,10 +187,9 @@ newtype Msat = Msat {unMsat :: Natural}
 
 instance PersistField Msat where
   toPersistValue =
-    toPersistValue . unsafeFrom @Natural @Word64 . unMsat
+    unsafeToPersistValue @Natural @Word64 unMsat
   fromPersistValue =
-    (Msat . from @Word64 @Natural <$>)
-      . fromPersistValue
+    safeFromPersistValue @Word64 @Natural Msat
 
 deriving via Word64 instance PersistFieldSql Msat
 
@@ -220,10 +216,9 @@ newtype Seconds = Seconds {unSeconds :: Natural}
 
 instance PersistField Seconds where
   toPersistValue =
-    toPersistValue . unsafeFrom @Natural @Word64 . unSeconds
+    unsafeToPersistValue @Natural @Word64 unSeconds
   fromPersistValue =
-    (Seconds . from @Word64 @Natural <$>)
-      . fromPersistValue
+    safeFromPersistValue @Word64 @Natural Seconds
 
 deriving via Word64 instance PersistFieldSql Seconds
 
@@ -371,6 +366,17 @@ instance ToGrpc RHash IGrpc.SubscribeSingleInvoiceRequest where
   toGrpc x = do
     rh <- toGrpc x
     Right $ defMessage & IGrpc.rHash .~ rh
+
+unsafeToPersistValue :: forall a b c. (TryFrom a b, PersistField b, Show a, Typeable a, Typeable b) => (c -> a) -> c -> PersistValue
+unsafeToPersistValue x = toPersistValue . unsafeFrom @a @b . x
+
+safeFromPersistValue ::
+  forall a b c.
+  (From a b, PersistField a) =>
+  (b -> c) ->
+  PersistValue ->
+  Either Text c
+safeFromPersistValue x = (x . from @a @b <$>) . fromPersistValue
 
 newRHash :: RPreimage -> RHash
 newRHash = RHash . SHA256.hash . unRPreimage
