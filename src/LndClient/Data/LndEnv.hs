@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications #-}
 
 module LndClient.Data.LndEnv
   ( LndEnv (..),
@@ -41,7 +42,6 @@ import LndClient.Class
 import LndClient.Data.Newtype
 import LndClient.Data.Type
 import LndClient.Import.External as Ex
-import LndClient.Util as U
 import Network.GRPC.Client.Helpers
   ( GrpcClientConfig (..),
     grpcClientConfigSimple,
@@ -106,7 +106,7 @@ data LndEnv = LndEnv
   }
 
 instance ToGrpc LndWalletPassword ByteString where
-  toGrpc x = Right $ encodeUtf8 (coerce x :: Text)
+  toGrpc x = Right $ encodeUtf8 (unLndWalletPassword x :: Text)
 
 instance FromJSON LndTlsCert where
   parseJSON x =
@@ -194,12 +194,11 @@ createLndTlsCert bs = do
     (decodeSignedCertificate $ Pem.pemContent pem)
 
 unLndTlsCert :: LndTlsCert -> ByteString
-unLndTlsCert (LndTlsCert bs _) = coerce bs
+unLndTlsCert (LndTlsCert bs _) = bs
 
 createLndPort :: Word32 -> Either LndError LndPort'
-createLndPort p = do
-  let maybePort :: Maybe Int = U.safeFromIntegral p
-  maybeToRight (LndEnvError "Wrong port") $ LndPort' <$> maybePort
+createLndPort p =
+  bimap (LndEnvError . ("Wrong port " <>) . Universum.show) LndPort' (tryFrom @Word32 @Int p)
 
 readLndEnv :: IO LndEnv
 readLndEnv =
@@ -245,7 +244,7 @@ newLndEnv pwd (LndTlsCert _ cert) mac (LndHost' host) (LndPort' port) seed aezee
         (grpcClientConfigSimple host_ port_ True)
           { _grpcClientConfigCompression = uncompressed,
             _grpcClientConfigHeaders =
-              [ ("macaroon", encodeUtf8 (coerce mac :: Text))
+              [ ("macaroon", encodeUtf8 (unLndHexMacaroon mac :: Text))
               ],
             _grpcClientConfigTLS =
               Just . selfSignedCertificateValidation [cert] $

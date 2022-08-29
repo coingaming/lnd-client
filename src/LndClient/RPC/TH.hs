@@ -104,11 +104,11 @@ mkRpc k = do
                 env
                 IW.InitWalletRequest
                   { IW.walletPassword =
-                      coerce $ envLndWalletPassword env,
+                      envLndWalletPassword env,
                     IW.cipherSeedMnemonic =
-                      coerce seed,
+                      seed,
                     IW.aezeedPassphrase =
-                      coerce $ envLndAezeedPassphrase env
+                      envLndAezeedPassphrase env
                   }
           if isRight res
             then waitForGrpc env
@@ -125,7 +125,7 @@ mkRpc k = do
             (RPC :: RPC LnGRPC.WalletUnlocker "unlockWallet")
             env
             UW.UnlockWalletRequest
-              { UW.walletPassword = coerce $ envLndWalletPassword env,
+              { UW.walletPassword = envLndWalletPassword env,
                 UW.recoveryWindow = 100
               }
       if isRight res

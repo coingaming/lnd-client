@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeApplications #-}
+
 module LndClient.Data.PayReq
   ( PayReq (..),
     addSeconds,
@@ -45,7 +47,8 @@ addSeconds =
     . fromRational
     . toRational
     . secondsToDiffTime
-    . fromIntegral
+    . from @Natural @Integer
+    . unSeconds
 
 secToUtcTime :: Int64 -> UTCTime
 secToUtcTime x =
@@ -53,7 +56,7 @@ secToUtcTime x =
     ( fromRational
         . toRational
         . secondsToDiffTime
-        $ fromIntegral x
+        $ from @Int64 @Integer x
     )
     epoch
 

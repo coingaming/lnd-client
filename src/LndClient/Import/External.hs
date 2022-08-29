@@ -25,7 +25,6 @@ import Control.Monad.Extra as Import
     fromMaybeM,
   )
 import Data.Aeson as Import (FromJSON (..), ToJSON, fromJSON)
-import Data.Coerce as Import (coerce)
 import Data.List.Extra as Import (enumerate)
 import Data.Text as Import (Text, pack, unpack)
 import Data.Time.Clock as Import
@@ -43,6 +42,7 @@ import Data.Type.Equality as Import
 import Database.Persist.Class as Import (PersistField (..))
 import Database.Persist.Sql as Import (PersistFieldSql)
 import Database.Persist.TH as Import (derivePersistField)
+import Database.Persist.PersistValue as Import
 import GHC.Generics as Import (Rep)
 import Katip as Import
   ( ColorStrategy (..),
@@ -76,7 +76,7 @@ import Text.PrettyPrint.GenericPretty.Import as Import
     inspectStr,
   )
 import Text.PrettyPrint.GenericPretty.Instance as Import ()
-import Universum as Import hiding (Text, catch, finally, show)
+import Universum as Import hiding (Text, catch, finally, fromIntegral, show)
 import UnliftIO as Import
   ( Handler (..),
     MonadUnliftIO (..),

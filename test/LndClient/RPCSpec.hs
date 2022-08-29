@@ -410,7 +410,7 @@ spec = do
           =<< getInfo alice
       VerifyMessageResponse res <-
         liftLndResult
-          =<< verifyMessage bob (VerifyMessageRequest "test" sig (coerce pubKey))
+          =<< verifyMessage bob (VerifyMessageRequest "test" sig (unNodePubKey pubKey))
       liftIO $
         res `shouldBe` True
   it "waitForGrpc" $

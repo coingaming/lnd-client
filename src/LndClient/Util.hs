@@ -4,7 +4,6 @@
 module LndClient.Util
   ( retrySilent,
     retryKatip,
-    safeFromIntegral,
     spawnLink,
     withSpawnLink,
     readTChanTimeout,
@@ -76,17 +75,6 @@ retryKatip = this 0
         _ ->
           pure res
 
-safeFromIntegral ::
-  forall a b. (Integral a, Integral b, Bounded b) => a -> Maybe b
-safeFromIntegral x =
-  if (intX >= intMin) && (intX <= intMax)
-    then Just $ fromIntegral x
-    else Nothing
-  where
-    intX = fromIntegral x :: Integer
-    intMin = fromIntegral (minBound :: b) :: Integer
-    intMax = fromIntegral (maxBound :: b) :: Integer
-
 spawnLink :: (MonadUnliftIO m) => m a -> m (Async a)
 spawnLink x =
   withRunInIO $ \run -> do
@@ -110,7 +98,7 @@ readTChanTimeout t x = do
   t0 <-
     liftIO
       . TVar.registerDelay
-      $ coerce t
+      $ unMicroSecondsDelay t
   (join <$>)
     . (rightToMaybe <$>)
     . catchAsync
@@ -135,4 +123,4 @@ catchAsync x =
               ]
 
 sleep :: MonadIO m => MicroSecondsDelay -> m ()
-sleep = liftIO . Delay.delay . fromIntegral @Int . coerce
+sleep = liftIO . Delay.delay . from @Int . unMicroSecondsDelay
