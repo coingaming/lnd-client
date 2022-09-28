@@ -13,7 +13,7 @@ import qualified Proto.Lightning_Fields as LnGRPC
 
 data SendPaymentRequest = SendPaymentRequest
   { paymentRequest :: PaymentRequest,
-    amt :: Msat,
+    amt :: Maybe Msat,
     outgoingChanId :: Maybe ChanId
   }
   deriving stock (Eq, Show, Generic)
@@ -32,7 +32,7 @@ instance Out SendPaymentResponse
 instance ToGrpc SendPaymentRequest LnGRPC.SendRequest where
   toGrpc x =
     msg
-      <$> toGrpcMSat (amt x)
+      <$> toGrpcMSat (fromMaybe (Msat 0) $ amt x)
       <*> toGrpc (paymentRequest x)
       <*> toGrpc (outgoingChanId x)
     where

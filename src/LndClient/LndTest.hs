@@ -538,7 +538,7 @@ sendTestPayment amt0 sender0 recepient0 = do
           { SendPayment.paymentRequest =
               AddInvoice.paymentRequest invoice,
             SendPayment.amt =
-              amt0,
+              Just amt0,
             SendPayment.outgoingChanId =
               Nothing
           }
