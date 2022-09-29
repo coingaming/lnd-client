@@ -57,6 +57,7 @@ module LndClient.RPC.Katip
     exportChannelBackup,
     restoreChannelBackups,
     walletBalance,
+    channelBalance,
   )
 where
 

@@ -17,6 +17,7 @@ import LndClient.Data.AddInvoice as AddInvoice
     AddInvoiceResponse (..),
   )
 import LndClient.Data.Channel as Channel (Channel (..))
+import qualified LndClient.Data.ChannelBalance as ChannelBalance
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import qualified LndClient.Data.CloseChannel as CloseChannel
 import qualified LndClient.Data.ClosedChannels as ClosedChannels
@@ -137,7 +138,22 @@ spec = do
         =<< receiveInvoice bob rh Invoice.OPEN chan
       alice <- getLndEnv Alice
       let pr = AddInvoice.paymentRequest inv
-      let spr = SendPaymentRequest pr (Msat 1000000) Nothing
+      let spr = SendPaymentRequest pr (Just $ Msat 1000000) Nothing
+      void $ liftLndResult =<< sendPayment alice spr
+      res <- receiveInvoice bob rh Invoice.SETTLED chan
+      liftIO $ res `shouldSatisfy` isRight
+  it "settleNormalInvoice amt not specified" $
+    withEnv $ do
+      void $ setupOneChannel Alice Bob
+      chan <- getInvoiceTChan Bob
+      bob <- getLndEnv Bob
+      inv <- liftLndResult =<< addInvoice bob addInvoiceRequest
+      let rh = AddInvoice.rHash inv
+      liftLndResult
+        =<< receiveInvoice bob rh Invoice.OPEN chan
+      alice <- getLndEnv Alice
+      let pr = AddInvoice.paymentRequest inv
+      let spr = SendPaymentRequest pr Nothing Nothing
       void $ liftLndResult =<< sendPayment alice spr
       res <- receiveInvoice bob rh Invoice.SETTLED chan
       liftIO $ res `shouldSatisfy` isRight
@@ -248,7 +264,7 @@ spec = do
       watchSingleInvoice Bob rh
       liftLndResult
         =<< receiveInvoice bob rh Invoice.OPEN q
-      let spr = SendPaymentRequest pr (Msat 1000000) Nothing
+      let spr = SendPaymentRequest pr (Just $ Msat 1000000) Nothing
       alice <- getLndEnv Alice
       withSpawnLink
         (liftLndResult =<< sendPayment alice spr)
@@ -279,7 +295,7 @@ spec = do
       watchSingleInvoice Bob rh
       liftLndResult
         =<< receiveInvoice bob rh Invoice.OPEN q
-      let spr = SendPaymentRequest pr (Msat 1000000) Nothing
+      let spr = SendPaymentRequest pr (Just $ Msat 1000000) Nothing
       alice <- getLndEnv Alice
       withSpawnLink
         (liftLndResult =<< sendPayment alice spr)
@@ -381,7 +397,7 @@ spec = do
         let req =
               SendPaymentRequest
                 (AddInvoice.paymentRequest inv)
-                (AddInvoice.valueMsat addInvoiceRequest)
+                (Just $ AddInvoice.valueMsat addInvoiceRequest)
                 Nothing
         --
         -- spawn payment watcher and settle invoice
@@ -457,7 +473,7 @@ spec = do
         let req =
               SendPaymentRequest
                 (AddInvoice.paymentRequest inv)
-                (AddInvoice.valueMsat addInvoiceRequest)
+                (Just $ AddInvoice.valueMsat addInvoiceRequest)
                 Nothing
         let tpreq = TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
         _ <- sendPayment alice req
@@ -473,7 +489,7 @@ spec = do
         let req =
               SendPaymentRequest
                 (AddInvoice.paymentRequest inv)
-                (AddInvoice.valueMsat addInvoiceRequest)
+                (Just $ AddInvoice.valueMsat addInvoiceRequest)
                 Nothing
         let tpreq = TrackPayment.TrackPaymentRequest (AddInvoice.rHash inv) False
         _ <- sendPayment alice req
@@ -484,10 +500,37 @@ spec = do
       void $ setupOneChannel Alice Bob
       lnd <- getLndEnv Alice
       res <- liftLndResult =<< walletBalance lnd
-      print res
       liftIO $ do
         Wallet.totalBalance res `shouldSatisfy` (> 0)
         Wallet.confirmedBalance res `shouldSatisfy` (> 0)
+  it "channelBalance" $
+    withEnv $ do
+      setupZeroChannels proxyOwner
+      void $ setupOneChannel Alice Bob
+      sleep $ MicroSecondsDelay 1000000
+      alice <- getLndEnv Alice
+      aliceBalance <- liftLndResult =<< channelBalance alice
+      bob <- getLndEnv Bob
+      bobBalance <- liftLndResult =<< channelBalance bob
+      liftIO $ do
+        aliceBalance
+          `shouldBe` ChannelBalance.ChannelBalanceResponse
+            { localBalance = Msat 186530000,
+              remoteBalance = Msat 10000000,
+              unsettledLocalBalance = Msat 0,
+              unsettledRemoteBalance = Msat 0,
+              pendingOpenLocalBalance = Msat 0,
+              pendingOpenRemoteBalance = Msat 0
+            }
+        bobBalance
+          `shouldBe` ChannelBalance.ChannelBalanceResponse
+            { localBalance = Msat 10000000,
+              remoteBalance = Msat 186530000,
+              unsettledLocalBalance = Msat 0,
+              unsettledRemoteBalance = Msat 0,
+              pendingOpenLocalBalance = Msat 0,
+              pendingOpenRemoteBalance = Msat 0
+            }
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing

@@ -12,6 +12,7 @@ import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.Channel (Channel (..))
 import qualified LndClient.Data.ChannelBackup as Bak
+import qualified LndClient.Data.ChannelBalance as ChannelBalance
 import LndClient.Data.ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel
   ( ChannelCloseSummary (..),
@@ -646,6 +647,17 @@ mkRpc k = do
           (RPC :: RPC LnGRPC.Lightning "walletBalance")
           env
           (defMessage :: LnGRPC.WalletBalanceRequest)
+
+    channelBalance ::
+      $(tcc m) =>
+      LndEnv ->
+      $(pure m) (Either LndError ChannelBalance.ChannelBalanceResponse)
+    channelBalance env =
+      $(grpcRetry) $
+        $(grpcSync)
+          (RPC :: RPC LnGRPC.Lightning "channelBalance")
+          env
+          (defMessage :: LnGRPC.ChannelBalanceRequest)
     |]
   where
     tcc :: TH.Type -> Q TH.Type
