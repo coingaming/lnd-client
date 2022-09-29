@@ -507,6 +507,7 @@ spec = do
     withEnv $ do
       setupZeroChannels proxyOwner
       void $ setupOneChannel Alice Bob
+      sleep $ MicroSecondsDelay 1000000
       alice <- getLndEnv Alice
       aliceBalance <- liftLndResult =<< channelBalance alice
       bob <- getLndEnv Bob
@@ -514,9 +515,9 @@ spec = do
       liftIO $ do
         aliceBalance
           `shouldBe` ChannelBalance.ChannelBalanceResponse
-            { localBalance = Msat 185100000,
+            { localBalance = Msat 186530000,
               remoteBalance = Msat 10000000,
-              unsettledLocalBalance = Msat 1000000,
+              unsettledLocalBalance = Msat 0,
               unsettledRemoteBalance = Msat 0,
               pendingOpenLocalBalance = Msat 0,
               pendingOpenRemoteBalance = Msat 0
