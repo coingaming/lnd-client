@@ -37,6 +37,7 @@ library
       LndClient.Data.AddInvoice
       LndClient.Data.Channel
       LndClient.Data.ChannelBackup
+      LndClient.Data.ChannelBalance
       LndClient.Data.ChannelPoint
       LndClient.Data.CloseChannel
       LndClient.Data.ClosedChannel
@@ -269,6 +270,7 @@ executable lnd-client-prof
         LndClient.Data.AddInvoice
         LndClient.Data.Channel
         LndClient.Data.ChannelBackup
+        LndClient.Data.ChannelBalance
         LndClient.Data.ChannelPoint
         LndClient.Data.CloseChannel
         LndClient.Data.ClosedChannel
@@ -457,6 +459,7 @@ test-suite lnd-client-test
         LndClient.Data.AddInvoice
         LndClient.Data.Channel
         LndClient.Data.ChannelBackup
+        LndClient.Data.ChannelBalance
         LndClient.Data.ChannelPoint
         LndClient.Data.CloseChannel
         LndClient.Data.ClosedChannel

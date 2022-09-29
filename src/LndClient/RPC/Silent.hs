@@ -55,6 +55,7 @@ module LndClient.RPC.Silent
     exportChannelBackup,
     restoreChannelBackups,
     walletBalance,
+    channelBalance,
   )
 where
 

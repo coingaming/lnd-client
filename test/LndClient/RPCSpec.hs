@@ -17,6 +17,7 @@ import LndClient.Data.AddInvoice as AddInvoice
     AddInvoiceResponse (..),
   )
 import LndClient.Data.Channel as Channel (Channel (..))
+import qualified LndClient.Data.ChannelBalance as ChannelBalance
 import LndClient.Data.CloseChannel (CloseChannelRequest (..))
 import qualified LndClient.Data.CloseChannel as CloseChannel
 import qualified LndClient.Data.ClosedChannels as ClosedChannels
@@ -499,10 +500,36 @@ spec = do
       void $ setupOneChannel Alice Bob
       lnd <- getLndEnv Alice
       res <- liftLndResult =<< walletBalance lnd
-      print res
       liftIO $ do
         Wallet.totalBalance res `shouldSatisfy` (> 0)
         Wallet.confirmedBalance res `shouldSatisfy` (> 0)
+  it "channelBalance" $
+    withEnv $ do
+      setupZeroChannels proxyOwner
+      void $ setupOneChannel Alice Bob
+      alice <- getLndEnv Alice
+      aliceBalance <- liftLndResult =<< channelBalance alice
+      bob <- getLndEnv Bob
+      bobBalance <- liftLndResult =<< channelBalance bob
+      liftIO $ do
+        aliceBalance
+          `shouldBe` ChannelBalance.ChannelBalanceResponse
+            { localBalance = Msat 185100000,
+              remoteBalance = Msat 10000000,
+              unsettledLocalBalance = Msat 1000000,
+              unsettledRemoteBalance = Msat 0,
+              pendingOpenLocalBalance = Msat 0,
+              pendingOpenRemoteBalance = Msat 0
+            }
+        bobBalance
+          `shouldBe` ChannelBalance.ChannelBalanceResponse
+            { localBalance = Msat 10000000,
+              remoteBalance = Msat 186530000,
+              unsettledLocalBalance = Msat 0,
+              unsettledRemoteBalance = Msat 0,
+              pendingOpenLocalBalance = Msat 0,
+              pendingOpenRemoteBalance = Msat 0
+            }
   where
     subscribeInvoicesRequest =
       SubscribeInvoicesRequest (Just $ AddIndex 1) Nothing
