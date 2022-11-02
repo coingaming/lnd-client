@@ -87,7 +87,7 @@ waitForGrpc env = this 30
     this (x :: Int) =
       if x > 0
         then do
-          res <- getInfo env
+          res <- getInfoNoUnlock env
           if isRight res
             then return $ Right ()
             else do
@@ -102,7 +102,7 @@ lazyUnlockWallet ::
   LndEnv ->
   m (Either LndError ())
 lazyUnlockWallet env = do
-  unlocked <- isRight <$> getInfo env
+  unlocked <- isRight <$> getInfoNoUnlock env
   if unlocked
     then return $ Right ()
     else unlockWallet env
@@ -192,15 +192,15 @@ trackPaymentSync env req = do
         Nothing -> waitTrackResult mVar0 (n - 1)
 
 catchWalletLock ::
-  forall m a.
-  (MonadUnliftIO m) =>
-  LndEnv ->
-  m (Either LndError a) ->
-  m (Either LndError a)
+   forall m a.
+   MonadUnliftIO m =>
+   LndEnv ->
+   m (Either LndError a) ->
+   m (Either LndError a)
 catchWalletLock env x = do
-  x0 <- x
-  case x0 of
-    Left LndWalletLocked -> do
-      _ <- lazyUnlockWallet env
-      x
-    _ -> pure x0
+   x0 <- x
+   case x0 of
+     Left LndWalletLocked -> do
+       _ <- lazyUnlockWallet env
+       x
+     _ -> pure x0

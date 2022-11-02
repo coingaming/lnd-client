@@ -84,6 +84,18 @@ mkRpc k = do
       LndEnv ->
       $(pure m) (Either LndError GI.GetInfoResponse)
     getInfo env =
+      catchWalletLock env
+      $ $(grpcRetry)
+      $ $(grpcSync)
+          (RPC :: RPC LnGRPC.Lightning "getInfo")
+          env
+          (defMessage :: LnGRPC.GetInfoRequest)
+
+    getInfoNoUnlock ::
+      $(tcc m) =>
+      LndEnv ->
+      $(pure m) (Either LndError GI.GetInfoResponse)
+    getInfoNoUnlock env =
       $(grpcRetry) $
         $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "getInfo")
@@ -658,6 +670,7 @@ mkRpc k = do
           (RPC :: RPC LnGRPC.Lightning "channelBalance")
           env
           (defMessage :: LnGRPC.ChannelBalanceRequest)
+
     |]
   where
     tcc :: TH.Type -> Q TH.Type
