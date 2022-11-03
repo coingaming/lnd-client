@@ -672,7 +672,6 @@ mkRpc k = do
           (RPC :: RPC LnGRPC.Lightning "channelBalance")
           env
           (defMessage :: LnGRPC.ChannelBalanceRequest)
-
     |]
   where
     tcc :: TH.Type -> Q TH.Type
