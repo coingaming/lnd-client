@@ -219,15 +219,15 @@ trackPaymentSync env req = do
         Nothing -> waitTrackResult mVar0 (n - 1)
 
 catchWalletLock ::
-   forall m a.
-   (KatipContext m, MonadUnliftIO m) =>
-   LndEnv ->
-   m (Either LndError a) ->
-   m (Either LndError a)
+  forall m a.
+  (KatipContext m, MonadUnliftIO m) =>
+  LndEnv ->
+  m (Either LndError a) ->
+  m (Either LndError a)
 catchWalletLock env x = do
-   x0 <- x
-   case x0 of
-     Left LndWalletLocked -> do
-       _ <- lazyUnlockWallet env
-       x
-     _ -> pure x0
+  x0 <- x
+  case x0 of
+    Left LndWalletLocked -> do
+      _ <- lazyUnlockWallet env
+      x
+    _ -> pure x0
