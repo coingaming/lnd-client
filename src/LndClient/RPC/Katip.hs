@@ -91,7 +91,7 @@ waitForGrpc env =
       if x > 0
         then do
           $(logTM) (newSev env DebugS) "Waiting for GRPC..."
-          res <- getInfo $ enforceDebugSev env
+          res <- getInfoNoUnlock $ enforceDebugSev env
           if isRight res
             then return $ Right ()
             else do
@@ -109,7 +109,7 @@ lazyUnlockWallet ::
 lazyUnlockWallet env =
   katipAddLndPublic env LndMethodCompose LazyUnlockWallet $ do
     $(logTM) (newSev env DebugS) rpcRunning
-    unlocked <- isRight <$> getInfo (enforceDebugSev env)
+    unlocked <- isRight <$> getInfoNoUnlock (enforceDebugSev env)
     if unlocked
       then do
         $(logTM) (newSev env DebugS) "Wallet is already unlocked, doing nothing!"
@@ -220,7 +220,7 @@ trackPaymentSync env req = do
 
 catchWalletLock ::
   forall m a.
-  (MonadUnliftIO m, KatipContext m) =>
+  (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
   m (Either LndError a) ->
   m (Either LndError a)
