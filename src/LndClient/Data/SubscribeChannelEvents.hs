@@ -55,7 +55,7 @@ instance FromGrpc UpdateType LnGRPC.ChannelEventUpdate'UpdateType where
     LnGRPC.ChannelEventUpdate'UpdateType'Unrecognized v ->
       Left
         . FromGrpcError
-        $ "Cannot parse ChannelUpdateType, value:" <> inspect v
+        $ "Cannot parse ChannelUpdateType, value:" <> inspectPlain v
 
 instance FromGrpc UpdateChannel LnGRPC.ChannelEventUpdate'Channel where
   fromGrpc x = case x of

@@ -413,7 +413,7 @@ toGrpcSat mSat = do
   let mVal = unMsat mSat
   case divMod mVal 1000 of
     (val, 0) -> first (ToGrpcError . ("Msat overflow " <>) . Universum.show) (tryFrom @Natural @a val)
-    _ -> Left $ ToGrpcError ("Cannot convert " <> inspect mVal <> " to Sat")
+    _ -> Left $ ToGrpcError ("Cannot convert " <> inspectPlain mVal <> " to Sat")
 
 fromGrpcSat :: forall a. (TryFrom a Natural, Show a, Typeable a) => a -> Either LndError Msat
 fromGrpcSat x =

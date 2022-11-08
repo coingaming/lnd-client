@@ -252,9 +252,9 @@ mine blocks owner = do
   $(logTM) sev $
     logStr $
       "Mining "
-        <> inspect blocks
+        <> inspectPlain blocks
         <> " blocks to "
-        <> inspect owner
+        <> inspectPlain owner
         <> " wallet"
   void . liftIO $
     Btc.generateToAddress
@@ -271,7 +271,7 @@ liftLndResult :: MonadIO m => Either LndError a -> m a
 liftLndResult (Right x) =
   pure x
 liftLndResult (Left x) =
-  liftIO . fail $ "LiftLndResult failed " <> inspectStr x
+  liftIO . fail $ "LiftLndResult failed " <> inspectStrPlain x
 
 syncWallets ::
   forall m owner.
@@ -312,7 +312,7 @@ syncPendingChannelsFor owner = this 0
     this 30 = do
       let msg =
             "SyncPendingChannelsFor "
-              <> inspect owner
+              <> inspectPlain owner
               <> " attempt limit exceeded"
       sev <- getSev owner ErrorS
       $(logTM) sev $ logStr msg
@@ -322,7 +322,7 @@ syncPendingChannelsFor owner = this 0
       $(logTM) sev $
         logStr $
           "SyncPendingChannelsFor "
-            <> inspect owner
+            <> inspectPlain owner
             <> " is running"
       res <- Lnd.pendingChannels =<< getLndEnv owner
       case res of
@@ -385,7 +385,7 @@ cancelAllInvoices =
     this :: Int -> owner -> m ()
     this 30 owner =
       error $
-        "CancelAllInvoices attempt limit exceeded for " <> inspect owner
+        "CancelAllInvoices attempt limit exceeded for " <> inspectPlain owner
     this attempt owner = do
       lnd <- getLndEnv owner
       let getInvoices :: m [Invoice] =
@@ -408,7 +408,7 @@ closeAllChannels po = do
     this :: Int -> (owner, owner) -> m ()
     this 30 owners =
       error $
-        "CloseAllChannels - limit exceeded for " <> inspect owners
+        "CloseAllChannels - limit exceeded for " <> inspectPlain owners
     this attempt (owner0, owner1) = do
       sev <- getSev owner0 DebugS
       $(logTM) sev "CloseAllChannels - closing channels"
