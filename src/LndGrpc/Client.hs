@@ -45,7 +45,7 @@ runUnary rpc env req = do
     Right (Right (Right (Right (_, _, Left e)))) ->
       Left $ LndError $ pack e
     Right (Right (Right (Left e))) ->
-      Left $ LndError ("LndGrpc response error, code: " <> inspect e)
+      Left $ LndError ("LndGrpc response error, code: " <> inspectPlain e)
     Right (Right (Left e)) ->
       Left . LndError $
         "LndGrpc TooMuchConcurrency error" <> fromString (Prelude.show e)
@@ -96,7 +96,7 @@ runStreamServer rpc env req handler = do
 catchExceptions :: MonadUnliftIO m => m (Either LndError a) -> m (Either LndError a)
 catchExceptions x =
   x
-    `catches` [ Handler (\(e :: BlockedIndefinitelyOnMVar) -> pure (Left $ LndGrpcException $ inspect e)),
+    `catches` [ Handler (\(e :: BlockedIndefinitelyOnMVar) -> pure (Left $ LndGrpcException $ inspectPlain e)),
                 Handler
                   ( \(ex :: IOException) -> case stripPrefix ("Network.Socket.connect" :: Text) (pack $ Prelude.show ex) of
                       Just mes -> pure $ Left $ NetworkException mes

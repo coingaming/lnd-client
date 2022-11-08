@@ -89,7 +89,7 @@ inspectSecret ::
   raw ->
   Text
 inspectSecret env =
-  inspect
+  inspectPlain
     . if rpcIsSecret @rpc
       then SecretLog (loggingStrategySecret $ envLndLogStrategy env)
       else PrettyLog
@@ -119,7 +119,7 @@ katipAddLndSecret ::
   m b
 katipAddLndSecret env meta =
   katipAddLndMeta env meta
-    . sl (inspect meta)
+    . sl (inspectPlain meta)
     . inspectSecret @rpc env
 
 katipAddLndPublic ::
@@ -133,8 +133,8 @@ katipAddLndPublic ::
   m b
 katipAddLndPublic env meta =
   katipAddLndMeta env meta
-    . sl (inspect meta)
-    . inspect
+    . sl (inspectPlain meta)
+    . inspectPlain
 
 katipAddLndLoc ::
   ( KatipContext m

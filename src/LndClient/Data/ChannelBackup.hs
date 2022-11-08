@@ -67,7 +67,7 @@ instance FromGrpc SingleChanBackupBlob ByteString where
       then
         Left
           . FromGrpcError
-          $ "Cannot parse SingleChanBackupBlob from " <> inspect x
+          $ "Cannot parse SingleChanBackupBlob from " <> inspectPlain x
       else
         Right $
           SingleChanBackupBlob x
