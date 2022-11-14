@@ -226,6 +226,7 @@ catchWalletLock ::
   m (Either LndError a)
 catchWalletLock env x = do
   x0 <- x
+  $(logTM) (ErrorS) $ logStr $ "CatchWalletUnlock" <> inspect (isLeft x0)
   case x0 of
     Left LndWalletLocked -> do
       $(logTM) (WarningS) "Wallet is locked, needs to be unlocked"
@@ -237,4 +238,6 @@ catchWalletLock env x = do
         Left err -> do
           $(logTM) (ErrorS) "Wallet unlock failure"
           pure $ Left err
-    _ -> pure x0
+    _ -> do
+      $(logTM) (ErrorS) $ logStr ("Wallet unlock not needed" :: Text)
+      pure x0
