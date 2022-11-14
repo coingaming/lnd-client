@@ -226,21 +226,15 @@ catchWalletLock ::
   m (Either LndError a)
 catchWalletLock env x = do
   x0 <- x
-  $(logTM) (ErrorS) $ logStr $ "CatchWalletUnlock" <> inspect (isLeft x0)
   case x0 of
-    Left LndWalletLocked -> do
-      $(logTM) (WarningS) "Wallet is locked, needs to be unlocked"
+    Left err -> do
+      $(logTM) (newSev env WarningS) $ logStr ("Wallet possibly is locked, try to unlock, RPC error: " <> inspect err)
       unlocked <- lazyUnlockWallet env
       case unlocked of
         Right () -> do
-          $(logTM) (InfoS) "Wallet unlocked"
+          $(logTM) (newSev env InfoS) "Wallet unlocked"
           pure x0
-        Left err -> do
-          $(logTM) (ErrorS) "Wallet unlock failure"
-          pure $ Left err
-    Left err -> do
-      $(logTM) (ErrorS) $ logStr ("RPC error" <> inspect err)
-      pure x0
-    _ -> do
-      $(logTM) (ErrorS) $ logStr ("Wallet unlock not needed" :: Text)
-      pure x0
+        Left err0 -> do
+          $(logTM) (newSev env ErrorS) "Wallet unlock failure"
+          pure $ Left err0
+    _ -> pure x0
