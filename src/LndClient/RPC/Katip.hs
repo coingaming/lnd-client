@@ -233,7 +233,7 @@ catchWalletLock env x = do
       case unlocked of
         Right () -> do
           $(logTM) (newSev env InfoS) "Wallet unlocked"
-          pure x0
+          x
         Left err0 -> do
           $(logTM) (newSev env ErrorS) "Wallet unlock failure"
           pure $ Left err0
