@@ -238,6 +238,9 @@ catchWalletLock env x = do
         Left err -> do
           $(logTM) (ErrorS) "Wallet unlock failure"
           pure $ Left err
+    Left err -> do
+      $(logTM) (ErrorS) $ logStr ("RPC error" <> inspect err)
+      pure x0
     _ -> do
       $(logTM) (ErrorS) $ logStr ("Wallet unlock not needed" :: Text)
       pure x0
