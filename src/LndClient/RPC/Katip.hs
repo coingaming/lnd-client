@@ -227,8 +227,8 @@ catchWalletLock ::
 catchWalletLock env x = do
   x0 <- x
   case x0 of
-    Left err -> do
-      $(logTM) (newSev env WarningS) $ logStr ("Wallet possibly is locked, try to unlock, RPC error: " <> inspect err)
+    Left LndWalletLocked -> do
+      $(logTM) (newSev env WarningS) "Wallet possibly is locked, try to unlock"
       unlocked <- lazyUnlockWallet env
       case unlocked of
         Right () -> do
