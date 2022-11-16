@@ -201,8 +201,6 @@ catchWalletLock env x = do
   x0 <- x
   case x0 of
     Left LndWalletLocked -> do
-      unlocked <- lazyUnlockWallet env
-      case unlocked of
-        Right () -> x
-        Left err -> pure $ Left err
+      _ <- lazyUnlockWallet env
+      pure x0
     _ -> pure x0
