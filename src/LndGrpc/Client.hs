@@ -36,14 +36,12 @@ runUnary rpc env req = do
   res <-
     catchExceptions $ liftIO (Right <$> this)
   pure $ case res of
-    Right (Right (Right (Right (_, _, Right x)))) ->
-      Right x
-    Right (Right (Right (Right (_, _, Left "wallet not created, create one to enable full RPC access")))) ->
-      Left LndWalletNotExists
-    Right (Right (Right (Right (_, _, Left "wallet locked, unlock it to enable full RPC access")))) ->
-      Left LndWalletLocked
-    Right (Right (Right (Right (_, _, Left e)))) ->
-      Left $ LndError $ pack e
+    Right (Right (Right (Right (_, _, Right x)))) -> Right x
+    Right (Right (Right (Right (a, _, Left e)))) -> do
+      case Prelude.lookup "grpc-message" a of
+        Just "wallet not created, create one to enable full RPC access" -> Left LndWalletNotExists
+        Just "wallet locked, unlock it to enable full RPC access" -> Left LndWalletLocked
+        _ -> Left $ LndError $ pack e
     Right (Right (Right (Left e))) ->
       Left $ LndError ("LndGrpc response error, code: " <> inspectPlain e)
     Right (Right (Left e)) ->
