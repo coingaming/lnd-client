@@ -52,7 +52,7 @@ module LndClient.RPC.Katip
     verifyMessage,
     fundingStateStep,
     trackPaymentSync,
-    catchWalletLock,
+    grpcCatchWalletLockKatip,
     exportAllChannelBackups,
     exportChannelBackup,
     restoreChannelBackups,
@@ -218,13 +218,13 @@ trackPaymentSync env req = do
         Just res -> return $ Right res
         Nothing -> waitTrackResult mVar0 (n - 1)
 
-catchWalletLock ::
+grpcCatchWalletLockKatip ::
   forall m a.
   (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
   m (Either LndError a) ->
   m (Either LndError a)
-catchWalletLock env x = do
+grpcCatchWalletLockKatip env x = do
   x0 <- x
   case x0 of
     Left LndWalletLocked -> do
