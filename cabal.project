@@ -1,11 +1,15 @@
 packages: *.cabal
 
+index-state: 2022-04-06T00:00:00Z
+
+package witch
+  flags: +remove-time
+
 source-repository-package
   type: git
-  location: https://github.com/coingaming/signable.git
-  tag: 403a04f9d29181fcc627abb359f31140d6400bfb
-  --sha256: 0p6ck18ap0w518iaq8r09maxz7j23d8ykaskg5sshcb0hcdwpbqf
-  subdir: haskell
+  location: https://github.com/21it/witch.git
+  --sha256: 17dvcqj29883sysx5qcgjbi3smn1c9kjaj807a9a2vj24fg2jwja
+  tag: ee0259bc5eb46d9c47d1c15473ff3e7d8212dc43
 
 source-repository-package
   type: git
