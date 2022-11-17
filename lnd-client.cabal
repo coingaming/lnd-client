@@ -1,6 +1,6 @@
 cabal-version: 2.0
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.34.7.
 --
 -- see: https://github.com/sol/hpack
 
@@ -189,7 +189,7 @@ library
     , unbounded-delays >=0.1.1.0 && <0.1.2
     , universum >=1.5.0 && <1.8
     , unliftio >=0.2.12
-    , witch >=1.0.0.2
+    , witch
     , x509 ==1.7.5.*
     , x509-store
   if impl(ghc >= 8.10.7)
@@ -405,7 +405,7 @@ executable lnd-client-prof
       , unbounded-delays >=0.1.1.0 && <0.1.2
       , universum >=1.5.0 && <1.8
       , unliftio >=0.2.12
-      , witch >=1.0.0.2
+      , witch
       , x509 ==1.7.5.*
       , x509-store
   else
@@ -594,7 +594,7 @@ test-suite lnd-client-test
       , unbounded-delays >=0.1.1.0 && <0.1.2
       , universum >=1.5.0 && <1.8
       , unliftio >=0.2.12
-      , witch >=1.0.0.2
+      , witch
       , x509 ==1.7.5.*
       , x509-store
   else
