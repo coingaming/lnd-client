@@ -57,6 +57,7 @@ module LndClient.RPC.Katip
     exportChannelBackup,
     restoreChannelBackups,
     walletBalance,
+    channelBalance,
   )
 where
 
@@ -90,7 +91,7 @@ waitForGrpc env =
       if x > 0
         then do
           $(logTM) (newSev env DebugS) "Waiting for GRPC..."
-          res <- getInfo $ enforceDebugSev env
+          res <- getInfoNoUnlock $ enforceDebugSev env
           if isRight res
             then return $ Right ()
             else do
@@ -108,7 +109,7 @@ lazyUnlockWallet ::
 lazyUnlockWallet env =
   katipAddLndPublic env LndMethodCompose LazyUnlockWallet $ do
     $(logTM) (newSev env DebugS) rpcRunning
-    unlocked <- isRight <$> getInfo (enforceDebugSev env)
+    unlocked <- isRight <$> getInfoNoUnlock (enforceDebugSev env)
     if unlocked
       then do
         $(logTM) (newSev env DebugS) "Wallet is already unlocked, doing nothing!"
@@ -219,7 +220,7 @@ trackPaymentSync env req = do
 
 catchWalletLock ::
   forall m a.
-  (MonadUnliftIO m, KatipContext m) =>
+  (KatipContext m, MonadUnliftIO m) =>
   LndEnv ->
   m (Either LndError a) ->
   m (Either LndError a)
@@ -227,6 +228,12 @@ catchWalletLock env x = do
   x0 <- x
   case x0 of
     Left LndWalletLocked -> do
-      _ <- lazyUnlockWallet env
-      x
+      $(logTM) (newSev env WarningS) "Wallet possibly is locked, try to unlock"
+      unlocked <- lazyUnlockWallet env
+      case unlocked of
+        Right () -> do
+          $(logTM) (newSev env InfoS) "Wallet unlocked"
+        Left _ -> do
+          $(logTM) (newSev env ErrorS) "Wallet unlock failure"
+      pure x0
     _ -> pure x0

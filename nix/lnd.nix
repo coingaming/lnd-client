@@ -7,7 +7,7 @@ let
     owner = "lightningnetwork";
     repo = "lnd";
     rev = "v${version}";
-    sha256 = "sha256-/PKW2Y6+PlWk88pC4DHFi1ZRqMfQzoO9MVLYZrB2UNc=u";
+    sha256 = "sha256-/PKW2Y6+PlWk88pC4DHFi1ZRqMfQzoO9MVLYZrB2UNc=";
   };
 in (callPackage lndnix {
       buildGoModule = args : pkgs.buildGoModule (args // {

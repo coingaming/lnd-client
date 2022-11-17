@@ -53,6 +53,8 @@ import LndClient.Import.External
 import LndClient.Util
 import qualified Proto.Invoicesrpc.Invoices as IGrpc
 import qualified Proto.Invoicesrpc.Invoices_Fields as IGrpc
+import qualified Proto.Lnrpc.Ln0 as LnGrpc
+import qualified Proto.Lnrpc.Ln0_Fields as LnGrpc
 import qualified Proto.Lnrpc.Ln1 as LnGrpc
 import qualified Proto.Lnrpc.Ln1_Fields as LnGrpc
 import qualified Universum (show)
@@ -194,6 +196,10 @@ instance PersistField Msat where
 deriving via Word64 instance PersistFieldSql Msat
 
 instance Out Msat
+
+instance FromGrpc Msat LnGrpc.Amount where
+  fromGrpc =
+    fromGrpcMSat . (^. LnGrpc.msat)
 
 newtype CipherSeedMnemonic = CipherSeedMnemonic {unCipherSeedMnemonic :: [Text]}
   deriving newtype (PersistField, PersistFieldSql, Eq, FromJSON)
@@ -407,7 +413,7 @@ toGrpcSat mSat = do
   let mVal = unMsat mSat
   case divMod mVal 1000 of
     (val, 0) -> first (ToGrpcError . ("Msat overflow " <>) . Universum.show) (tryFrom @Natural @a val)
-    _ -> Left $ ToGrpcError ("Cannot convert " <> inspect mVal <> " to Sat")
+    _ -> Left $ ToGrpcError ("Cannot convert " <> inspectPlain mVal <> " to Sat")
 
 fromGrpcSat :: forall a. (TryFrom a Natural, Show a, Typeable a) => a -> Either LndError Msat
 fromGrpcSat x =

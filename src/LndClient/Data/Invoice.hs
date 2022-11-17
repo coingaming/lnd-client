@@ -57,4 +57,4 @@ instance FromGrpc InvoiceState LnGRPC.Invoice'InvoiceState where
       LnGRPC.Invoice'InvoiceState'Unrecognized v ->
         Left
           . FromGrpcError
-          $ "Cannot parse InvoiceState, value:" <> inspect v
+          $ "Cannot parse InvoiceState, value:" <> inspectPlain v

@@ -48,4 +48,4 @@ instance FromGrpc EventType LnGRPC.HtlcEvent'EventType where
       LnGRPC.HtlcEvent'EventType'Unrecognized v ->
         Left
           . FromGrpcError
-          $ "Cannot parse EventType, value:" <> inspect v
+          $ "Cannot parse EventType, value:" <> inspectPlain v

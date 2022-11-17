@@ -12,6 +12,7 @@ import LndClient.Data.AddHodlInvoice (AddHodlInvoiceRequest (..))
 import LndClient.Data.AddInvoice (AddInvoiceRequest (..), AddInvoiceResponse (..))
 import LndClient.Data.Channel (Channel (..))
 import qualified LndClient.Data.ChannelBackup as Bak
+import qualified LndClient.Data.ChannelBalance as ChannelBalance
 import LndClient.Data.ChannelPoint (ChannelPoint (..))
 import LndClient.Data.CloseChannel
   ( ChannelCloseSummary (..),
@@ -83,6 +84,18 @@ mkRpc k = do
       LndEnv ->
       $(pure m) (Either LndError GI.GetInfoResponse)
     getInfo env =
+      catchWalletLock env
+      $ $(grpcRetry)
+      $ $(grpcSync)
+          (RPC :: RPC LnGRPC.Lightning "getInfo")
+          env
+          (defMessage :: LnGRPC.GetInfoRequest)
+
+    getInfoNoUnlock ::
+      $(tcc m) =>
+      LndEnv ->
+      $(pure m) (Either LndError GI.GetInfoResponse)
+    getInfoNoUnlock env =
       $(grpcRetry) $
         $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "getInfo")
@@ -483,7 +496,8 @@ mkRpc k = do
       SendCoinsRequest ->
       $(pure m) (Either LndError SendCoinsResponse)
     sendCoins env =
-      $(grpcRetry)
+      catchWalletLock env
+        . $(grpcRetry)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "sendCoins")
           env
@@ -646,6 +660,18 @@ mkRpc k = do
           (RPC :: RPC LnGRPC.Lightning "walletBalance")
           env
           (defMessage :: LnGRPC.WalletBalanceRequest)
+
+    channelBalance ::
+      $(tcc m) =>
+      LndEnv ->
+      $(pure m) (Either LndError ChannelBalance.ChannelBalanceResponse)
+    channelBalance env =
+      catchWalletLock env
+        . $(grpcRetry)
+        $ $(grpcSync)
+          (RPC :: RPC LnGRPC.Lightning "channelBalance")
+          env
+          (defMessage :: LnGRPC.ChannelBalanceRequest)
     |]
   where
     tcc :: TH.Type -> Q TH.Type

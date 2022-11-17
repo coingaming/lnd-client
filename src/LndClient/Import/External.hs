@@ -72,8 +72,8 @@ import Text.PrettyPrint.GenericPretty as Import (Out (..))
 import Text.PrettyPrint.GenericPretty.Import as Import
   ( PrettyLog (..),
     SecretVision (..),
-    inspect,
-    inspectStr,
+    inspectPlain,
+    inspectStrPlain,
   )
 import Text.PrettyPrint.GenericPretty.Instance as Import ()
 import Universum as Import hiding (Text, catch, finally, fromIntegral, show)
