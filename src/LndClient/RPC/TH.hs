@@ -84,12 +84,12 @@ mkRpc k = do
       LndEnv ->
       $(pure m) (Either LndError GI.GetInfoResponse)
     getInfo env =
-      catchWalletLock env
-      $ $(grpcRetry)
-      $ $(grpcSync)
-          (RPC :: RPC LnGRPC.Lightning "getInfo")
-          env
-          (defMessage :: LnGRPC.GetInfoRequest)
+      $(grpcRetry) $
+        ($(grpcCatchWalletLock) env) $
+          $(grpcSync)
+            (RPC :: RPC LnGRPC.Lightning "getInfo")
+            env
+            (defMessage :: LnGRPC.GetInfoRequest)
 
     getInfoNoUnlock ::
       $(tcc m) =>
@@ -151,8 +151,8 @@ mkRpc k = do
       NewAddressRequest ->
       $(pure m) (Either LndError NewAddressResponse)
     newAddress env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "newAddress")
           env
@@ -163,8 +163,8 @@ mkRpc k = do
       AddInvoiceRequest ->
       $(pure m) (Either LndError AddInvoiceResponse)
     addInvoice env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "addInvoice")
           env
@@ -175,8 +175,8 @@ mkRpc k = do
       AddHodlInvoiceRequest ->
       $(pure m) (Either LndError PaymentRequest)
     addHodlInvoice env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Invoices "addHoldInvoice")
           env
@@ -187,8 +187,8 @@ mkRpc k = do
       RHash ->
       $(pure m) (Either LndError ())
     cancelInvoice env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Invoices "cancelInvoice")
           env
@@ -199,8 +199,8 @@ mkRpc k = do
       RPreimage ->
       $(pure m) (Either LndError ())
     settleInvoice env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Invoices "settleInvoice")
           env
@@ -212,7 +212,7 @@ mkRpc k = do
       RHash ->
       $(pure m) (Either LndError ())
     subscribeSingleInvoice handler env =
-      catchWalletLock env
+      ($(grpcCatchWalletLock) env)
         . $(grpcSubscribe)
           (RPC :: RPC LnGRPC.Invoices "subscribeSingleInvoice")
           handler
@@ -239,7 +239,7 @@ mkRpc k = do
       SubscribeInvoicesRequest ->
       $(pure m) (Either LndError ())
     subscribeInvoices handler env =
-      catchWalletLock env
+      ($(grpcCatchWalletLock) env)
         . $(grpcSubscribe)
           (RPC :: RPC LnGRPC.Lightning "subscribeInvoices")
           handler
@@ -264,7 +264,7 @@ mkRpc k = do
       LndEnv ->
       $(pure m) (Either LndError ())
     subscribeChannelEvents handler env =
-      catchWalletLock env $
+      ($(grpcCatchWalletLock) env) $
         $(grpcSubscribe)
           (RPC :: RPC LnGRPC.Lightning "subscribeChannelEvents")
           handler
@@ -289,7 +289,7 @@ mkRpc k = do
       OpenChannelRequest ->
       $(pure m) (Either LndError ())
     openChannel handler env =
-      catchWalletLock env
+      ($(grpcCatchWalletLock) env)
         . $(grpcSubscribe)
           (RPC :: RPC LnGRPC.Lightning "openChannel")
           handler
@@ -301,7 +301,7 @@ mkRpc k = do
       OpenChannelRequest ->
       $(pure m) (Either LndError ChannelPoint)
     openChannelSync env =
-      catchWalletLock env
+      ($(grpcCatchWalletLock) env)
         . $(grpcSync) (RPC :: RPC LnGRPC.Lightning "openChannelSync") env
 
     listChannels ::
@@ -310,8 +310,8 @@ mkRpc k = do
       ListChannelsRequest ->
       $(pure m) (Either LndError [Channel])
     listChannels env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "listChannels")
           env
@@ -322,8 +322,8 @@ mkRpc k = do
       ListInvoiceRequest ->
       $(pure m) (Either LndError ListInvoiceResponse)
     listInvoices env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "listInvoices")
           env
@@ -334,8 +334,8 @@ mkRpc k = do
       ClosedChannelsRequest ->
       $(pure m) (Either LndError [ChannelCloseSummary])
     closedChannels env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "closedChannels")
           env
@@ -347,7 +347,7 @@ mkRpc k = do
       CloseChannelRequest ->
       $(pure m) (Either LndError ())
     closeChannel handler env =
-      catchWalletLock env
+      ($(grpcCatchWalletLock) env)
         . $(grpcSubscribe)
           (RPC :: RPC LnGRPC.Lightning "closeChannel")
           handler
@@ -358,12 +358,12 @@ mkRpc k = do
       LndEnv ->
       $(pure m) (Either LndError [Peer])
     listPeers env =
-      catchWalletLock env
-        . $(grpcRetry)
-        $ $(grpcSync)
-          (RPC :: RPC LnGRPC.Lightning "listPeers")
-          env
-          (defMessage :: LnGRPC.ListPeersRequest)
+      $(grpcRetry) $
+        ($(grpcCatchWalletLock) env) $
+          $(grpcSync)
+            (RPC :: RPC LnGRPC.Lightning "listPeers")
+            env
+            (defMessage :: LnGRPC.ListPeersRequest)
 
     connectPeer ::
       $(tcc m) =>
@@ -371,8 +371,8 @@ mkRpc k = do
       ConnectPeerRequest ->
       $(pure m) (Either LndError ())
     connectPeer env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "connectPeer")
           env
@@ -400,8 +400,8 @@ mkRpc k = do
       SendPaymentRequest ->
       $(pure m) (Either LndError SendPaymentResponse)
     sendPayment env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "sendPaymentSync")
           env
@@ -412,8 +412,8 @@ mkRpc k = do
       FundPsbtRequest ->
       $(pure m) (Either LndError FundPsbtResponse)
     fundPsbt env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "fundPsbt")
           env
@@ -424,8 +424,8 @@ mkRpc k = do
       FinalizePsbtRequest ->
       $(pure m) (Either LndError FinalizePsbtResponse)
     finalizePsbt env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "finalizePsbt")
           env
@@ -436,8 +436,8 @@ mkRpc k = do
       PublishTransactionRequest ->
       $(pure m) (Either LndError PublishTransactionResponse)
     publishTransaction env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "publishTransaction")
           env
@@ -448,8 +448,8 @@ mkRpc k = do
       ListUnspentRequest ->
       $(pure m) (Either LndError ListUnspentResponse)
     listUnspent env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "listUnspent")
           env
@@ -460,8 +460,8 @@ mkRpc k = do
       ListLeasesRequest ->
       $(pure m) (Either LndError ListLeasesResponse)
     listLeases env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "listLeases")
           env
@@ -472,8 +472,8 @@ mkRpc k = do
       LeaseOutputRequest ->
       $(pure m) (Either LndError LeaseOutputResponse)
     leaseOutput env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "leaseOutput")
           env
@@ -484,8 +484,8 @@ mkRpc k = do
       ReleaseOutputRequest ->
       $(pure m) (Either LndError ReleaseOutputResponse)
     releaseOutput env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.WalletKit "releaseOutput")
           env
@@ -496,8 +496,7 @@ mkRpc k = do
       SendCoinsRequest ->
       $(pure m) (Either LndError SendCoinsResponse)
     sendCoins env =
-      catchWalletLock env
-        . $(grpcRetry)
+      ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "sendCoins")
           env
@@ -508,7 +507,7 @@ mkRpc k = do
       LndEnv ->
       $(pure m) (Either LndError ())
     subscribeHtlcEvents handler env =
-      catchWalletLock env $
+      ($(grpcCatchWalletLock) env) $
         $(grpcSubscribe)
           (RPC :: RPC LnGRPC.Router "subscribeHtlcEvents")
           handler
@@ -521,8 +520,8 @@ mkRpc k = do
       PaymentRequest ->
       $(pure m) (Either LndError PayReq)
     decodePayReq env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "decodePayReq")
           env
@@ -533,8 +532,8 @@ mkRpc k = do
       RHash ->
       $(pure m) (Either LndError Invoice)
     lookupInvoice env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "lookupInvoice")
           env
@@ -546,7 +545,7 @@ mkRpc k = do
       TrackPaymentRequest ->
       $(pure m) (Either LndError ())
     trackPaymentV2 handler env =
-      catchWalletLock env
+      ($(grpcCatchWalletLock) env)
         . $(grpcSubscribe)
           (RPC :: RPC LnGRPC.Router "trackPaymentV2")
           handler
@@ -570,12 +569,12 @@ mkRpc k = do
       LndEnv ->
       $(pure m) (Either LndError PendingChannelsResponse)
     pendingChannels env =
-      catchWalletLock env
-        . $(grpcRetry)
-        $ $(grpcSync)
-          (RPC :: RPC LnGRPC.Lightning "pendingChannels")
-          env
-          (defMessage :: LnGRPC.PendingChannelsRequest)
+      $(grpcRetry) $
+        ($(grpcCatchWalletLock) env) $
+          $(grpcSync)
+            (RPC :: RPC LnGRPC.Lightning "pendingChannels")
+            env
+            (defMessage :: LnGRPC.PendingChannelsRequest)
 
     signMessage ::
       $(tcc m) =>
@@ -583,8 +582,8 @@ mkRpc k = do
       SignMessageRequest ->
       $(pure m) (Either LndError SignMessageResponse)
     signMessage env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Signer "signMessage")
           env
@@ -595,8 +594,8 @@ mkRpc k = do
       VM.VerifyMessageRequest ->
       $(pure m) (Either LndError VM.VerifyMessageResponse)
     verifyMessage env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Signer "verifyMessage")
           env
@@ -607,8 +606,8 @@ mkRpc k = do
       FSS.FundingStateStepRequest ->
       $(pure m) (Either LndError ())
     fundingStateStep env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "fundingStateStep")
           env
@@ -618,12 +617,12 @@ mkRpc k = do
       LndEnv ->
       $(pure m) (Either LndError [Bak.ChannelBackup])
     exportAllChannelBackups env =
-      catchWalletLock env
-        . $(grpcRetry)
-        $ $(grpcSync)
-          (RPC :: RPC LnGRPC.Lightning "exportAllChannelBackups")
-          env
-          (defMessage :: LnGRPC.ChanBackupExportRequest)
+      $(grpcRetry) $
+        ($(grpcCatchWalletLock) env) $
+          $(grpcSync)
+            (RPC :: RPC LnGRPC.Lightning "exportAllChannelBackups")
+            env
+            (defMessage :: LnGRPC.ChanBackupExportRequest)
 
     exportChannelBackup ::
       $(tcc m) =>
@@ -631,8 +630,8 @@ mkRpc k = do
       ChannelPoint ->
       $(pure m) (Either LndError Bak.ChannelBackup)
     exportChannelBackup env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "exportChannelBackup")
           env
@@ -643,8 +642,8 @@ mkRpc k = do
       [Bak.ChannelBackup] ->
       $(pure m) (Either LndError ())
     restoreChannelBackups env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         . $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "restoreChannelBackups")
           env
@@ -654,8 +653,8 @@ mkRpc k = do
       LndEnv ->
       $(pure m) (Either LndError Wallet.WalletBalance)
     walletBalance env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         $ $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "walletBalance")
           env
@@ -666,8 +665,8 @@ mkRpc k = do
       LndEnv ->
       $(pure m) (Either LndError ChannelBalance.ChannelBalanceResponse)
     channelBalance env =
-      catchWalletLock env
-        . $(grpcRetry)
+      $(grpcRetry)
+        . ($(grpcCatchWalletLock) env)
         $ $(grpcSync)
           (RPC :: RPC LnGRPC.Lightning "channelBalance")
           env
@@ -699,3 +698,7 @@ mkRpc k = do
     grpcSubscribe = case k of
       RpcSilent -> [e|grpcSubscribeSilent|]
       RpcKatip -> [e|grpcSubscribeKatip|]
+    grpcCatchWalletLock :: Q Exp
+    grpcCatchWalletLock = case k of
+      RpcSilent -> [e|grpcCatchWalletLockSilent|]
+      RpcKatip -> [e|grpcCatchWalletLockKatip|]
