@@ -18,7 +18,7 @@ _deps: &deps
   # foundation
   - base >= 4.7 && < 5
   - universum             >= 1.5.0 && < 1.8
-  - witch >= 1.0.0.2
+  - witch
   # time
   - time
   - chronos               >= 1.0.7 && < 1.2

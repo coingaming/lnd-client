@@ -1,11 +1,15 @@
 packages: *.cabal
 
+index-state: 2022-04-06T00:00:00Z
+
+package witch
+  flags: +remove-time
+
 source-repository-package
   type: git
-  location: https://github.com/coingaming/signable.git
-  tag: 403a04f9d29181fcc627abb359f31140d6400bfb
-  --sha256: 0p6ck18ap0w518iaq8r09maxz7j23d8ykaskg5sshcb0hcdwpbqf
-  subdir: haskell
+  location: https://github.com/21it/witch.git
+  --sha256: 17dvcqj29883sysx5qcgjbi3smn1c9kjaj807a9a2vj24fg2jwja
+  tag: ee0259bc5eb46d9c47d1c15473ff3e7d8212dc43
 
 source-repository-package
   type: git
@@ -24,15 +28,15 @@ source-repository-package
 source-repository-package
   type: git
   location: https://github.com/coingaming/src.git
-  tag: 982b960ff3f02be881244da83964cb80245ee417
-  --sha256: Z2FWjR9X/8OjAxh49gls7ixe6+FO2WdZQUMnxGLf4hs=
+  tag: 3a2328197075ec2444ad2d875450a11aa4d2305e
+  --sha256: sha256-wduMNBixBJ4MW4tzkcuJJ9pExk/39kmCOeHwTLOnV9I=
   subdir: generic-pretty-instances
 
 source-repository-package
   type: git
   location: https://github.com/coingaming/src.git
-  tag: 74f7fc422ff2dc1ad29f724b380f83f53d11c35e
-  --sha256: 1kn6r8izzmgs8q96r5fihwxjr74zdkfgdqcw8ycg3dnvwp3zlcy2
+  tag: 3a2328197075ec2444ad2d875450a11aa4d2305e
+  --sha256: sha256-wduMNBixBJ4MW4tzkcuJJ9pExk/39kmCOeHwTLOnV9I=
   subdir: network-bitcoin
 
 source-repository-package
