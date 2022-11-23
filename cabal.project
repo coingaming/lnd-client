@@ -28,15 +28,15 @@ source-repository-package
 source-repository-package
   type: git
   location: https://github.com/coingaming/src.git
-  tag: 3a2328197075ec2444ad2d875450a11aa4d2305e
-  --sha256: sha256-wduMNBixBJ4MW4tzkcuJJ9pExk/39kmCOeHwTLOnV9I=
+  tag: 79c3ac57bcd985d3952181d2cc22cf10e61b7db2
+  --sha256: sha256-1T0cQARQMHBmsQAdOspqb+s6YravQ5TJb+NwMXZnbjY=
   subdir: generic-pretty-instances
 
 source-repository-package
   type: git
   location: https://github.com/coingaming/src.git
-  tag: 3a2328197075ec2444ad2d875450a11aa4d2305e
-  --sha256: sha256-wduMNBixBJ4MW4tzkcuJJ9pExk/39kmCOeHwTLOnV9I=
+  tag: 79c3ac57bcd985d3952181d2cc22cf10e61b7db2
+  --sha256: sha256-1T0cQARQMHBmsQAdOspqb+s6YravQ5TJb+NwMXZnbjY=
   subdir: network-bitcoin
 
 source-repository-package
