@@ -1,5 +1,5 @@
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 
 module LndClient.PsbtSpec
   ( spec,
@@ -107,23 +107,32 @@ openChannelPsbt lndEnv toPubKey locFundAmt = do
   where
     fundStep pcid chan = do
       upd <- T.atomically $ T.readTChan chan
-      $(logTM) DebugS $ logStr $ "Got chan status update" <> inspectPlain upd
+      $(logTM) DebugS $ logStr $ "Got chan status update" <> inspectPlain @Text upd
       case upd of
         OpenStatusUpdate _ (Just (OpenStatusUpdatePsbtFund (ReadyForPsbtFunding faddr famt _))) -> do
-          $(logTM) DebugS $ logStr $ "Chan ready for funding at addr:" <> inspectPlain faddr <> " with amt:" <> inspectPlain famt
+          $logTM DebugS
+            . logStr
+            $ "Chan ready for funding at addr:"
+              <> inspectPlain @Text faddr
+              <> " with amt:"
+              <> inspectPlain famt
           psbtResp <- fundPsbtToAddr faddr famt
           let psbt' = Psbt $ FP.fundedPsbt psbtResp
           void $ liftLndResult =<< fundingStateStep lndEnv (psbtVerifyReq pcid psbt')
           sPsbtResp <- signPsbt psbtResp
-          $(logTM) DebugS $ logStr $ "Used psbt for funding:" <> inspectPlain sPsbtResp
+          $logTM DebugS
+            . logStr
+            $ "Used psbt for funding:" <> inspectPlain @Text sPsbtResp
           void $ liftLndResult =<< fundingStateStep lndEnv (psbtFinalizeReq pcid (Psbt $ FNP.signedPsbt sPsbtResp))
           fundStep pcid chan
         OpenStatusUpdate _ (Just (OpenStatusUpdateChanPending p)) -> do
-          $(logTM) DebugS $ logStr $ "Chan is pending... mining..." <> inspectPlain p
+          $logTM DebugS
+            . logStr
+            $ "Chan is pending... mining..." <> inspectPlain @Text p
           mine 3 Bob
           fundStep pcid chan
         OpenStatusUpdate _ (Just (OpenStatusUpdateChanOpen (ChannelOpenUpdate cp))) -> do
-          $(logTM) DebugS $ logStr $ "Chan is open" <> inspectPlain cp
+          $(logTM) DebugS $ logStr $ "Chan is open" <> inspectPlain @Text cp
           pure (Right cp)
         _ -> pure (Left "Unexpected update")
 

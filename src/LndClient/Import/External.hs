@@ -40,9 +40,9 @@ import Data.Type.Equality as Import
     type (==),
   )
 import Database.Persist.Class as Import (PersistField (..))
+import Database.Persist.PersistValue as Import
 import Database.Persist.Sql as Import (PersistFieldSql)
 import Database.Persist.TH as Import (derivePersistField)
-import Database.Persist.PersistValue as Import
 import GHC.Generics as Import (Rep)
 import Katip as Import
   ( ColorStrategy (..),
@@ -68,12 +68,11 @@ import Katip as Import
     runKatipContextT,
     sl,
   )
-import Text.PrettyPrint.GenericPretty as Import (Out (..))
 import Text.PrettyPrint.GenericPretty.Import as Import
-  ( PrettyLog (..),
+  ( Out (..),
+    PrettyLog (..),
     SecretVision (..),
     inspectPlain,
-    inspectStrPlain,
   )
 import Text.PrettyPrint.GenericPretty.Instance as Import ()
 import Universum as Import hiding (Text, catch, finally, fromIntegral, show)

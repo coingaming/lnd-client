@@ -119,7 +119,7 @@ katipAddLndSecret ::
   m b
 katipAddLndSecret env meta =
   katipAddLndMeta env meta
-    . sl (inspectPlain meta)
+    . sl (inspectPlain meta :: Text)
     . inspectSecret @rpc env
 
 katipAddLndPublic ::
@@ -133,8 +133,8 @@ katipAddLndPublic ::
   m b
 katipAddLndPublic env meta =
   katipAddLndMeta env meta
-    . sl (inspectPlain meta)
-    . inspectPlain
+    . sl (inspectPlain meta :: Text)
+    . inspectPlain @Text
 
 katipAddLndLoc ::
   ( KatipContext m

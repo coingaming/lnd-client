@@ -48,9 +48,19 @@ data LoggingMeta
   | LndElapsedSecondsSub
   | LndMethodCompose
   | LndTestReceiveInvoice
-  deriving stock (Eq, Ord, Show, Read, Generic, Enum, Bounded)
+  deriving stock
+    ( Eq,
+      Ord,
+      Show,
+      Read,
+      Generic,
+      Enum,
+      Bounded
+    )
 
 instance Out LoggingMeta
+
+instance ToJSON LoggingMeta
 
 instance FromJSON LoggingMeta
 

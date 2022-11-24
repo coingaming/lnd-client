@@ -1,6 +1,5 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 
 module LndClient.LndTest
   ( -- * Btc
@@ -252,7 +251,7 @@ mine blocks owner = do
   $(logTM) sev $
     logStr $
       "Mining "
-        <> inspectPlain blocks
+        <> inspectPlain @Text blocks
         <> " blocks to "
         <> inspectPlain owner
         <> " wallet"
@@ -271,7 +270,8 @@ liftLndResult :: MonadIO m => Either LndError a -> m a
 liftLndResult (Right x) =
   pure x
 liftLndResult (Left x) =
-  liftIO . fail $ "LiftLndResult failed " <> inspectStrPlain x
+  liftIO . fail $
+    "LiftLndResult failed " <> inspectPlain @String x
 
 syncWallets ::
   forall m owner.
@@ -312,7 +312,7 @@ syncPendingChannelsFor owner = this 0
     this 30 = do
       let msg =
             "SyncPendingChannelsFor "
-              <> inspectPlain owner
+              <> inspectPlain @Text owner
               <> " attempt limit exceeded"
       sev <- getSev owner ErrorS
       $(logTM) sev $ logStr msg
@@ -322,7 +322,7 @@ syncPendingChannelsFor owner = this 0
       $(logTM) sev $
         logStr $
           "SyncPendingChannelsFor "
-            <> inspectPlain owner
+            <> inspectPlain @Text owner
             <> " is running"
       res <- Lnd.pendingChannels =<< getLndEnv owner
       case res of
