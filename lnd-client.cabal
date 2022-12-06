@@ -5,7 +5,7 @@ cabal-version: 2.0
 -- see: https://github.com/sol/hpack
 
 name:           lnd-client
-version:        0.1.0.1
+version:        0.1.0.2
 synopsis:       Lightning Network Daemon (LND) client library for Haskell
 description:    You can find documentation at <https://hackage.haskell.org/package/lnd-client>
 category:       Lightning, Bitcoin, Finance, Network, Payments
