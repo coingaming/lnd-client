@@ -29,6 +29,7 @@ module LndClient.LndTest
     receiveClosedChannels,
     receiveActiveChannel,
     receiveInvoice,
+    confirmedBalance,
 
     -- * LowLevel setup
     lazyMineInitialCoins,
@@ -86,6 +87,7 @@ import LndClient.Data.SubscribeChannelEvents
 import LndClient.Data.SubscribeInvoices
   ( SubscribeInvoicesRequest (..),
   )
+import qualified LndClient.Data.WalletBalance as Wallet
 import LndClient.Import
 import qualified LndClient.RPC.Katip as Lnd
 import LndClient.Watcher as Watcher
@@ -193,6 +195,12 @@ walletAddress owner = do
         (Lnd.NewAddressRequest Lnd.WITNESS_PUBKEY_HASH Nothing)
   pure x
 
+confirmedBalance :: LndTest m owner => owner -> m Msat
+confirmedBalance owner = do
+  lnd <- getLndEnv owner
+  bal <- liftLndResult =<< Lnd.walletBalance lnd
+  pure $ Wallet.confirmedBalance bal
+
 lazyMineInitialCoins :: forall m owner. LndTest m owner => Proxy owner -> m ()
 lazyMineInitialCoins = const $ do
   mapM_ (liftLndResult <=< Lnd.lazyInitWallet <=< getLndEnv) owners
@@ -202,12 +210,17 @@ lazyMineInitialCoins = const $ do
   -- mine additional 100 blocks per owner to ensure everybody
   -- has coins to spend.
   when (h < from (length owners * blocksPerOwner)) $ do
-    mapM_ (mine blocksPerOwner) owners
+    mapM_ mineBlocks owners
   where
     owners :: [owner]
     owners = enumerate
     blocksPerOwner :: Int
     blocksPerOwner = 200
+    mineBlocks :: owner -> m ()
+    mineBlocks owner = do
+      confirmedBal <- confirmedBalance owner
+      when (unMsat confirmedBal < 100000000000) $ do
+        mine blocksPerOwner owner
 
 lazyConnectNodes :: forall m owner. LndTest m owner => Proxy owner -> m ()
 lazyConnectNodes = const $ mapM_ this uniquePairs

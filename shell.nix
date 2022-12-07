@@ -27,6 +27,7 @@ project.shellFor {
     pkgs.ps
     pkgs.jq
     pkgs.ormolu
+    pkgs.niv
     lnd
     pkgs.protobuf
     proto-lens-protoc

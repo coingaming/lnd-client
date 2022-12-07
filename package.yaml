@@ -1,5 +1,5 @@
 name:                lnd-client
-version:             0.1.0.1
+version:             0.1.0.2
 github:              "coingaming/lnd-client"
 license:             BSD3
 author:              "21it <21it@tuta.io>, Mikhail Prushinskiy <mprushinsky@gmail.com>, Artem Markov <drownbes@gmail.com>"
