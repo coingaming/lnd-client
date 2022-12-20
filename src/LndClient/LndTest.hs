@@ -127,12 +127,13 @@ newBtcClient x =
       (unBtcPassword $ btcPassword x)
 
 withTestEnv ::
-  ( MonadUnliftIO m
+  ( KatipContext m,
+    MonadUnliftIO m
   ) =>
   LndEnv ->
   NodeLocation ->
-  (TestEnv -> KatipContextT m a) ->
-  KatipContextT m a
+  (TestEnv -> m a) ->
+  m a
 withTestEnv lnd loc action =
   withChannelWatcher lnd $ \cw ->
     withInvoiceWatcher lnd $ \iw ->
