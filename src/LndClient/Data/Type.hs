@@ -89,7 +89,7 @@ logDefault :: LoggingStrategy
 logDefault =
   LoggingStrategy
     { loggingStrategySeverity = \x _ _ -> x,
-      loggingStrategySecret = SecretHidden,
+      loggingStrategySecret = SecretVisible,
       loggingStrategyMeta = Set.fromList enumerate
     }
 
@@ -97,7 +97,7 @@ logDebug :: LoggingStrategy
 logDebug =
   LoggingStrategy
     { loggingStrategySeverity = \_ _ _ -> DebugS,
-      loggingStrategySecret = SecretHidden,
+      loggingStrategySecret = SecretVisible,
       loggingStrategyMeta = Set.fromList enumerate
     }
 
